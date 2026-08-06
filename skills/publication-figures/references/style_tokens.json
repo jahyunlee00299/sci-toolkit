@@ -1,0 +1,154 @@
+{
+  "$schema": "publication-figures style tokens v1",
+  "compiled": "2026-05-18",
+  "project": "publication-figures / Style standards sub-project [0]",
+  "scope": "Cofactor regeneration arrows and cascade scheme styling for biocatalysis figures",
+
+  "arrow": {
+    "main_stroke_pt": 1.0,
+    "main_color": "#000000",
+    "head_style": "filled_triangle",
+    "head_angle_deg": 28,
+    "head_length_pt": 4.5,
+    "head_width_pt": 3.0,
+    "linejoin": "miter",
+    "linecap": "butt"
+  },
+
+  "swing_arc": {
+    "default_style": "hairpin",
+    "available_styles": ["hairpin", "double_half_arrow", "semicircle", "stacked_label", "photoredox_ladder"],
+    "style_aliases": {
+      "hairpin": "Pattern A — classic curved-tick (Angew/JACS default)",
+      "double_half_arrow": "Pattern B — twin-tick swing-arc",
+      "semicircle": "Pattern C — full ellipse with regen enzyme inside",
+      "stacked_label": "Pattern D — compact textbook style",
+      "photoredox_ladder": "Pattern E — vertical electron-shuttle ladder"
+    },
+    "stroke_pt": 0.9,
+    "stroke_color": "#000000",
+    "curvature_default": 0.55,
+    "curvature_range": [0.4, 0.7],
+    "drop_distance_pt": 18,
+    "head_inherit": true,
+    "comment": "drop_distance = vertical excursion from main arrow midpoint to arc apex; 18 pt at 9 pt label size gives clear separation"
+  },
+
+  "cofactor_colors": {
+    "NADP_pool": {
+      "hex": "#2e5aa8",
+      "name": "cool blue",
+      "convention_source": "Hollmann 2020 Angew, ACS Catal BVMO 2019"
+    },
+    "NAD_pool": {
+      "hex": "#c84a2c",
+      "name": "warm red",
+      "convention_source": "Chem Rev 2023 photobiocatalysis"
+    },
+    "ATP_pool": {
+      "hex": "#7a3ec7",
+      "name": "purple",
+      "convention_source": "Project-internal default; rarely color-coded in literature"
+    },
+    "FAD_pool": {
+      "hex": "#d49a1a",
+      "name": "amber",
+      "convention_source": "FAD biological color"
+    },
+    "misc_cofactor": {
+      "hex": "#7a8399",
+      "name": "neutral slate"
+    },
+    "monochrome_fallback": "#000000",
+    "comment": "Use monochrome for single-cofactor figures; engage colors only when 2+ cofactor pools coexist in same panel"
+  },
+
+  "fonts": {
+    "compound": {
+      "family": "Arial",
+      "size_pt": 9,
+      "weight": 500,
+      "italic": false,
+      "color": "#000000"
+    },
+    "enzyme": {
+      "family": "Arial",
+      "size_pt": 9,
+      "weight": 600,
+      "italic": true,
+      "color": "#000000",
+      "comment": "Italic abbreviation (GDH, FDH, NOX, BVMO) per JACS/Angew convention"
+    },
+    "ec_number": {
+      "family": "Arial",
+      "size_pt": 7,
+      "weight": 400,
+      "italic": false,
+      "color": "#7a8399",
+      "comment": "Muted gray; used only in mechanism figures, omit from cascade scheme"
+    },
+    "cofactor": {
+      "family": "Arial",
+      "size_pt": 8,
+      "weight": 500,
+      "italic": true,
+      "color": "inherit_from_cofactor_pool",
+      "comment": "Italic; color follows cofactor_colors mapping when multi-cofactor panel"
+    },
+    "caption": {
+      "family": "Arial",
+      "size_pt": 8,
+      "weight": 400,
+      "italic": false,
+      "color": "#000000"
+    }
+  },
+
+  "label_placement": {
+    "in_label_position": "arc_start_above",
+    "out_label_position": "arc_end_above",
+    "regen_enzyme_position": "arc_center_below",
+    "main_enzyme_position": "main_arrow_above",
+    "offset_pt": 3,
+    "comment": "Above/below relative to arc concavity; offset is perpendicular distance from arc to label baseline"
+  },
+
+  "equilibrium_notation": {
+    "preferred": "double_half_arrow",
+    "deprecated": ["equilibrium_symbol_⇌"],
+    "comment": "Modern JACS/Angew (post-2015) uses paired half-arrows over ⇌ symbol for cofactor cycling"
+  },
+
+  "spacing": {
+    "min_label_clear_pt": 2,
+    "arc_to_main_arrow_pt": 4,
+    "enzyme_to_arrow_pt": 3,
+    "panel_margin_pt": 8
+  },
+
+  "recommended_defaults": {
+    "primary_pattern": "hairpin",
+    "secondary_pattern": "semicircle",
+    "use_color": "only_when_multi_cofactor",
+    "rationale_file": "arrow_patterns.md"
+  },
+
+  "sources": [
+    "arrow_patterns.md",
+    "10.1039/d0cs01575j",
+    "10.1039/d1cs00100k",
+    "10.1021/acs.chemrev.7b00203",
+    "10.1002/anie.202001876",
+    "10.1002/anie.201800343",
+    "10.1021/acscatal.9b03396",
+    "10.1021/acs.chemrev.2c00767",
+    "10.1021/jacs.5b12252",
+    "10.1021/acscatal.9b02413",
+    "10.1038/ncomms11917",
+    "10.1038/ncomms4145",
+    "10.1021/jacs.9b11761",
+    "10.1038/s41467-022-29535-7",
+    "10.1515/znc-2018-0216",
+    "10.1002/bit.22630"
+  ]
+}

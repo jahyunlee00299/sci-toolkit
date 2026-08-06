@@ -1,0 +1,41 @@
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# ── Credentials — never commit ──────────────────────────────────────────────
+# The template lives at config/credentials.example.json; the filled-in copy
+# stays local. Anything matching these names is a real secret by convention.
+config/credentials.json
+secrets.json
+*.credentials.json
+google_token.json
+.env
+.env.*
+!.env.example
+
+# ── Private / infrastructure (mirrors .distignore) ──────────────────────────
+# .distignore governs what goes into the SHA256SUMS manifest; this governs what
+# goes into git. Keep the two in sync — a pattern that only exists in one of
+# them is a hole.
+research_fund/
+ssot_registry.json
+.cache/
+
+# ── Local run artifacts ─────────────────────────────────────────────────────
+out/*
+!out/.gitkeep
+*.log
+*.bak
+evals/runs/
+
+# ── OS / editor noise ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/

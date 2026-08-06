@@ -1,0 +1,344 @@
+{
+  "_comment": "sci-toolkit skill catalog — SSOT for the selective installer (install/install.py). 'requires' = hard deps the installer MUST auto-pull; deps extracted from each SKILL.md, not guessed. No circular dependencies. 'groups' = top-level buckets that categories roll up into; 'size_kb' measured from disk (du), used by the installer to show install footprint.  | docx·pdf·pptx·xlsx 는 Anthropic 소유 스킬로 이 저장소에 포함되지 않는다(external=true). 의존성 표기는 유지되며, 설치기는 이들을 건너뛰고 안내만 한다.",
+  "version": "1.2.0",
+  "groups": {
+    "research": "연구 작업 (스킬) — 논문·문헌·실험·데이터·그림·문서·검증",
+    "connect": "외부 연동 (커넥터) — 메일·GitHub·Asana·Notion (draft-first)"
+  },
+  "categories": {
+    "paper-writing": {
+      "group": "research",
+      "label": "논문 작성 (초안·교정·인용·리뷰)"
+    },
+    "literature": {
+      "group": "research",
+      "label": "문헌 조사 (검색·고찰·추출)"
+    },
+    "molbio": {
+      "group": "research",
+      "label": "분자생물학 (프라이머·서열·DB)"
+    },
+    "data-stats": {
+      "group": "research",
+      "label": "데이터·통계 (분석·검정·검증)"
+    },
+    "figures": {
+      "group": "research",
+      "label": "그림·포스터 (publication figure·poster)"
+    },
+    "documents": {
+      "group": "research",
+      "label": "문서 작업 (docx·xlsx·pdf·md)"
+    },
+    "validation": {
+      "group": "research",
+      "label": "검증 (피어리뷰·타당성·평가)"
+    }
+  },
+  "connectors": {
+    "_note": "외부서비스 커넥터 — scripts/connectors/. 스킬과 달리 credentials.json 필요, draft-first/write-guard. 설치 시 scripts/connectors/ 통째 복사 권장(공통 _credentials.py 공유).",
+    "mail": {
+      "role": "메일 draft-first (IMAP 읽기 + SMTP 초안, 발송 3중게이트)",
+      "needs": "IMAP/SMTP 계정 + 앱비밀번호"
+    },
+    "github": {
+      "role": "이슈·PR 조회 + PR draft-only + upstream fork-guard",
+      "needs": "GitHub PAT"
+    },
+    "asana": {
+      "role": "작업·댓글·하위작업 (형식 자동검증, write-guard)",
+      "needs": "Asana PAT"
+    },
+    "notion": {
+      "role": "페이지 검색·추가 + DB 조회·행추가 (write-guard)",
+      "needs": "Notion Integration 토큰"
+    }
+  },
+  "skills": {
+    "manuscript-pipeline": {
+      "category": "paper-writing",
+      "role": "논문 초안→작성→셀프리뷰→교정 (IMRAD, 저널별 포맷)",
+      "requires": [
+        "docx",
+        "academic-term-rules"
+      ],
+      "size_kb": 173
+    },
+    "endnote-citation-injection": {
+      "category": "paper-writing",
+      "role": "EndNote 인용 대량 삽입 + DOI 이중검증",
+      "requires": [
+        "docx"
+      ],
+      "size_kb": 52
+    },
+    "academic-term-rules": {
+      "category": "validation",
+      "role": "학술 용어·표기 규칙 SSOT (종명 이탤릭·단위·kinetics)",
+      "requires": [],
+      "size_kb": 34
+    },
+    "scholar-evaluation": {
+      "category": "validation",
+      "role": "ScholarEval 정량 채점 (8차원 5점)",
+      "requires": [],
+      "size_kb": 44
+    },
+    "scientific-validation": {
+      "category": "validation",
+      "role": "fit/최적화 결과 과학적 타당성 게이트 (5축)",
+      "requires": [],
+      "size_kb": 43
+    },
+    "reference-surveyor": {
+      "category": "validation",
+      "role": "논문 구현 GitHub 레퍼런스 실행검증·평가",
+      "requires": [],
+      "size_kb": 7
+    },
+    "literature-review": {
+      "category": "literature",
+      "role": "체계적 문헌고찰 문서 생성 (PRISMA·검증인용·PDF)",
+      "requires": [],
+      "size_kb": 81
+    },
+    "research-search": {
+      "category": "literature",
+      "role": "검색 메타 라우터 (최적 백엔드 자동 선택)",
+      "requires": [],
+      "size_kb": 9
+    },
+    "research-lookup": {
+      "category": "literature",
+      "role": "무료 API 조회 (OpenAlex+PubMed 자동 라우팅)",
+      "requires": [],
+      "size_kb": 60
+    },
+    "research-ideation": {
+      "category": "literature",
+      "role": "브레인스토밍→가설→실험설계",
+      "requires": [],
+      "size_kb": 4
+    },
+    "openalex-database": {
+      "category": "literature",
+      "role": "OpenAlex 2.4억 논문 쿼리·서지분석",
+      "requires": [],
+      "size_kb": 51
+    },
+    "pubmed-database": {
+      "category": "literature",
+      "role": "PubMed E-utilities (MeSH·Boolean·배치)",
+      "requires": [],
+      "size_kb": 45
+    },
+    "paper-extract": {
+      "category": "documents",
+      "role": "논문 PDF/docx에서 표·그림·본문 추출",
+      "requires": [],
+      "size_kb": 16
+    },
+    "primer-design": {
+      "category": "molbio",
+      "role": "프라이머 설계 (iPCR·RE 클로닝·발현검증·주문서)",
+      "requires": [],
+      "size_kb": 639
+    },
+    "lab-data-analysis": {
+      "category": "data-stats",
+      "role": "랩 데이터 EDA (kinetic·HPLC·gel, MSDS/GHS)",
+      "requires": [],
+      "size_kb": 3
+    },
+    "stats-workflow": {
+      "category": "data-stats",
+      "role": "통계 3단계 (탐색→검정+가정확인→APA 리포팅)",
+      "requires": [],
+      "size_kb": 20
+    },
+    "publication-figures": {
+      "category": "figures",
+      "role": "논문 그림/스킴 라우터 (figure_lint 게이트)",
+      "requires": [],
+      "size_kb": 228
+    },
+    "docx": {
+      "category": "documents",
+      "role": "Word 문서 생성/편집 (구조검증·트랙변경·수식)  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "xlsx": {
+      "category": "documents",
+      "role": "엑셀 생성/편집 (수식·재계산·오류스캔)  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "pdf": {
+      "category": "documents",
+      "role": "PDF 조작 (병합·분할·양식·OCR)  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "markitdown": {
+      "category": "documents",
+      "role": "파일→마크다운 변환 (PDF/DOCX/PPTX/이미지 등)",
+      "requires": [],
+      "size_kb": 65
+    },
+    "pptx": {
+      "category": "documents",
+      "role": "발표자료(.pptx) 생성·읽기·편집 — 슬라이드/노트/템플릿  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "journal-presentation-maker": {
+      "category": "documents",
+      "role": "저널클럽·랩미팅 발표자료 자동 작성 및 리뷰",
+      "requires": [
+        "pptx",
+        "academic-term-rules"
+      ],
+      "size_kb": 101
+    },
+    "markdown-mermaid-writing": {
+      "category": "figures",
+      "role": "Mermaid 다이어그램 표준 — 구조·흐름도 우선 작성",
+      "requires": [],
+      "size_kb": 275
+    },
+    "generate-image": {
+      "category": "figures",
+      "role": "범용 이미지 생성·편집(AI) — 사진·일러스트·컨셉아트",
+      "requires": [],
+      "size_kb": 16
+    },
+    "statsmodels": {
+      "category": "data-stats",
+      "role": "OLS/GLM/혼합모형/ARIMA 등 통계모형 + 진단",
+      "requires": [],
+      "size_kb": 99
+    },
+    "code-quality": {
+      "category": "validation",
+      "role": "SOLID 원칙·파일 크기 한계·체계적 리팩토링 게이트",
+      "requires": [],
+      "size_kb": 3
+    },
+    "conda-env-manager": {
+      "category": "data-stats",
+      "role": "conda 환경 진단·생성·복구, import 스캔, 버전 충돌 해소",
+      "requires": [],
+      "size_kb": 24
+    },
+    "experiment-hub": {
+      "category": "molbio",
+      "role": "실험 프로토콜·조건 최적화·이력 기록·실험 비교",
+      "requires": [],
+      "size_kb": 27
+    },
+    "get-available-resources": {
+      "category": "data-stats",
+      "role": "CPU/GPU/메모리/디스크 탐지 — 무거운 계산 전 전략 결정",
+      "requires": [],
+      "size_kb": 24
+    },
+    "research-grants": {
+      "category": "paper-writing",
+      "role": "연구제안서 작성(NSF·NIH·DOE·DARPA 등 기관별 양식)",
+      "requires": [],
+      "size_kb": 245
+    },
+    "parallel-web": {
+      "category": "literature",
+      "role": "웹 검색·URL 본문 추출·딥리서치 (Parallel API)",
+      "requires": [],
+      "size_kb": 83
+    },
+    "perplexity-search": {
+      "category": "literature",
+      "role": "실시간 웹 검색 + 출처 인용 응답 (Perplexity via OpenRouter)",
+      "requires": [],
+      "size_kb": 59
+    },
+    "git-workflow-manager": {
+      "category": "validation",
+      "role": "git 워크플로우 — pull 강제, 임시파일 정리, 커밋 규칙",
+      "requires": [],
+      "size_kb": 6
+    },
+    "skill-developer": {
+      "category": "validation",
+      "role": "새 스킬 작성·트리거 설정 가이드",
+      "requires": [],
+      "size_kb": 5
+    }
+  },
+  "presets": {
+    "paper-writing": {
+      "label": "논문 작성",
+      "desc": "논문 초안부터 교정·인용·피어리뷰까지",
+      "skills": [
+        "manuscript-pipeline",
+        "endnote-citation-injection",
+        "publication-figures",
+        "research-grants"
+      ]
+    },
+    "literature": {
+      "label": "문헌 조사",
+      "desc": "논문 검색·체계적 고찰·추출",
+      "skills": [
+        "research-search",
+        "research-lookup",
+        "openalex-database",
+        "pubmed-database",
+        "literature-review",
+        "paper-extract",
+        "parallel-web",
+        "perplexity-search"
+      ]
+    },
+    "molbio": {
+      "label": "분자생물학 실험",
+      "desc": "프라이머 설계·서열 분석·생물정보 DB",
+      "skills": [
+        "primer-design"
+      ]
+    },
+    "data-figures": {
+      "label": "데이터 분석 & 그림",
+      "desc": "데이터 EDA → 통계 → 논문 그림 → 타당성 검증",
+      "skills": [
+        "lab-data-analysis",
+        "stats-workflow",
+        "publication-figures",
+        "scientific-validation",
+        "statsmodels",
+        "markdown-mermaid-writing"
+      ]
+    },
+    "documents": {
+      "label": "문서 작업",
+      "desc": "Word·엑셀·PDF·마크다운 파일 다루기",
+      "skills": [
+        "docx",
+        "xlsx",
+        "pdf",
+        "markitdown",
+        "paper-extract"
+      ]
+    },
+    "all": {
+      "label": "전체 설치",
+      "desc": "21개 스킬 모두",
+      "skills": [
+        "__ALL__"
+      ]
+    }
+  }
+}

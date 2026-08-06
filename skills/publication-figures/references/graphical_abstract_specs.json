@@ -1,0 +1,47 @@
+{
+  "_meta": {
+    "created_at": "2026-05-18",
+    "source": "official journal author guidelines (sizes verified)",
+    "notes": "Sizes are journal-specified maximum dimensions. DPI 300 for raster."
+  },
+  "nature": {
+    "label": "Nature (NPG)",
+    "w_cm": 5.5,
+    "h_cm": 8.5,
+    "dpi": 300,
+    "orientation": "portrait",
+    "max_font_pt": 8,
+    "min_line_pt": 0.5,
+    "note": "Nature group GA / cover-style abstract"
+  },
+  "acs": {
+    "label": "ACS · JACS TOC",
+    "w_cm": 9.0,
+    "h_cm": 4.8,
+    "dpi": 300,
+    "orientation": "landscape",
+    "max_font_pt": 7,
+    "min_line_pt": 0.5,
+    "note": "Standard JACS / ACS Catalysis TOC"
+  },
+  "elsevier": {
+    "label": "Elsevier",
+    "w_cm": 13.0,
+    "h_cm": 5.0,
+    "dpi": 300,
+    "orientation": "landscape",
+    "max_font_pt": 8,
+    "min_line_pt": 0.5,
+    "note": "Most Elsevier journals; 'graphical abstract' 500×1300 px at 100 dpi spec"
+  },
+  "wiley": {
+    "label": "Wiley · Angewandte",
+    "w_cm": 5.5,
+    "h_cm": 5.5,
+    "dpi": 300,
+    "orientation": "square",
+    "max_font_pt": 8,
+    "min_line_pt": 0.5,
+    "note": "Wiley group (Angew Chem, Adv Synth Catal etc.)"
+  }
+}
