@@ -1,0 +1,15 @@
+# NEVER package these — financial / private / infra
+**/research_fund/**
+**/ssot_registry.json
+**/secrets.json
+**/*.credentials.json
+config/credentials.json
+**/google_token.json
+**/dual*pc*
+**/delegate.sh
+**/homepc_*
+**/autonomous-night/**
+**/.git/**
+**/__pycache__/**
+**/*.pyc
+**/.cache/**

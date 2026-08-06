@@ -1,0 +1,35 @@
+# 줄바꿈 정책
+#
+# 이 저장소는 Windows·macOS·Linux(WSL 포함)에서 함께 쓰인다. git 의 기본
+# autocrlf 동작에 맡기면 체크아웃할 때 셸 스크립트가 CRLF 로 바뀌고, 그러면
+# `#!/usr/bin/env sh` 뒤의 \r 때문에 훅이 통째로 죽는다 — 실패가 조용해서
+# "훅이 설치됐는데 아무것도 막지 않는" 상태가 된다.
+#
+# 그래서 실행되는 것은 전부 LF 로 못박고, 나머지는 git 이 알아서 처리하게 둔다.
+
+* text=auto
+
+# 실행 파일 — 반드시 LF (플랫폼 무관)
+*.sh    text eol=lf
+*.py    text eol=lf
+*.bash  text eol=lf
+
+# Windows 전용 스크립트는 CRLF 여야 한다
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# 해시 매니페스트 — 줄바꿈이 바뀌면 체크섬 검증이 통째로 실패한다
+SHA256SUMS text eol=lf
+
+# 바이너리 (diff/변환 금지)
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.pdf   binary
+*.docx  binary
+*.xlsx  binary
+*.pptx  binary
+*.zip   binary
+*.ico   binary
