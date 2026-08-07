@@ -27,14 +27,12 @@ python doctor.py   →   10 OK / 0 FAIL
 
 ---
 
-## 이게 뭔가요? / What is this?
+## sci-toolkit이 뭔가요? / What is sci-toolkit?
 
 - Claude Code가 특정 작업(논문 검색, 실험 데이터 분석, 서열 설계, figure 제작 등)을 할 때
   참고하는 **스킬(skill) 모음** = `skills/` 폴더 하나하나가 독립된 기능 단위입니다.
 - 스킬은 코드가 아니라 "이럴 때 이렇게 해라"는 **지침서 + 필요시 보조 스크립트**입니다.
   Claude Code가 대화 맥락에서 알아서 관련 스킬을 찾아 로드합니다 (수동 실행 불필요).
-- 랩 공용 SSOT(single source of truth)이며, 개인 워크스페이스(연구비·과제·개인 계정 연동 등)는
-  분리되어 있어 이 배포판에는 들어있지 않습니다.
 
 In short: each folder under `skills/` is a self-contained instruction set (a "skill")
 that Claude Code auto-loads when relevant to your request — you don't run them by hand.
