@@ -3,7 +3,7 @@
 
 통계 도구는 "돌아간다"와 "맞다"가 다르다. 여기서는 분포를 알고 만든 데이터를
 넣어서, 도구가 **정답으로 알려진 검정을 지목하는지** 확인한다.
-난수 시드를 고정하므로 결과는 재현 가능하다.
+데이터는 난수가 아니라 분위수로 만든다 — 어느 numpy/scipy 버전에서나 같다.
 
 실행:
     python tests/test_assumption_check.py     # exit 0 = 통과
@@ -35,6 +35,26 @@ for _s in (sys.stdout, sys.stderr):
             _s.reconfigure(encoding="utf-8", errors="replace")
         except Exception:
             pass
+
+
+def _normal_quantiles(mean: float, sd: float, n: int) -> list[float]:
+    """난수 없이 '정규분포를 따르는 표본' 을 만든다 — i/(n+1) 분위수.
+
+    `np.random.default_rng(seed)` 는 시드를 고정해도 numpy 버전이 바뀌면 스트림이
+    달라질 수 있다. 그러면 정규성 p 값이 0.05 를 넘나들며 지목되는 검정이 바뀌어,
+    검정 선택 로직을 재는 테스트가 난수 운에 좌우된다 — CI(다른 numpy/scipy)에서
+    실제로 깨졌다(260807). 분위수 표본은 어느 환경에서나 같은 바이트다.
+    """
+    from statistics import NormalDist
+    nd = NormalDist(mean, sd)
+    return [nd.inv_cdf((i + 1) / (n + 1)) for i in range(n)]
+
+
+def _exponential_quantiles(scale: float, n: int) -> list[float]:
+    """지수분포 분위수 — 강하게 치우쳐 정규성이 확실히 깨진다."""
+    import math
+    return [-scale * math.log(1.0 - (i + 1) / (n + 1)) for i in range(n)]
+
 
 fails = []
 
@@ -81,9 +101,8 @@ except ImportError:
     np = None
 
 if np is not None:
-    rng = np.random.default_rng(20260723)
-    small_normal = rng.normal(10, 2, 20)
-    big_normal = rng.normal(10, 2, 80)
+    small_normal = _normal_quantiles(10.0, 2.0, 20)
+    big_normal = _normal_quantiles(10.0, 2.0, 80)
     check("n=20 → Shapiro-Wilk 사용",
           mod.check_normality(small_normal, "a")["test"], "Shapiro-Wilk")
     check("n=80 → D'Agostino-Pearson 사용",
@@ -91,7 +110,7 @@ if np is not None:
     check("정규분포 데이터 → normal=True",
           mod.check_normality(small_normal, "a")["normal"], True)
     # 지수분포는 강하게 치우쳐 있어 정규성이 깨져야 한다
-    skewed = rng.exponential(3, 40)
+    skewed = _exponential_quantiles(3.0, 40)
     check("지수분포 데이터 → normal=False",
           mod.check_normality(skewed, "c")["normal"], False)
 
@@ -113,12 +132,20 @@ print("\n=== 실제 실행 (정답을 아는 데이터) ===")
 if np is None:
     print("  SKIP — numpy 없음")
 else:
-    rng = np.random.default_rng(4242)
     tmp = Path(tempfile.mkdtemp())
 
     # (1) 두 정규분포, 등분산, 평균이 뚜렷이 다름 → Independent t-test, 유의
-    a = rng.normal(10, 1.5, 30)
-    b = rng.normal(14, 1.5, 30)
+    #
+    # 난수를 쓰지 않는다. `default_rng(seed)` 는 시드를 고정해도 **numpy 버전이
+    # 바뀌면 스트림이 달라질 수 있고**, 그러면 정규성 p 값이 0.05 를 넘나들며
+    # 지목되는 검정이 바뀐다 — CI(다른 numpy/scipy)에서 이 케이스가 실제로
+    # 깨졌다(260807). 검정 선택 로직을 재는 테스트가 난수 운에 좌우되면 안 된다.
+    #
+    # 대신 정규분포의 분위수를 결정적으로 만든다. 표본이 이론 분포를 거의 정확히
+    # 따르므로 Shapiro-Wilk 가 확실히 "정규"를 주고, 두 군의 분산이 같아 Levene 도
+    # 확실히 "등분산"이며, 평균 차이가 4σ 이상이라 유의성 판정도 경계에서 멀다.
+    a = _normal_quantiles(10.0, 1.5, 30)
+    b = _normal_quantiles(14.0, 1.5, 30)
     f1 = tmp / "two_normal.csv"
     f1.write_text("value,group\n" +
                   "".join(f"{v},A\n" for v in a) +
@@ -134,8 +161,8 @@ else:
     check("  exit 0", r.returncode, 0)
 
     # (2) 한쪽이 지수분포 → 비모수로 전환되어야 한다
-    c = rng.exponential(2, 30)
-    d = rng.normal(10, 1.5, 30)
+    c = _exponential_quantiles(2.0, 30)
+    d = _normal_quantiles(10.0, 1.5, 30)
     f2 = tmp / "skewed.csv"
     f2.write_text("value,group\n" +
                   "".join(f"{v},A\n" for v in c) +
@@ -147,8 +174,9 @@ else:
           "Mann-Whitney U" in r2.stdout, True)
 
     # (3) 등분산 위배 → Welch 로 전환
-    e = rng.normal(10, 1.0, 30)
-    f = rng.normal(10.5, 6.0, 30)
+    # 분산비 36배 — Levene 이 확실히 등분산을 기각한다.
+    e = _normal_quantiles(10.0, 1.0, 30)
+    f = _normal_quantiles(10.5, 6.0, 30)
     f3 = tmp / "unequal_var.csv"
     f3.write_text("value,group\n" +
                   "".join(f"{v},A\n" for v in e) +
@@ -160,9 +188,9 @@ else:
           "Welch's t-test" in r3.stdout, True)
 
     # (4) 3군 정규·등분산 → ANOVA
-    g1 = rng.normal(10, 1.5, 25)
-    g2 = rng.normal(12, 1.5, 25)
-    g3 = rng.normal(14, 1.5, 25)
+    g1 = _normal_quantiles(10.0, 1.5, 25)
+    g2 = _normal_quantiles(12.0, 1.5, 25)
+    g3 = _normal_quantiles(14.0, 1.5, 25)
     f4 = tmp / "three.csv"
     f4.write_text("value,group\n" +
                   "".join(f"{v},A\n" for v in g1) +
@@ -177,8 +205,8 @@ else:
     # (5) 대응표본인데 크기가 다르면 조용히 넘어가지 말고 막아야 한다
     f5 = tmp / "mismatched.csv"
     f5.write_text("value,group\n" +
-                  "".join(f"{v},A\n" for v in rng.normal(10, 1, 20)) +
-                  "".join(f"{v},B\n" for v in rng.normal(11, 1, 15)), encoding="utf-8")
+                  "".join(f"{v},A\n" for v in _normal_quantiles(10.0, 1.0, 20)) +
+                  "".join(f"{v},B\n" for v in _normal_quantiles(11.0, 1.0, 15)), encoding="utf-8")
     r5 = subprocess.run([sys.executable, str(SCRIPT), str(f5),
                          "--value", "value", "--group", "group",
                          "--paired", "--run"],
