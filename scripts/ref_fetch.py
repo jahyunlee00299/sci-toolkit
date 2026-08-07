@@ -49,6 +49,7 @@ import io
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 import urllib.error
@@ -621,6 +622,50 @@ def print_summary(results: list[dict[str, Any]]) -> None:
 # --------------------------------------------------------------------------- #
 
 
+def _run_doi_gate(
+    doi: str,
+    expect_title: str,
+    email: Optional[str],
+    refresh: bool,
+    cache_dir: Optional[str],
+) -> int:
+    """수집 전 DOI 관문 — doi_verify.py 를 별도 프로세스로 돌리고 exit code 를 읽는다.
+
+    왜 import 가 아니라 subprocess 인가:
+      ① doi_verify.py 가 이 모듈(ref_fetch)을 import 한다. 반대로 여기서 import
+         하면 순환이 된다.
+      ② 이 저장소의 게이트 관례가 "스크립트를 돌리고 종료 코드를 읽는다"이다
+         (CLAUDE.md: 눈으로 판단하지 말고 exit code 를 볼 것).
+
+    반환: doi_verify 의 exit code (0=통과, 1=대조 실패류, 2=환각/철회).
+    """
+    script = Path(__file__).resolve().parent / "doi_verify.py"
+    if not script.exists():
+        print(f"[WARN] doi_verify.py 를 찾지 못해 관문을 건너뜁니다: {script}", file=sys.stderr)
+        return 0
+
+    cmd = [
+        sys.executable, str(script),
+        "--doi", doi,
+        "--expect-title", expect_title,
+        "--output", os.devnull,
+    ]
+    if email:
+        cmd += ["--email", email]
+    if refresh:
+        cmd += ["--refresh"]
+    if cache_dir:
+        cmd += ["--cache-dir", cache_dir]
+
+    print(f"[GATE] 수집 전 DOI 대조: {doi}", file=sys.stderr)
+    proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    out = (proc.stdout or "") + (proc.stderr or "")
+    for line in out.splitlines():
+        if any(k in line for k in ("HALLUCINATED", "RETRACTED", "MISMATCH", "UNCORROBORATED", "[PASS]", "[FAIL]", "[WARN]")):
+            print(f"       {line.strip()}", file=sys.stderr)
+    return proc.returncode
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="DOI 목록으로 공개(OA) 경로 서지정보/PDF를 수집한다 (CrossRef+OpenAlex+Unpaywall, API 키 불필요).",
@@ -650,8 +695,44 @@ def main() -> int:
     )
     parser.add_argument("--bibtex", default=None, help="CrossRef BibTeX를 이 경로로 저장")
     parser.add_argument("--cache-dir", default=None, help="ref_cache_manager 캐시 디렉토리 (기본값 사용 권장)")
+    parser.add_argument(
+        "--doi-source",
+        choices=["human", "model"],
+        default=None,
+        help="DOI 출처. model(LLM 생성)은 --expect-title 없이 수집에 진입할 수 없다.",
+    )
+    parser.add_argument(
+        "--expect-title",
+        default=None,
+        help="이 DOI가 가리킬 것으로 의도한 제목. 수집 전 doi_verify 로 대조한다.",
+    )
+    parser.add_argument(
+        "--with-si",
+        action="store_true",
+        help="보충자료(SI)도 수집한다 (Europe PMC 공개 경로만; 그 밖은 링크 안내).",
+    )
+    parser.add_argument("--si-dir", default=None, help="SI 저장 디렉토리 (기본: ./ref_fetch_si)")
+    parser.add_argument(
+        "--institution",
+        default=None,
+        help="페이월 논문에 기관 도서관 접속 링크를 붙인다 (config/institutions.json 의 키). "
+        "링크만 만들며 로그인·다운로드는 하지 않는다.",
+    )
 
     args = parser.parse_args()
+
+    # --- 0단계: DOI 관문 --------------------------------------------------- #
+    # LLM이 생성한 DOI는 형식이 완벽해도 실재하는 *무관한* 논문에 착지할 수 있다
+    # (doi_verify.py 의 122211/122213 실측). 그래서 수집(네트워크 조회·다운로드)에
+    # 들어가기 전에 막는다 — 뒤에서 등급으로 걸러내는 것보다 확실하다.
+    if args.doi_source == "model" and not args.expect_title:
+        print(
+            "[BLOCKED] --doi-source model 은 --expect-title 없이 쓸 수 없습니다.\n"
+            "          LLM이 생성한 DOI는 존재 여부만으로 검증되지 않습니다 — "
+            "찾으려던 논문 제목을 함께 선언하세요.",
+            file=sys.stderr,
+        )
+        return 2
 
     email = args.email or os.getenv("SCITK_CONTACT_EMAIL") or None
     if not email:
@@ -667,8 +748,33 @@ def main() -> int:
         parser.print_help()
         return 1
 
+    # 제목이 선언됐다면 수집 전에 doi_verify 로 대조한다. 통과 못 하면 진입 차단.
+    if args.expect_title:
+        if len(dois) != 1:
+            print(
+                "[ERROR] --expect-title 은 DOI 하나에만 붙일 수 있습니다 "
+                f"(현재 {len(dois)}건).",
+                file=sys.stderr,
+            )
+            return 1
+        gate_rc = _run_doi_gate(dois[0], args.expect_title, email, args.refresh, args.cache_dir)
+        if gate_rc != 0:
+            print(
+                "[BLOCKED] DOI 관문을 통과하지 못해 수집을 중단합니다 "
+                f"(doi_verify exit={gate_rc}).",
+                file=sys.stderr,
+            )
+            return gate_rc
+
     cache = RefCacheManager(cache_dir=args.cache_dir)
     pdf_dir = Path(args.pdf_dir) if args.pdf_dir else Path.cwd() / "ref_fetch_pdfs"
+    si_dir = Path(args.si_dir) if args.si_dir else Path.cwd() / "ref_fetch_si"
+
+    institutions = None
+    if args.institution:
+        from institutional_access import InstitutionRegistry  # 지연 import (선택 기능)
+
+        institutions = InstitutionRegistry.load()
 
     results: list[dict[str, Any]] = []
     for i, doi in enumerate(dois, 1):
@@ -684,6 +790,44 @@ def main() -> int:
             )
         except Exception as e:  # noqa: BLE001 — 개별 DOI 실패가 전체를 죽이지 않게
             record = {"doi": doi, "status": "error", "error": f"{type(e).__name__}: {e}"}
+
+        # 페이월이면 본문 대신 '사람이 클릭할 링크'를 붙인다. 자동 다운로드는 하지 않는다
+        # (구독 원문을 스크립트로 받는 것은 도서관 공정이용 규정 위반이다).
+        if institutions is not None and record.get("oa_status") == "closed":
+            target = (
+                record.get("oa_landing_page_url")
+                or (record.get("crossref") or {}).get("url")
+                or f"https://doi.org/{doi}"
+            )
+            link = institutions.build_link(args.institution, target)
+            if link:
+                record["institutional_access"] = {
+                    "institution": link.institution,
+                    "url": link.url,
+                    "login_note": link.login_note,
+                    "fair_use_url": link.fair_use_url,
+                    "daily_limits": link.daily_limits,
+                    "_note": "사람이 브라우저에서 여는 링크. 자동 다운로드 아님.",
+                }
+                print(link.human_summary(), file=sys.stderr)
+
+        # SI 는 본문과 접근성이 다르다 — 본문이 페이월이어도 열려 있을 수 있다.
+        if args.with_si:
+            from si_fetch import discover_si, download_si  # 지연 import
+
+            try:
+                si_res = discover_si(doi, email)
+                if si_res.status == "found" and args.download:
+                    si_res = download_si(si_res, si_dir, extract=True, si_only=True)
+                record["supplementary"] = si_res.to_dict()
+                n_si = len(si_res.supplementary_files)
+                if si_res.status == "found":
+                    print(f"  SI: {n_si}개 발견 ({si_res.pmcid})", file=sys.stderr)
+                elif si_res.manual_hint:
+                    print(f"  SI: {si_res.manual_hint}", file=sys.stderr)
+            except Exception as e:  # noqa: BLE001 — SI 실패가 본문 수집을 죽이지 않게
+                record["supplementary"] = {"status": "error", "error": f"{type(e).__name__}: {e}"}
+
         results.append(record)
 
         if args.bibtex and record.get("status") in ("fetched", "cache_hit"):
