@@ -51,6 +51,9 @@ jobs:
           python scripts/make_checksums.py --apply
           if ! git diff --quiet -- SHA256SUMS; then
             echo "::error::SHA256SUMS is stale — run 'python scripts/make_checksums.py --apply' and commit it."
-            git diff --stat -- SHA256SUMS
+            # 어떤 항목이 어떻게 달라졌는지 보여준다. --stat 만 찍으면 "62줄 다름"
+            # 이라는 사실만 남고 왜 다른지는 알 수 없어, 로컬에서 재현을 시도하며
+            # 왕복하게 된다(260807에 그렇게 한 라운드를 썼다).
+            git diff -- SHA256SUMS | head -60
             exit 1
           fi
