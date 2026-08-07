@@ -48,6 +48,17 @@ Query arrives
     |
     +-- 논문 원문 PDF 다운로드? (DOI 기반, OA 경로만)
     |       |
+    |       +-- 🔒 그 DOI를 어디서 얻었는가? — 수집 전에 먼저 정한다
+    |       |       · 사용자가 브라우저/PDF에서 직접 복사   --> 그대로 진행
+    |       |       · LLM(나)이 기억에서 생성했다
+    |       |           --> ref_fetch.py --doi-source model --expect-title "<찾던 제목>"
+    |       |               제목을 선언하지 않으면 수집에 진입조차 못 한다(exit 2).
+    |       |               이유: 순차 DOI 대역(10.1016/j.xxx.YYYY.NNNNNN, Wiley, ACS)은
+    |       |               한 자리만 틀려도 *실재하는 무관한 논문*에 착지한다. 실측 —
+    |       |               지어낸 10.1016/j.biortech.2019.122211 은 없지만 +2 인 122213 은
+    |       |               실재하는 크롬 환원 논문이고, 옛 게이트는 OK/exit 0 으로 통과시켰다.
+    |       |               "존재함"과 "내가 찾던 그 논문임"은 다른 명제다.
+    |       |
     |       +-- DOI를 알고 있음
     |       |       --> ../../scripts/ref_fetch.py --doi <DOI> --download
     |       |           (CrossRef → OpenAlex → Unpaywall 교차검증 후 OA PDF만 수집,
@@ -57,10 +68,24 @@ Query arrives
     |       |       --> ../../scripts/ref_fetch.py --title "<제목>" --download
     |       |           (제목으로 DOI를 먼저 해석한 뒤 동일하게 진행)
     |       |
+    |       +-- 보충자료(SI)도 필요함
+    |       |       --> ref_fetch.py ... --with-si   (또는 scripts/si_fetch.py 단독)
+    |       |           본문과 SI는 접근성이 다르다 — 본문이 페이월이어도 SI는 열려 있을 수 있다.
+    |       |           자동 수집 경로는 Europe PMC 하나뿐이다(표준 라이브러리로 되는 유일한 길).
+    |       |           실측: 출판사 landing page 는 urllib 로 축소 페이지만 오고,
+    |       |           PMC 파일 직링크는 "Preparing to download" JS 인터스티셜을 준다.
+    |       |           PMC 에 없는 논문은 링크만 안내한다 — 우회하지 않는다.
+    |       |
     |       +-- 기관 구독 저널(페이월) 논문 — OA 링크 없음
-    |               --> ref_fetch.py는 페이월 우회/로그인 기능이 없다.
-    |                   결과 JSON의 oa_status가 "closed"면 그대로 남기고,
-    |                   기관 도서관 경로는 사용자가 직접 확인한다.
+    |               --> ref_fetch.py ... --institution <키>   (config/institutions.json)
+    |                   oa_status 가 "closed" 면 **사람이 클릭할** 기관 도서관 링크를
+    |                   만들어 리포트와 화면에 넣는다. 로그인도 다운로드도 하지 않는다.
+    |                   🔒 왜 자동화하지 않는가: 대학 도서관 공정이용 규정은 위반 사례
+    |                   첫 항목으로 "전자적, 기계적 수단(다운로딩 프로그램, 엔진, 로봇,
+    |                   매크로, RPA 등)으로 원문을 다운로드하는 행위"를 든다. 본인 계정으로
+    |                   로그인했더라도 그 뒤를 스크립트가 받으면 수단 자체가 위반이고,
+    |                   제재는 도서관 서비스 1년 제한 + 민사 책임 1차 부담이다.
+    |                   한도(예: 동일 출판사 30건/일, 동일 PC 50건/일)도 함께 안내된다.
     |
     +-- Web search / current information?
     |       |
