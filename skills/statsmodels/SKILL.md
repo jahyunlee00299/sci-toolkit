@@ -185,6 +185,7 @@ examples live in `references/`:
 | Discrete choice | binary/multinomial/count outcome models | [discrete_choice.md](references/discrete_choice.md) |
 | Time series (ARIMA/SARIMAX/VAR) | forecasting, autocorrelated data | [time_series.md](references/time_series.md) |
 | Statistical tests & diagnostics | assumption checks, residual analysis, hypothesis tests | [stats_diagnostics.md](references/stats_diagnostics.md) |
+| Choosing **between** candidate models | R-style formula API, AIC/BIC, nested-model tests, cross-validation caveats | [model_selection.md](references/model_selection.md) |
 
 **Read the matching reference file before implementing that model family** — it
 has the full parameter set, diagnostics, and interpretation guidance.
