@@ -1,27 +1,29 @@
-# sci-toolkit (internal lab distribution / 랩 내부 배포판)
+# sci-toolkit
 
-Claude Code 기반 연구실 공용 스킷셋(skillset)을 USB/공유폴더로 배포하기 위한
-**독립 실행형(standalone) 패키지**입니다. 개인 계정·개인정보·과제비 정보는 포함하지 않으며,
-누구나 자신의 Claude Code 환경에 그대로 복사해 쓸 수 있도록 구성되어 있습니다.
+**연구실 공용 Claude Code 스킬셋** — 논문 검색·원고 작성·그림 제작·데이터 분석을
+AI가 일관된 절차로 처리하도록 만드는 지침서 모음입니다. 각 절차 끝에는 **검증 게이트**가
+붙어 있어, "돌아갔다"가 아니라 "결과가 맞다"를 확인한 뒤에 끝납니다.
 
-This is a **standalone distribution package** of the lab's shared Claude Code skillset,
-meant to be handed out via USB stick or shared folder. It contains no personal accounts,
-personal data, or funding/billing information — anyone in the lab can copy it into their
-own Claude Code environment and use it as-is.
+A shared Claude Code skillset for lab work — literature search, manuscript writing,
+figure production, data analysis. Each route ends in a **verification gate**: the
+artifact is not done until the gate passes, and gates are scripts, not advice.
 
----
+```
+스킬 31종 · 자체 회귀 테스트 9종 · 안전 가드 7종
+python doctor.py   →   10 OK / 0 FAIL
+```
 
-## 어디서 시작하나요? / Where to start
+개인 계정·개인정보·연구비 정보는 포함하지 않습니다.
+미공개 연구 내용은 기계 검사(`doctor.py` SENTINEL)로 걸러집니다.
 
 | 나는… | 여기부터 |
 |---|---|
 | 처음이라 뭐가 뭔지 모르겠다 | [docs/00_시작하기](docs/00_시작하기.md) |
-| 일단 설치부터 하고 싶다 | [docs/01_설치와_첫_명령](docs/01_설치와_첫_명령.md) — 앱 / VS Code / 터미널 중 선택 |
-| **이 툴킷이 어떻게 돌아가는지 알고 싶다** | **[docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md)** |
-| 원격 서버·HPC에서 쓰고 싶다 | [docs/09_원격서버에서_쓰기](docs/09_원격서버에서_쓰기.md) |
-| 필요한 스킬만 골라 설치하고 싶다 | [QUICKSTART.md](QUICKSTART.md) |
-| AI가 자꾸 엉뚱하게 한다 | [AGENTS.md](AGENTS.md) §0 라우팅 표를 보고 "§0대로 해줘"라고 하세요 |
-| **쓰다가 불편한 걸 발견했다** | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) — 그냥 말하면 기록됩니다 |
+| 일단 설치부터 | [QUICKSTART.md](QUICKSTART.md) — 필요한 스킬만 골라 설치 |
+| 어떻게 돌아가는지 알고 싶다 | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) |
+| AI가 자꾸 엉뚱하게 한다 | [AGENTS.md](AGENTS.md) §0 라우팅 표 → "§0대로 해줘" |
+| Word/PDF/PPT/Excel 이 안 된다 | [docs/12](docs/12_문서스킬_직접_준비하기.md) — 그 스킬들은 여기 없습니다(라이선스) |
+| 쓰다가 불편한 걸 발견했다 | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) — 그냥 말하면 기록됩니다 |
 
 ---
 
@@ -108,13 +110,16 @@ material stripped out.
 | `install/install.py` | 선택 설치 프로그램 — 프리셋/개별 스킬 단위로 골라 설치 (의존 스킬 자동 동반) |
 | `config/catalog.json` | 스킬 카탈로그 SSOT (카테고리·의존성·용량·프리셋). 설치 프로그램이 이 파일을 읽음 |
 | `config/credentials.example.json` | 외부 연동 자격증명 템플릿 (실제 키는 각자 채워 넣고 공유 금지) |
-| `hooks/` | 안전 가드 4종 — 시크릿 유출·강제 삭제·위험한 git·클라우드 폴더 재귀 스캔 차단 |
+| `hooks/` | 안전 가드 7종 — 시크릿 유출·강제 삭제·위험한 git(fork upstream 포함)·클라우드 재귀 스캔 차단 + Windows 환경불일치 3종 |
 | `scripts/` | 연구용 보조 도구 (HPLC 파서, primer 구조 점검, 변이 필터, JCR 검증, 엑셀 수식 점검, `ref_fetch.py`=DOI 기반 공개(OA) 서지정보·PDF 자동 수집+CrossRef/OpenAlex 교차검증 등) + 외부 연동 커넥터 |
-| `docs/` | 초심자 문서 11종 (시작하기 → 설치 → API/MCP → 토큰·비용 → 규칙주기 → 외부연동 → 기능별 준비물 → Notion/Asana → 원격서버 → **전체 워크플로우 지도**) |
+| `docs/` | 초심자 문서 13종 (시작하기 → 설치 → API/MCP → 토큰·비용 → 규칙주기 → 외부연동 → 기능별 준비물 → Notion/Asana → 원격서버 → **전체 워크플로우 지도** → 불편한점 남기기 → 문서스킬 준비) |
 | `AGENTS.md` | **AI가 따르는 운영 규칙.** §0의 라우팅 표가 "어떤 요청 → 어떤 스킬 → 어떤 검증"을 정한다. AI가 엉뚱하게 갈 때 "§0대로 해줘"라고 하면 된다 |
-| `tests/` | 이 패키지 자체의 회귀 테스트 (시크릿 검사·문서 참조 실존·라우팅 표 정합). `doctor.py`가 자동 실행 |
+| `tests/` | 이 패키지 자체의 회귀 테스트 9종 (시크릿·연구마커 검사, 문서 참조 실존, 라우팅 정합, 비파괴 설치, 능력 소실 탐지, 훅 양방향 검증). `doctor.py`가 자동 실행 |
 | `doctor.py` / `doctor.ps1` | 배포판 무결성·환경 점검 (PASS/FAIL 리포트) |
-| `SHA256SUMS` | 전체 파일 해시 — USB 복사 후 손상 여부 검증용 |
+| `SHA256SUMS` | 전체 파일 해시 — 복사·전송 후 손상 여부 검증용 |
+| `evals/` | 라우팅이 실제로 발동하는지 headless 로 측정 (느리고 비용 발생 — 수동 실행) |
+| `scripts/capability_diff.py` | 스킬을 고쳐 쓴 뒤 **기능이 조용히 빠지지 않았는지** 구조적으로 대조 |
+| `scripts/feedback_log.py` | 불편·오류 기록 (계정·토큰 불필요) |
 
 > 정확한 각 스킬의 상세 사용법·트리거 문구는 각 `skills/<이름>/SKILL.md`를 확인하세요.
 
@@ -152,6 +157,9 @@ API 키 발급 없이 구독 로그인만으로 대부분의 스킬이 동작합
   사용하면 됩니다. 스스로 스킬을 추가/수정할 경우, 개인 계정 토큰·이메일·연구비 번호 등을
   절대 포함하지 마세요.
 - 외부(랩 밖)에 재배포하기 전에는 관리자에게 먼저 확인하세요.
+- **라이선스**: 저장소 전체는 MIT([LICENSE](LICENSE))이지만 스킬마다 자체 라이선스가
+  있습니다. 재배포 전 각 `SKILL.md` 앞머리를 확인하세요 — 자세한 건 [NOTICE.md](NOTICE.md).
+  `docx`·`pdf`·`pptx`·`xlsx` 는 Anthropic 소유라 이 저장소에 **포함되지 않습니다**.
 
 This distribution contains **no personal data, no account credentials, and no funding/
 billing information** — these are automatically excluded at packaging time per
