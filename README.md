@@ -41,7 +41,7 @@ python doctor.py   →   10 OK / 0 FAIL
 | **분자생물학·실험** | `primer-design` · `experiment-hub` |
 | **Figure** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
 | **데이터·통계** | `stats-workflow` · `statsmodels` · `lab-data-analysis` · `conda-env-manager` · `get-available-resources` |
-| **문서** | `journal-presentation-maker` · `markitdown` |
+| **문서 변환** | `markitdown`(PDF·docx·xlsx·이미지OCR → Markdown) · `journal-presentation-maker` |
 | **검증·개발 규율** | `scientific-validation` · `code-quality` · `git-workflow-manager` · `skill-developer` |
 
 > **Word · PDF · PPT · Excel** 은 스킬 없이 그냥 됩니다 — Claude Code 기본 기능이
@@ -74,6 +74,10 @@ python doctor.py                                      # PASS 나오면 준비 �
 문서 작업은 **그냥 됩니다.** "이 워드 파일 고쳐줘"라고 하면 평소처럼 동작합니다.
 해당 스킬을 저장소에 넣지 않은 건 기능이 없어서가 아니라, **재배포가 금지된
 Anthropic 소유 자산**이기 때문입니다 ([docs/12](docs/12_문서스킬_직접_준비하기.md)).
+
+**PDF·문서를 텍스트로 읽어야 할 때는 `markitdown`** 을 쓰세요. PDF·docx·pptx·xlsx·
+이미지(OCR)를 Markdown으로 바꿔 주며, `paper-extract` 와 `journal-presentation-maker`
+가 논문 PDF를 읽을 때 실제로 이 경로를 씁니다.
 
 원고 QC·편집 도구 7종은 랩에서 직접 만든 것이라 그대로 들어 있습니다:
 
