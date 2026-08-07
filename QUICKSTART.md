@@ -31,7 +31,7 @@ USB를 꽂았다고 바로 복사/설치하지 마세요. 먼저 이 순서로 �
 | Primer/서열 설계 | `primer-design` |
 | 논문/발표용 그림 그리기 | `publication-figures` |
 | 통계 검정 뭐 쓸지 모르겠음 | `stats-workflow` |
-| PDF/엑셀/문서 변환 | `pdf`, `xlsx`, `markitdown` |
+| PDF·문서를 텍스트로 읽기 | `markitdown` |
 | 결과가 말이 되는지 검증 | `scientific-validation` |
 
 > 이 단계에서는 아무것도 설치하지 않습니다. 그냥 "내가 뭘 골라야 하는지"만 확인하는
@@ -43,8 +43,11 @@ USB를 꽂았다고 바로 복사/설치하지 마세요. 먼저 이 순서로 �
 
 **전체를 한 번에 설치하지 말고, 지금 당장 쓸 기능만 골라서** 설치하세요.
 이 툴킷에는 **골라 담기 설치기**(`install/install.py`)가 들어있어, "나는 논문 작성만
-하겠다" 하면 관련 스킬만 설치됩니다. 필요한 다른 스킬(예: 원고 작성에 필요한 `docx`)은
-**자동으로 함께** 설치되므로 빠뜨릴 걱정이 없습니다.
+하겠다" 하면 관련 스킬만 설치됩니다. 필요한 다른 스킬(예: `manuscript-pipeline` 에
+필요한 `academic-term-rules`)은 **자동으로 함께** 설치되므로 빠뜨릴 걱정이 없습니다.
+
+> `docx`·`pdf`·`pptx`·`xlsx` 는 Anthropic 소유라 이 저장소에 없습니다. 설치기가
+> 그 사실을 알려주며, 문서 작업 자체는 Claude Code 기본 기능으로 그대로 됩니다.
 
 ### 가장 쉬운 방법 — 대화형 (초심자 추천)
 
@@ -113,7 +116,7 @@ python install/install.py --preset all --apply
 ```
 
 **설치기(Python)를 쓸 수 없는 환경이라면**, 폴더 복사가 곧 설치이므로 직접 복사해도
-됩니다. 단, 이 경우 **의존성(예: `manuscript-pipeline`은 `docx`·`academic-term-rules`가
+됩니다. 단, 이 경우 **의존성(예: `manuscript-pipeline`은 `academic-term-rules`가
 있어야 제대로 동작)을 직접 챙겨야** 합니다.
 
 ```powershell
