@@ -30,6 +30,14 @@ special characters with plain ASCII equivalents when writing in that language.
 > keep that as the canonical name and symlink the tool-specific name to it,
 > not the reverse, so the generic file stays the source of truth.
 
+> **Codex note**: everything in this file applies to you. One thing does not
+> carry over: the guards in `hooks/` run as `PreToolUse` hooks under Claude
+> Code, and **Codex has no equivalent** — nothing inspects a command before it
+> executes. The seven rules those guards enforce therefore become rules you
+> follow by reading them. They are spelled out, with the exact patterns, in
+> **[`CODEX.md`](CODEX.md)**. Read it before your first destructive or
+> outward-facing action.
+
 ---
 
 ## 0. Routing — which path does this request take?
