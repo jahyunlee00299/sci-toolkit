@@ -1,7 +1,7 @@
 79a1ae7f296bcdea894fbe918f3ffd5baec1599d4f39c7103bca3cac9e7a99f3 *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 71cebbc131f610e8ad4438e917544418a6896ce14ba8aa5a96c5c50e2fa8a9ad *./.gitattributes
-abf57faa0b1292c9f53f11af8e286eb8077729132506ced03ab274451fc2fe41 *./.github/workflows/doctor.yml
+ae0d11c07b3316e31d0ccc0342e35c42a99cb5bdc4ef48233d1d6867b2044e82 *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 fefa29e6306122d4c087bdab636915e70225b93753b7b00ddfc4497b68e17c54 *./AGENTS.md
 6e483fc06ca4bf0e639529d654a889a9a9c75e41b201cc985ae1d5038a9377e7 *./CHANGELOG.md
