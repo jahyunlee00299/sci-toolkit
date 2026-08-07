@@ -558,17 +558,17 @@ This skill works seamlessly with other scientific skills:
 - Direct REST API access: ChEMBL, KEGG, Reactome, UniProt, PubChem, AlphaFold DB, COSMIC, Ensembl (for background/methods sections)
 
 ### Analysis Skills
-- **pydeseq2**: RNA-seq differential expression (for methods sections)
-- **scanpy**: Single-cell analysis (for methods sections)
-- **anndata**: Single-cell data (for methods sections)
+- **lab-data-analysis**: EDA over the data files a review needs to summarize
+- **stats-workflow**: Hypothesis tests + APA-formatted reporting of pooled results
+- **statsmodels**: Regression / mixed models when a review quantifies across studies
 
 ### Visualization Skills
-- **matplotlib**: Generate figures and plots for review
-- **seaborn**: Statistical visualizations
+- **publication-figures**: Every figure in the review — PRISMA flow, thematic synthesis, forest plots. It owns the matplotlib/seaborn layer and the figure_lint gate; do not hand-roll plotting code alongside it.
+- **markdown-mermaid-writing**: Flow and structure diagrams written inline in the document
 
 ### Writing Skills
-- **brand-guidelines**: Apply institutional branding to PDF
-- **internal-comms**: Adapt review for different audiences
+- **manuscript-pipeline**: Turn the review into a submittable manuscript (IMRAD, journal formats)
+- **academic-term-rules**: Notation, units, species italics, and citation conventions in the text
 
 ## Resources
 

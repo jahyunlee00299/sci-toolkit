@@ -51,6 +51,20 @@ SKILL_REF_RE = re.compile(
 # 실제로 존재하지 않는 도구 2개가 문서에 남아 있었다(2026-07-23 발견).
 BARE_SCRIPT_RE = re.compile(r"(?<![\w/.-])([a-z][a-z0-9_]{3,60}\.py)\b")
 
+# "Integration with Other Skills" 류 섹션의 목록 항목 — `- **foo**: 설명`.
+# SKILL_REF_RE 는 뒤에 "skill"/"스킬" 이라는 낱말을 요구하는데, 이런 목록에서는
+# 섹션 제목이 이미 "Skills" 라서 항목마다 그 낱말을 다시 쓰지 않는다. 그래서
+# 배포되지 않는 스킬 9개가 검사를 통째로 빠져나가 있었다 (260807 실측:
+# pydeseq2·scanpy·anndata·scientific-slides·latex-posters·brand-guidelines·
+# internal-comms, 그리고 스킬이 아닌 라이브러리 matplotlib·seaborn).
+#
+# 판정은 **제목이 스킬 목록이라고 말하는 섹션 안에서만** 한다. 문서 전체에서
+# `**foo**` 를 스킬로 보면 JSON 필드명·matplotlib 인자·mermaid 키워드까지 걸려
+# 383종이 후보로 뜬다 — 그건 검사가 아니라 소음이다.
+SKILL_SECTION_RE = re.compile(r"^#{1,6}\s+.*\b(skills?|스킬)\b", re.I)
+SKILL_LIST_ITEM_RE = re.compile(
+    r"^\s*[-*]\s*[`*]{1,2}([a-z][a-z0-9-]{2,40})[`*]{1,2}\s*[:：]")
+
 TEXT_SUFFIXES = (".md", ".txt")
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 
@@ -139,7 +153,22 @@ def main():
                     lines = open(p, encoding="utf-8", errors="ignore").read().splitlines()
                 except OSError:
                     continue
+                in_skill_section = False
                 for i, line in enumerate(lines, 1):
+                    # --- 스킬 목록 섹션의 항목 (`- **foo**: 설명`) ---
+                    if line.startswith("#"):
+                        in_skill_section = bool(SKILL_SECTION_RE.match(line))
+                    elif in_skill_section:
+                        m = SKILL_LIST_ITEM_RE.match(line)
+                        if m:
+                            name = m.group(1)
+                            if (name != s and name not in EXTERNAL_SKILLS
+                                    and "deprecated" not in line.lower()):
+                                checked += 1
+                                if name not in skillset:
+                                    dead_skills.append(
+                                        (s, srcrel, i, name, line.strip()[:90]))
+
                     # --- 백틱 없이 산문에 쓰인 스크립트 이름 ---
                     for m in BARE_SCRIPT_RE.finditer(line):
                         fname = m.group(1)
