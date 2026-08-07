@@ -52,6 +52,33 @@ LOG_PATH = ROOT / "out" / "feedback.jsonl"
 
 KINDS = ("bug", "friction", "missing", "docs", "idea")
 
+# ── 정화 게이트 ─────────────────────────────────────────────────────────────
+# 이슈 본문에는 what/expected/actual/note 가 원문 그대로 들어간다(to_issue).
+# 그 경로에 미공개 연구내용·자격증명·개인정보가 실리지 않도록 막는다.
+# 게이트가 없으면 문서 §"남기면 안 되는 것" 은 안내문일 뿐 아무것도 막지
+# 못한다 — 이 워크스페이스에서 이미 세 번 그렇게 샜다(260628·260706·260807).
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from feedback_sanitize import format_report, scan_entry  # type: ignore
+except ImportError:  # pragma: no cover - 모듈이 빠진 배포본
+    scan_entry = None  # type: ignore[assignment]
+    format_report = None  # type: ignore[assignment]
+
+
+def _gate(entry: dict) -> list[str]:
+    """기록 하나를 정화 게이트에 통과시킨다. 반환값이 비면 깨끗함."""
+    if scan_entry is None:
+        return []
+    return scan_entry(entry)
+
+
+def _print_hits(hits: list[str]) -> None:
+    if format_report is not None:
+        print(format_report(hits))
+    else:  # pragma: no cover
+        for h in hits:
+            print(f"  · {h}")
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -163,6 +190,14 @@ def mark_exported(ids: set[str]) -> None:
 
 # ── commands ────────────────────────────────────────────────────────────────
 def cmd_add(args) -> int:
+    # 기록 전에 먼저 검사한다. 여기서는 **막지 않고 경고만** 한다 —
+    # 기록 시점에 차단하면 지친 사람이 신고 자체를 포기하고, 그러면 이
+    # 기능의 존재 이유가 사라진다. 대신 맥락이 아직 생생할 때 고칠
+    # 기회를 준다. 실제 차단은 밖으로 나가는 export 에서 한다(비대칭).
+    draft = {"what": args.what, "expected": args.expected,
+             "actual": args.actual, "note": args.note}
+    hits = _gate(draft)
+
     entry = add_entry(args.what, kind=args.kind, skill=args.skill,
                       expected=args.expected, actual=args.actual, note=args.note)
     print(f"기록했습니다 — {entry['id']}  ({LOG_PATH})")
@@ -170,6 +205,13 @@ def cmd_add(args) -> int:
     if missing:
         print("  비어 있는 항목: " + ", ".join(missing)
               + "  (없어도 됩니다. 나중에 채우려면 이 ID로 찾으세요.)")
+
+    if hits:
+        print("\n⚠ 밖으로 내보낼 수 없는 내용이 들어 있습니다:")
+        _print_hits(hits)
+        print("\n  이 기록은 저장됐지만, 이대로는 이슈로 올라가지 않습니다.")
+        print("  \"무엇이 실패했는가\"만 남기고 \"무슨 데이터로 실패했는가\"는 빼주세요.")
+        print(f"  고치려면 out/feedback.jsonl 에서 {entry['id']} 를 찾아 편집하세요.")
     return 0
 
 
@@ -193,6 +235,24 @@ def cmd_export(args) -> int:
     if not entries:
         print("올릴 기록이 없습니다.")
         return 0
+
+    # ── 정화 게이트 (하드 차단) ────────────────────────────────────────
+    # 미리보기까지 포함해 막는다. 미리보기만 통과시키면 그 출력을 복사해
+    # 손으로 올리는 우회가 생기고, 그 경로엔 아무 검사도 없다.
+    flagged = [(e, hits) for e in entries if (hits := _gate(e))]
+    if flagged and not args.approve:
+        print(f"[차단] {len(flagged)}건에 밖으로 내보낼 수 없는 내용이 있습니다.\n")
+        for e, hits in flagged:
+            print(f"  {e['id']}  {e['what'][:46]}")
+            _print_hits(hits)
+            print()
+        print("고친 뒤 다시 실행하세요 — out/feedback.jsonl 에서 해당 ID를 편집하면 됩니다.")
+        print("검사가 틀렸다고 판단되면 --approve 를 붙여 넘길 수 있습니다.")
+        print("  (--approve 는 검사 결과를 무시합니다. 내용을 직접 확인한 뒤에만 쓰세요.)")
+        return 2
+
+    if flagged and args.approve:
+        print(f"[경고] --approve 로 {len(flagged)}건의 검사 결과를 무시하고 진행합니다.\n")
 
     if not args.github:
         for e in entries:
@@ -270,6 +330,8 @@ def main() -> int:
     sp.add_argument("--repo", help="owner/name")
     sp.add_argument("--label", help="쉼표구분 라벨")
     sp.add_argument("--write", action="store_true", help="실제로 올린다(없으면 미리보기)")
+    sp.add_argument("--approve", action="store_true",
+                    help="정화 검사 결과를 무시하고 진행한다 (내용을 직접 확인한 경우에만)")
     sp.set_defaults(func=cmd_export)
 
     args = ap.parse_args()

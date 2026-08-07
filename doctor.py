@@ -95,9 +95,14 @@ SENTINEL_FORBIDDEN_FILENAMES = {
 
 # This scanner's own test fixtures carry intentionally fake credentials
 # (see tests/test_doctor_sentinel.py) — scanning them would always "find" a leak.
+# 탐지기의 **계약**을 정의하는 파일들. 여기 담긴 문자열은 유출이 아니라
+# "이런 것을 잡아야 한다"는 명세이므로 SENTINEL 스캔에서 제외한다.
+# 제외하지 않으면 유출을 막는 테스트가 스스로 유출로 잡혀, 결국 케이스를
+# 지우는 쪽으로 압력이 생긴다 — 그 순간 탐지기가 무력해진다.
 SENTINEL_SELF_TEST_FILES = {
     "test_doctor_sentinel.py",
     "test_research_marker_scan.py",
+    "test_feedback_sanitize.py",
 }
 
 # ── research-marker scan ────────────────────────────────────────────────────
@@ -709,6 +714,8 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_hooks_guards.py", "hook guards (block/allow)"),
     ("tests/test_env_guards.py", "environment-mismatch guards"),
     ("tests/test_feedback_log.py", "feedback channel"),
+    ("tests/test_research_marker_scan.py", "research-marker scanner"),
+    ("tests/test_feedback_sanitize.py", "feedback sanitize gate"),
 ]
 
 
