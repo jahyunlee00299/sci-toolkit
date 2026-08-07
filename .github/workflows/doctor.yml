@@ -32,12 +32,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      # 테스트 12종 중 서드파티가 필요한 것은 stats assumption check 하나뿐이다.
-      # numpy 만으로 충분할 줄 알았는데 CI 첫 실행이 scipy 도 필요하다고 알려줬다 —
-      # 최상위 import 만 grep 해서는 안 보인다(함수 안에서 지연 import 한다).
-      # 나머지 11종은 표준 라이브러리만 쓰므로 과학 스택을 통째로 설치하지 않는다.
+      # 의존성 목록은 tests/requirements.txt 하나에만 둔다. 워크플로에 직접 적으면
+      # 그 목록이 두 곳이 되고, 실제로 그렇게 갈라져서 CI 를 두 번 왕복했다
+      # (numpy 만 → scipy 누락 → pandas 누락). 목록은 깨끗한 venv 에서 실측했다.
       - name: Install test dependencies
-        run: python -m pip install --quiet numpy scipy
+        run: python -m pip install --quiet -r tests/requirements.txt
 
       # doctor 는 claude CLI 가 없으면 WARN 을 내고 계속 간다(FAIL 아님).
       # CI 러너에 CLI 가 없는 것은 정상 상태이므로 그대로 둔다.
