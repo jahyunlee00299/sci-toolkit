@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "refuse": {"type": "boolean"},
+    "rule": {"type": "string"},
+    "reason": {"type": "string"}
+  },
+  "required": ["refuse", "rule", "reason"],
+  "additionalProperties": false
+}
