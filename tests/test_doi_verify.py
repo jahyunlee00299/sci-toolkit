@@ -317,9 +317,13 @@ result_ok_no_expected = doi_verify.grade_one(
     crossref_found,
     {**openalex_found, "is_retracted": False},
 )
+# [260807 계약 변경] 원래 "expected 없이 존재만 확인해도 OK"였다. 그 계약이 실제
+# 사고를 통과시켰다: 지어낸 10.1016/j.biortech.2019.122211 은 없지만, +2 인 122213 은
+# *실재하는 무관한 논문*(크롬 환원)이고 --doi 경로에서 OK/exit 0 으로 통과했다.
+# 완화가 아니라 강화다 — OK(통과) -> UNCORROBORATED(대조 안 됨)로 좁혔다.
 check(
-    "expected 없이 존재만 확인해도 OK",
-    result_ok_no_expected["grade"] == "OK",
+    "expected 없으면 OK가 아니라 UNCORROBORATED (존재 != 그 논문임)",
+    result_ok_no_expected["grade"] == "UNCORROBORATED",
     f"got={result_ok_no_expected['grade']}",
 )
 
@@ -378,6 +382,32 @@ check("UNVERIFIED만 -> exit 1 (네트워크 실패를 통과로 처리하지 �
 results_ok = [{"grade": "OK"}, {"grade": "OK"}]
 check("전부 OK -> exit 0", doi_verify.exit_code_for(results_ok) == 0)
 
+# UNCORROBORATED 의 exit code 는 어느 경로로 들어왔는지에 따라 갈린다.
+#   --doi 로 특정 DOI를 짚어 왔으면 "존재만 확인"은 검증이 아니다 -> 1
+#   --file 대량 스캔은 제목을 얻을 방법이 없어 거의 전부 UNCORROBORATED가 된다.
+#   여기에 1을 매기면 항상 노란불이 되고, 항상 노란불인 게이트는 무시당한다.
+results_uncorr = [{"grade": "UNCORROBORATED"}, {"grade": "OK"}]
+check(
+    "UNCORROBORATED, strict(--doi 경로) -> exit 1",
+    doi_verify.exit_code_for(results_uncorr, strict_uncorroborated=True) == 1,
+)
+check(
+    "UNCORROBORATED, non-strict(--file 대량스캔) -> exit 0 (알람 피로 방지)",
+    doi_verify.exit_code_for(results_uncorr, strict_uncorroborated=False) == 0,
+)
+check(
+    "strict 여부와 무관하게 HALLUCINATED는 항상 exit 2",
+    doi_verify.exit_code_for(
+        [{"grade": "UNCORROBORATED"}, {"grade": "HALLUCINATED"}],
+        strict_uncorroborated=False,
+    )
+    == 2,
+)
+check(
+    "기본값은 non-strict (기존 --file 호출자의 동작을 바꾸지 않는다)",
+    doi_verify.exit_code_for(results_uncorr) == 0,
+)
+
 
 # --------------------------------------------------------------------------- #
 # 2) 네트워크가 필요한 테스트 — 없으면 SKIP (조용히 통과 금지)
@@ -400,10 +430,25 @@ if _network_available():
     valid_result = doi_verify.verify_one(
         "10.1038/nature12373", None, _FakeCache(), None, refresh=True
     )
+    # expected=None 으로 호출하므로 대조할 제목이 없다 -> UNCORROBORATED가 정답이다.
     check(
-        "[네트워크] 유효 DOI(10.1038/nature12373) -> OK",
-        valid_result["grade"] == "OK",
+        "[네트워크] 유효 DOI(10.1038/nature12373), 제목 없이 -> UNCORROBORATED",
+        valid_result["grade"] == "UNCORROBORATED",
         f"got={valid_result['grade']}, reasons={valid_result.get('reasons')}",
+    )
+
+    # 같은 DOI에 실제 제목을 주면 OK로 통과해야 한다 — 오탐 방지.
+    valid_with_title = doi_verify.verify_one(
+        "10.1038/nature12373",
+        {"title": "Nanometre-scale thermometry in a living cell"},
+        _FakeCache(),
+        None,
+        refresh=True,
+    )
+    check(
+        "[네트워크] 유효 DOI + 실제 제목 -> OK (오탐 없음)",
+        valid_with_title["grade"] == "OK",
+        f"got={valid_with_title['grade']}, reasons={valid_with_title.get('reasons')}",
     )
 
     fake_result = doi_verify.verify_one(
@@ -428,6 +473,73 @@ if _network_available():
         real_meta_result["grade"] == "OK",
         f"got={real_meta_result['grade']}, reasons={real_meta_result.get('reasons')}",
     )
+
+    # ----------------------------------------------------------------- #
+    # 260807 사고 재현: "존재하지만 무관한 논문"
+    # 지어낸 10.1016/j.biortech.2019.122211 은 없다. 그런데 +2 인 122213 은
+    # 실재한다 — 크롬 환원 논문으로, 찾던 주제와 무관하다.
+    # 이 케이스가 패치 전 OK/exit 0 으로 통과했다. 픽스처로 박아 고정한다.
+    # ----------------------------------------------------------------- #
+    UNRELATED_DOI = "10.1016/j.biortech.2019.122213"
+    INTENDED = "Photocatalytic hydrogen evolution over nitrogen-doped titanium dioxide"
+
+    unrelated_no_title = doi_verify.verify_one(
+        UNRELATED_DOI, None, _FakeCache(), None, refresh=True
+    )
+    check(
+        "[네트워크] 존재하지만 무관한 DOI, 제목 없이 -> UNCORROBORATED (OK 아님)",
+        unrelated_no_title["grade"] == "UNCORROBORATED",
+        f"got={unrelated_no_title['grade']}",
+    )
+
+    unrelated_with_intent = doi_verify.verify_one(
+        UNRELATED_DOI, {"title": INTENDED}, _FakeCache(), None, refresh=True
+    )
+    check(
+        "[네트워크] 존재하지만 무관한 DOI + 의도한 제목 -> MISMATCH",
+        unrelated_with_intent["grade"] == "MISMATCH",
+        f"got={unrelated_with_intent['grade']}, reasons={unrelated_with_intent.get('reasons')}",
+    )
+
+    # ----------------------------------------------------------------- #
+    # CLI 게이트: model 출처 DOI는 제목 선언 없이 조회에 진입조차 못 한다.
+    # grade_one 단위로는 잴 수 없다 — 인자 파싱 단계에서 막기 때문이다.
+    # ----------------------------------------------------------------- #
+    import subprocess
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as _td:
+        _proc = subprocess.run(
+            [
+                sys.executable, str(SCRIPTS / "doi_verify.py"),
+                "--doi", UNRELATED_DOI,
+                "--doi-source", "model",
+                "--output", str(Path(_td) / "r.json"),
+            ],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
+        )
+        _combined = _proc.stdout + _proc.stderr
+        check(
+            "[CLI] --doi-source model + 제목 미선언 -> BLOCKED, exit 2",
+            _proc.returncode == 2 and "BLOCKED" in _combined,
+            f"got exit={_proc.returncode}, out={_combined[-200:]!r}",
+        )
+
+        _proc_ok = subprocess.run(
+            [
+                sys.executable, str(SCRIPTS / "doi_verify.py"),
+                "--doi", "10.1038/nature12373",
+                "--doi-source", "model",
+                "--expect-title", "Nanometre-scale thermometry in a living cell",
+                "--output", str(Path(_td) / "r2.json"),
+            ],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
+        )
+        check(
+            "[CLI] --doi-source model + 올바른 제목 -> 통과 (exit 0, 오탐 없음)",
+            _proc_ok.returncode == 0,
+            f"got exit={_proc_ok.returncode}, out={(_proc_ok.stdout + _proc_ok.stderr)[-300:]!r}",
+        )
 else:
     print("  [SKIP] 네트워크 연결 불가 — 실제 API 호출 테스트를 건너뜁니다 (UNVERIFIED 경로는 이미 grade_one 단위 테스트로 검증됨)")
 

@@ -1,0 +1,41 @@
+{
+  "_README": [
+    "기관 도서관의 전자자원 프록시(교외접속) 프로파일.",
+    "",
+    "이 파일은 '사람이 클릭할 링크'를 만드는 데만 쓴다. 이 툴킷은 프록시에",
+    "로그인하지 않고, 구독 저널의 원문을 자동으로 내려받지 않는다.",
+    "",
+    "왜 자동 다운로드가 없는가 — 고려대 도서관 '전자자료 공정이용' 규정은",
+    "위반 사례 첫 항목으로 다음을 명시한다:",
+    "  '전자적, 기계적 수단(다운로딩 프로그램, 엔진, 로봇, 매크로, RPA 등)으로",
+    "   원문을 다운로드하는 행위'",
+    "본인 계정으로 정당하게 로그인했더라도 그 뒤를 스크립트가 받으면 수단 자체가",
+    "위반이다. 제재는 도서관 서비스 1년 제한 + 민사 책임 1차 부담이다.",
+    "다른 기관도 대개 같은 조항을 둔다 — 추가하기 전에 그 기관 규정을 직접 확인할 것.",
+    "",
+    "항목 추가 방법: proxy_url_template 에 {url} 자리표시자를 넣는다.",
+    "실제로 브라우저에서 한 번 열어보고 동작을 확인한 뒤에만 추가할 것",
+    "(확인하지 않은 템플릿은 조용히 깨진 링크를 만든다).",
+    "",
+    "자격증명(ID/PW)은 이 파일에 절대 넣지 않는다. 로그인은 사람이 브라우저에서 한다."
+  ],
+
+  "default_institution": null,
+
+  "institutions": {
+    "korea-univ": {
+      "display_name": "Korea University Library",
+      "proxy_url_template": "https://oca.korea.ac.kr/link.n2s?url={url}",
+      "login_note": "도서관 홈페이지에 먼저 로그인해야 링크가 열린다. 이용 자격은 재학·신분 상태, 대출 가능 여부, 연체 여부에 연동된다.",
+      "fair_use_url": "https://library.korea.ac.kr/datause/proxy/notice/",
+      "guide_url": "https://library.korea.ac.kr/datause/proxy/guide/",
+      "daily_limits": {
+        "per_publisher": 30,
+        "per_machine": 50,
+        "_note": "도서관 지침. 초과 시 출판사 모니터링에 감지되어 기관 IP 전체가 차단될 수 있다."
+      },
+      "verified_on": "2026-08-07",
+      "_verified_how": "guide/ 와 notice/ 페이지를 직접 읽어 템플릿과 규정 문구를 확인함."
+    }
+  }
+}

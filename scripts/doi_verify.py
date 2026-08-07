@@ -16,14 +16,25 @@
     HALLUCINATED    — CrossRef와 OpenAlex 양쪽 모두 존재하지 않음
     RETRACTED       — OpenAlex가 is_retracted=True 로 보고
     MISMATCH        — 존재는 하지만 문서에 적힌 저자/연도/제목이 실제 레코드와 다름
+    UNCORROBORATED  — 존재는 확인됐지만 대조할 제목/저자/연도가 없어 "그 논문인지"는
+                      확인되지 않음. "존재함" != "내가 찾던 그 논문임"
     ONE_SOURCE_ONLY — 두 소스 중 한쪽에서만 조회됨 (조용히 통과시키지 않음)
     UNVERIFIED      — 조회 자체가 실패함 (네트워크 오류 등) — "확인 못 했다" ≠ "괜찮다"
-    OK              — 존재 확인 + (메타데이터 제공 시) 일치 + 철회 아님
+    OK              — 존재 확인 + 메타데이터 일치 + 철회 아님
+
+왜 UNCORROBORATED 가 따로 있는가 (실측, 260807):
+    LLM이 생성한 10.1016/j.biortech.2019.122211 은 실재하지 않는다. 그런데 같은
+    순차 대역에서 +2 떨어진 122213 은 *실재하는 무관한 논문*이다(촉매 논문을
+    찾던 중에 크롬 환원 논문). 순차 DOI 대역(Elsevier j.xxx.YYYY.NNNNNN, Wiley,
+    ACS)에서 한 자리 오류는 "없는 DOI"가 아니라 "다른 논문"을 낳는다. 없는 DOI는
+    시끄럽게 실패하지만 이쪽은 조용히 통과한다 — 그래서 등급을 분리했다.
 
 exit code:
     2 — HALLUCINATED 또는 RETRACTED 가 하나라도 있음
     1 — (2가 아니면서) MISMATCH/ONE_SOURCE_ONLY/UNVERIFIED 가 하나라도 있음
-    0 — 전부 OK
+        또는 strict 경로(--doi / --doi-source)에서 UNCORROBORATED 가 있음
+    0 — 나머지. --file 대량 스캔의 UNCORROBORATED 는 여기 해당하되, 요약에
+        "몇 건을 대조하지 못했는지"를 반드시 출력한다 (조용한 통과 금지)
 
 사용법:
     # 문서에서 DOI 자동 추출
@@ -34,6 +45,13 @@ exit code:
 
     # BibTeX — 저자/연도/제목까지 대조
     python doi_verify.py --bibtex refs.bib
+
+    # DOI 하나를 "의도한 제목"과 대조 — 존재하지만 무관한 논문을 잡는다
+    python doi_verify.py --doi 10.1016/j.biortech.2019.122213 \
+        --expect-title "Photocatalytic hydrogen evolution over nitrogen-doped titania"
+
+    # LLM이 생성한 DOI — 제목 선언 없이는 조회 단계에 진입조차 못 한다
+    python doi_verify.py --doi <DOI> --doi-source model --expect-title "..."
 
     # 캐시 무시하고 강제 재조회
     python doi_verify.py --doi 10.1038/nature12373 --refresh
@@ -283,7 +301,15 @@ def compare_metadata(
 # 등급 결정
 # --------------------------------------------------------------------------- #
 
-GRADE_ORDER = ["HALLUCINATED", "RETRACTED", "MISMATCH", "ONE_SOURCE_ONLY", "UNVERIFIED", "OK"]
+GRADE_ORDER = [
+    "HALLUCINATED",
+    "RETRACTED",
+    "MISMATCH",
+    "UNCORROBORATED",
+    "ONE_SOURCE_ONLY",
+    "UNVERIFIED",
+    "OK",
+]
 
 
 def grade_one(
@@ -391,10 +417,26 @@ def grade_one(
                 "openalex": openalex,
             }
 
+    # 대조할 메타데이터가 아예 없으면 "존재한다"까지만 확인된 것이다. 그것을 OK로
+    # 부르면 안 된다 — 순차 DOI 대역은 한 자리만 틀려도 *실재하는 무관한 논문*에
+    # 착지하기 때문이다(모듈 docstring 의 122211/122213 실측 참고).
+    if not expected:
+        return {
+            "doi": doi,
+            "grade": "UNCORROBORATED",
+            "reasons": [
+                "존재 확인(CrossRef+OpenAlex 양쪽) — 그러나 대조할 제목/저자/연도가 "
+                "주어지지 않아 '찾던 그 논문인지'는 확인되지 않았음. "
+                "--expect-title 로 의도한 제목을 함께 넘길 것."
+            ],
+            "crossref": crossref,
+            "openalex": openalex,
+        }
+
     return {
         "doi": doi,
         "grade": "OK",
-        "reasons": ["존재 확인(CrossRef+OpenAlex 양쪽)" + (", 메타데이터 일치" if expected else "")],
+        "reasons": ["존재 확인(CrossRef+OpenAlex 양쪽), 메타데이터 일치"],
         "crossref": crossref,
         "openalex": openalex,
     }
@@ -481,7 +523,7 @@ def collect_targets(args: argparse.Namespace) -> list[dict[str, Any]]:
         for part in args.doi.split(","):
             part = part.strip()
             if part:
-                _add(part)
+                _add(part, {"title": args.expect_title} if getattr(args, "expect_title", None) else None)
 
     if args.file:
         p = Path(args.file)
@@ -538,11 +580,26 @@ def print_summary(results: list[dict[str, Any]]) -> None:
                 print(f"      - {reason}")
 
 
-def exit_code_for(results: list[dict[str, Any]]) -> int:
+def exit_code_for(results: list[dict[str, Any]], strict_uncorroborated: bool = False) -> int:
+    """등급 목록 -> exit code.
+
+    strict_uncorroborated 는 UNCORROBORATED(존재하지만 대조 근거 없음)를 실패로
+    셀지 결정한다. 경로에 따라 갈리는 이유:
+
+      --doi 로 특정 DOI를 짚어 검증하러 왔다면, "존재는 한다"까지만 확인하고
+      통과시키는 것은 사실상 검증하지 않은 것이다 -> strict(=exit 1).
+
+      --file 로 원고 전체를 훑는 경우 제목을 얻을 방법이 구조적으로 없어서
+      거의 모든 DOI가 UNCORROBORATED가 된다. 여기에 exit 1을 매기면 게이트가
+      항상 노란불이 되고, 항상 노란불인 게이트는 무시당해 결국 없는 것과 같다
+      -> non-strict(=exit 0, 대신 요약에 몇 건인지 눈에 띄게 적는다).
+    """
     grades = {r["grade"] for r in results}
     if "HALLUCINATED" in grades or "RETRACTED" in grades:
         return 2
     if "MISMATCH" in grades or "ONE_SOURCE_ONLY" in grades or "UNVERIFIED" in grades:
+        return 1
+    if strict_uncorroborated and "UNCORROBORATED" in grades:
         return 1
     return 0
 
@@ -574,12 +631,52 @@ def main() -> int:
         help="결과 JSON 저장 경로 (기본: doi_verify_report.json)",
     )
     parser.add_argument("--cache-dir", default=None, help="ref_cache_manager 캐시 디렉토리 (기본값 권장)")
+    parser.add_argument(
+        "--expect-title",
+        default=None,
+        help="이 DOI가 가리킬 것으로 의도한 논문 제목. 실제 레코드와 대조해 "
+        "'존재하지만 무관한 논문'을 잡는다. --doi 하나와 함께만 쓸 것.",
+    )
+    parser.add_argument(
+        "--doi-source",
+        choices=["human", "model"],
+        default=None,
+        help="DOI의 출처. human=사용자가 브라우저/PDF에서 직접 복사, "
+        "model=LLM이 기억에서 생성. model은 --expect-title 없이 진입할 수 없다.",
+    )
 
     args = parser.parse_args()
 
     if not (args.doi or args.file or args.bibtex):
         print("[ERROR] --doi / --file / --bibtex 중 하나는 필요합니다.", file=sys.stderr)
         parser.print_help()
+        return 1
+
+    # --- DOI 출처 게이트 -------------------------------------------------- #
+    # LLM이 생성한 DOI는 형식이 완벽해도 내용이 틀릴 수 있고, 순차 대역에서는
+    # 실재하는 무관한 논문에 착지한다. 그래서 model 출처는 "무엇을 찾으려 했는지"를
+    # 반드시 함께 선언하게 하고, 선언이 없으면 조회 자체에 들어가지 못하게 한다.
+    # (등급으로 걸러내는 것보다 앞단에서 막는 편이 확실하다 — 등급은 사람이
+    #  무시할 수 있지만 진입 차단은 무시할 수 없다.)
+    if args.doi_source == "model" and not args.expect_title:
+        print(
+            "[BLOCKED] --doi-source model 은 --expect-title 없이 쓸 수 없습니다.\n"
+            "          LLM이 생성한 DOI는 존재 여부만으로 검증되지 않습니다 — "
+            "찾으려던 논문 제목을 함께 선언하세요.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if args.expect_title and not args.doi:
+        print("[ERROR] --expect-title 은 --doi 와 함께만 쓸 수 있습니다.", file=sys.stderr)
+        return 1
+
+    if args.expect_title and len([p for p in args.doi.split(",") if p.strip()]) != 1:
+        print(
+            "[ERROR] --expect-title 은 DOI 하나에만 붙일 수 있습니다 "
+            "(제목 하나를 여러 DOI에 공유하면 대조가 무의미해집니다).",
+            file=sys.stderr,
+        )
         return 1
 
     email = args.email or os.getenv("SCITK_CONTACT_EMAIL") or None
@@ -626,11 +723,32 @@ def main() -> int:
 
     print_summary(results)
 
-    code = exit_code_for(results)
+    # --doi 로 특정 DOI를 짚어 왔거나 출처를 선언했다면 UNCORROBORATED를 실패로 센다.
+    # --file 대량 스캔은 제목을 얻을 방법이 없어 거의 전부 UNCORROBORATED가 되므로
+    # exit 에는 반영하지 않는다 (exit_code_for 의 docstring 참고).
+    strict = bool(args.doi or args.doi_source)
+    code = exit_code_for(results, strict_uncorroborated=strict)
+
+    n_uncorr = sum(1 for r in results if r["grade"] == "UNCORROBORATED")
+
     if code == 2:
         print("\n[FAIL] HALLUCINATED 또는 RETRACTED 항목이 있습니다 (exit 2).", file=sys.stderr)
     elif code == 1:
-        print("\n[WARN] MISMATCH/ONE_SOURCE_ONLY/UNVERIFIED 항목이 있습니다 (exit 1).", file=sys.stderr)
+        print(
+            "\n[WARN] MISMATCH/UNCORROBORATED/ONE_SOURCE_ONLY/UNVERIFIED 항목이 "
+            "있습니다 (exit 1).",
+            file=sys.stderr,
+        )
+    elif n_uncorr:
+        # 통과시키되 "무엇을 확인하지 않았는지"를 반드시 말한다. 조용한 통과가
+        # 바로 존재하지만 무관한 DOI를 원고에 들여보내는 경로다.
+        print(
+            f"\n[PASS] 차단 사유 없음 (exit 0) — 단, {n_uncorr}건은 '존재한다'까지만 "
+            "확인됐고 그 DOI가 의도한 논문인지는 대조하지 못했습니다.\n"
+            "       제목까지 대조하려면 --bibtex 로 넘기거나, 개별 DOI에 "
+            "--expect-title 을 주세요.",
+            file=sys.stderr,
+        )
     else:
         print("\n[PASS] 전부 OK (exit 0).", file=sys.stderr)
     return code
