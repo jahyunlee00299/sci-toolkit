@@ -81,7 +81,7 @@ dc843bc5cb98b24079c781c04cc82fc5d0706fdff4a18affcba7a8eb980dcdbc *./skills/endno
 295afeee67755b55a36f576f2a5a7ec7df0ff4f87bbf23c728900f856a7644eb *./skills/endnote-citation-injection/enci_base_collation.py
 67fc0e5f533da3f4596669e6ef56c9d607d267e332b068c26e36726fc228f3a0 *./skills/experiment-hub/SKILL.md
 f281f945ac06bd9ac987a2dda6b5bb8154c5cfffa3565e396bd211c930c59a91 *./skills/experiment-hub/reaction_matrix.py
-88b5c4166fa79701249c352dac6acd3eb50ddb2440c972bcfabdb26e02451c8b *./skills/generate-image/SKILL.md
+bd3252c76c6b79ca06496ca5e51a4273d5bd3e21580ea13ac554077edfd65ed7 *./skills/generate-image/SKILL.md
 d519266b65f08ae0442d36d2d829f5e59fa93fcf0c434a5ec45e31c688eefe32 *./skills/generate-image/scripts/generate_image.py
 f9d65a3a81fffd09276c163558e25520c33b09d1c026251c640f7e97d193f4a9 *./skills/get-available-resources/SKILL.md
 3b4085d73cb4697b7b5776b6f7d3d62ff9bf3a2e18e773ec5ad70a209325b2b9 *./skills/get-available-resources/references/resource_semantics.md
@@ -103,7 +103,7 @@ a037427f03eeb72e5c58aa938ee9d4619a0d45219072b27afd98f02c34c95174 *./skills/journ
 3249297bfe14990f53fcde98c09b9f5b69168df2892aa321e78caf7a36cd2505 *./skills/journal-presentation-maker/scripts/search_papers.py
 6a885a133b95572256448ed13d093e856ed1d31d32527771417fbc5164e784fc *./skills/journal-presentation-maker/scripts/search_papers_v2.py
 652b62bb53f302bb89e6748b965f21cd08dfad1940a1c5730b635c81d9f31749 *./skills/lab-data-analysis/SKILL.md
-2b0b4feb4a3cddb2470be6a546f3121c54c4eb412635a0b02765d0be3df64841 *./skills/literature-review/SKILL.md
+47b802f73ff6333a4e6c428279f3cfc664eaf05b1234de138ca29a1cb32842fc *./skills/literature-review/SKILL.md
 e9db0f8e00f894fc55c474ca0355a86fd72eb9bb5456e1253e740d3c06e74208 *./skills/literature-review/assets/review_template.md
 a62f97c9f1c50da0627033187da5632f9fec00679fc5e8c0e97b217210c0c79b *./skills/literature-review/references/citation_styles.md
 ffa6913488001550e623317ec35e8dadb1723fc4f2627488cba810382cfcf961 *./skills/literature-review/references/database_strategies.md
@@ -275,4 +275,4 @@ c8c2ee3a2f2136d38b456b944bb974073090c0f8e7dd6c9689c291096231f25e *./tests/test_d
 8e77f3aead30899cd8391fd9f61af86e42a742690d38f17a662b29c50a4b2d1a *./tests/test_install_nondestructive.py
 da1b8ecb7bc48b9ba605240cb4792328ab2848a69ce245865398314e1a8e9f20 *./tests/test_research_marker_scan.py
 faf8384aa2303f78c2633866f8954b796e823b32b299083756a3f02792540f9b *./tests/test_si_institutional.py
-a24cd7f6028ad64d9de605869ec1be1aa52e422bbd7e76d77ecfa834b746a166 *./tests/test_skill_references.py
+9be8d9748c0e9db56da2ad482589a8083d5ba540f8d9a52a44316c3314cc1226 *./tests/test_skill_references.py

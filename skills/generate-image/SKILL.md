@@ -176,8 +176,7 @@ If the script fails, read the error message and address the issue before retryin
 
 ## Integration with Other Skills
 
-- **publication-figures**: Use for technical diagrams, flowcharts, circuits, pathways
+- **publication-figures**: Use for technical diagrams, flowcharts, circuits, pathways — and for posters, where it carries the layout and figure_lint rules
 - **generate-image**: Use for photos, illustrations, artwork, visual concepts
-- **scientific-slides**: Combine with generate-image for visually rich presentations
-- **latex-posters**: Use generate-image for poster visuals and hero images
+- **journal-presentation-maker**: Slide decks — combine with generate-image for visually rich presentations
 
