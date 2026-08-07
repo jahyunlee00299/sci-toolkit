@@ -186,7 +186,7 @@ def interactive_select(cat: dict) -> list[str]:
     presets = list(cat["presets"].items())
     print("\n무엇을 하실 건가요? 아래에서 고르세요.\n")
     for i, (pkey, p) in enumerate(presets, 1):
-        n = "27" if p["skills"] == ["__ALL__"] else str(len(p["skills"]))
+        n = str(len(all_skill_names(cat) if p["skills"] == ["__ALL__"] else p["skills"]))
         print(f"  {i}. {p['label']} — {p['desc']} ({n}개)")
     print(f"  {len(presets)+1}. 직접 고르기 (개별 스킬 선택)")
     print()

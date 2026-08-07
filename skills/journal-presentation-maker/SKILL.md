@@ -14,7 +14,6 @@ Do not run directly; delegate the entire task to the Agent.
 | Skill | When to use together |
 |------|----------------|
 | **pubmed-database** | Direct PubMed query for paper search |
-| **perplexity-search** | General paper search including Google and bioRxiv |
 | **openalex-database** | Auto-collect paper metadata and citation counts |
 | **biorxiv-database** | Preprint-specific search for bioRxiv/medRxiv |
 | **literature-review** | Systematic literature review (PRISMA criteria) |
