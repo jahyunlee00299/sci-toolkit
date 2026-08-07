@@ -45,6 +45,7 @@ and read its exit code rather than judging by eye.
 | The user asks for… | Route (in order) | Gate before you call it done |
 |---|---|---|
 | Find papers / "what's known about X" | `research-search` → (`openalex-database`, `pubmed-database`, `research-lookup`) | 🔒 `scripts/doi_verify.py --doi <list>` — exit 2 means a DOI does not exist (fabricated) or is retracted. Fabricated citations are the failure mode here; do not rely on your own recall. |
+| Preprints / "has this been posted yet" / 최신 논문 검색 | `biorxiv-database` (Europe PMC `SRC:PPR` + arXiv) | 🔒 Every hit is **not peer reviewed** — say so, and when the skill reports a published DOI, cite that instead. bioRxiv's own API has no keyword search: its `?query=` is silently ignored. |
 | Collect references + OA PDFs for a DOI list | `scripts/ref_fetch.py` | 🔒 Read `refs_report.json`: report `discrepancies` and `not_found` explicitly; never silently pick one source. |
 | Write a full literature review document | `literature-review` | Citations verified against the fetched records, not from memory. |
 | Write / edit a manuscript | `manuscript-pipeline` (+ `academic-term-rules` for notation) | 🔒 `manuscript-pipeline/scripts/nomenclature_lint.py` + `manuscript-pipeline/scripts/numeric_consistency_check.py` + `manuscript-pipeline/scripts/body_typo_lint.py` (units, NAD⁺, glued punctuation) |
@@ -60,8 +61,7 @@ and read its exit code rather than judging by eye.
 | Design primers / cloning | `primer-design` | Sequence re-checked against the construct; order sheet re-read before sending. |
 | Make slides | `pptx`(외부) / `journal-presentation-maker` | Numbers and claims traced to their source (§3). |
 | Convert a file (PDF/docx/xlsx → md) | `markitdown`, `paper-extract` (또는 외부 `pdf`·`xlsx`) | Spot-check the output against the source; conversion silently drops content. |
-| Write a grant proposal | `research-grants` | Agency-specific requirements read from `references/<agency>_guidelines.md`, not from memory. |
-| Search the live web | `research-search` → `parallel-web` / `perplexity-search` | Cite sources; separate what a source said from your inference. |
+| Search the live web | `research-search` → built-in WebSearch / WebFetch | Cite sources; separate what a source said from your inference. No API key is needed. |
 | Send/post anything outward (mail, issue, task, page) | the connector in `scripts/connectors/` | 🔒 §9 draft-first: **stop at the draft.** A human sends it. |
 | Write or restructure code | — | §1 SOLID; §2 verification gate before claiming it works. |
 | Set up / install / "it's not working" | `doctor.py` | 🔒 `python doctor.py` must print `PASS` — quote the failing line, don't paraphrase. |
@@ -346,12 +346,12 @@ Two hard truths from auditing the actual scripts, so you don't misuse them:
 
 Do **not** invent a `*_lint.py` for these — none exists. Enforce the relevant
 principle *manually* instead:
-- **research-ideation, scholar-evaluation** — judgement-shaped output; there is
-  nothing mechanical to check. The claims they produce still pass §2/§3.
+- **research-ideation** — judgement-shaped output; there is
+  nothing mechanical to check. The claims it produces still pass §2/§3.
 - **paper-extract, markitdown, pdf** — extraction/conversion wrappers. They fail
   by silently dropping content, so spot-check the output against the source
   rather than trusting a clean exit.
-- **research-search, research-lookup, openalex-database, pubmed-database** — the
+- **research-search, research-lookup, openalex-database, pubmed-database, biorxiv-database** — the
   search itself has no correctness gate, but **the DOIs they return do**: run
   `scripts/doi_verify.py` before any of them enters a document (see below).
 

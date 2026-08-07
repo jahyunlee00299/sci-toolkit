@@ -69,7 +69,7 @@ python install/install.py
 ```
 python install/install.py --list
 ```
-전체 스킬 35개와 프리셋 목록이 카테고리별로 나옵니다.
+전체 스킬 31개와 프리셋 목록이 카테고리별로 나옵니다.
 
 ### 이미 뭘 설치할지 아는 경우 (한 줄로)
 
@@ -83,7 +83,7 @@ python install/install.py --skills primer-design,literature-review --apply
 
 **프리셋 목록**: `paper-writing`(논문 작성) · `literature`(문헌 조사) ·
 `molbio`(분자생물학) · `data-figures`(데이터·그림) · `documents`(문서 작업) ·
-`all`(전체 35개)
+`all`(전체 31개)
 
 - 설치 대상 폴더는 기본이 `~/.claude/skills/`입니다. 다르면 `--dest <경로>` 로 지정하세요.
 - 설치라고 해서 빌드/컴파일이 필요한 게 아닙니다 — **폴더 복사가 곧 설치**입니다.
@@ -108,7 +108,7 @@ python install/install.py --skills primer-design,literature-review --apply
 ## 4단계 (선택) — 전체 설치 & 설치기를 안 쓰고 직접 복사하기
 
 **전체가 정말 필요하다면**(예: 랩 공용 PC 셋업) 설치기의 전체 프리셋을 쓰세요.
-초심자가 한 번에 35개를 다 받으면 뭐가 왜 로드됐는지 파악이 어려우니, 필요한 것만
+초심자가 한 번에 31개를 다 받으면 뭐가 왜 로드됐는지 파악이 어려우니, 필요한 것만
 골라 담는 2단계 방식을 먼저 권장합니다. 그래도 전체가 필요하면:
 
 ```

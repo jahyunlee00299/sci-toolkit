@@ -78,23 +78,11 @@
       "requires": [],
       "size_kb": 34
     },
-    "scholar-evaluation": {
-      "category": "validation",
-      "role": "ScholarEval 정량 채점 (8차원 5점)",
-      "requires": [],
-      "size_kb": 44
-    },
     "scientific-validation": {
       "category": "validation",
       "role": "fit/최적화 결과 과학적 타당성 게이트 (5축)",
       "requires": [],
       "size_kb": 43
-    },
-    "reference-surveyor": {
-      "category": "validation",
-      "role": "논문 구현 GitHub 레퍼런스 실행검증·평가",
-      "requires": [],
-      "size_kb": 7
     },
     "literature-review": {
       "category": "literature",
@@ -113,6 +101,12 @@
       "role": "무료 API 조회 (OpenAlex+PubMed 자동 라우팅)",
       "requires": [],
       "size_kb": 60
+    },
+    "biorxiv-database": {
+      "category": "literature",
+      "role": "프리프린트 검색 (bioRxiv·medRxiv·arXiv, 키 불필요)",
+      "requires": [],
+      "size_kb": 51
     },
     "research-ideation": {
       "category": "literature",
@@ -247,24 +241,6 @@
       "requires": [],
       "size_kb": 24
     },
-    "research-grants": {
-      "category": "paper-writing",
-      "role": "연구제안서 작성(NSF·NIH·DOE·DARPA 등 기관별 양식)",
-      "requires": [],
-      "size_kb": 245
-    },
-    "parallel-web": {
-      "category": "literature",
-      "role": "웹 검색·URL 본문 추출·딥리서치 (Parallel API)",
-      "requires": [],
-      "size_kb": 83
-    },
-    "perplexity-search": {
-      "category": "literature",
-      "role": "실시간 웹 검색 + 출처 인용 응답 (Perplexity via OpenRouter)",
-      "requires": [],
-      "size_kb": 59
-    },
     "git-workflow-manager": {
       "category": "validation",
       "role": "git 워크플로우 — pull 강제, 임시파일 정리, 커밋 규칙",
@@ -285,8 +261,7 @@
       "skills": [
         "manuscript-pipeline",
         "endnote-citation-injection",
-        "publication-figures",
-        "research-grants"
+        "publication-figures"
       ]
     },
     "literature": {
@@ -297,10 +272,9 @@
         "research-lookup",
         "openalex-database",
         "pubmed-database",
+        "biorxiv-database",
         "literature-review",
-        "paper-extract",
-        "parallel-web",
-        "perplexity-search"
+        "paper-extract"
       ]
     },
     "molbio": {
@@ -335,7 +309,7 @@
     },
     "all": {
       "label": "전체 설치",
-      "desc": "21개 스킬 모두",
+      "desc": "31개 스킬 모두",
       "skills": [
         "__ALL__"
       ]
