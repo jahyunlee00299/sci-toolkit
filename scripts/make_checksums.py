@@ -66,7 +66,16 @@ def is_excluded(rel_posix: str, patterns: list[str]) -> bool:
 
 
 def iter_files(patterns: list[str]):
-    for p in sorted(ROOT.rglob("*")):
+    """매니페스트에 담을 (파일, 상대경로) 를 **플랫폼 무관한 순서**로 낸다.
+
+    `sorted(ROOT.rglob("*"))` 는 Path 객체를 정렬하는데, 그 비교는 OS 마다 다르다.
+    Windows 에서는 `CLAUDE.md` 다음에 `config/…` 가 오고 Linux 에서는 `LICENSE` 가
+    먼저 온다 — 같은 파일 집합인데 매니페스트 줄 순서가 달라지고, 그러면 CI 가
+    "매니페스트가 낡았다"고 계속 보고한다(260807 실측: 62줄 차이, 내용은 동일).
+    상대경로 문자열로 정렬하면 어느 OS 에서 만들어도 같은 파일이 나온다.
+    """
+    entries = []
+    for p in ROOT.rglob("*"):
         if p.is_dir():
             continue
         if any(part in ALWAYS_EXCLUDE_DIRS for part in p.parts):
@@ -76,6 +85,8 @@ def iter_files(patterns: list[str]):
             continue
         if is_excluded(rel, patterns):
             continue
+        entries.append((rel, p))
+    for rel, p in sorted(entries):
         yield p, rel
 
 
