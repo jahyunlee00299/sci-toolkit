@@ -253,6 +253,27 @@ def _build_ignore():
     return ignore_factory(SKILLS_DIR, load_patterns(ROOT))
 
 
+def default_dest() -> tuple[Path, str]:
+    """설치 대상 기본값을 환경에서 정한다. (경로, 근거) 를 돌려준다.
+
+    `~/.claude/skills` 를 무조건 기본값으로 쓰면 Codex 사용자에게는 아무 의미가
+    없는 폴더에 설치된다 — 그쪽은 스킬 등록 개념이 없고 AGENTS.md 가 가리키는
+    경로를 읽을 뿐이다. 그래서 무엇이 있는지 보고 정한다.
+    """
+    home = Path.home()
+    claude = home / ".claude"
+    codex = home / ".codex"
+    if claude.is_dir() and not codex.is_dir():
+        return claude / "skills", "Claude Code 환경 감지"
+    if codex.is_dir() and not claude.is_dir():
+        # Codex 는 스킬 레지스트리가 없다. 현재 폴더에 두고 AGENTS.md 가
+        # 가리키게 하는 편이 정직하다 — 자세한 건 CODEX.md.
+        return Path.cwd() / "skills", "Codex 환경 감지 (CODEX.md 참조)"
+    if claude.is_dir() and codex.is_dir():
+        return claude / "skills", "Claude Code·Codex 모두 감지 — Claude 쪽 기본"
+    return Path.cwd() / "skills", "에이전트 미감지 — 현재 폴더"
+
+
 _CATALOG_CACHE: dict | None = None
 
 
@@ -335,8 +356,8 @@ def main() -> None:
     ap.add_argument("--list", action="store_true", help="카탈로그·프리셋만 출력하고 종료")
     ap.add_argument("--preset", help="프리셋 키 (paper-writing/literature/molbio/data-figures/documents/all)")
     ap.add_argument("--skills", help="개별 스킬 쉼표목록 (예: docx,xlsx)")
-    ap.add_argument("--dest", default=str(Path.home() / ".claude" / "skills"),
-                    help="설치 대상 폴더 (기본: ~/.claude/skills)")
+    ap.add_argument("--dest", default=None,
+                    help="설치 대상 폴더 (미지정 시 감지된 에이전트에 맞춰 결정)")
     ap.add_argument("--apply", action="store_true", help="실제로 복사 (없으면 미리보기)")
     ap.add_argument("--force", action="store_true",
                     help="대상 스킬 폴더를 통째로 교체 (대상에만 있던 파일도 삭제). "
@@ -370,7 +391,14 @@ def main() -> None:
     print(f"최종 설치 대상: {len(final)}개 ({fmt_size(total_size_kb(final, cat))})")
 
     # 4) 설치
-    install(final, Path(args.dest).expanduser(), args.apply, force=args.force)
+    if args.dest:
+        dest = Path(args.dest).expanduser()
+    else:
+        dest, why = default_dest()
+        print(f"\n설치 위치를 지정하지 않아 자동 결정했습니다 — {why}")
+        print(f"  {dest}")
+        print("  다른 곳에 넣으려면 --dest <경로> 를 쓰세요.")
+    install(final, dest, args.apply, force=args.force)
 
 
 if __name__ == "__main__":

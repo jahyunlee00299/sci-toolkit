@@ -33,6 +33,7 @@ for _s in (sys.stdout, sys.stderr):
         except Exception:
             pass
 
+import importlib.util
 import shutil
 import subprocess
 import tempfile
@@ -155,6 +156,32 @@ def main() -> int:
               f"exit={proc.returncode} stderr={proc.stderr[-300:]}")
         check("--force 는 기존 파일을 제거함", not local_only.exists(),
               "--force 인데도 남아 있음")
+
+    # ── 케이스 6: --dest 생략 시 환경에 맞는 기본값 ─────────────────────
+    # 예전에는 무조건 ~/.claude/skills 였다. Codex 사용자에게는 아무 의미가 없는
+    # 폴더라(스킬 레지스트리 개념이 없다) 조용히 엉뚱한 곳에 설치된다.
+    print("\n[--dest 생략] 환경을 보고 결정하고, 어디에 넣는지 알린다")
+    spec = importlib.util.spec_from_file_location("installer", INSTALLER)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["installer"] = mod
+    try:
+        spec.loader.exec_module(mod)
+    except SystemExit:
+        pass
+    if hasattr(mod, "default_dest"):
+        dest, why = mod.default_dest()
+        check("경로를 돌려줌", bool(str(dest)), f"dest={dest}")
+        check("근거를 함께 돌려줌", bool(why), "왜 그 경로인지 설명이 없다")
+        check("마지막 구성요소가 skills", Path(dest).name == "skills", f"dest={dest}")
+    else:
+        check("default_dest 가 존재", False, "install.py 에 함수가 없다")
+
+    proc = subprocess.run(
+        [sys.executable, str(INSTALLER), "--skills", skill],
+        capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
+    check("생략해도 정상 종료", proc.returncode == 0, proc.stderr[-200:])
+    check("어디에 설치할지 출력함", "자동 결정" in proc.stdout,
+          "사용자가 설치 위치를 모른 채 진행하게 된다")
 
     print("=" * 60)
     print(f"통과 {_pass} / 실패 {_fail}")

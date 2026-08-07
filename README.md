@@ -24,6 +24,7 @@ python doctor.py   →   10 OK / 0 FAIL
 | AI가 자꾸 엉뚱하게 한다 | [AGENTS.md](AGENTS.md) §0 라우팅 표 → "§0대로 해줘" |
 | Word/PDF/PPT/Excel 이 안 된다 | [docs/12](docs/12_문서스킬_직접_준비하기.md) — 그 스킬들은 여기 없습니다(라이선스) |
 | 쓰다가 불편한 걸 발견했다 | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) — 그냥 말하면 기록됩니다 |
+| **Claude Code가 아니라 Codex를 쓴다** | [CODEX.md](CODEX.md) — 훅이 안 도는 환경이라 지켜야 할 것이 다릅니다 |
 
 ---
 
