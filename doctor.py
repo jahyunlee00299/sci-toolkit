@@ -738,10 +738,27 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
             continue
         if proc.returncode != 0:
             out = (proc.stdout or "") + (proc.stderr or "")
-            first = next((ln.strip() for ln in out.splitlines()
-                          if "FAIL" in ln or "Error" in ln), "")
-            failed.append(f"{rel} ({label}) exited {proc.returncode}"
-                          + (f" — {first[:100]}" if first else ""))
+            # Keep the failing lines AND what follows them. Reporting only the
+            # first "FAIL" line throws away the expected/actual values printed
+            # underneath it, which is exactly what you need to tell a real
+            # regression from an environment difference. A CI log that says only
+            # "FAIL <case name>" cannot be diagnosed without re-running locally —
+            # and if it reproduces locally you did not need the CI log anyway.
+            lines = out.splitlines()
+            detail = []
+            for i, ln in enumerate(lines):
+                if "FAIL" in ln or "Error" in ln or "Traceback" in ln:
+                    detail.append(ln.strip()[:160])
+                    # the two lines after a failure usually carry 기대/실제
+                    for nxt in lines[i + 1:i + 3]:
+                        s = nxt.strip()
+                        if s and not s.startswith("PASS"):
+                            detail.append(f"    {s[:160]}")
+                if len(detail) >= 12:
+                    detail.append("    …")
+                    break
+            failed.append(f"{rel} ({label}) exited {proc.returncode}")
+            failed.extend(f"    {d}" for d in detail)
 
     if failed:
         return CheckResult(name, STATUS_FAIL,
