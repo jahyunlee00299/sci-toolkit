@@ -1,0 +1,55 @@
+name: doctor
+
+# 이 저장소의 검사 장치를 PR 마다 실제로 돌린다.
+#
+# 왜 필요한가: 회귀 테스트 12종이 로컬 실행용으로만 있었다. 오늘 하루만 해도 그
+# 테스트들이 실제 결함 3건을 잡았다 — `git push -f` 가 가드를 통과하던 것,
+# 설치기가 기존 파일을 지우던 것, QC 게이트 오발동. 그런데 아무도 로컬에서
+# doctor 를 돌리지 않고 PR 을 보내면 그 감지력은 존재하지 않는 것과 같다.
+#
+# doctor.py 는 SHA256SUMS 무결성·시크릿/연구마커 스캔·문서 참조 실존·라우팅 정합
+# + 자체 테스트 9종을 한 번에 돌리고 PASS/FAIL 을 낸다. 그래서 여기서는 그것 하나만
+# 부른다 — CI 가 검사 목록을 따로 들고 있으면 doctor 와 갈라져 드리프트가 난다.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 테스트 12종 중 numpy 를 쓰는 것은 stats assumption check 하나뿐이고,
+      # 나머지는 표준 라이브러리만 쓴다. 무거운 과학 스택을 통째로 설치하지 않는다.
+      - name: Install the one third-party dependency
+        run: python -m pip install --quiet numpy
+
+      # doctor 는 claude CLI 가 없으면 WARN 을 내고 계속 간다(FAIL 아님).
+      # CI 러너에 CLI 가 없는 것은 정상 상태이므로 그대로 둔다.
+      - name: Run doctor
+        run: python doctor.py
+
+      # doctor 가 PASS 여도 SHA256SUMS 가 커밋에 반영되지 않았을 수 있다.
+      # 매니페스트를 다시 만들어 봐서 차이가 나면, 파일은 고쳤는데 해시를
+      # 갱신하지 않고 올린 것이다 — 배포본 무결성 검증이 그 순간부터 거짓이 된다.
+      - name: SHA256SUMS is up to date
+        run: |
+          python scripts/make_checksums.py --apply
+          if ! git diff --quiet -- SHA256SUMS; then
+            echo "::error::SHA256SUMS is stale — run 'python scripts/make_checksums.py --apply' and commit it."
+            git diff --stat -- SHA256SUMS
+            exit 1
+          fi
