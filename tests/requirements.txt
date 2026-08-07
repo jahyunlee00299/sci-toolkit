@@ -1,0 +1,18 @@
+# 회귀 테스트 12종을 돌리는 데 필요한 서드파티 — 이게 전부다.
+#
+# 이 목록은 grep 이 아니라 **깨끗한 venv 에서 실제로 돌려** 얻었다(260807).
+# 최상위 import 만 훑으면 틀린다: assumption_check.py 는 scipy 를 함수 안에서,
+# pandas 를 load_table() 안에서 지연 import 한다. CI 를 두 번 왕복하고 나서야
+# 셋 다 필요하다는 걸 알았다.
+#
+# 나머지 11종은 표준 라이브러리만 쓴다. 스킬 전체가 쓰는 패키지(matplotlib,
+# python-docx, rdkit, Pillow, openpyxl …)는 여기 넣지 않는다 — 테스트가 그
+# 경로를 타지 않으므로 CI 설치 시간만 늘어난다.
+#
+# 확인 방법:
+#   python -m venv /tmp/ci && /tmp/ci/bin/pip install -r tests/requirements.txt
+#   for t in tests/test_*.py; do /tmp/ci/bin/python "$t" || echo "FAIL $t"; done
+
+numpy
+scipy
+pandas

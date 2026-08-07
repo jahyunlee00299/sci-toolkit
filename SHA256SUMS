@@ -1,7 +1,7 @@
 79a1ae7f296bcdea894fbe918f3ffd5baec1599d4f39c7103bca3cac9e7a99f3 *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 71cebbc131f610e8ad4438e917544418a6896ce14ba8aa5a96c5c50e2fa8a9ad *./.gitattributes
-d7257714f48884de10efec430c00fa2051d14c8c9e6570852489f2853b25ee26 *./.github/workflows/doctor.yml
+abf57faa0b1292c9f53f11af8e286eb8077729132506ced03ab274451fc2fe41 *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 fefa29e6306122d4c087bdab636915e70225b93753b7b00ddfc4497b68e17c54 *./AGENTS.md
 6e483fc06ca4bf0e639529d654a889a9a9c75e41b201cc985ae1d5038a9377e7 *./CHANGELOG.md
@@ -273,6 +273,7 @@ b260fcc1d604592a1b960249cd835d1cb67f510f054e0270a5939dceb33aafaf *./skills/stats
 f4d8ec3c6b149af355ae3cb33f29bea1776b873867dcc035906753b2b47d5620 *./skills/statsmodels/references/stats_diagnostics.md
 9046111210d39cda57cb2af5f929ab8c68d9c6b4965b14e14431ca51cf90707d *./skills/statsmodels/references/time_series.md
 aa4bec6dc8ae5e3d534a8465c121723a6fc8f5b8dfd1e336c5dd32a573c823f7 *./skills/statsmodels/SKILL.md
+5437e653d4f8d29306cd04b6c39f02a650826817be7f013dc7856938b258eba6 *./tests/requirements.txt
 1269d8dd6a3c4745cca0fd6e3b4fdc96c5a16f076fbe1544a5cab929d677a617 *./tests/test_agents_routing.py
 98395e055fbaecead5d03b945491746a6af237d81caa08bb31bc84d23ac59664 *./tests/test_assumption_check.py
 276ce7db36f963fcf35ad7cd4c3439987ffd1a49e6b4c4425cbe7b6dfe1d64d9 *./tests/test_body_typo_lint.py
