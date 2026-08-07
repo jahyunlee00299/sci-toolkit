@@ -19,6 +19,7 @@ import argparse
 import fnmatch
 import hashlib
 import io
+import subprocess
 import sys
 from pathlib import Path
 
@@ -37,8 +38,14 @@ MANIFEST = ROOT / "SHA256SUMS"
 DISTIGNORE = ROOT / ".distignore"
 
 # .distignore 에 없더라도 항상 제외 (생성물 / 캐시)
+#
+# `out` 이 여기 없어서 로컬 실행 산출물 6개가 매니페스트에 들어간 적이 있다
+# (260807). 저장소를 clone 한 사람에게는 그 파일이 존재하지 않으므로 doctor 가
+# "6 missing" 으로 무조건 실패한다 — 만든 사람의 컴퓨터에서만 통과하는 매니페스트는
+# 무결성 검증이 아니다. .gitignore 에는 `out/*` 가 있었지만 이 스크립트는
+# .distignore 만 읽으므로 걸리지 않았다.
 ALWAYS_EXCLUDE_DIRS = {".git", "__pycache__", ".cache", ".pytest_cache",
-                       "node_modules", ".ipynb_checkpoints"}
+                       "node_modules", ".ipynb_checkpoints", "out"}
 
 
 def load_patterns() -> list[str]:
@@ -98,6 +105,34 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def untracked_entries(rels: list[str]) -> list[str] | None:
+    """매니페스트에 담긴 것 중 git 이 추적하지 않는 파일을 돌려준다.
+
+    `out` 을 제외 목록에 넣는 것만으로는 다음 산출물 폴더에서 같은 일이 다시
+    난다. 배포되는 것은 **저장소에 커밋된 파일**이고, 그것이 곧 다른 사람이
+    clone 했을 때 실제로 갖게 되는 집합이다. 그래서 규칙 자체를 그걸로 잰다.
+
+    git 이 없거나 저장소 밖이면 검사를 건너뛴다 (None) — USB 로 복사된 사본에서
+    이 스크립트를 돌릴 수도 있고, 그때 검사를 실패로 처리하면 오탐이 된다.
+    """
+    # `-z` 로 받는다. 기본 출력은 비ASCII 경로를 `"docs/06_\352\270..."` 처럼
+    # 따옴표+8진 이스케이프로 내놓기 때문에, 그대로 비교하면 한글 이름의 문서가
+    # 전부 "추적되지 않음" 으로 잡힌다 (260807 실측: 문서 7개 오탐). NUL 구분
+    # 출력에는 이스케이프가 없다.
+    try:
+        proc = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-z"],
+                              capture_output=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    tracked = {p.decode("utf-8", "surrogateescape")
+               for p in proc.stdout.split(b"\0") if p}
+    if not tracked:
+        return None
+    return sorted(r for r in rels if r not in tracked)
+
+
 def read_existing() -> dict[str, str]:
     if not MANIFEST.exists():
         return {}
@@ -136,6 +171,19 @@ def main() -> int:
             print(f"    [{label}] {k}")
         if len(items) > 8:
             print(f"    [{label}] … 외 {len(items) - 8}개")
+
+    stray = untracked_entries([k[2:] for k in new])
+    if stray:
+        print(f"\n거부 — git 이 추적하지 않는 파일 {len(stray)}개가 매니페스트에 들어간다.")
+        for k in stray[:10]:
+            print(f"    [미추적] {k}")
+        if len(stray) > 10:
+            print(f"    [미추적] … 외 {len(stray) - 10}개")
+        print("이 파일들은 clone 한 사람에게 없으므로 doctor 가 반드시 실패한다.")
+        print(".distignore 에 추가하거나, 커밋해야 할 파일이면 커밋한 뒤 다시 실행하라.")
+        return 1
+    if stray is None:
+        print("\n(git 저장소가 아니라 미추적 파일 검사는 건너뛴다)")
 
     if args.apply:
         MANIFEST.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
