@@ -1,6 +1,6 @@
 ---
 name: research-search
-description: Meta-skill that routes research and search queries to the optimal backend — academic papers (OpenAlex, PubMed), AI-powered web search (Perplexity), general web search (Parallel). Use as the single entry point for any research or information lookup. For synthesizing findings into a review document use literature-review; for ideation/discussion of results use research-ideation.
+description: Meta-skill that routes research and search queries to the optimal backend — peer-reviewed papers (OpenAlex, PubMed), preprints (bioRxiv, medRxiv, arXiv), and OA full-text retrieval. Use as the single entry point for any research or information lookup. For synthesizing findings into a review document use literature-review; for ideation/discussion of results use research-ideation.
 license: MIT license
 metadata:
     skill-author: K-Dense Inc.
@@ -87,13 +87,16 @@ Query arrives
     |                   제재는 도서관 서비스 1년 제한 + 민사 책임 1차 부담이다.
     |                   한도(예: 동일 출판사 30건/일, 동일 PC 50건/일)도 함께 안내된다.
     |
-    +-- Web search / current information?
+    +-- Preprint / not yet peer reviewed?
     |       |
-    |       +-- General web search, market research, news, industry data
-    |       |       --> parallel-web (search or research command)
+    |       +-- "has this been posted yet", newest work, 최신 논문 검색
+    |               --> biorxiv-database (Europe PMC SRC:PPR + arXiv, no API key)
+    |
+    +-- General web search / current non-academic information?
     |       |
-    |       +-- AI-synthesized answer with citations (recent science, tech, facts)
-    |               --> perplexity-search (sonar-pro or sonar-pro-search)
+    |       +-- No web-search skill ships in this package.
+    |               --> use your agent's own built-in web search / fetch tool.
+    |                   Do not point the user at a skill that is not installed.
     |
     +-- Mixed / unclear?
             --> research-lookup (free, no API key, good default)
@@ -155,33 +158,28 @@ results = client.search_works(search="topic", filter_params={"cited_by_count": "
 
 ---
 
-### 4. parallel-web (General Web Search)
+### 4. biorxiv-database (Preprints)
 
-**When:** General web searches, market research, industry analysis, current events, technical documentation, deep research reports.
+**When:** The work may be too new to be peer reviewed — "has anyone posted this yet", newest results in a fast-moving field, 최신 논문 검색 before journal publication.
 
-- Parallel Chat API (OpenAI-compatible)
-- `search` command: quick web search with synthesized summary
-- `research` command: comprehensive multi-source reports
-- `extract` command: URL content extraction (verification only)
-- Requires `PARALLEL_API_KEY`
+- Europe PMC `SRC:PPR` (bioRxiv, medRxiv, Research Square, ChemRxiv, SSRN) + arXiv Atom API
+- No API key, no registration
+- Surfaces the **published DOI** when a preprint has since appeared in a journal, so you cite that instead
+- Hands results to `scripts/ref_fetch.py` for PDF download and BibTeX
 
-Route the query to the **parallel-web** skill (e.g. `search "latest AI regulation updates"` or `research "EV battery market analysis"`) rather than calling its script directly.
+```bash
+python preprint_search.py "CRISPR base editing" --source biorxiv --json -o sources/preprints_topic.json
+```
 
-**Route here when:** User needs non-academic web information, market data, news, or comprehensive research reports.
+**Route here when:** The user asks for preprints, the newest work in a field, or wants to check whether a result has already been posted publicly.
+
+⚠️ bioRxiv's own API **cannot do keyword search** — its `?query=` parameter is silently ignored and returns a full, unfiltered page with HTTP 200. See `../biorxiv-database/references/api_guide.md` for the measured probes; never hand-roll a search against it.
 
 ---
 
-### 5. perplexity-search (AI Web Search)
+### General web search — not in this package
 
-**When:** AI-synthesized answers with source citations, recent scientific developments, real-time information beyond training cutoff.
-
-- Multiple models: sonar, sonar-pro, sonar-pro-search, sonar-reasoning-pro
-- Real-time web-grounded answers
-- Requires `OPENROUTER_API_KEY`
-
-Route the query to the **perplexity-search** skill (e.g. `"latest CRISPR clinical trial results 2025"` with `--model sonar-pro`) rather than calling its script directly.
-
-**Route here when:** User wants AI-synthesized answers with citations, or needs information that is very recent and may not be indexed in academic databases yet.
+No general web-search skill ships here (they all require a paid API key). For non-academic web information, market data, or news, use the web search / fetch tool built into your agent, and cite the URL. Do not route the user to a skill that is not installed.
 
 ---
 
@@ -193,14 +191,14 @@ Route the query to the **perplexity-search** skill (e.g. `"latest CRISPR clinica
 | "PubMed search with MeSH terms" | pubmed-database | — |
 | "Author's publication list" | openalex-database | — |
 | "Citation analysis for paper X" | openalex-database | — |
-| "Latest news about X" | parallel-web | perplexity-search |
-| "Market size for X" | parallel-web | — |
+| "프리프린트 / 아직 안 나온 최신 결과" | biorxiv-database | research-lookup |
+| "이미 누가 올렸는지 확인" | biorxiv-database | openalex-database |
 | "What methods did studies use for X" | literature-review | research-lookup |
-| "Recent advances in X (2025)" | perplexity-search | parallel-web |
-| "Compare X vs Y (current state)" | perplexity-search | parallel-web |
+| "Recent advances in X (2026)" | biorxiv-database | research-lookup |
 | "Systematic review on X" | literature-review (workflow) | — |
-| "논문 PDF 다운로드 (OA)" | web-scraping --download | — |
-| "논문 PDF 다운로드 (기관 구독)" | web-scraping --download --libkey | --auto-login (EZproxy) |
+| "논문 PDF 다운로드 (OA)" | `scripts/ref_fetch.py --doi <DOI> --download` | `--title "<제목>"` |
+| "논문 PDF 다운로드 (기관 구독)" | 미지원 — `oa_status: closed` 로 남기고 도서관 경로는 사용자가 직접 | — |
+| "Latest news / market data (비학술)" | 에이전트 내장 웹 검색 | — |
 
 ## API Key Requirements
 
@@ -209,10 +207,10 @@ Route the query to the **perplexity-search** skill (e.g. `"latest CRISPR clinica
 | research-lookup | None | Free |
 | pubmed-database | Optional (NCBI API key) | Free |
 | openalex-database | None | Free |
-| parallel-web | PARALLEL_API_KEY | Paid |
-| perplexity-search | OPENROUTER_API_KEY | Paid (pay-per-query) |
+| biorxiv-database | None | Free |
+| `scripts/ref_fetch.py` (OA PDF·BibTeX) | None | Free |
 
-**Recommendation:** Start with free backends (research-lookup) and escalate to paid backends only when needed.
+**Every backend in this package is free and keyless.** Nothing here bills per query, so there is no paid route to escalate to — if a query genuinely needs the open web, that is your agent's own web-search tool, not a skill.
 
 ## MANDATORY: Save All Results
 
@@ -225,5 +223,5 @@ ls sources/  # Always check existing results before new queries
 ## Relationship to Other Skills
 
 - **literature-review**: Workflow/methodology skill for systematic reviews. It *uses* search backends listed here but is NOT a search tool itself. Keep separate.
-- **parallel-web**: Backend that serves both this meta-skill and other skills. Remains active independently.
+- **biorxiv-database**: Preprint front end. Also usable directly; it hands its hits to `scripts/ref_fetch.py`, the same retrieval path this skill points at.
 - **research-lookup**: Simplified wrapper over OpenAlex + PubMed. Remains active as the default free route.

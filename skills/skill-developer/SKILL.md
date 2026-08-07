@@ -124,7 +124,6 @@ wc -l ~/.claude/commands/my-skill.md
 | `academic-term-rules` | academic notation, italic, gene notation |
 | `solid-principles` | SOLID, refactoring, class design |
 | `lab-equipment-check` | equipment reservation, HPLC, lab equipment |
-| `reference-surveyor` | GitHub investigation, implementation case |
 | `code-implementer` | implementation, implement, fork |
 | `update-skills` | skill update, install skills |
 | `weekly-briefing` | weekly briefing, weekly summary |
