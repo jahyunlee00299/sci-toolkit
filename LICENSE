@@ -19,29 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-================================================================================
-THIRD-PARTY SKILLS — the MIT grant above does NOT cover these
-================================================================================
-
-`skills/` bundles material from several origins. The MIT license above applies
-to the packaging (installer, doctor, tests, connectors, docs) and to skills
-authored for this toolkit. Individual skills carry their own `license:` field
-in their `SKILL.md`, and that field governs.
-
-Known non-MIT skills, as declared in their own front matter:
-
-  Proprietary — "LICENSE.txt has complete terms" (bundled Claude skills):
-    skills/docx      skills/pdf      skills/pptx      skills/xlsx
-
-  Proprietary (toolkit-internal; not for redistribution outside the lab
-  without the author's permission):
-    skills/experiment-hub      skills/primer-design
-
-  Apache-2.0 / BSD-3-Clause / MIT (per-skill, see each SKILL.md):
-    the remaining skills, several of which are authored by K-Dense Inc.
-
-Before redistributing this package — especially publicly — re-read each
-`SKILL.md` front matter rather than assuming the repository-level MIT applies.
-A repository-wide license claim that contradicts a bundled skill's own terms is
-a licensing defect, not a formality.
