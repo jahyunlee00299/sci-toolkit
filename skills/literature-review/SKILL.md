@@ -99,7 +99,7 @@ Literature reviews follow a structured, multi-phase workflow:
 
    **Biomedical & Life Sciences:**
    - Use `pubmed-database` skill (or `research-search`, which auto-routes) for PubMed/PMC
-   - Use `research-search` (routes to Parallel/Perplexity web search) for bioRxiv/medRxiv preprints
+   - Use `biorxiv-database` (or `research-search`, which routes to it) for bioRxiv/medRxiv/arXiv preprints
    - Use direct API access (ChEMBL, KEGG, UniProt REST endpoints) for chemical/pathway/protein DB lookups
 
    **General Scientific Literature:**
@@ -321,11 +321,13 @@ esearch.fcgi?db=pubmed&term=CRISPR+gene+editing&retmax=100
 
 ### bioRxiv / medRxiv
 
-Access via `research-search` skill (routes to Parallel/Perplexity web search, or direct bioRxiv API):
+Access via the `biorxiv-database` skill (Europe PMC `SRC:PPR` + arXiv, keyless):
+```bash
+python preprint_search.py "CRISPR sickle cell" --source biorxiv --json -o sources/preprints_topic.json
 ```
-# Direct bioRxiv API details
-# https://api.biorxiv.org/details/biorxiv/CRISPR sickle cell
-```
+bioRxiv's own `api.biorxiv.org` endpoint resolves a DOI you already have — it has **no keyword
+search**, and its `?query=` parameter is silently ignored while still returning HTTP 200. Do not
+build a search on it.
 
 **Important considerations**:
 - Preprints are not peer-reviewed
@@ -551,7 +553,8 @@ This skill works seamlessly with other scientific skills:
 ### Database Access Skills
 - **pubmed-database**: PubMed / PubMed Central (E-utilities API)
 - **openalex-database**: Cross-disciplinary bibliometrics, citation analysis
-- **research-search**: General web search routing (Parallel/Perplexity), also covers bioRxiv
+- **research-search**: Meta-router across the search backends in this package
+- **biorxiv-database**: Preprints — bioRxiv, medRxiv, arXiv, Research Square, ChemRxiv (keyless)
 - Direct REST API access: ChEMBL, KEGG, Reactome, UniProt, PubChem, AlphaFold DB, COSMIC, Ensembl (for background/methods sections)
 
 ### Analysis Skills

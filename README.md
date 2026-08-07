@@ -9,7 +9,7 @@ figure production, data analysis. Each route ends in a **verification gate**: th
 artifact is not done until the gate passes, and gates are scripts, not advice.
 
 ```
-스킬 31종 · 회귀 테스트 12종 · 안전 가드 7종
+스킬 26종 · 회귀 테스트 12종 · 안전 가드 7종
 python doctor.py   →   10 OK / 0 FAIL
 ```
 
@@ -34,11 +34,11 @@ python doctor.py   →   10 OK / 0 FAIL
 스크립트가 딸려 옵니다). 코드가 아니라 문서라서, Claude Code가 대화 맥락을 보고
 알아서 골라 읽습니다 — 직접 실행할 필요가 없습니다.
 
-## 무엇이 들어 있나 (스킬 31종)
+## 무엇이 들어 있나 (스킬 26종)
 
 | 분야 | 스킬 |
 |---|---|
-| **논문 검색·작성** | `research-search`(진입점) · `research-lookup` · `openalex-database` · `pubmed-database` · `paper-extract` · `literature-review` · `research-ideation` · `reference-surveyor` · `manuscript-pipeline` · `academic-term-rules` · `endnote-citation-injection` · `scholar-evaluation` · `research-grants` · `parallel-web` · `perplexity-search` |
+| **논문 검색·작성** | `research-search`(진입점) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `academic-term-rules` · `endnote-citation-injection` |
 | **분자생물학·실험** | `primer-design` · `experiment-hub` |
 | **Figure** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
 | **데이터·통계** | `stats-workflow` · `statsmodels` · `lab-data-analysis` · `conda-env-manager` · `get-available-resources` |
