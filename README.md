@@ -27,7 +27,7 @@ python doctor.py   →   10 OK / 0 FAIL
 
 ---
 
-## 이게 뭔가요?
+## sci-toolkit이 뭔가요? / What is sci-toolkit?
 
 `skills/` 폴더 하나하나가 **"이럴 때 이렇게 해라"는 지침서**입니다. 코드가 아니라
 문서라서, Claude Code가 대화 맥락을 보고 알아서 골라 읽습니다 — 직접 실행할 필요가
