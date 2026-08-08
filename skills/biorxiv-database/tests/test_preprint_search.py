@@ -243,14 +243,18 @@ _F2_RETRY_BACKOFF_SEC = 5
 def test_f2_route_a_pdf_on_disk() -> str:
     """F2: ref_fetch.py --doi ... --download must leave a %PDF- file on disk.
 
-    ref_fetch.py caches by DOI under ~/.claude/ref_cache/ and, on a cache hit,
-    reports the download path from the run that first populated the cache —
-    not the fresh --pdf-dir passed this time. Report-based judgement would
-    pass here even though the fresh out_dir has nothing in it (reproduced
-    while writing this test). HOME is redirected to a throwaway directory for
-    the subprocess only, so every run starts from an empty cache and the
-    disk-artifact check is exercising the real download path, not a cache
-    lookup that recalls a location from an earlier run.
+    Judgement is the bytes on disk, never ref_fetch.py's own report. The report
+    cannot be trusted here for a specific reason: on a cache hit it used to
+    replay the download path from whichever run first populated the cache, so
+    it read "ok" while the freshly requested --pdf-dir stayed empty. That is
+    fixed in ref_fetch.py (_reconcile_cached_download) and pinned by
+    test_cache_hit_honors_requested_pdf_dir below.
+
+    The cache is isolated with an explicit --cache-dir per attempt. Redirecting
+    HOME does NOT isolate it on Windows, where Path.expanduser() reads
+    USERPROFILE and ignores HOME — an earlier version did that and inherited a
+    polluted real cache, which made this test fail non-deterministically
+    depending on what had run on the machine before.
 
     A transient HTTP 429 from the OA host (observed while writing this test,
     triggered by re-running the same DOI back to back) is retried a few times
@@ -278,17 +282,11 @@ def test_f2_route_a_pdf_on_disk() -> str:
     for attempt in range(1, _F2_MAX_ATTEMPTS + 1):
         ok = True
         with tempfile.TemporaryDirectory() as tmpdir, \
-             tempfile.TemporaryDirectory() as fake_home:
+             tempfile.TemporaryDirectory() as cache_dir:
             out_dir = Path(tmpdir)
-            old_home = os.environ.get("HOME")
-            os.environ["HOME"] = fake_home
-            try:
-                result = ps.fetch_via_doi_route(records, out_dir, email=None)
-            finally:
-                if old_home is None:
-                    os.environ.pop("HOME", None)
-                else:
-                    os.environ["HOME"] = old_home
+            result = ps.fetch_via_doi_route(
+                records, out_dir, email=None, cache_dir=Path(cache_dir)
+            )
             print(f"  attempt {attempt}/{_F2_MAX_ATTEMPTS}: attempted={result['attempted']} "
                   f"downloaded={result['downloaded']} failures={result['failures']}")
 
@@ -364,6 +362,66 @@ def test_f3_route_b_pdf_on_disk() -> str:
     return "pass" if ok else "fail"
 
 
+def test_cache_hit_honors_requested_pdf_dir() -> str:
+    """F4: a cache hit must deliver the PDF to THIS call's --pdf-dir.
+
+    The regression: ref_fetch.py caches by DOI alone, so the second call for the
+    same DOI returned the first call's download record verbatim. It reported
+    status "ok" with a path inside the FIRST --pdf-dir while the directory the
+    caller actually asked for stayed empty. A caller trusting that report gets
+    no file and no error. Reproduced live before the fix (dirA populated, dirB
+    empty, report said ok).
+
+    Judged from disk in the second directory, never from the report.
+    """
+    print("\n-- F4 (cache hit): second --pdf-dir must actually receive the PDF --")
+    if not _network_available():
+        print(f"  {SKIP}  no network reachable — F4 not exercised (NOT a pass)")
+        return "skip"
+
+    repo_root = ps.find_repo_root()
+    if repo_root is None:
+        print(f"  {FAIL}  scripts/ref_fetch.py not found from repo root search")
+        return "fail"
+
+    records = [
+        ps._build_record(
+            title="Mag-Net fixture", authors="", date="2023-06-10", server="bioRxiv",
+            doi=F2_DOI, arxiv_id=None, abstract="", landing_url=f"https://doi.org/{F2_DOI}",
+            source_api="europepmc",
+        )
+    ]
+
+    # One cache dir shared by both calls: the second call is the cache hit.
+    with tempfile.TemporaryDirectory() as cache_dir, \
+         tempfile.TemporaryDirectory() as dir_a, \
+         tempfile.TemporaryDirectory() as dir_b:
+        first = ps.fetch_via_doi_route(records, Path(dir_a), email=None,
+                                       cache_dir=Path(cache_dir))
+        if not sorted(Path(dir_a).glob("*.pdf")):
+            print(f"  {SKIP}  first call downloaded nothing "
+                  f"(failures={first.get('failures')}) — cache-hit path not reachable")
+            return "skip"
+
+        ps.fetch_via_doi_route(records, Path(dir_b), email=None,
+                               cache_dir=Path(cache_dir))
+        pdfs_b = sorted(Path(dir_b).glob("*.pdf"))
+        if not pdfs_b:
+            _print_check("cache hit delivered a PDF into the second --pdf-dir", False,
+                         f"0 file(s) in {dir_b} — cached record points elsewhere")
+            return "fail"
+
+        ok = _print_check("cache hit delivered a PDF into the second --pdf-dir", True,
+                          f"{len(pdfs_b)} file(s) in {dir_b}")
+        for p in pdfs_b:
+            head = p.open("rb").read(5)
+            ok &= _print_check(
+                f"disk file {p.name} starts with %PDF- (byte-level, read from disk)",
+                head == b"%PDF-", f"header={head!r} size={p.stat().st_size:,}B",
+            )
+        return "pass" if ok else "fail"
+
+
 # --------------------------------------------------------------------------- #
 # Runner
 # --------------------------------------------------------------------------- #
@@ -382,6 +440,7 @@ def main() -> int:
 
     f2 = test_f2_route_a_pdf_on_disk()
     f3 = test_f3_route_b_pdf_on_disk()
+    f4 = test_cache_hit_honors_requested_pdf_dir()
 
     print("\n" + "=" * 70)
     print("  SUMMARY")
@@ -392,7 +451,8 @@ def main() -> int:
         print(f"  {PASS if ok else FAIL}  {label}")
         all_ok &= ok
 
-    for label, verdict in (("F2 (Route A / DOI)", f2), ("F3 (Route B / arXiv)", f3)):
+    for label, verdict in (("F2 (Route A / DOI)", f2), ("F3 (Route B / arXiv)", f3),
+                           ("F4 (cache hit -> requested --pdf-dir)", f4)):
         if verdict == "skip":
             print(f"  {SKIP}  {label} — network unreachable, not exercised")
         else:

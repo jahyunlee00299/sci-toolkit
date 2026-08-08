@@ -748,6 +748,10 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
         return CheckResult(name, STATUS_WARN, "no self-test scripts present — skipped")
 
     failed, errored = [], []
+    # `failed` mixes one header line per script with its detail lines, so its
+    # length counts lines, not scripts — reporting it as "N of 16" produced
+    # nonsense like "19 of 16". Count the scripts separately.
+    n_failed_scripts = 0
     for rel, label in present:
         try:
             proc = subprocess.run(
@@ -780,10 +784,11 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
                     break
             failed.append(f"{rel} ({label}) exited {proc.returncode}")
             failed.extend(f"    {d}" for d in detail)
+            n_failed_scripts += 1
 
     if failed:
         return CheckResult(name, STATUS_FAIL,
-                           f"{len(failed)} of {len(present)} self-test(s) failing — "
+                           f"{n_failed_scripts} of {len(present)} self-test(s) failing — "
                            f"a verification tool is broken",
                            failed + errored)
     if errored:
