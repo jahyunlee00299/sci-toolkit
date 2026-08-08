@@ -369,9 +369,18 @@ def check_sha256sums(root: Path) -> CheckResult:
     name = "SHA256SUMS integrity"
     manifest = root / "SHA256SUMS"
     if not manifest.is_file():
+        # WARN, not OK. This check exists to answer "did this copy arrive
+        # intact"; with no manifest that question cannot be answered, and
+        # reporting OK means a copy that lost its manifest in transit — the
+        # exact failure the manifest guards against — scores full marks
+        # (measured 260807: 10 OK / 0 FAIL on a tree with SHA256SUMS removed).
+        # It stays WARN rather than FAIL because a single skill folder copied
+        # out of the package legitimately has no manifest.
         return CheckResult(
-            name, STATUS_OK,
-            "no SHA256SUMS manifest present (nothing to verify)",
+            name, STATUS_WARN,
+            "no SHA256SUMS manifest — integrity of this copy cannot be "
+            "verified. If this is the full package, the manifest is missing; "
+            "regenerate with `python scripts/make_checksums.py --apply`.",
         )
 
     mismatches: list[str] = []
@@ -719,6 +728,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_si_institutional.py", "SI fetch + institutional links"),
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
     ("tests/test_doc_counts.py", "documented counts match reality"),
+    ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
 ]
 
 

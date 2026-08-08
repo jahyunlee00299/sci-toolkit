@@ -39,3 +39,11 @@ SHA256SUMS text eol=lf
 *.pptx  binary
 *.zip   binary
 *.ico   binary
+
+# SnapGene 벡터 — 바이너리인데 선언이 없어 `* text=auto eol=lf` 에 걸렸다.
+# 260807: LF 정규화가 파일 안쪽 CRLF 두 바이트를 접어 4개 벡터의 feature 주석이
+# 전부 사라졌다(19/15/16/18개 → 0개). 서열은 그대로 남고 파서는 예외도 던지지
+# 않아서, 프라이머 설계가 CDS 를 못 찾는 형태로 조용히 틀린다.
+*.dna   binary
+*.xls   binary
+
