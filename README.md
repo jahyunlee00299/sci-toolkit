@@ -9,7 +9,7 @@ figure production, data analysis. Each route ends in a **verification gate**: th
 artifact is not done until the gate passes, and gates are scripts, not advice.
 
 ```
-스킬 27종 · 회귀 테스트 16종 · 안전 가드 7종
+스킬 27종 · 회귀 테스트 17종 · 안전 가드 7종
 python doctor.py   →   10 OK / 0 FAIL
 ```
 
@@ -135,7 +135,7 @@ python scripts/ref_fetch.py --doi 10.1016/j.example.2026.01.001 --download
 | `hooks/` | 안전 가드 7종 — 시크릿·강제삭제·위험한 git(fork upstream 포함)·클라우드 재귀스캔 + Windows 환경불일치 3종 |
 | `scripts/` | 연구 보조 도구 (HPLC 파서, primer 점검, JCR 검증, `ref_fetch.py` 등) + 외부 연동 커넥터 |
 | `docs/` | 초심자 문서 13종 (시작하기 → 설치 → API/MCP → 토큰·비용 → … → 전체 워크플로우 지도) |
-| `tests/` | 회귀 테스트 16종 (시크릿·연구마커, 참조 실존, 라우팅 정합, 비파괴 설치, 능력 소실, 훅 양방향). `doctor.py` 가 전부 자동 실행 |
+| `tests/` | 회귀 테스트 17종 (시크릿·연구마커, 참조 실존, 라우팅 정합, 비파괴 설치, 능력 소실, 훅 양방향). `doctor.py` 가 전부 자동 실행 |
 | `doctor.py` | 무결성·환경 점검. `PASS` 가 나와야 준비된 것 |
 | `evals/` | 라우팅이 **실제로 발동하는지** headless 측정 (느리고 비용 발생 — 수동 실행) |
 | `scripts/capability_diff.py` | 스킬을 고쳐 쓴 뒤 **기능이 조용히 빠지지 않았는지** 구조적으로 대조 |

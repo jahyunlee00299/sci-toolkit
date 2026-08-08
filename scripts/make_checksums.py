@@ -85,7 +85,12 @@ def iter_files(patterns: list[str]):
     for p in ROOT.rglob("*"):
         if p.is_dir():
             continue
-        if any(part in ALWAYS_EXCLUDE_DIRS for part in p.parts):
+        rel_parts = p.relative_to(ROOT).parts
+        # 저장소 **안쪽** 경로 조각만 본다. `p.parts` 는 절대경로라 ROOT 위의
+        # 조상 폴더까지 포함되고, 그러면 저장소를 `~/out/sci-toolkit` 처럼 흔한
+        # 이름의 폴더 아래에 두는 것만으로 모든 파일이 제외된다 — 매니페스트가
+        # 0개가 되고 doctor 는 "0 file(s) verified" 로 PASS 를 낸다(260807 실측).
+        if any(part in ALWAYS_EXCLUDE_DIRS for part in rel_parts):
             continue
         rel = p.relative_to(ROOT).as_posix()
         if p.resolve() == MANIFEST.resolve():
@@ -105,6 +110,20 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def tracked_files() -> set[str] | None:
+    """git 이 추적하는 파일 집합. git 이 없거나 저장소 밖이면 None."""
+    try:
+        proc = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-z"],
+                              capture_output=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    out = {p.decode("utf-8", "surrogateescape")
+           for p in proc.stdout.split(b"\0") if p}
+    return out or None
+
+
 def untracked_entries(rels: list[str]) -> list[str] | None:
     """매니페스트에 담긴 것 중 git 이 추적하지 않는 파일을 돌려준다.
 
@@ -115,20 +134,12 @@ def untracked_entries(rels: list[str]) -> list[str] | None:
     git 이 없거나 저장소 밖이면 검사를 건너뛴다 (None) — USB 로 복사된 사본에서
     이 스크립트를 돌릴 수도 있고, 그때 검사를 실패로 처리하면 오탐이 된다.
     """
-    # `-z` 로 받는다. 기본 출력은 비ASCII 경로를 `"docs/06_\352\270..."` 처럼
-    # 따옴표+8진 이스케이프로 내놓기 때문에, 그대로 비교하면 한글 이름의 문서가
-    # 전부 "추적되지 않음" 으로 잡힌다 (260807 실측: 문서 7개 오탐). NUL 구분
-    # 출력에는 이스케이프가 없다.
-    try:
-        proc = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-z"],
-                              capture_output=True, timeout=60)
-    except (OSError, subprocess.SubprocessError):
-        return None
-    if proc.returncode != 0:
-        return None
-    tracked = {p.decode("utf-8", "surrogateescape")
-               for p in proc.stdout.split(b"\0") if p}
-    if not tracked:
+    # tracked_files() 는 `-z` 로 받는다. 기본 출력은 비ASCII 경로를
+    # `"docs/06_\352\270..."` 처럼 따옴표+8진 이스케이프로 내놓기 때문에, 그대로
+    # 비교하면 한글 이름의 문서가 전부 "추적되지 않음" 으로 잡힌다 (260807 실측:
+    # 문서 7개 오탐). NUL 구분 출력에는 이스케이프가 없다.
+    tracked = tracked_files()
+    if tracked is None:
         return None
     return sorted(r for r in rels if r not in tracked)
 
@@ -171,6 +182,33 @@ def main() -> int:
             print(f"    [{label}] {k}")
         if len(items) > 8:
             print(f"    [{label}] … 외 {len(items) - 8}개")
+
+    # 비어 있으면 무조건 거부. 무결성 매니페스트가 0개 항목이면 검사는 통과하는
+    # 것이 아니라 **아무것도 검사하지 않는 것**인데, doctor 는 그 상태에서
+    # "0 file(s) verified" 로 PASS 를 낸다. 위 조상-폴더 버그가 정확히 그렇게
+    # 나타났고, untracked 가드는 목록이 비면 stray 도 비어서 통과시킨다.
+    if not new:
+        print("\n거부 — 매니페스트 대상이 0개다.")
+        print("제외 규칙이 과하게 걸렸거나(.distignore / ALWAYS_EXCLUDE_DIRS),")
+        print("스크립트가 저장소 루트를 잘못 잡았다. 빈 매니페스트는 검증이 아니다.")
+        return 1
+
+    # 역방향 — git 이 추적하는데 매니페스트에 없는 파일. untracked_entries() 는
+    # "매니페스트 → 추적" 한 방향만 보므로, 제외 규칙이 너무 넓어 실제 배포 파일이
+    # 빠지는 경우를 못 잡는다. `out/.gitkeep` 이 그렇게 빠져 있었다.
+    tracked = tracked_files()
+    if tracked is not None:
+        patterns_now = patterns
+        dropped = sorted(
+            f for f in tracked - {k[2:] for k in new}
+            if f != "SHA256SUMS"
+            and not is_excluded(f, patterns_now)
+            and not any(part in ALWAYS_EXCLUDE_DIRS for part in Path(f).parts))
+        if dropped:
+            print(f"\n주의 — 추적 중이지만 매니페스트에 없는 파일 {len(dropped)}개:")
+            for k in dropped[:10]:
+                print(f"    [누락] {k}")
+            print("제외 규칙이 의도보다 넓다면 좁히고, 의도한 것이면 .distignore 에 명시하라.")
 
     stray = untracked_entries([k[2:] for k in new])
     if stray:

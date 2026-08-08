@@ -92,8 +92,16 @@ def main() -> int:
     # 로 둔 이유다.
     checked += 1
     doctor_src = (ROOT / "doctor.py").read_text(encoding="utf-8")
+    # 실행 지점만 본다. 소스 전체 substring 검색으로 두면 **주석에 이름을 한 줄
+    # 적는 것만으로** 통과한다 — 게이트는 초록불인데 그 테스트는 어디서도 안
+    # 돌아가는 상태를, 게이트가 승인해 준다(260807 실측). 그래서 문자열 리터럴로
+    # 등장하는 `"tests/....py"` 만 실행 경로로 인정한다: SELF_TEST_SCRIPTS 항목과
+    # _run_test_script() 호출이 모두 이 형태다.
+    executed = set(re.findall(r'["\'](tests/(test_[A-Za-z0-9_]+\.py))["\']',
+                              doctor_src))
+    executed_names = {name for _full, name in executed}
     unreached = sorted(p.name for p in (ROOT / "tests").glob("test_*.py")
-                       if p.name not in doctor_src)
+                       if p.name not in executed_names)
     if unreached:
         failures.append(
             f"doctor 가 실행하지 않는 테스트 {len(unreached)}개: {unreached}"

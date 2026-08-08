@@ -20,6 +20,7 @@
 """
 import argparse
 import io
+import json
 import os
 import re
 import sys
@@ -101,6 +102,31 @@ BARE_SCRIPT_ALLOWLIST = {
 # 이름으로 참조되는 것은 죽은 참조가 아니라 "외부 의존"이다 — doctor.py 의
 # EXTERNAL_SKILLS 와 같은 목록을 본다. docs/12 참조.
 EXTERNAL_SKILLS = {"docx", "pdf", "pptx", "xlsx"}
+
+# ── skills/ 밖 문서(루트 *.md · docs/)의 스킬명 검사 ──────────────────────────
+#
+# 이 검사는 오래 `skills/` 만 훑었다. 그런데 스킬을 넣고 빼는 편집이 실제로
+# 일어나는 곳은 README·QUICKSTART·docs 다. 260807 실측: 배포되지 않는 스킬
+# 두 개를 README 표에 되살려도 `ALL PASS` 였고, 스킬명 참조의 42%(111건)가
+# 한 번도 검사된 적이 없었다(README 27 · AGENTS 25 · docs 28 · QUICKSTART 12 …).
+#
+# CHANGELOG 는 제외한다 — 제거한 스킬의 이름을 기록하는 것이 그 파일의 일이다.
+# AGENTS.md 는 §0 을 test_agents_routing.py 가 이미 대조하지만, 표 밖 서술은
+# 아무도 안 보므로 여기서 함께 본다.
+OUTSIDE_SKIP_FILES = {"CHANGELOG.md"}
+
+# 스킬 이름과 형태가 같은(케밥케이스) 토큰 중 스킬이 아닌 것들.
+# 프리셋 이름은 config/catalog.json 에서 읽어 자동 허용하므로 여기 적지 않는다.
+OUTSIDE_ALLOWLIST = {
+    # pip 패키지 / 외부 라이브러리
+    "python-docx", "scikit-image", "sci-toolkit", "claude-code",
+    # 커넥터 CLI 서브커맨드 (docs/07·08 의 사용 예시)
+    "list-dbs", "add-row", "add-task", "add-comment", "add-subtask",
+    "list-tasks", "get-page", "add-page",
+    # 문서 안의 플레이스홀더 예시
+    "key-here", "your-token", "project-id",
+}
+KEBAB_TOKEN_RE = re.compile(r"[`*]{1,2}([a-z][a-z0-9]*(?:-[a-z0-9]+)+)[`*]{1,2}")
 
 
 def collect(skill_dir):
@@ -218,6 +244,44 @@ def main():
                         if name not in skillset:
                             dead_skills.append((s, srcrel, i, name, line.strip()[:90]))
 
+    # ── skills/ 밖 문서에서 스킬명 참조 ──
+    dead_outside = []
+    try:
+        catalog = json.loads(
+            open(os.path.join(ROOT, "config", "catalog.json"),
+                 encoding="utf-8").read())
+        allowed = set(OUTSIDE_ALLOWLIST) | set(catalog.get("presets", {}))
+        allowed |= set(catalog.get("connectors", {}))
+        allowed |= set(catalog.get("categories", {}))
+    except (OSError, ValueError):
+        allowed = set(OUTSIDE_ALLOWLIST)
+
+    outside_files = [os.path.join(ROOT, f) for f in sorted(os.listdir(ROOT))
+                     if f.lower().endswith(".md") and f not in OUTSIDE_SKIP_FILES]
+    docs_dir = os.path.join(ROOT, "docs")
+    if os.path.isdir(docs_dir):
+        outside_files += [os.path.join(docs_dir, f)
+                          for f in sorted(os.listdir(docs_dir))
+                          if f.lower().endswith(".md")]
+
+    for p in outside_files:
+        rel = os.path.relpath(p, ROOT).replace("\\", "/")
+        try:
+            lines = open(p, encoding="utf-8", errors="ignore").read().splitlines()
+        except OSError:
+            continue
+        for i, line in enumerate(lines, 1):
+            if "deprecated" in line.lower():
+                continue
+            for m in KEBAB_TOKEN_RE.finditer(line):
+                name = m.group(1)
+                if name in allowed:
+                    continue          # 스킬이 아닌 것으로 이미 판정된 토큰
+                checked += 1
+                if name in skillset or name in EXTERNAL_SKILLS:
+                    continue
+                dead_outside.append((rel, i, name, line.strip()[:90]))
+
     print(f"스킬 {len(skills)}종에서 참조 {checked}건 확인")
 
     fails = 0
@@ -237,6 +301,13 @@ def main():
         print(f"\n=== 배포판에 없는 스킬 참조 {len(dead_skills)}건 ===")
         for s, src, ln, name, ctx in dead_skills:
             print(f"  {s}/{src}:{ln}  '{name}'")
+            print(f"      {ctx}")
+    if dead_outside:
+        fails += len(dead_outside)
+        print(f"\n=== skills/ 밖 문서가 없는 스킬을 가리킨다 {len(dead_outside)}건 ===")
+        print("    (README·QUICKSTART·docs — 스킬을 빼고 문서를 안 고친 자리)")
+        for src, ln, name, ctx in dead_outside:
+            print(f"  {src}:{ln}  '{name}'")
             print(f"      {ctx}")
     if dead_bare:
         fails += len(dead_bare)
