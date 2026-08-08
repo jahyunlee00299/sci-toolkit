@@ -560,7 +560,8 @@ def find_repo_root() -> Optional[Path]:
 
 
 def fetch_via_doi_route(
-    records: list[dict[str, Any]], out_dir: Path, email: Optional[str]
+    records: list[dict[str, Any]], out_dir: Path, email: Optional[str],
+    cache_dir: Optional[Path] = None,
 ) -> dict[str, Any]:
     """Route A — hand the DOIs to scripts/ref_fetch.py, which resolves and downloads OA PDFs."""
     dois = [r["doi"] for r in records if r.get("route") == "doi" and r.get("doi")]
@@ -587,6 +588,10 @@ def fetch_via_doi_route(
     ]
     if email:
         cmd += ["--email", email]
+    if cache_dir is not None:
+        # Explicit cache directory. Redirecting HOME does not isolate the cache
+        # on Windows, where Path.expanduser() reads USERPROFILE and ignores HOME.
+        cmd += ["--cache-dir", str(cache_dir)]
 
     print(f"  -> invoking ref_fetch.py for {len(dois)} DOI(s)", file=sys.stderr)
     env = dict(os.environ, PYTHONUTF8="1")

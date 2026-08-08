@@ -49,6 +49,7 @@ import io
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -395,6 +396,54 @@ def cross_verify(crossref: dict, openalex: dict) -> list[str]:
 # --------------------------------------------------------------------------- #
 
 
+def _reconcile_cached_download(
+    cached: dict[str, Any], pdf_dir: Path, email: Optional[str]
+) -> Optional[dict[str, Any]]:
+    """Make a cache hit's download path true for THIS call's --pdf-dir.
+
+    The cache is keyed by DOI alone, so a hit replays the download record from
+    whichever run first populated it. That record names the *earlier* run's
+    --pdf-dir. Returning it unchanged reports status "ok" while the directory
+    the caller actually asked for stays empty, and a caller that trusts the
+    report gets nothing (reproduced: two runs, same DOI, different --pdf-dir).
+
+    Returns the record with download.path pointing inside pdf_dir, or None when
+    the cached PDF cannot be recovered and a fresh fetch is required.
+    """
+    dl = cached.get("download") or {}
+    if dl.get("status") != "ok":
+        # "skipped" / "failed" promise no file, so they cannot mislead.
+        return cached
+
+    dest = pdf_dir / f"{doi_to_safe_filename(cached['doi'])}.pdf"
+    if dest.is_file():
+        dl["path"] = str(dest)
+        return cached
+
+    src = Path(dl.get("path", ""))
+    if src.is_file():
+        pdf_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, dest)
+        dl["path"] = str(dest)
+        dl["reused_from_cache"] = str(src)
+        return cached
+
+    # The cached path no longer exists (temp dir cleaned, run on another
+    # machine, file deleted). Re-download from the OA URL the cache still holds.
+    oa_pdf_url = cached.get("oa_pdf_url")
+    if oa_pdf_url:
+        pdf_dir.mkdir(parents=True, exist_ok=True)
+        ok, err = _download_pdf(oa_pdf_url, dest, email)
+        if ok:
+            cached["download"] = {"status": "ok", "path": str(dest),
+                                  "redownloaded": True}
+            return cached
+        cached["download"] = {"status": "failed", "error": err,
+                              "attempted_url": oa_pdf_url}
+        return cached
+    return None
+
+
 def fetch_one(
     doi: str,
     cache: RefCacheManager,
@@ -416,7 +465,13 @@ def fetch_one(
         cached = cache.get(doi)
         if cached:
             cached["status"] = "cache_hit"
-            return cached
+            if download:
+                reconciled = _reconcile_cached_download(cached, pdf_dir, email)
+                if reconciled is not None:
+                    return reconciled
+                # Cached PDF is unrecoverable; fall through and fetch afresh.
+            else:
+                return cached
 
     crossref = query_crossref(doi, email)
     time.sleep(_RATE_LIMIT_DELAY)

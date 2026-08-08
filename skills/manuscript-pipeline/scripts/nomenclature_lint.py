@@ -25,9 +25,9 @@ Usage:
     python nomenclature_lint.py <document.docx>
     python nomenclature_lint.py <document.docx> --json
 
-Standard library + defusedxml only (matches repo deps). unpack.py is invoked as a
-subprocess to extract word/document.xml, so this script depends on the docx skill
-layout but does not import it.
+Standard library + defusedxml only (matches repo deps). word/document.xml is read
+directly out of the OOXML zip, so this lint has no dependency on the docx skill,
+which is not shipped with this package.
 """
 
 # Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
@@ -47,6 +47,7 @@ import os
 import re
 import subprocess
 import sys
+import zipfile
 import tempfile
 from pathlib import Path
 
@@ -58,43 +59,31 @@ W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 # --------------------------------------------------------------------------- #
 # DOCX extraction
 # --------------------------------------------------------------------------- #
-def _find_unpack_script() -> Path:
-    """Locate docx skill's unpack.py relative to this file, with fallbacks."""
-    here = Path(__file__).resolve()
-    # .../active/manuscript-pipeline/scripts/nomenclature_lint.py
-    # -> .../active/docx/scripts/office/unpack.py
-    candidates = []
-    for parent in here.parents:
-        if parent.name == "active":
-            candidates.append(parent / "docx" / "scripts" / "office" / "unpack.py")
-            break
-    candidates.append(here.parent.parent.parent / "docx" / "scripts" / "office" / "unpack.py")
-    for c in candidates:
-        if c.exists():
-            return c
-    raise FileNotFoundError(
-        "Could not locate docx skill's unpack.py; expected under active/docx/scripts/office/"
-    )
-
-
 def extract_document_xml(docx_path: Path, work_dir: Path) -> Path:
-    """Run unpack.py to extract the docx, return path to word/document.xml."""
-    unpack = _find_unpack_script()
-    out_dir = work_dir / "unpacked"
-    # unpack.py imports sibling 'helpers' package -> run with its dir on sys.path.
-    proc = subprocess.run(
-        [sys.executable, str(unpack), str(docx_path), str(out_dir),
-         "--merge-runs", "false", "--simplify-redlines", "false"],
-        cwd=str(unpack.parent),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-    doc_xml = out_dir / "word" / "document.xml"
-    if not doc_xml.exists():
-        msg = proc.stdout.strip() + "\n" + proc.stderr.strip()
-        raise RuntimeError(f"unpack.py did not produce document.xml:\n{msg}")
+    """Extract word/document.xml from the docx, return the path to it.
+
+    Read straight out of the OOXML zip rather than shelling out to the docx
+    skill's unpack.py. That skill is Anthropic-owned and is not shipped with
+    this package (see docs/12), so the subprocess route made this lint — a
+    mandatory gate in the AGENTS.md §0 routing table — fail with
+    FileNotFoundError for every user who installed sci-toolkit alone.
+    reference_validator.py in this same folder already reads the part this way.
+
+    Read-only: the archive is never re-serialized, so the docx cannot be
+    corrupted by linting it.
+    """
+    out_dir = work_dir / "unpacked" / "word"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    doc_xml = out_dir / "document.xml"
+    try:
+        with zipfile.ZipFile(docx_path) as z:
+            doc_xml.write_bytes(z.read("word/document.xml"))
+    except KeyError as exc:
+        raise RuntimeError(
+            f"{docx_path} has no word/document.xml — not a Word document?"
+        ) from exc
+    except zipfile.BadZipFile as exc:
+        raise RuntimeError(f"{docx_path} is not a readable .docx (bad zip)") from exc
     return doc_xml
 
 
