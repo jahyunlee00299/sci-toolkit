@@ -11,13 +11,16 @@
 
 set -eu
 
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+. "${SCRIPT_DIR}/_payload_fields.sh"
+
 INPUT="$(cat)"
-FLAT="$(printf '%s' "$INPUT" | tr '\n' ' ')"
 
 # Only look at the command field's content; this guard is about shell
-# commands, not file writes.
-CMD="$(printf '%s' "$FLAT" | grep -Eo '"command"[[:space:]]*:[[:space:]]*"[^"]*"' || true)"
-[ -z "$CMD" ] && CMD="$FLAT"
+# commands, not file writes. Parsed as JSON rather than pattern-matched — a
+# quote-truncating grep used to live here and let `cd "..." && rm -rf ...`
+# through untouched (see _payload_fields.sh).
+CMD="$(extract_fields "$INPUT" command)"
 
 # --- rm -rf / -fr in any option order/spacing, with or without sudo --------
 if printf '%s' "$CMD" | grep -Eq '(^|[^A-Za-z0-9_])(sudo[[:space:]]+)?rm[[:space:]]+(-[A-Za-z]*[rRfF][A-Za-z]*[[:space:]]+)*-[A-Za-z]*[rR][A-Za-z]*[fF][A-Za-z]*([[:space:]]|$)'; then
