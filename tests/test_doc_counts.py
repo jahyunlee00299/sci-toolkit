@@ -81,6 +81,25 @@ def main() -> int:
             f"catalog 와 skills/ 폴더가 불일치 — catalog에만 {only_catalog}, "
             f"디스크에만 {only_disk}")
 
+    # 0.5) tests/ 의 모든 테스트가 doctor 를 통해 실제로 실행되는가
+    #
+    # doctor 의 SELF_TEST_SCRIPTS 는 하드코딩 목록이고, CI 는 doctor 하나만 부른다.
+    # 그래서 tests/ 에 파일을 놓고 등록을 잊으면 그 테스트는 **어디에서도 돌지
+    # 않으면서** 존재하는 것처럼 보인다 — 초록불이 실제 감지력보다 커지는 전형적인
+    # 방식이다. 지금은 두 개(test_agents_routing·test_skill_references)가 전용
+    # check 로 따로 불리므로 등록 목록에는 없지만 실행은 된다. 판정 기준을
+    # "SELF_TEST_SCRIPTS 에 있는가" 가 아니라 "doctor.py 가 이 파일을 언급하는가"
+    # 로 둔 이유다.
+    checked += 1
+    doctor_src = (ROOT / "doctor.py").read_text(encoding="utf-8")
+    unreached = sorted(p.name for p in (ROOT / "tests").glob("test_*.py")
+                       if p.name not in doctor_src)
+    if unreached:
+        failures.append(
+            f"doctor 가 실행하지 않는 테스트 {len(unreached)}개: {unreached}"
+            " — doctor.py 의 SELF_TEST_SCRIPTS 에 추가하라. CI 는 doctor 만 부르므로"
+            " 등록하지 않으면 이 테스트는 영원히 돌지 않는다")
+
     # 1) 문서에 적힌 개수
     specs = [
         ("README.md", r"스킬\s+(\d+)종", a["bundled"], "동봉 스킬"),
