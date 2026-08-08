@@ -18,13 +18,18 @@
 
 set -eu
 
-INPUT="$(cat)"
-FLAT="$(printf '%s' "$INPUT" | tr '\n' ' ')"
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+. "${SCRIPT_DIR}/_payload_fields.sh"
 
-CMD="$(printf '%s' "$FLAT" | grep -Eo '"command"[[:space:]]*:[[:space:]]*"[^"]*"' || true)"
-FILE_PATH="$(printf '%s' "$FLAT" | grep -Eo '"file_path"[[:space:]]*:[[:space:]]*"[^"]*"' || true)"
+INPUT="$(cat)"
+
+# Parsed as JSON rather than pattern-matched. The old quote-truncating grep
+# dropped everything after the first quoted argument, so a quoted Windows path
+# — which is exactly how a cloud folder with a space in its name is written —
+# hid the OneDrive segment from this guard entirely (see _payload_fields.sh).
+CMD="$(extract_fields "$INPUT" command)"
+FILE_PATH="$(extract_fields "$INPUT" file_path)"
 COMBINED="${CMD} ${FILE_PATH}"
-[ "$COMBINED" = " " ] && COMBINED="$FLAT"
 
 # Generic cloud-sync path signature (any OS, any language folder name):
 # looks for the well-known provider folder names anywhere in the string.

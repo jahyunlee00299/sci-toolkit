@@ -11,11 +11,15 @@
 
 set -eu
 
-INPUT="$(cat)"
-FLAT="$(printf '%s' "$INPUT" | tr '\n' ' ')"
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+. "${SCRIPT_DIR}/_payload_fields.sh"
 
-CMD="$(printf '%s' "$FLAT" | grep -Eo '"command"[[:space:]]*:[[:space:]]*"[^"]*"' || true)"
-[ -z "$CMD" ] && CMD="$FLAT"
+INPUT="$(cat)"
+
+# Parse the payload as JSON. A quote-truncating grep used to live here and let
+# `git commit -m "wip" && git push --force` straight through — see
+# _payload_fields.sh for the measurement.
+CMD="$(extract_fields "$INPUT" command)"
 
 # Only bother if this actually looks like a git or gh invocation.
 # `gh` must be included: `gh pr create` in a fork targets the upstream repo by
