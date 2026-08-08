@@ -591,7 +591,10 @@ def fetch_via_doi_route(
     print(f"  -> invoking ref_fetch.py for {len(dois)} DOI(s)", file=sys.stderr)
     env = dict(os.environ, PYTHONUTF8="1")
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600, env=env)
+        proc = subprocess.run(
+            cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=600, env=env,
+        )
     except subprocess.TimeoutExpired:
         return {
             "attempted": len(dois),

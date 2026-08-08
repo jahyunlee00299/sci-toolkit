@@ -29,7 +29,7 @@ d5b0b03decb5d9dafbe9079fa7dd6c8cce3293fa55e5e8a9af193a9b85c85751 *./docs/11_불�
 9edbcaba7769f18eb4bf68aad7c400bb3523bfb02dc2ecb20cbbe8ff91c9a136 *./docs/12_문서스킬_직접_준비하기.md
 6a41264fb94be1c90f86d9d9d50b8bdac3475e6e75667a7dd316abe7a2dd2d54 *./docs/feature-connectivity-ledger.md
 77ab0f7dfa903cb620c00663920bd02de9d8872ed3c1b2e75018691d1d987086 *./doctor.ps1
-f73c354398e74ec27a23336b98778a0366df214f765a7e28e011c02ef00299a6 *./doctor.py
+5ce52787957b92540e685d28d2571a7cc0d950224b7a87acf87d8e5f56bac5cf *./doctor.py
 f97ad27c812f81df36d7a6990f69ce11a2b192975ba2e0881e03952d3aefb978 *./evals/codex_compliance_probe.py
 3986c22328fa7d5b0b658faa8411e8870b6267a8e3d2d7fe4eac15b10555973a *./evals/codex_compliance_schema.json
 2a28be5789e6c13e3f5abec5bb538e9f450bd661dcb69c66dca838bcf92ee738 *./evals/routing_probe.py
@@ -70,8 +70,9 @@ cf31e162c17b249f87e4d66d6724b1ea890a0d597d6338f006e84f5a3a513d8e *./scripts/vari
 734aab24a815373a941b3e42c7a845fb06ca496e135d392acf982fa789ea5805 *./skills/academic-term-rules/.prompt.md
 c095c246808a9fc134a6b4a826ab2877b67de09b474a2918f4156df5c63ac411 *./skills/academic-term-rules/SKILL.md
 37c77f8df7931f5beb50ab49ad02d7472793b7b8d7136efc7d5e4d3320a03083 *./skills/biorxiv-database/SKILL.md
-ebfc6066121f3d8a8c57224d063e263072f9df320afa6497c25d7cc8fd060a55 *./skills/biorxiv-database/references/api_guide.md
-b0fca6cd81220ded8313c4bba74bef609f8a2266844c3960367e771ab8ecfa22 *./skills/biorxiv-database/scripts/preprint_search.py
+821346695f1d4131314b8222d039030ac0a71755863c38b423e8818dd9bff6da *./skills/biorxiv-database/references/api_guide.md
+8366ce8c62628c141e6cdee32f3fde6516ed4d0bb87038c6bd00991674ac47d5 *./skills/biorxiv-database/scripts/preprint_search.py
+fc65a0bc70fcc77875898cdbcd635b0c1b3115a18cf45198f81f21a344e909a2 *./skills/biorxiv-database/tests/test_preprint_search.py
 be8e524c414327d126197d057ee0a460383aa7005aa09ab663398dc79d73b7ea *./skills/code-quality/SKILL.md
 da65b2d756692b657c4f7f5a66b28d50a820e51d3e4db3578c6efe4a847ec953 *./skills/conda-env-manager/SKILL.md
 3f3ff21ef51b95e4b6eb40e5426abb111cb45dd8b06c56f748f79181adf1e3af *./skills/conda-env-manager/references/known_conflicts.yml

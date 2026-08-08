@@ -729,6 +729,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
     ("tests/test_doc_counts.py", "documented counts match reality"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
+    ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
 ]
 
 
