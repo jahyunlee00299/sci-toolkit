@@ -192,10 +192,22 @@ API_KEY_RE = re.compile(
     ["']?[A-Za-z0-9_\-\.]{16,}["']?
     | sk-[A-Za-z0-9]{20,}
     | ghp_[A-Za-z0-9]{30,}
+    | gho_[A-Za-z0-9]{30,}
+    | github_pat_[A-Za-z0-9_]{20,}
     | xox[baprs]-[A-Za-z0-9-]{10,}
+    | AKIA[0-9A-Z]{16}
+    | AIzaSy[A-Za-z0-9_\-]{20,}
     """,
     re.IGNORECASE | re.VERBOSE,
 )
+# The last four were missing until 2026-08-08, and the gap was between layers
+# rather than inside one: hooks/secret_scan_guard.sh already carried all of
+# them, so a live tool call pasting an AWS or Google key was blocked — but this
+# scanner, whose whole job is the last look before distribution, walked past
+# the same key sitting in a file. Measured: a bare AKIA…, AIzaSy…, and
+# github_pat_… all read as clean here while the guard blocked each one.
+# The vendor prefixes are specific enough that widening this costs no false
+# positives (MUST_NOT_BLOCK in tests/test_doctor_sentinel.py pins that).
 
 # Obvious non-secret placeholders. These are matched against the VALUE side of
 # the assignment only, and each must be a whole hyphen/underscore-delimited word

@@ -5,9 +5,22 @@
 
 느슨하게 고쳐서 통과시킨 게 아닌지 확인한다.
 """
-import io, importlib.util, sys
+import importlib.util, sys
 from pathlib import Path
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
+# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서, 이 모듈이
+# import 된 뒤 GC 되면 호출자의 stdout 까지 닫아버린다. 이 파일이 래퍼를 쓰던
+# 동안 `pytest tests/` 는 수집 도중 통째로 죽었다(ValueError: I/O operation on
+# closed file — 실측 2026-08-08). doctor.py 는 각 테스트를 subprocess 로 돌려서
+# 이 고장이 보이지 않았고, 새로 clone 한 사람이 가장 먼저 치는 명령에서만
+# 드러났다. 나머지 테스트 파일은 이미 reconfigure 를 쓰고 있었다.
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        try:
+            _s.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 
 spec = importlib.util.spec_from_file_location(
     "doctor", str(Path(__file__).resolve().parent.parent / "doctor.py"))
@@ -22,6 +35,19 @@ MUST_BLOCK = [  # 진짜 유출 — 반드시 탐지돼야 함
     ('secret_key="hunter2hunter2hunter2hunter2"', "secret_key literal"),
     ('sk-abcdefghijklmnopqrstuvwxyz012345', "bare sk- token"),
     ('ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', "github PAT"),
+    # --- 2026-08-08 mutation testing: 아래 벤더 규칙들은 "지워도 테스트가 초록불"
+    # 이었다. 즉 규칙은 있는데 아무도 고정하지 않은 상태였고, 나중에 누가
+    # 느슨하게 고쳐도 게이트가 통과시킨다. 더 나쁜 것은 AKIA/AIzaSy/github_pat
+    # 세 개가 애초에 이 스캐너에 **없었다**는 점이다 — hooks/secret_scan_guard.sh
+    # 는 이미 잡고 있었으므로, 층 하나만 보면 보호되는 것처럼 보였다.
+    # 각 케이스는 할당 형태가 아니라 '순수 토큰'이다. 할당 형태로 적으면
+    # api_key= 규칙이 대신 잡아서, 정작 벤더 규칙을 지워도 통과한다.
+    ('xoxb-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrSt', "bare Slack bot token"),
+    ('gho_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', "bare GitHub OAuth token"),
+    ('AKIA5FJ39DKS02MXZQ7B', "bare AWS access key (할당 없음)"),
+    ('AIzaSyA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q', "bare Google API key"),
+    ('github_pat_11ABCDEFG0abcdefghijkl_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+     "bare fine-grained GitHub PAT"),
     ('access_token = "ya29.a0ARrdaM_realish_token_value_here123"', "oauth token"),
     # --- 아래 4개는 적대 검증에서 실제로 뚫렸던 우회 입력이다 (2026-07-23).
     # 플레이스홀더 마커를 '서브스트링'으로 검사하던 시절, 진짜 키 값 안에
