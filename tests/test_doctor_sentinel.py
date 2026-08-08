@@ -5,9 +5,22 @@
 
 느슨하게 고쳐서 통과시킨 게 아닌지 확인한다.
 """
-import io, importlib.util, sys
+import importlib.util, sys
 from pathlib import Path
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
+# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서, 이 모듈이
+# import 된 뒤 GC 되면 호출자의 stdout 까지 닫아버린다. 이 파일이 래퍼를 쓰던
+# 동안 `pytest tests/` 는 수집 도중 통째로 죽었다(ValueError: I/O operation on
+# closed file — 실측 2026-08-08). doctor.py 는 각 테스트를 subprocess 로 돌려서
+# 이 고장이 보이지 않았고, 새로 clone 한 사람이 가장 먼저 치는 명령에서만
+# 드러났다. 나머지 테스트 파일은 이미 reconfigure 를 쓰고 있었다.
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        try:
+            _s.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 
 spec = importlib.util.spec_from_file_location(
     "doctor", str(Path(__file__).resolve().parent.parent / "doctor.py"))
