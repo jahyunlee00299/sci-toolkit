@@ -454,7 +454,11 @@ def main() -> int:
     for label, verdict in (("F2 (Route A / DOI)", f2), ("F3 (Route B / arXiv)", f3),
                            ("F4 (cache hit -> requested --pdf-dir)", f4)):
         if verdict == "skip":
-            print(f"  {SKIP}  {label} — network unreachable, not exercised")
+            # Do not name a cause here. A test skips for more than one reason
+            # (no network, or a first-stage download that never happened), and
+            # printing "network unreachable" for all of them sends whoever reads
+            # the summary after the details have scrolled off to the wrong place.
+            print(f"  {SKIP}  {label} — not exercised (reason printed above)")
         else:
             ok = verdict == "pass"
             print(f"  {PASS if ok else FAIL}  {label}")

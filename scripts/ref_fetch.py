@@ -397,7 +397,7 @@ def cross_verify(crossref: dict, openalex: dict) -> list[str]:
 
 
 def _reconcile_cached_download(
-    cached: dict[str, Any], pdf_dir: Path, email: Optional[str]
+    doi: str, cached: dict[str, Any], pdf_dir: Path, email: Optional[str]
 ) -> Optional[dict[str, Any]]:
     """Make a cache hit's download path true for THIS call's --pdf-dir.
 
@@ -415,7 +415,10 @@ def _reconcile_cached_download(
         # "skipped" / "failed" promise no file, so they cannot mislead.
         return cached
 
-    dest = pdf_dir / f"{doi_to_safe_filename(cached['doi'])}.pdf"
+    # doi comes from the caller, not from the cached record: an entry written by
+    # an older schema may not carry a 'doi' key, and a KeyError here would take
+    # down a run that a cache hit should have made cheaper.
+    dest = pdf_dir / f"{doi_to_safe_filename(doi)}.pdf"
     if dest.is_file():
         dl["path"] = str(dest)
         return cached
@@ -466,7 +469,7 @@ def fetch_one(
         if cached:
             cached["status"] = "cache_hit"
             if download:
-                reconciled = _reconcile_cached_download(cached, pdf_dir, email)
+                reconciled = _reconcile_cached_download(doi, cached, pdf_dir, email)
                 if reconciled is not None:
                     return reconciled
                 # Cached PDF is unrecoverable; fall through and fetch afresh.
