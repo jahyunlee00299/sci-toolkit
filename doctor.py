@@ -718,6 +718,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_feedback_sanitize.py", "feedback sanitize gate"),
     ("tests/test_si_institutional.py", "SI fetch + institutional links"),
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
+    ("tests/test_doc_counts.py", "documented counts match reality"),
 ]
 
 
