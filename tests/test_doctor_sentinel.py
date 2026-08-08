@@ -43,6 +43,7 @@ MUST_BLOCK = [  # 진짜 유출 — 반드시 탐지돼야 함
     # 각 케이스는 할당 형태가 아니라 '순수 토큰'이다. 할당 형태로 적으면
     # api_key= 규칙이 대신 잡아서, 정작 벤더 규칙을 지워도 통과한다.
     ('xoxb-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrSt', "bare Slack bot token"),
+    ('gho_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', "bare GitHub OAuth token"),
     ('AKIA5FJ39DKS02MXZQ7B', "bare AWS access key (할당 없음)"),
     ('AIzaSyA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q', "bare Google API key"),
     ('github_pat_11ABCDEFG0abcdefghijkl_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
