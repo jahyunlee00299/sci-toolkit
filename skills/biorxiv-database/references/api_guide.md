@@ -178,15 +178,21 @@ for bulk published-status checks.
 
 ---
 
-## 4. Crossref — breadth fallback
+## 4. Crossref — Route A metadata resolution
+
+This skill does **not** query Crossref for keyword search — `preprint_search.py` only
+implements `search_europepmc()` and `search_arxiv()` (section 1 and 2 above). Crossref's
+role here is different and lives one layer down: it is the metadata-resolution call
+`scripts/ref_fetch.py` makes for every DOI handed to it, which is what makes **Route A**
+(`route="doi"` records → `ref_fetch.py --doi <DOI> --download`) work at all.
 
 ```
-https://api.crossref.org/works?query=...&filter=type:posted-content&rows=25&mailto=...
+GET https://api.crossref.org/works/{doi}
 ```
 
-`filter=type:posted-content` is the verified preprint filter. Crossref is already used by
-`scripts/ref_fetch.py`, so this skill reaches it through that script rather than
-duplicating a client.
+`filter=type:posted-content` (used with a `?query=` search) is the verified preprint
+filter *if* a Crossref-search client is ever added later — it is documented here because
+it was probed and confirmed, not because it is wired into anything today.
 
 Confirmed live for a bioRxiv preprint DOI:
 
@@ -195,8 +201,9 @@ GET /works/10.1101/2020.03.05.979500
   -> type = "posted-content", institution[0].name = "bioRxiv"
 ```
 
-That is what makes **Route A** work: `ref_fetch.py` resolves preprint DOIs with no
-special-casing.
+`type = "posted-content"` is exactly why `ref_fetch.py` needs no preprint-specific
+branching: a preprint DOI resolves through the same single-DOI Crossref call as any other
+reference.
 
 ### Notes
 
