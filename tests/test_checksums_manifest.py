@@ -20,6 +20,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
+
+# A Korean Windows console is cp949, which cannot encode the em dash this file
+# prints on failure. Without this the test dies with UnicodeEncodeError *while
+# reporting a failure*, so doctor.py showed a red self-test whose only visible
+# detail was the encoding crash — hiding whatever the real verdict was.
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        try:
+            _s.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
