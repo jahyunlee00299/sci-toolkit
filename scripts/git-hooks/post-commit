@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+# sci-toolkit version-bump hook (post-commit)
+#
+# Bumps the patch version in .claude-plugin/plugin.json + adds a CHANGELOG.md
+# entry for EVERY commit (repo owner's policy, 260809 — not a release-only
+# bump). Then folds the change into the same commit via --amend so the tree
+# a reader checks out always matches the version it claims.
+#
+# Recursion guard: --amend creates a new commit, which would re-fire
+# post-commit. SCI_TOOLKIT_VERSION_BUMPING breaks that loop.
+set -eu
+
+if [ "${SCI_TOOLKIT_VERSION_BUMPING:-}" = "1" ]; then
+    exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+PYBIN="python3"
+command -v python3 >/dev/null 2>&1 || PYBIN="python"
+
+SUBJECT="$(git log -1 --format=%s)"
+
+if ! "$PYBIN" scripts/bump_version.py --commit-subject "$SUBJECT"; then
+    # Never block a commit over a version-bump failure (e.g. version field
+    # hand-edited into something non-semver) — just warn and leave it.
+    echo "post-commit: version bump skipped (see message above)" >&2
+    exit 0
+fi
+
+# plugin.json + CHANGELOG.md are both in SHA256SUMS — keep the manifest in
+# sync or every next doctor.py run reports a false "manifest is stale".
+"$PYBIN" scripts/make_checksums.py --apply >/dev/null
+
+git add .claude-plugin/plugin.json CHANGELOG.md SHA256SUMS
+SCI_TOOLKIT_VERSION_BUMPING=1 git commit --amend --no-edit --no-verify >/dev/null
