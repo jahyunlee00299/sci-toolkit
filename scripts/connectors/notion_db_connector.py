@@ -160,6 +160,12 @@ def cmd_schema(args, token):
 
 def cmd_query(args, token):
     body = {"page_size": args.limit}
+    if args.sort:
+        prop, _, direction = args.sort.partition(":")
+        direction = direction or "ascending"
+        if direction not in ("ascending", "descending"):
+            sys.exit(f"[오류] --sort 방향은 ascending/descending 중 하나여야 합니다: {direction}")
+        body["sorts"] = [{"property": prop, "direction": direction}]
     if args.status:
         # 스키마를 먼저 조회해 Status 속성 실제 타입(status/select)을 확인
         schema = _get_schema(args.db, token)
@@ -304,6 +310,11 @@ def build_parser():
     sp.add_argument("--limit", type=int, default=10, help="최대 조회 개수 (기본 10)")
     sp.add_argument(
         "--status", default=None, help="status/select 속성 값으로 간단 필터 (예: 'In progress')"
+    )
+    sp.add_argument(
+        "--sort", default=None,
+        help="PROPERTY[:ascending|descending] 형태 정렬 (기본 ascending). "
+             "예: --sort 'Date:descending' — 최근 N건 조회에 사용",
     )
     sp.set_defaults(func=cmd_query)
 
