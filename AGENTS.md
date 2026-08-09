@@ -429,9 +429,19 @@ they extend §7 (Safety Baseline).
 
 ### Credentials & connection
 
-- Prefer the tool's built-in secure connection (an OAuth "connect" button /
-  MCP-style connection) over hand-managed API keys/tokens wherever
-  available — most services need no raw key.
+- **Avoid MCP-style always-on connections.** For any service that already
+  ships a REST/API connector script (`scripts/connectors/`) — mail, GitHub,
+  Asana, Notion — use that connector with a scoped personal token instead
+  of the tool's built-in "connect" button. A connector invocation only
+  touches what that one command asked for; an MCP connection stays open to
+  the whole account for every future turn regardless of whether the current
+  task needs it. Treat MCP as a last resort: only for a service that has no
+  connector yet, or for exploratory browser work that has no API
+  equivalent.
+- Once a service has been switched to its connector, disconnect that
+  service's MCP connection in the app's own settings (a human action, not
+  something the agent does on its own) so the standing access shrinks to
+  what's actually in use.
 - When a token IS required (e.g. a code-host personal access token), store
   it in a secrets store or the tool's credential manager, NEVER inline in
   code, chat, commits, or a plaintext file in the repo. Never echo a token
