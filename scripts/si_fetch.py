@@ -48,6 +48,7 @@ import argparse
 import io
 import json
 import sys
+import time
 import urllib.parse
 import urllib.request
 import zipfile
@@ -73,6 +74,8 @@ for _s in (sys.stdout, sys.stderr):
 
 _NCBI_IDCONV = "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/"
 _EPMC_SUPPL = "https://www.ebi.ac.uk/europepmc/webservices/rest/{pmcid}/supplementaryFiles"
+_ARCHIVE_MAX_RETRIES = 3
+_ARCHIVE_RETRY_BACKOFF = 1.5  # 초, 시도마다 배수 증가 (ref_fetch._http_get_json 과 동일 패턴)
 
 # Europe PMC 아카이브에는 본문 그림(Fig1_HTML.jpg 등)도 함께 들어온다.
 # 저자가 올린 보충자료는 관례적으로 파일명에 MOESM / ESM / suppl 이 붙는다.
@@ -145,30 +148,50 @@ def _looks_supplementary(name: str) -> bool:
     return any(h in low for h in _SI_NAME_HINTS)
 
 
-def doi_to_pmcid(doi: str, email: Optional[str] = None) -> Optional[str]:
-    """NCBI ID converter 로 DOI -> PMCID. 없으면 None."""
+def doi_to_pmcid(doi: str, email: Optional[str] = None) -> tuple[Optional[str], Optional[str]]:
+    """NCBI ID converter 로 DOI -> PMCID.
+
+    반환은 (pmcid, err) — _http_get_json 이 이미 재시도까지 마친 뒤의 결과다.
+    err=None 이면 "PMC 에 진짜로 없음"(정상 not-found), err 가 있으면
+    "조회 자체가 실패함"(네트워크/서버 오류) — 이 둘을 섞으면 안 된다.
+    섞으면 CI 의 일시적 네트워크 실패가 "논문이 PMC 에 없다"는 오탐으로 둔갑한다.
+    """
     url = f"{_NCBI_IDCONV}?ids={urllib.parse.quote(doi)}&format=json"
     data, err = _http_get_json(url, email)
-    if err or not data:
-        return None
+    if err:
+        return None, err
+    if not data:
+        return None, None
     for rec in data.get("records") or []:
         if rec.get("pmcid"):
-            return rec["pmcid"]
-    return None
+            return rec["pmcid"], None
+    return None, None
 
 
 def _fetch_archive(pmcid: str, email: Optional[str], timeout: int = 120) -> tuple[Optional[bytes], Optional[str]]:
-    """Europe PMC supplementaryFiles 아카이브를 통째로 받는다."""
+    """Europe PMC supplementaryFiles 아카이브를 통째로 받는다.
+
+    404(보충자료 없음)는 재시도하지 않고 즉시 "not_found"로 끝낸다 — 그 밖의
+    네트워크/서버 오류만 ref_fetch._http_get_json 과 같은 패턴으로 재시도한다.
+    """
     url = _EPMC_SUPPL.format(pmcid=pmcid)
     req = urllib.request.Request(url, headers={"User-Agent": _build_user_agent(email)})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            return r.read(), None
-    except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
-        # 보충자료가 없는 논문은 404 를 준다 — 오류가 아니라 "없음"이다.
-        return None, ("not_found" if e.code == 404 else f"HTTP {e.code}")
-    except Exception as e:  # noqa: BLE001
-        return None, f"{type(e).__name__}: {e}"
+    last_err: Optional[str] = None
+    for attempt in range(1, _ARCHIVE_MAX_RETRIES + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read(), None
+        except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
+            if e.code == 404:
+                return None, "not_found"
+            last_err = f"HTTP {e.code}"
+        except Exception as e:  # noqa: BLE001
+            last_err = f"{type(e).__name__}: {e}"
+
+        if attempt < _ARCHIVE_MAX_RETRIES:
+            time.sleep(_ARCHIVE_RETRY_BACKOFF * attempt)
+
+    return None, last_err or "unknown_error"
 
 
 def discover_si(doi: str, email: Optional[str] = None) -> SIResult:
@@ -178,7 +201,15 @@ def discover_si(doi: str, email: Optional[str] = None) -> SIResult:
     내려받는다. 저장 여부는 download_si() 가 정한다.
     """
     doi = normalize_doi(doi)
-    pmcid = doi_to_pmcid(doi, email)
+    pmcid, lookup_err = doi_to_pmcid(doi, email)
+
+    if lookup_err:
+        # 재시도까지 다 실패한 것 — "PMC 에 없음"이 아니라 "조회 자체가 안 됨".
+        return SIResult(
+            doi=doi,
+            status="error",
+            note=f"PMC ID 조회 실패(재시도 후에도): {lookup_err}",
+        )
 
     if not pmcid:
         pfx = _prefix(doi)

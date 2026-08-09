@@ -67,7 +67,7 @@ ef8923fef8d537dfea01d6959c2a5416e195023be1c1f21dd438ed1784342e10 *./scripts/make
 23892f92724e266172de1bf8731f6aae36b1664dd2930a28dddb31e963e9aa49 *./scripts/primer_structure_check.py
 214ab8691adedf55a88bb72afd5bd73338898d2c2e9fb2c718086c406156f53b *./scripts/ref_cache_manager.py
 39f59b39b7244caab62bc3daee28647a893b6546927985707e3dd51139b342d4 *./scripts/ref_fetch.py
-0214248e1a2d9f172fadd240834395255a05a6de9a2d979dd4809e905e8713db *./scripts/si_fetch.py
+277969e12051f3c20ec58c4e5c143907bdf6243534078bcf11203d76478d22f4 *./scripts/si_fetch.py
 cf31e162c17b249f87e4d66d6724b1ea890a0d597d6338f006e84f5a3a513d8e *./scripts/variant_filter.py
 734aab24a815373a941b3e42c7a845fb06ca496e135d392acf982fa789ea5805 *./skills/academic-term-rules/.prompt.md
 c095c246808a9fc134a6b4a826ab2877b67de09b474a2918f4156df5c63ac411 *./skills/academic-term-rules/SKILL.md
