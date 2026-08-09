@@ -86,6 +86,11 @@ SCAN_EXCLUDE_SUFFIXES = {
 
 MAX_SCAN_FILE_BYTES = 5 * 1024 * 1024  # 5 MB — skip anything bigger
 
+# `doctor.py --quick` (the 10 environment checks, no check_toolkit_selftests)
+# measured at ~1.5s locally. install.py imports this rather than hardcoding
+# its own timeout, so the two stay in sync if quick mode grows a check.
+QUICK_MODE_TIMEOUT_SEC = 60
+
 # Filenames that are an automatic FAIL if found anywhere in the tree,
 # regardless of content (a real secrets store should never ship).
 SENTINEL_FORBIDDEN_FILENAMES = {
