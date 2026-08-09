@@ -573,6 +573,41 @@ def check_hooks_config(root: Path) -> CheckResult:
     return CheckResult(name, STATUS_OK, f"present and valid ({n_events} hook event type(s) configured)")
 
 
+def check_shell_env(root: Path) -> CheckResult:
+    """hooks/hooks.json runs `sh ...` -- if no bash-capable shell is reachable
+    (typically: Windows with neither Git Bash nor WSL configured), Claude Code
+    falls back to cmd.exe for hook execution, which cannot run .sh files. Every
+    hook then fails silently: no secret scan, no dangerous-git guard, no docx
+    corruption check. FAIL here means those guards are not actually running,
+    even though check_hooks_config() above reports the config as valid --
+    a valid hooks.json with an unreachable shell still enforces nothing.
+    """
+    name = "Shell environment for hooks"
+    import subprocess
+    script = root / "scripts" / "env_detect.py"
+    if not script.is_file():
+        return CheckResult(name, STATUS_WARN, "scripts/env_detect.py not found — skipped")
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(script), "--json"], cwd=str(root),
+            capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=30)
+        r = json.loads(proc.stdout)
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        return CheckResult(name, STATUS_WARN, f"could not run env_detect.py: {exc}")
+
+    if r.get("shell_ok"):
+        return CheckResult(
+            name, STATUS_OK,
+            f"{r.get('shell_source')}: {r.get('shell_path')}",
+        )
+    return CheckResult(
+        name, STATUS_FAIL,
+        f"no usable shell found for hooks (os={r.get('os')}) -- hooks will not run",
+        r.get("advice", []),
+    )
+
+
 def check_sentinel_scan(root: Path) -> CheckResult:
     """Distribution safety self-check: make sure no secrets / private
     identifiers leaked into the tree that is about to be shipped.
@@ -716,6 +751,7 @@ def run_all_checks(root: Path) -> list[CheckResult]:
         check_required_skills(root),
         check_plugin_manifest(root),
         check_hooks_config(root),
+        check_shell_env(root),
         check_sentinel_scan(root),
         check_skill_references(root),
         check_agents_routing(root),
@@ -741,6 +777,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
     ("tests/test_doc_counts.py", "documented counts match reality"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
+    ("tests/test_env_detect.py", "shell-env detection (Windows Git-Bash/WSL branches)"),
     ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
 ]
 
