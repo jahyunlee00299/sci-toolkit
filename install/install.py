@@ -370,6 +370,34 @@ def install(final: list[str], dest: Path, apply: bool, force: bool = False) -> N
         print("\n※ 미리보기입니다. 실제로 설치하려면 --apply 를 붙여 다시 실행하세요.")
     else:
         print(f"\n완료: {len(final)}개 스킬을 설치했습니다.")
+        _run_doctor_after_install()
+
+
+def _run_doctor_after_install() -> None:
+    """설치 직후 doctor.py 를 자동 실행한다.
+
+    새 컴퓨터에서 설치가 "성공"했다는 출력만 보고 넘어가면, 그 환경에 훅이
+    실제로 돌아갈 셸이 있는지(check_shell_env) 같은 문제는 사람이 따로
+    `python doctor.py` 를 떠올려 실행하지 않는 한 발견되지 않는다. 설치가
+    끝나는 시점이 그 환경 조건을 가장 저렴하게 확인할 수 있는 때이므로 여기서
+    바로 돌린다. 실패해도 설치 자체를 롤백하지 않는다 — doctor 는 진단 도구지
+    설치를 막는 게이트가 아니다.
+    """
+    import subprocess
+    doctor_path = ROOT / "doctor.py"
+    if not doctor_path.is_file():
+        return
+    print("\n── 설치 후 자동 점검 (doctor.py) ──")
+    print("  (환경 점검만 빠르게 — 전체 자체테스트는 `python doctor.py` 로 직접 실행)")
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(doctor_path), "--quick"], cwd=str(ROOT),
+            timeout=60)
+        if proc.returncode != 0:
+            print("  ⚠ doctor.py 가 FAIL 을 보고했습니다 — 위 출력을 확인하세요.")
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"  ⚠ doctor.py 자동 실행 실패: {exc}")
+        print(f"  수동으로 실행하세요: python {doctor_path}")
 
 
 # ── main ────────────────────────────────────────────────────────────────────

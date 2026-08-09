@@ -743,8 +743,15 @@ def _os_walk(root: Path):
 # Runner / reporting
 # --------------------------------------------------------------------------
 
-def run_all_checks(root: Path) -> list[CheckResult]:
-    return [
+def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
+    """quick=True skips check_toolkit_selftests — that check alone runs 17+
+    regression scripts (minutes), which is the wrong cost for a check that
+    should run right after every install (see install/install.py's
+    post-install doctor call). The fast checks (shell/hooks/sentinel/routing)
+    are what actually differ machine-to-machine; the self-test suite verifies
+    the package's own code and does not change with the install environment.
+    """
+    checks = [
         check_sha256sums(root),
         check_python_version(),
         check_claude_cli(),
@@ -755,8 +762,10 @@ def run_all_checks(root: Path) -> list[CheckResult]:
         check_sentinel_scan(root),
         check_skill_references(root),
         check_agents_routing(root),
-        check_toolkit_selftests(root),
     ]
+    if not quick:
+        checks.append(check_toolkit_selftests(root))
+    return checks
 
 
 # Test scripts that verify this package's own gates. Each must exit 0.
@@ -767,9 +776,11 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_doi_verify.py", "DOI verification"),
     ("tests/test_assumption_check.py", "stats assumption check"),
     ("tests/test_install_nondestructive.py", "non-destructive install"),
+    ("tests/test_install_doctor_onboarding.py", "post-install doctor auto-run (onboarding)"),
     ("tests/test_capability_diff.py", "capability-loss detector"),
     ("tests/test_hooks_guards.py", "hook guards (block/allow)"),
     ("tests/test_env_guards.py", "environment-mismatch guards"),
+    ("tests/test_hook_wiring.py", "hook file <-> chain-runner wiring (orphaned/dangling guards)"),
     ("tests/test_feedback_log.py", "feedback channel"),
     ("tests/test_research_marker_scan.py", "research-marker scanner"),
     ("tests/test_feedback_sanitize.py", "feedback sanitize gate"),
@@ -908,11 +919,17 @@ def main(argv: list[str] | None = None) -> int:
         "--root", type=Path, default=None,
         help="root directory to check (default: this script's own directory)",
     )
+    parser.add_argument(
+        "--quick", action="store_true",
+        help="skip the toolkit self-test suite (minutes) -- environment-only "
+             "checks (shell/hooks/sentinel/routing). Used by install.py's "
+             "post-install check; run without --quick for the full gate.",
+    )
     args = parser.parse_args(argv)
 
     root = (args.root or Path(__file__).resolve().parent).resolve()
 
-    results = run_all_checks(root)
+    results = run_all_checks(root, quick=args.quick)
 
     if args.json:
         print_json_report(results, root)
