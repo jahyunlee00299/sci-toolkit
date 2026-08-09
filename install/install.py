@@ -49,6 +49,29 @@ CATALOG_PATH = ROOT / "config" / "catalog.json"
 SKILLS_DIR = ROOT / "skills"
 
 
+def _shell_env_notice() -> None:
+    """Warn before install if this machine can't run the plugin's hooks.
+
+    Only relevant when this repo is loaded as a Claude Code plugin (hooks/hooks.json
+    runs `sh ...`) -- the à-la-carte skill copy below works regardless. But a user
+    who never sees this warning has no way to know their safety-guard hooks are
+    silently inert (see scripts/env_detect.py for the full explanation).
+    """
+    try:
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import env_detect  # noqa: E402
+        r = env_detect.detect()
+    except Exception:
+        return  # preflight is best-effort; never block install over it
+    if r["shell_ok"]:
+        return
+    print("\n⚠ 이 컴퓨터에서는 이 저장소를 Claude Code 플러그인으로 설치했을 때")
+    print("  훅(안전 가드)이 실행되지 않을 수 있습니다:")
+    for line in r["advice"]:
+        print(f"  {line}")
+    print("  (스킬만 개별 설치하는 이 스크립트 자체는 이 문제와 무관하게 정상 동작합니다)\n")
+
+
 # ── catalog ────────────────────────────────────────────────────────────────
 def load_catalog() -> dict:
     if not CATALOG_PATH.exists():
@@ -363,6 +386,8 @@ def main() -> None:
                     help="대상 스킬 폴더를 통째로 교체 (대상에만 있던 파일도 삭제). "
                          "기본은 비파괴 병합이며, 이 옵션은 명시적으로 필요할 때만 쓴다.")
     args = ap.parse_args()
+
+    _shell_env_notice()
 
     cat = load_catalog()
 
