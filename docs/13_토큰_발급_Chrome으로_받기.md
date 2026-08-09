@@ -25,7 +25,7 @@
 | 스코프/권한 체크박스가 의도대로 선택됐는지 확인 | Claude가 스크린샷으로 확인 + 안내 |
 | **"생성(Generate/Create)" 버튼 클릭** | **본인** |
 | **토큰 값 복사** | **본인** |
-| 값을 환경변수 또는 `credentials.json`에 등록 | 본인 (터미널/에디터에서 직접) |
+| 값을 `credentials.json`에 등록 | 본인 (`register_token.py` 실행 — 붙여넣기 한 번, 화면엔 안 보임) |
 | 등록이 됐는지 확인 (값은 마스킹) | Claude (`_credentials.py`) |
 
 ---
@@ -53,11 +53,15 @@ Google Calendar/Drive는 PAT가 아니라 OAuth 로그인 흐름(동의 화면)�
 3. Claude가 화면의 이름/스코프 입력란을 확인하고 "이대로 만들면 됩니다"라고 안내합니다
    (텍스트 입력까지는 Claude가 채워줄 수 있습니다 — 이름·스코프 선택은 비밀값이 아니므로).
 4. **"생성" 버튼은 본인이 클릭**합니다.
-5. 화면에 뜬 토큰 값을 **본인이 직접 복사**해서:
+5. 화면에 뜬 토큰 값을 **본인이 직접 복사**해서, 터미널에서 (Claude에게 시키지 말고
+   직접, 예: Claude Code라면 `!` 로 시작하는 명령으로) 실행합니다:
    ```bash
-   export SCITK_GITHUB_TOKEN='...'   # 예: GitHub
+   python scripts/connectors/register_token.py github   # notion / asana 도 동일
    ```
-   또는 `config/credentials.json`의 해당 필드에 붙여넣습니다.
+   숨김 입력 프롬프트가 뜨면 값을 붙여넣고 Enter — **입력이 화면에 보이지 않고**,
+   `config/credentials.json`의 해당 필드에 바로 기록됩니다. Claude는 이 값을 읽지도,
+   대화에 다시 말하지도 않습니다 — 키보드에서 파일로 직행하고 끝입니다.
+   (환경변수를 직접 쓰고 싶다면 기존처럼 `export SCITK_GITHUB_TOKEN='...'` 도 여전히 됩니다.)
 6. 확인:
    ```bash
    python scripts/connectors/_credentials.py
@@ -66,7 +70,32 @@ Google Calendar/Drive는 PAT가 아니라 OAuth 로그인 흐름(동의 화면)�
 
 ---
 
-## 4. 한 줄 요약
+## 4. 자주 막히는 지점 (Windows)
+
+실제로 처음 해보면 아래 세 가지에서 거의 항상 걸립니다 — 미리 알아두세요.
+
+- **`python` 명령이 안 먹는다** ("용어가 인식되지 않습니다"): Windows에 Python을 설치할 때
+  "Add to PATH"를 체크하지 않았거나, 아나콘다처럼 기본으로 PATH에 안 잡히는 배포판을
+  쓰는 경우 흔합니다. 이럴 땐 `python` 대신 **`py`** 를 먼저 시도하세요 (Windows Python
+  설치 시 거의 항상 같이 깔리는 런처라 PATH에 있을 확률이 높습니다):
+  ```
+  py scripts\connectors\register_token.py github
+  ```
+  그래도 안 되면 설치 경로를 찾아 전체 경로로 실행하세요 (`where python` 또는
+  파일 탐색기에서 Python 설치 폴더 확인).
+- **Claude가 메모장/터미널을 대신 열어주려다 실패할 수 있다**: Claude가 `notepad`/
+  `explorer` 실행을 먼저 시도하긴 하지만, Claude Code가 실행하는 명령은 화면(데스크톱)
+  과 세션이 분리된 환경이 많아 실제로는 안 뜨는 경우가 흔합니다. 잠시 기다려도 창이
+  안 보이면 Claude가 "안 열렸다"고 알려주고, 그 즉시 정확한 파일 경로(또는 그 파일이
+  들어있는 폴더까지 미리 열어서)를 알려줄 겁니다 — 그 경로를 파일 탐색기 주소창에
+  붙여넣거나, Windows 키 → `cmd` 입력 → Enter 로 직접 여세요.
+- **파일을 잘못 열기 쉽다**: 컴퓨터에 `credentials.json`이나 `secrets.json` 같은 이름의
+  파일이 여러 개(백업, 다른 프로젝트, 예전 버전) 있을 수 있습니다. 검색 대신
+  **Claude가 알려준 경로를 파일 탐색기 주소창에 그대로 붙여넣어** 정확한 파일을 여세요.
+  저장한 뒤에는 값을 눈으로 재확인하지 말고, `register_token.py`가 등록 직후 보여주는
+  마스킹 확인 메시지(`[등록됨] ... = xx****...`)로만 확인하세요.
+
+## 5. 한 줄 요약
 
 - Claude는 **길안내**(정확한 URL로 이동 + 화면 확인)까지만, **생성 버튼과 값 복사는 항상 본인**
 - 토큰 값은 Claude가 화면에서 읽어 다시 말하지 않습니다 — 채팅 기록에 남기지 않기 위해서입니다
