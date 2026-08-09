@@ -3,6 +3,10 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.2] — 2026-08-10
+
+- feat: auto version-bump on every commit (post-commit hook)
+
 ## [1.2.1] — 2026-08-09
 
 - docs: make REST connectors the default over MCP for mail/GitHub/Asana/Notion
