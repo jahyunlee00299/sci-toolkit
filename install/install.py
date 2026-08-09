@@ -387,12 +387,25 @@ def _run_doctor_after_install() -> None:
     doctor_path = ROOT / "doctor.py"
     if not doctor_path.is_file():
         return
+
+    # doctor.py owns the timeout for its own --quick mode; importing it (rather
+    # than hardcoding a duplicate number here) keeps the two in sync if quick
+    # mode's check list ever changes.
+    timeout_sec = 60
+    try:
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        import doctor as _doctor_mod
+        timeout_sec = _doctor_mod.QUICK_MODE_TIMEOUT_SEC
+    except (ImportError, AttributeError):
+        pass
+
     print("\n── 설치 후 자동 점검 (doctor.py) ──")
     print("  (환경 점검만 빠르게 — 전체 자체테스트는 `python doctor.py` 로 직접 실행)")
     try:
         proc = subprocess.run(
             [sys.executable, str(doctor_path), "--quick"], cwd=str(ROOT),
-            timeout=60)
+            timeout=timeout_sec)
         if proc.returncode != 0:
             print("  ⚠ doctor.py 가 FAIL 을 보고했습니다 — 위 출력을 확인하세요.")
     except (OSError, subprocess.SubprocessError) as exc:
