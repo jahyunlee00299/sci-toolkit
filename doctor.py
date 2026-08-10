@@ -455,6 +455,87 @@ def _sha256_of(path: Path) -> str:
     return h.hexdigest()
 
 
+def check_credentials_divergence(root: Path) -> CheckResult:
+    """Warn when tokens registered in this package's credentials.json are
+    invisible to a pre-existing ~/.claude/scripts/ automation setup.
+
+    [260810] Filed by an actual installer (issue #3): register_token.py makes
+    a token work for scripts/connectors/*, but a coexisting ~/.claude install
+    has its own ~/.claude/secrets.json with different key names (notion.token
+    vs NOTION_TOKEN) that scripts/connectors/ never touches and vice versa.
+    Neither side is broken on its own — doctor.py passed 11/11 while roughly
+    30 pre-existing scripts silently failed, because this divergence was
+    never checked. This is a WARN, not a FAIL: not having a ~/.claude/
+    install at all is the common case and entirely fine.
+    """
+    name = "Credentials store divergence"
+    creds_path = root / "config" / "credentials.json"
+    if not creds_path.is_file():
+        return CheckResult(name, STATUS_OK, "no config/credentials.json yet — nothing to check")
+
+    try:
+        creds = json.loads(creds_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return CheckResult(name, STATUS_WARN, f"could not read config/credentials.json: {exc}")
+
+    # service -> (credentials.json section, ~/.claude/secrets.json key)
+    # Only services with a plausible ~/.claude/ counterpart are checked —
+    # mail/google have no single well-known secrets.json key to compare against.
+    SERVICE_KEY_MAP = {
+        "notion": "NOTION_TOKEN",
+        "asana": "ASANA_PAT",
+        "github": "GITHUB_PAT",
+    }
+
+    registered = []
+    for service in SERVICE_KEY_MAP:
+        section = creds.get(service) or {}
+        token = section.get("token", "")
+        # "ENV:VAR" placeholders and the literal example string are not real registrations.
+        if token and not token.startswith("ENV:"):
+            registered.append(service)
+        elif token.startswith("ENV:"):
+            import os
+            if os.environ.get(token[4:]):
+                registered.append(service)
+
+    if not registered:
+        return CheckResult(name, STATUS_OK, "no services registered in credentials.json yet")
+
+    secrets_path = Path("~/.claude/secrets.json").expanduser()
+    if not secrets_path.is_file():
+        return CheckResult(
+            name, STATUS_WARN,
+            f"credentials.json has {', '.join(registered)} registered, but "
+            f"~/.claude/secrets.json does not exist — any pre-existing "
+            f"~/.claude/scripts/ automation that expects that file cannot see "
+            f"these tokens (they use different key names: notion.token vs "
+            f"NOTION_TOKEN, asana.token vs ASANA_PAT, github.token vs GITHUB_PAT). "
+            f"If you don't have a ~/.claude/ automation setup, this is expected "
+            f"and safe to ignore.",
+        )
+
+    try:
+        secrets = json.loads(secrets_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        secrets = {}
+
+    missing_in_secrets = [
+        s for s in registered if not secrets.get(SERVICE_KEY_MAP[s])
+    ]
+    if missing_in_secrets:
+        pairs = ", ".join(f"{s}.token -> {SERVICE_KEY_MAP[s]}" for s in missing_in_secrets)
+        return CheckResult(
+            name, STATUS_WARN,
+            f"{', '.join(missing_in_secrets)} registered in credentials.json "
+            f"but missing from ~/.claude/secrets.json ({pairs}) — scripts "
+            f"outside scripts/connectors/ that read secrets.json directly "
+            f"will not see these tokens.",
+        )
+    return CheckResult(name, STATUS_OK,
+                        f"{', '.join(registered)} present in both credentials.json and secrets.json")
+
+
 def check_python_version() -> CheckResult:
     name = "Python version"
     current = sys.version_info[:2]
@@ -767,6 +848,7 @@ def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
         check_sentinel_scan(root),
         check_skill_references(root),
         check_agents_routing(root),
+        check_credentials_divergence(root),
     ]
     if not quick:
         checks.append(check_toolkit_selftests(root))
@@ -795,6 +877,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
     ("tests/test_env_detect.py", "shell-env detection (Windows Git-Bash/WSL branches)"),
     ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
+    ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),
 ]
 
 
