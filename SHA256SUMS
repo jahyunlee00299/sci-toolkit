@@ -1,10 +1,10 @@
-2f0cac540d98815acdf84e38fe31fb2cbcb1167b9742f3f9b18490816587353e *./.claude-plugin/plugin.json
+3d3c692ef0f1a9998c453190c31b398bb55c6c7b37f1eb2c985486e62c70e7e2 *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 0d1017752f3b1dd450e2f7ef802598c76997aeac9101cba0884269d57ef8ce1d *./.gitattributes
 630991f4e8a144a1dbbdfa3e25d0fa4e930f897f5facf15dd962e04f7aa0aa39 *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 ed54ccf4d93112afcf8eaa6aeedb481e53c3237fb5d6d7289d99cc4893cf07a2 *./AGENTS.md
-fb65deda3b5f1f8625166f097beec2850b0276232533927907088571c104e7cb *./CHANGELOG.md
+4fab92cd3643f9e3f88df3c28508241561c38f03ca60b9cf0d61c4cb6e5040ea *./CHANGELOG.md
 e50b2bc593f181a1fa37141c4b884c5dc704842f1a3c359ffd9c4ca13b674cfb *./CLAUDE.md
 78b094258cf9ef029ad8fea9c90a0ce5390ebe53ccab98f4f693e6c73c4ceca1 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -30,7 +30,7 @@ d5b0b03decb5d9dafbe9079fa7dd6c8cce3293fa55e5e8a9af193a9b85c85751 *./docs/11_불�
 03dfe98cd172e421dde7ef5f273371a06573dafe3ca3f4a87a5094fdef643718 *./docs/13_토큰_발급_Chrome으로_받기.md
 6a41264fb94be1c90f86d9d9d50b8bdac3475e6e75667a7dd316abe7a2dd2d54 *./docs/feature-connectivity-ledger.md
 77ab0f7dfa903cb620c00663920bd02de9d8872ed3c1b2e75018691d1d987086 *./doctor.ps1
-5d6a932e7821e337da4949d5c60e9b3fd45deb52ff417a1dfe24d59aba5cf7d9 *./doctor.py
+7d408c355709acdef0592471793e9a0508f58235f5bc8f9d2aea4b41c1d97951 *./doctor.py
 f97ad27c812f81df36d7a6990f69ce11a2b192975ba2e0881e03952d3aefb978 *./evals/codex_compliance_probe.py
 3986c22328fa7d5b0b658faa8411e8870b6267a8e3d2d7fe4eac15b10555973a *./evals/codex_compliance_schema.json
 2a28be5789e6c13e3f5abec5bb538e9f450bd661dcb69c66dca838bcf92ee738 *./evals/routing_probe.py
@@ -80,7 +80,7 @@ c095c246808a9fc134a6b4a826ab2877b67de09b474a2918f4156df5c63ac411 *./skills/acade
 37c77f8df7931f5beb50ab49ad02d7472793b7b8d7136efc7d5e4d3320a03083 *./skills/biorxiv-database/SKILL.md
 821346695f1d4131314b8222d039030ac0a71755863c38b423e8818dd9bff6da *./skills/biorxiv-database/references/api_guide.md
 16baf9d7e29504ce7f15f693c69b56ea8872ea9681e86511986dc154a234bedc *./skills/biorxiv-database/scripts/preprint_search.py
-1a0dac37689b6b6aad5e64eda6bcdcd83e0562d434bf4b5ef27f69621e5a7e18 *./skills/biorxiv-database/tests/test_preprint_search.py
+b97fd625bfda34500a948204874e432108a87fae4e5295a83244ba4ee21895b3 *./skills/biorxiv-database/tests/test_preprint_search.py
 be8e524c414327d126197d057ee0a460383aa7005aa09ab663398dc79d73b7ea *./skills/code-quality/SKILL.md
 da65b2d756692b657c4f7f5a66b28d50a820e51d3e4db3578c6efe4a847ec953 *./skills/conda-env-manager/SKILL.md
 3f3ff21ef51b95e4b6eb40e5426abb111cb45dd8b06c56f748f79181adf1e3af *./skills/conda-env-manager/references/known_conflicts.yml
