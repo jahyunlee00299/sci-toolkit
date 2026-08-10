@@ -837,7 +837,7 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
             lines = out.splitlines()
             detail = []
             for i, ln in enumerate(lines):
-                if "FAIL" in ln or "Error" in ln or "Traceback" in ln:
+                if "FAIL" in ln or "Error" in ln or "Traceback" in ln or "attempt " in ln:
                     detail.append(ln.strip()[:160])
                     # the two lines after a failure usually carry 기대/실제
                     for nxt in lines[i + 1:i + 3]:
