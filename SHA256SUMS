@@ -1,10 +1,10 @@
-3d3c692ef0f1a9998c453190c31b398bb55c6c7b37f1eb2c985486e62c70e7e2 *./.claude-plugin/plugin.json
+26ff3364c1e16edc709f9e739a67cbfda69f59415211bbf0f452009eea7a24a6 *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 0d1017752f3b1dd450e2f7ef802598c76997aeac9101cba0884269d57ef8ce1d *./.gitattributes
 630991f4e8a144a1dbbdfa3e25d0fa4e930f897f5facf15dd962e04f7aa0aa39 *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 ed54ccf4d93112afcf8eaa6aeedb481e53c3237fb5d6d7289d99cc4893cf07a2 *./AGENTS.md
-4fab92cd3643f9e3f88df3c28508241561c38f03ca60b9cf0d61c4cb6e5040ea *./CHANGELOG.md
+605771a3d7ff30bc40fd8455ff0c66014ad2bdfe1b913b8140d96c7a796f5f28 *./CHANGELOG.md
 e50b2bc593f181a1fa37141c4b884c5dc704842f1a3c359ffd9c4ca13b674cfb *./CLAUDE.md
 78b094258cf9ef029ad8fea9c90a0ce5390ebe53ccab98f4f693e6c73c4ceca1 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
