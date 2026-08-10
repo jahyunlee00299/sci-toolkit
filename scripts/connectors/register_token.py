@@ -19,6 +19,8 @@ Usage (run this yourself, not through Claude):
     python scripts/connectors/register_token.py github
     python scripts/connectors/register_token.py notion
     python scripts/connectors/register_token.py asana
+    python scripts/connectors/register_token.py mail --account personal
+    python scripts/connectors/register_token.py mail --account work
     python scripts/connectors/register_token.py github --field username --value your-handle
 
 If `python` isn't recognized on Windows (common with PATH-less installs), try
@@ -54,7 +56,11 @@ DEFAULT_FIELD = {
     "github": ["github", "token"],
     "notion": ["notion", "token"],
     "asana": ["asana", "token"],
+    "mail": ["mail", "accounts", "work", "password"],
 }
+
+# mail is keyed by --account too (work/personal), unlike the single-token services
+MAIL_ACCOUNTS = ("work", "personal")
 
 
 def mask(secret: str) -> str:
@@ -85,6 +91,8 @@ def set_nested(cfg: dict, path: list[str], value: str) -> None:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("service", choices=sorted(DEFAULT_FIELD), help="어떤 서비스 토큰인지")
+    ap.add_argument("--account", choices=MAIL_ACCOUNTS, default="work",
+                     help="mail 서비스 전용: work(업무) 또는 personal(개인) 중 어느 계정인지 (기본 work)")
     ap.add_argument("--field", nargs="+", default=None,
                      help="기본 필드 대신 다른 중첩 키 경로 (예: --field github username)")
     ap.add_argument("--value", default=None,
@@ -92,7 +100,12 @@ def main(argv=None) -> int:
                           "터미널에서 직접 실행할 때만, 절대 Claude 도구 호출로 넘기지 마세요)")
     args = ap.parse_args(argv)
 
-    field_path = args.field if args.field else DEFAULT_FIELD[args.service]
+    if args.field:
+        field_path = args.field
+    elif args.service == "mail":
+        field_path = ["mail", "accounts", args.account, "password"]
+    else:
+        field_path = DEFAULT_FIELD[args.service]
     label = " → ".join(field_path)
 
     if args.value is not None:
@@ -101,7 +114,7 @@ def main(argv=None) -> int:
               "숨김 입력을 쓰세요.", file=sys.stderr)
     else:
         value = getpass.getpass(
-            f"{args.service} 의 '{label}' 값을 붙여넣고 Enter 를 누르세요 "
+            f"'{label}' 값을 붙여넣고 Enter 를 누르세요 "
             f"(입력은 화면에 표시되지 않습니다): "
         ).strip()
 
@@ -114,7 +127,7 @@ def main(argv=None) -> int:
         json.dump(cfg, f, ensure_ascii=False, indent=2)
         f.write("\n")
 
-    print(f"[등록됨] {args.service} → {label} = {mask(value)}  ({CRED_PATH})")
+    print(f"[등록됨] {label} = {mask(value)}  ({CRED_PATH})")
     print("확인: python scripts/connectors/_credentials.py")
     return 0
 

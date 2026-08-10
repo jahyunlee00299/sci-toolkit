@@ -38,9 +38,13 @@
 | GitHub (fine-grained, 더 안전) | `https://github.com/settings/personal-access-tokens/new` | 저장소를 하나씩 골라 최소 권한으로 발급(권장), 다만 스코프 사전 채움은 안 됨 |
 | Notion | `https://www.notion.so/my-integrations/new` | 생성 후 **대상 데이터베이스에 공유(Connections)** 하는 절차가 별도로 필요 — `docs/07` §3 |
 | Asana | `https://app.asana.com/0/developer-console` | "새 개인 액세스 토큰 만들기" 버튼이 바로 보이는 화면 |
+| Gmail (앱 비밀번호) | `https://myaccount.google.com/apppasswords` | 2단계 인증이 켜져 있어야 메뉴가 보임. 로그인 비밀번호가 아니라 **앱 비밀번호**를 새로 발급 — §5 참고 |
 
-Google Calendar/Drive는 PAT가 아니라 OAuth 로그인 흐름(동의 화면)이라 이 표와 다릅니다 —
-`docs/05_외부서비스_연동.md` §4-4 및 `scripts/connectors/README.md`를 따르세요.
+이 표는 **"토큰 하나로 끝나는" 서비스**(GitHub/Notion/Asana/Gmail 앱 비밀번호)만 다룹니다.
+Google Calendar/Drive는 PAT가 아니라 OAuth 로그인 흐름(동의 화면)이라 이 표와 완전히
+다른 절차이며, 이 문서가 다루는 범위 밖입니다 — `docs/05_외부서비스_연동.md` §4-4 및
+`scripts/connectors/README.md` "캘린더 / 공유 스프레드시트" 절을 따르세요(커넥터 자체가
+아직 없어 지금은 MCP 연결 버튼으로 처리).
 
 ---
 
@@ -67,6 +71,29 @@ Google Calendar/Drive는 PAT가 아니라 OAuth 로그인 흐름(동의 화면)�
    python scripts/connectors/_credentials.py
    ```
    값이 마스킹된 채로 "설정됨"이라고 나오면 끝입니다.
+
+---
+
+## 5. Gmail 앱 비밀번호는 절차가 조금 다름
+
+Gmail(개인 메일)은 "토큰 생성" 화면이 아니라 **앱 비밀번호** 발급 화면입니다. 위 §2
+바로가기(`myaccount.google.com/apppasswords`)로 들어가면 되지만, 두 가지가 다릅니다.
+
+- **2단계 인증이 꺼져 있으면 메뉴 자체가 안 보입니다.** 먼저 Google 계정의 2단계 인증을
+  켠 뒤 다시 들어가야 합니다 — 이 설정도 본인이 직접 합니다.
+- **등록은 `--account` 로 어느 메일인지 지정합니다.** 개인 메일(Gmail)과 업무/조직
+  메일은 `config/credentials.json` 안에서 별도 경로(`mail.accounts.personal.password`
+  / `mail.accounts.work.password`)를 쓰기 때문입니다:
+  ```bash
+  python scripts/connectors/register_token.py mail --account personal   # Gmail
+  python scripts/connectors/register_token.py mail --account work       # 업무/조직 메일
+  ```
+  (`--account` 를 생략하면 기본값은 `work`. 환경변수 방식이 더 간단하면
+  `export SCITK_MAIL_PERSONAL_PASSWORD='...'` / `SCITK_MAIL_WORK_PASSWORD` 도
+  여전히 됩니다.)
+- 업무/조직 메일의 IMAP·SMTP 서버 값(`imap_host`, `smtp_host` 등)은 토큰이 아니라
+  소속 기관 IT 안내를 따라 `config/credentials.json`에 직접 채워 넣는 값입니다 —
+  비밀값이 아니므로 Claude가 채워도 괜찮습니다.
 
 ---
 
