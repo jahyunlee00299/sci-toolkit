@@ -16,6 +16,12 @@
   — `docs/05_외부서비스_연동.md` §2가 금지하는 "채팅창에 토큰 붙여넣기"와 결과적으로 같습니다.
 - "토큰 생성" 버튼을 누르는 것도 **계정 설정을 바꾸는 동작**이라, Claude가 임의로 눌러도 되는
   종류의 일이 아닙니다.
+- **로그인된 계정이 어디 것인지는 Claude가 판단할 수 없습니다.** 화면이 로그인 상태인지는
+  스크린샷으로 보이지만, "이 계정으로 발급해도 되는지"는 항상 본인이 판단합니다 — 처음
+  써보는 서비스라면 로그인 화면에서 평소 쓰던 본인 계정으로 로그인하거나, 없으면 새로
+  만들면 됩니다(§3 2단계). 토큰은 `config/credentials.json`에 저장되고 이 파일은
+  **기기마다 별도**라 다른 PC와 공유되지 않습니다 — 계정을 잘못 골랐다 싶어도 그 파일만
+  지우고 다시 발급하면 그만입니다.
 
 그래서 역할을 이렇게 나눕니다.
 
@@ -36,7 +42,7 @@
 |---|---|---|
 | GitHub (classic PAT) | `https://github.com/settings/tokens/new?scopes=repo&description=sci-toolkit` | `scopes` 파라미터로 스코프 사전 체크 가능. 저장소 접근만 필요하면 `repo` 로 충분 |
 | GitHub (fine-grained, 더 안전) | `https://github.com/settings/personal-access-tokens/new` | 저장소를 하나씩 골라 최소 권한으로 발급(권장), 다만 스코프 사전 채움은 안 됨 |
-| Notion | `https://www.notion.so/my-integrations/new` | 생성 후 **대상 데이터베이스에 공유(Connections)** 하는 절차가 별도로 필요 — `docs/07` §3 |
+| Notion | `https://www.notion.so/my-integrations/new` | 본인 개인 계정이면 충분 — 워크스페이스 공유 여부는 무관. 생성 후 **대상 데이터베이스에 공유(Connections)** 하는 절차가 별도로 필요 — `docs/07` §3 |
 | Asana | `https://app.asana.com/0/developer-console` | "새 개인 액세스 토큰 만들기" 버튼이 바로 보이는 화면 |
 | Gmail (앱 비밀번호) | `https://myaccount.google.com/apppasswords` | 2단계 인증이 켜져 있어야 메뉴가 보임. 로그인 비밀번호가 아니라 **앱 비밀번호**를 새로 발급 — §5 참고 |
 
@@ -54,13 +60,17 @@ Google Calendar/Drive는 PAT가 아니라 OAuth 로그인 흐름(동의 화면)�
 2. Claude가 위 표의 URL로 새 탭을 열고, 로그인된 상태인지 스크린샷으로 확인합니다.
    - 로그인이 안 돼 있으면 Claude는 로그인하지 않고 **직접 로그인해달라고 요청**합니다
      (자격증명 입력은 금지 사항입니다).
+   - 처음 로그인하는 경우 계정을 새로 만들거나, 이미 쓰던 본인 계정으로 로그인하면
+     됩니다 — 어느 쪽이든 특별히 신경 쓸 건 없습니다.
 3. Claude가 화면의 이름/스코프 입력란을 확인하고 "이대로 만들면 됩니다"라고 안내합니다
    (텍스트 입력까지는 Claude가 채워줄 수 있습니다 — 이름·스코프 선택은 비밀값이 아니므로).
 4. **"생성" 버튼은 본인이 클릭**합니다.
 5. 화면에 뜬 토큰 값을 **본인이 직접 복사**해서, 터미널에서 (Claude에게 시키지 말고
    직접, 예: Claude Code라면 `!` 로 시작하는 명령으로) 실행합니다:
    ```bash
-   python scripts/connectors/register_token.py github   # notion / asana 도 동일
+   python scripts/connectors/register_token.py github   # notion / asana 는 서비스명만 바꿔서
+   python scripts/connectors/register_token.py notion
+   python scripts/connectors/register_token.py asana
    ```
    숨김 입력 프롬프트가 뜨면 값을 붙여넣고 Enter — **입력이 화면에 보이지 않고**,
    `config/credentials.json`의 해당 필드에 바로 기록됩니다. Claude는 이 값을 읽지도,
@@ -126,4 +136,6 @@ Gmail(개인 메일)은 "토큰 생성" 화면이 아니라 **앱 비밀번호**
 
 - Claude는 **길안내**(정확한 URL로 이동 + 화면 확인)까지만, **생성 버튼과 값 복사는 항상 본인**
 - 토큰 값은 Claude가 화면에서 읽어 다시 말하지 않습니다 — 채팅 기록에 남기지 않기 위해서입니다
+- 발급한 토큰은 `config/credentials.json`에 저장되고 이 파일은 **기기마다 별도**입니다 —
+  다른 PC와 공유되지 않으니, 계정 선택에 너무 신경 쓸 필요 없습니다
 - 서비스별 바로가기는 위 §2 표 참고, Google Calendar/Drive는 별도 OAuth 흐름

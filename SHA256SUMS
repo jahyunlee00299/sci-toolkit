@@ -1,10 +1,10 @@
-d9aea7c9bb69f5af1124c940472b7d5b47d26a5b246ed33a1159767565bd28e9 *./.claude-plugin/plugin.json
+0f22b2190cd601d8776011cc36a8960b50d9f0501d9f35f4e78bad414628baf7 *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 0d1017752f3b1dd450e2f7ef802598c76997aeac9101cba0884269d57ef8ce1d *./.gitattributes
 630991f4e8a144a1dbbdfa3e25d0fa4e930f897f5facf15dd962e04f7aa0aa39 *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 ed54ccf4d93112afcf8eaa6aeedb481e53c3237fb5d6d7289d99cc4893cf07a2 *./AGENTS.md
-da25a8a9e280bd3ac0aedea6280335f153a31c922e52e95e3d0da4fd7eb0f196 *./CHANGELOG.md
+7be1b56cb0f7f3d828fee9fa5c83160b9d3a0063da6dff8f039b2746a57cdf2f *./CHANGELOG.md
 4ac19e3464e06c6aac016c7ad38d7a7e412790f5cb307b2b861dc22e5c40746e *./CLAUDE.md
 78b094258cf9ef029ad8fea9c90a0ce5390ebe53ccab98f4f693e6c73c4ceca1 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -27,7 +27,7 @@ c5cb795bb0f7959a1531b97b8220e4daa480a5deb51ac769d3ac2cca74a6a355 *./docs/09_원�
 67ee8242d7e07c1acb8837a7fe7f2ffbfa511ff7f69ca94176c36419c5ddcd23 *./docs/10_전체_워크플로우_지도.md
 095e8122a12c57b316a060e65610c6d4d2c9565bb9af3cc370c8a4136d38f7ff *./docs/11_불편한점_남기기.md
 9edbcaba7769f18eb4bf68aad7c400bb3523bfb02dc2ecb20cbbe8ff91c9a136 *./docs/12_문서스킬_직접_준비하기.md
-03dfe98cd172e421dde7ef5f273371a06573dafe3ca3f4a87a5094fdef643718 *./docs/13_토큰_발급_Chrome으로_받기.md
+8b656b08de26edb5799a594104878de21b5249a3f57e5300af6ed0616b99f69d *./docs/13_토큰_발급_Chrome으로_받기.md
 fd94ab8fd88243c97527143f072192ee8ed0f4811ae558ef25a11af379233887 *./docs/feature-connectivity-ledger.md
 77ab0f7dfa903cb620c00663920bd02de9d8872ed3c1b2e75018691d1d987086 *./doctor.ps1
 7d408c355709acdef0592471793e9a0508f58235f5bc8f9d2aea4b41c1d97951 *./doctor.py
