@@ -99,3 +99,62 @@
   없는 것과 같아지므로, 사용 흔적이 잦아지면 게이트 쪽을 재보정할 것.
 - `out/feedback.jsonl` 은 `.gitignore` 로 커밋이 막혀 있다. 이 상태를
   유지할 것 — 정화는 내보내기 경로를 지키지, 커밋 경로를 지키지 않는다.
+
+---
+
+## 피드백 이슈 담당자 = 발견자 본인 (2026-08-10)
+
+**범위** — `feedback_log.py export --github --write` 로 올라간 GitHub 이슈의
+기본 담당자.
+
+**계층** — sub-feature (기존 피드백 정화 게이트 위에 얹는 얕은 추가)
+
+**왜 필요했는가** — 이슈는 만들어졌지만 아무에게도 할당되지 않아 담당자가
+없는 채로 쌓였다. "발견한 사람이 담당자" 라는 원칙을 코드가 강제하지 않으면
+관리자 한 명에게 몰리거나(피로) 아무도 안 보거나(방치) 둘 중 하나가 된다.
+
+### 입출력
+
+| | |
+|---|---|
+| 입력 | `--assignee <login>` (선택) / `--no-assignee` (선택) |
+| 출력 | GitHub 이슈 생성 요청의 `assignees` 필드 |
+| 상태 소유 | 없음 |
+| 외부 효과 | `GET /user` (담당자 조회, 옵션 없을 때만) + `POST .../issues` |
+
+### 동작
+
+- 옵션 없음(기본값) → 이 명령을 실행한 GitHub 계정(`GET /user`)에게 자동 할당.
+  즉 **발견한 사람 본인**이 기본 담당자다 — 관리자에게 자동으로 몰리지 않는다.
+- `--assignee <login>` → 그 사람에게 할당. `/user` 조회는 건너뛴다(불필요한 호출 방지).
+- `--no-assignee` → 아무에게도 할당하지 않는다.
+- `/user` 조회가 실패해도(오프라인 등) 이슈 생성 자체는 막히지 않는다 —
+  경고만 찍고 할당 없이 진행한다.
+
+### 배선
+
+| 지점 | 동작 | 발화 확인 |
+|---|---|---|
+| `feedback_log.cmd_export` | 기본값 자기-할당, `--write` 시에만 실제 API 호출 | ✅ mock E2E |
+| `--no-assignee` | `/user` 호출 자체를 생략 | ✅ mock E2E |
+| `--assignee` | 지정값 사용, `/user` 호출 생략 | ✅ mock E2E |
+| `doctor.py SELF_TEST_SCRIPTS` | 기존 `test_feedback_log.py` 항목에 이미 등록됨 — 새 테스트가 자동으로 얹힘, 별도 배선 불필요 | ✅ 확인됨 |
+
+### 증거 / 반증
+
+- `tests/test_feedback_log.py` §7 — mock GitHub API로 4가지 케이스 검증
+  (기본 자기-할당·`--no-assignee`·명시적 `--assignee`·`/user` 조회 실패 시
+  크래시 없는 폴백). **전체 23/23 통과**, 기존 16건 회귀 없음.
+- 반증 1건 발견·수정: 첫 버전 테스트가 `_mod.FEEDBACK_PATH`를 몽키패치했으나
+  실제 상수명은 `LOG_PATH` — 그래서 실제 `out/feedback.jsonl`(로컬에 쌓여
+  있던 실사용 기록)까지 함께 mock export에 섞여 나갔다. 격리 실패였지 로직
+  결함은 아니었지만, 값 목록 대신 "전부 같은 담당자인가"로 단언을 고쳐
+  실제 기록이 섞여도 깨지지 않게 했다.
+- Regress: `tests/test_feedback_sanitize.py` 73/73, `test_doc_counts.py` +
+  `test_skill_references.py` 2/2 — 무손상 확인.
+
+### 남은 위험 / 의도적 한계
+
+- 팀(organization) 소속 저장소에서 `assignees`에 저장소 협업자가 아닌
+  로그인을 넣으면 GitHub API가 조용히 무시한다(에러 없음) — 이 기능은
+  "발견자가 이 저장소의 협업자"라는 전제를 검증하지 않는다.

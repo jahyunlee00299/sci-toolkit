@@ -48,6 +48,11 @@ instructions that point at it (`python tests/test_skill_references.py` and
   full SOLID guidance). Split a script if it mixes unrelated concerns.
 - One-off / throwaway scripts belong in a scratch or `scripts/oneshot/`
   folder, not scattered at the project root.
+- If you hit a real problem while working on a local branch (a doc that lags
+  the actual code, a broken assumption, a missing connector, anything worth
+  someone else knowing) — file it as a GitHub issue rather than only fixing
+  it silently or leaving a comment in the diff. Assign it to whoever found
+  it (the person working the branch), not automatically to the repo owner.
 
 ## Verification gate
 
