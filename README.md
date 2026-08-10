@@ -1,12 +1,13 @@
 # sci-toolkit
 
-**연구실 공용 Claude Code 스킬셋** — 논문 검색·원고 작성·그림 제작·데이터 분석을
-AI가 일관된 절차로 처리하도록 만드는 지침서 모음입니다. 각 절차 끝에는 **검증 게이트**가
-붙어 있어, "돌아갔다"가 아니라 "결과가 맞다"를 확인한 뒤에 끝납니다.
+**연구실 공용 Claude Code 스킬셋.** 논문 검색·원고 작성·그림 제작·데이터 분석을 AI가
+매번 같은 절차로 처리하도록 정리해 뒀습니다. 절차 끝마다 **검증 게이트**를 붙여서
+"일단 돌아갔다"가 아니라 "결과가 맞는지 확인했다"까지 확인하고 끝냅니다.
 
 A shared Claude Code skillset for lab work — literature search, manuscript writing,
-figure production, data analysis. Each route ends in a **verification gate**: the
-artifact is not done until the gate passes, and gates are scripts, not advice.
+figure production, data analysis. Every workflow ends in a **verification gate**:
+the artifact isn't done until the gate passes, and the gate is a script, not a
+suggestion.
 
 ```
 스킬 28종 · 회귀 테스트 20종 · 안전 가드 7종
@@ -30,9 +31,9 @@ python doctor.py   →   11 OK / 0 FAIL
 
 ## sci-toolkit이 뭔가요? / What is sci-toolkit?
 
-`skills/` 폴더 하나하나가 **"이럴 때 이렇게 해라"는 지침서**입니다(필요하면 보조
-스크립트가 딸려 옵니다). 코드가 아니라 문서라서, Claude Code가 대화 맥락을 보고
-알아서 골라 읽습니다 — 직접 실행할 필요가 없습니다.
+`skills/` 아래 폴더 하나하나가 "이럴 때는 이렇게" 정리해 둔 지침이고, 필요하면
+보조 스크립트가 같이 딸려 있습니다. 코드가 아니라 문서라서 Claude Code가 대화
+맥락을 보고 알아서 골라 읽습니다. 따로 실행시킬 필요는 없습니다.
 
 ## 무엇이 들어 있나 (스킬 28종)
 
@@ -50,7 +51,7 @@ python doctor.py   →   11 OK / 0 FAIL
 
 ## 쓰는 법
 
-그냥 평소처럼 말하면 됩니다.
+평소 대화하듯 말하면 됩니다.
 
 ```
 "이 주제로 논문 찾아줘"     "primer 설계해줘"      "이 데이터 통계 뭐 써야 해?"
@@ -72,13 +73,13 @@ python doctor.py                                      # PASS 나오면 준비 �
 
 <br>
 
-문서 작업은 **그냥 됩니다.** "이 워드 파일 고쳐줘"라고 하면 평소처럼 동작합니다.
-해당 스킬을 저장소에 넣지 않은 건 기능이 없어서가 아니라, **재배포가 금지된
-Anthropic 소유 자산**이기 때문입니다 ([docs/12](docs/12_문서스킬_직접_준비하기.md)).
+문서 작업은 스킬 없이도 됩니다. "이 워드 파일 고쳐줘"라고 하면 평소처럼 동작합니다.
+해당 스킬을 저장소에 안 넣은 건 기능이 없어서가 아니라, 재배포가 금지된 Anthropic
+소유 자산이라서입니다 ([docs/12](docs/12_문서스킬_직접_준비하기.md)).
 
-**PDF·문서를 텍스트로 읽어야 할 때는 `markitdown`** 을 쓰세요. PDF·docx·pptx·xlsx·
-이미지(OCR)를 Markdown으로 바꿔 주며, `paper-extract` 와 `journal-presentation-maker`
-가 논문 PDF를 읽을 때 실제로 이 경로를 씁니다.
+PDF·문서를 텍스트로 읽어야 할 때는 `markitdown`을 쓰면 됩니다. PDF·docx·pptx·xlsx·
+이미지(OCR)를 Markdown으로 바꿔 주고, `paper-extract`와 `journal-presentation-maker`도
+논문 PDF를 읽을 때 실제로 이 경로를 탑니다.
 
 원고 QC·편집 도구 7종은 랩에서 직접 만든 것이라 그대로 들어 있습니다:
 
@@ -96,8 +97,8 @@ python skills/manuscript-pipeline/scripts/word_com_ops.py --help    # Windows + 
 
 <br>
 
-`scripts/ref_fetch.py` 는 **공개(OA) 경로로만** 받습니다. CrossRef·OpenAlex·Unpaywall을
-교차검증해 OA PDF를 모으고, 페이월 논문은 우회하지 않고 `oa_status: closed` 로 남깁니다.
+`scripts/ref_fetch.py`는 공개(OA) 경로로만 받습니다. CrossRef·OpenAlex·Unpaywall을
+교차검증해 OA PDF를 모으고, 페이월 논문은 우회하지 않고 `oa_status: closed`로 남깁니다.
 
 ```bash
 python scripts/ref_fetch.py --doi 10.1016/j.example.2026.01.001 --download
@@ -110,14 +111,15 @@ python scripts/ref_fetch.py --doi 10.1016/j.example.2026.01.001 --download
 2. **교내망**이거나 도서관 원격접속(EZproxy 등)에 로그인한 상태에서 그 DOI를 연다
 3. 받은 PDF를 작업 폴더에 두고 파일 경로로 알려준다
 
-> ⚠️ **외부망에서는 접근이 막힙니다 — 읽고 시작하세요**
+> ⚠️ **외부망에서는 접근이 막힙니다**
 > - 교외에서 기관 구독 논문 링크를 그대로 열면 페이월 화면만 나옵니다. 오류가 아니라
->   인증이 없는 상태입니다. **먼저 도서관 원격접속에 로그인**하세요.
-> - 원격접속 세션은 시간이 지나면 끊깁니다. 여러 편을 받다가 중간부터 실패하면
->   대체로 세션 만료이니 재로그인 후 이어서 받으세요.
-> - **자동 대량 다운로드 금지.** 짧은 시간에 여러 편을 긁으면 출판사가 기관 IP 전체를
->   차단할 수 있고, 그 피해는 연구실 전체가 봅니다. 필요한 편만 사람이 직접 받으세요.
-> - 이 툴킷은 **페이월 우회·스크래핑을 하지 않습니다**(`ref_fetch.py` 설계 원칙).
+>   인증이 안 된 상태일 뿐입니다. 먼저 도서관 원격접속에 로그인하세요.
+> - 원격접속 세션은 시간이 지나면 끊깁니다. 여러 편 받다가 중간부터 실패하면
+>   대개 세션 만료니 재로그인하고 이어서 받으세요.
+> - 자동 대량 다운로드는 하지 마세요. 짧은 시간에 여러 편을 긁으면 출판사가 기관 IP
+>   전체를 차단할 수 있고, 그 피해는 연구실 전체가 떠안습니다. 필요한 편만 사람이
+>   직접 받으세요.
+> - 이 툴킷은 페이월 우회나 스크래핑을 하지 않습니다(`ref_fetch.py` 설계 원칙).
 >   AI에게 "우회해서 받아줘"라고 시키지 마세요.
 
 </details>
@@ -149,7 +151,7 @@ python scripts/ref_fetch.py --doi 10.1016/j.example.2026.01.001 --download
 
 <br>
 
-스킬은 그냥 디렉토리입니다. 등록 절차가 따로 없습니다.
+스킬은 디렉토리 하나일 뿐이라 등록 절차가 따로 없습니다.
 
 ```bash
 python install/install.py --list                          # 카탈로그·프리셋
@@ -158,14 +160,14 @@ python install/install.py --skills primer-design --apply  # 개별
 python install/install.py --skills docx --dest ./my-skills --apply
 ```
 
-- `--dest` 를 생략하면 환경을 감지해 정합니다(Claude Code면 `~/.claude/skills`).
-  **어디에 넣는지 출력하니 확인하세요.**
-- **기존 파일을 지우지 않습니다.** 같은 이름은 갱신하고, 대상에만 있던 파일은 남깁니다.
-  완전 교체가 필요하면 `--force` 를 명시하세요.
-- 폴더 하나만 복사해도 동작합니다 — 전체를 넣을 필요는 없습니다.
+- `--dest`를 생략하면 환경을 감지해 알아서 정합니다(Claude Code면 `~/.claude/skills`).
+  어디에 넣는지 출력해 주니 확인하면 됩니다.
+- 기존 파일은 지우지 않습니다. 같은 이름은 갱신하고, 대상에만 있던 파일은 남깁니다.
+  완전 교체가 필요하면 `--force`를 명시하세요.
+- 폴더 하나만 복사해도 동작합니다. 전체를 넣을 필요는 없습니다.
 
-**베이스 환경**: Claude Code(구독). 대부분의 스킬이 API 키 없이 동작하며, 일부 외부 DB
-조회 스킬만 무료 API 또는 선택적 키를 씁니다 — 각 `SKILL.md` 에 명시돼 있습니다.
+**베이스 환경**: Claude Code(구독). 대부분의 스킬이 API 키 없이 동작하고, 일부 외부 DB
+조회 스킬만 무료 API나 선택적 키를 씁니다. 각 `SKILL.md`에 명시돼 있습니다.
 
 Codex 등 다른 에이전트를 쓴다면 [CODEX.md](CODEX.md) 를 먼저 읽으세요.
 
@@ -178,20 +180,20 @@ Codex 등 다른 에이전트를 쓴다면 [CODEX.md](CODEX.md) 를 먼저 읽�
 
 <br>
 
-- **개인정보·계정정보·연구비 정보가 들어 있지 않습니다.** `.distignore` 로 패키징
-  단계에서 자동 제외되고, `doctor.py` 의 SENTINEL 스캔이 시크릿·개인식별정보·
-  미공개 연구 마커를 기계 검사합니다.
-- 스킬을 직접 추가·수정할 때 개인 토큰·이메일·연구비 번호를 넣지 마세요.
-  넣으면 `doctor.py` 가 FAIL 로 잡습니다.
-- 랩 밖으로 재배포하기 전에는 관리자에게 확인하세요.
-- **라이선스**: 저장소 전체는 MIT([LICENSE](LICENSE))이지만 스킬마다 자체 라이선스가
-  있으니 재배포 전 각 `SKILL.md` 앞머리를 확인하세요 ([NOTICE.md](NOTICE.md)).
-  `docx`·`pdf`·`pptx`·`xlsx` 는 Anthropic 소유라 이 저장소에 포함되지 않습니다 —
+- 개인정보·계정정보·연구비 정보는 들어 있지 않습니다. `.distignore`로 패키징 단계에서
+  자동 제외되고, `doctor.py`의 SENTINEL 스캔이 시크릿·개인식별정보·미공개 연구 마커를
+  기계적으로 검사합니다.
+- 스킬을 직접 추가·수정할 때 개인 토큰·이메일·연구비 번호는 넣지 마세요. 넣으면
+  `doctor.py`가 FAIL로 잡아냅니다.
+- 랩 밖으로 재배포하기 전에는 관리자에게 먼저 확인하세요.
+- **라이선스**: 저장소 전체는 MIT([LICENSE](LICENSE))지만 스킬마다 자체 라이선스가
+  있어서, 재배포 전 각 `SKILL.md` 앞머리를 확인해야 합니다 ([NOTICE.md](NOTICE.md)).
+  `docx`·`pdf`·`pptx`·`xlsx`는 Anthropic 소유라 이 저장소에는 포함하지 않았습니다.
   다만 문서 작업 자체는 Claude Code 기본 기능으로 그대로 됩니다.
 
-This distribution contains no personal data, account credentials, or funding
-information — excluded at packaging time via `.distignore`, and machine-checked by
-`doctor.py`'s SENTINEL scan. If you extend it, never add personal tokens, emails, or
-grant numbers. Check with the lab admin before redistributing outside the lab.
+This distribution ships with no personal data, account credentials, or funding
+information: `.distignore` strips it at packaging time, and `doctor.py`'s SENTINEL
+scan checks for it mechanically. If you extend it, don't add personal tokens, emails,
+or grant numbers — and check with the lab admin before redistributing outside the lab.
 
 </details>
