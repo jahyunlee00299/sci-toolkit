@@ -1,6 +1,6 @@
 {
   "name": "sci-toolkit",
-  "version": "1.2.13",
+  "version": "1.2.14",
   "description": "Lab-distributed scientific research toolkit for Claude Code: literature search & manuscript writing, molecular biology (primer/sequence), figures, statistics, document conversion, and scientific validation skills.",
   "author": "Lab Distribution Kit"
 }
