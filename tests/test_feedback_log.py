@@ -25,10 +25,12 @@ for _s in (sys.stdout, sys.stderr):
         except Exception:
             pass
 
+import argparse
 import importlib.util
 import json
 import tempfile
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location(
@@ -120,6 +122,81 @@ def main() -> int:
             except json.JSONDecodeError:
                 pass
         check("유효한 JSON 줄이 2건", parsed == 2, f"parsed={parsed}/{len(lines)}")
+
+        # ── 7. 담당자 = 발견자 (mock, 실제 네트워크 없음) ─────────────────
+        print("\n[담당자] 이슈는 발견자에게 할당된다 — 관리자에게 몰지 않는다")
+
+        def _run_export(no_assignee=False, assignee=None, fail_lookup=None):
+            # fail_lookup: None(성공) / "exception"(일반 예외) /
+            # "systemexit"(실제 github_connector.http()가 실패 시 내는
+            # 방식 — sys.exit() 는 BaseException 서브클래스라 일반
+            # except Exception 으로는 안 잡힌다. 적대검증 260810에서
+            # 발견된 실제 실패 경로를 그대로 재현한다).
+            calls = []
+
+            def fake_http(method, url, token, data=None):
+                calls.append((method, url, data))
+                if url.endswith("/user"):
+                    if fail_lookup == "exception":
+                        raise RuntimeError("network down")
+                    if fail_lookup == "systemexit":
+                        sys.exit("[오류] 네트워크 연결을 확인하세요: mocked offline")
+                    return {"login": "finder-account"}
+                return {"number": 1}
+
+            mock_gh = mock.MagicMock()
+            mock_gh.http = fake_http
+            mock_gh.API_ROOT = "https://api.github.com"
+            mock_cred = mock.MagicMock()
+            mock_cred.get = lambda *a: "fake-token"
+
+            with mock.patch.dict(sys.modules,
+                                  {"github_connector": mock_gh, "_credentials": mock_cred}):
+                args = argparse.Namespace(
+                    github=True, repo="owner/name", label=None,
+                    assignee=assignee, no_assignee=no_assignee, write=True, approve=False)
+                _mod.cmd_export(args)
+            issue_calls = [c for c in calls if c[1].endswith("/issues")]
+            return calls, issue_calls
+
+        # 기본값: 지정하지 않으면 /user 로 조회한 본인 계정에 할당
+        # (이전 섹션의 미출력 기록도 함께 올라갈 수 있으므로 "전부"를 검사한다 —
+        #  개수가 아니라 모든 이슈가 같은 담당자를 받았는지가 계약이다.)
+        e3 = _mod.add_entry("담당자 테스트 — 기본값")
+        calls, issue_calls = _run_export()
+        check("기본값: /user 조회 호출됨", any(c[1].endswith("/user") for c in calls))
+        check("기본값: 올라간 이슈 전부가 발견자(본인)에게 할당됨",
+              len(issue_calls) >= 1 and
+              all(c[2].get("assignees") == ["finder-account"] for c in issue_calls),
+              f"issue_calls={issue_calls}")
+
+        # --no-assignee: 아무에게도 할당하지 않음, /user 호출도 생략(불필요한 API 호출 방지)
+        e4 = _mod.add_entry("담당자 테스트 — no-assignee")
+        calls, issue_calls = _run_export(no_assignee=True)
+        check("--no-assignee: /user 호출 생략", not any(c[1].endswith("/user") for c in calls))
+        check("--no-assignee: assignees 필드가 아예 없음",
+              len(issue_calls) == 1 and "assignees" not in issue_calls[0][2])
+
+        # --assignee 명시: 그 값을 그대로 쓰고, 본인 조회는 하지 않음
+        e5 = _mod.add_entry("담당자 테스트 — 명시적 지정")
+        calls, issue_calls = _run_export(assignee="someone-else")
+        check("--assignee 명시: /user 조회 생략", not any(c[1].endswith("/user") for c in calls))
+        check("--assignee 명시: 지정한 사람으로 할당",
+              len(issue_calls) == 1 and issue_calls[0][2].get("assignees") == ["someone-else"])
+
+        # /user 조회가 실패해도(오프라인 등) 이슈 생성 자체는 죽지 않아야 한다
+        e6 = _mod.add_entry("담당자 테스트 — 조회 실패(일반 예외)")
+        calls, issue_calls = _run_export(fail_lookup="exception")
+        check("일반 예외: /user 조회 실패해도 이슈는 만들어짐(할당 없이)",
+              len(issue_calls) == 1 and "assignees" not in issue_calls[0][2])
+
+        # 실제 github_connector.http() 가 쓰는 실패 방식(sys.exit → SystemExit)도
+        # 같은 계약을 지켜야 한다 — 이게 260810 적대검증에서 실제로 뚫려 있던 경로.
+        e7 = _mod.add_entry("담당자 테스트 — 조회 실패(SystemExit, 실제 실패 경로)")
+        calls, issue_calls = _run_export(fail_lookup="systemexit")
+        check("SystemExit: /user 조회 실패해도 이슈는 만들어짐(할당 없이), export가 죽지 않음",
+              len(issue_calls) == 1 and "assignees" not in issue_calls[0][2],
+              f"issue_calls={issue_calls}")
 
     print("=" * 60)
     print(f"통과 {_pass} / 실패 {_fail}")

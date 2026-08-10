@@ -285,8 +285,28 @@ def cmd_export(args) -> int:
         print("  토큰 없이 쓰려면 --github 없이 실행해 본문만 뽑아 수동으로 올리세요.")
         return 2
 
+    assignee = None
+    if not args.no_assignee:
+        assignee = args.assignee
+        if not assignee:
+            # 기본값: 발견자 본인 — 이 토큰으로 인증된 계정에게 자동 할당한다.
+            # (관리자에게 몰아주지 않는다 — 발견한 사람이 담당자.)
+            # github_connector.http() 는 CLI 단독 실행을 전제로 실패 시
+            # sys.exit() 를 호출한다 — SystemExit 은 BaseException 이라
+            # 일반 Exception 으로는 안 잡힌다(적대검증 260810에서 발견:
+            # 오프라인/401/403/404 상황에서 담당자 조회 실패가 export
+            # 전체를 죽여버렸다). 여기서는 "담당자 조회 실패해도 이슈는
+            # 만든다"는 계약을 지켜야 하므로 SystemExit 도 함께 잡는다.
+            try:
+                me = gh.http("GET", f"{gh.API_ROOT}/user", token, None)
+                assignee = me.get("login")
+            except (Exception, SystemExit) as e:
+                print(f"[경고] 담당자 자동 조회 실패 ({e}) — 할당 없이 진행합니다.")
+
     if not args.write:
         print(f"[미리보기] {len(entries)}건을 {args.repo} 에 올릴 예정입니다.")
+        if assignee:
+            print(f"  담당자: {assignee}")
         for e in entries:
             print(f"  - {to_issue(e)[0]}")
         print("\n실제로 올리려면 --write 를 붙이세요.")
@@ -298,9 +318,11 @@ def cmd_export(args) -> int:
         data = {"title": title, "body": body}
         if args.label:
             data["labels"] = [s.strip() for s in args.label.split(",") if s.strip()]
+        if assignee:
+            data["assignees"] = [assignee]
         res = gh.http("POST", f"{gh.API_ROOT}/repos/{args.repo}/issues", token, data)
         num = res.get("number")
-        print(f"  #{num}  {title}")
+        print(f"  #{num}  {title}" + (f"  (assignee: {assignee})" if assignee else ""))
         done.add(e["id"])
     mark_exported(done)
     print(f"\n{len(done)}건을 올렸습니다.")
@@ -329,6 +351,10 @@ def main() -> int:
     sp.add_argument("--github", action="store_true", help="GitHub 이슈로 올린다")
     sp.add_argument("--repo", help="owner/name")
     sp.add_argument("--label", help="쉼표구분 라벨")
+    sp.add_argument("--assignee",
+                    help="담당자 GitHub 로그인 (기본값: 발견자 본인 — 이 명령을 실행하는 토큰의 계정)")
+    sp.add_argument("--no-assignee", action="store_true",
+                    help="아무에게도 할당하지 않는다 (기본 자기-할당을 끈다)")
     sp.add_argument("--write", action="store_true", help="실제로 올린다(없으면 미리보기)")
     sp.add_argument("--approve", action="store_true",
                     help="정화 검사 결과를 무시하고 진행한다 (내용을 직접 확인한 경우에만)")
