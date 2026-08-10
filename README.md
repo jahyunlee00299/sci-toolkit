@@ -1,8 +1,8 @@
 # sci-toolkit
 
 **연구실 공용 Claude Code 스킬셋.** 논문 검색·원고 작성·그림 제작·데이터 분석을 AI가
-매번 같은 절차로 처리하도록 정리해 뒀습니다. 절차 끝마다 **검증 게이트**를 붙여서
-"일단 돌아갔다"가 아니라 "결과가 맞는지 확인했다"까지 확인하고 끝냅니다.
+매번 같은 절차로 처리하게 하는 지침 모음. 절차 끝마다 **검증 게이트**를 둬 "일단
+돌아갔다"가 아니라 "결과가 맞는지 확인" 후 끝냄.
 
 A shared Claude Code skillset for lab work — literature search, manuscript writing,
 figure production, data analysis. Every workflow ends in a **verification gate**:
@@ -14,8 +14,8 @@ suggestion.
 python doctor.py   →   11 OK / 0 FAIL
 ```
 
-개인 계정·개인정보·연구비 정보는 포함하지 않습니다.
-미공개 연구 내용은 기계 검사(`doctor.py` SENTINEL)로 걸러집니다.
+개인 계정·개인정보·연구비 정보는 미포함. 미공개 연구 내용은 기계 검사
+(`doctor.py` SENTINEL)로 걸러냄.
 
 | 나는… | 여기부터 |
 |---|---|
@@ -23,17 +23,17 @@ python doctor.py   →   11 OK / 0 FAIL
 | 일단 설치부터 | [QUICKSTART.md](QUICKSTART.md) — 필요한 스킬만 골라 설치 |
 | 어떻게 돌아가는지 알고 싶다 | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) |
 | AI가 자꾸 엉뚱하게 한다 | [AGENTS.md](AGENTS.md) §0 라우팅 표 → "§0대로 해줘" |
-| Word/PDF/PPT/Excel 을 다루고 싶다 | 그냥 말하면 됩니다 — Claude Code 기본 기능이 처리합니다. 원고 QC 도구는 [모듈 목록](#-word--pdf--ppt--excel) 참조 |
-| 쓰다가 불편한 걸 발견했다 | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) — 그냥 말하면 기록됩니다 |
-| **Claude Code가 아니라 Codex를 쓴다** | [CODEX.md](CODEX.md) — 훅이 안 도는 환경이라 지켜야 할 것이 다릅니다 |
+| Word/PDF/PPT/Excel 을 다루고 싶다 | 그냥 말하면 처리됨 — Claude Code 기본 기능. 원고 QC 도구는 [모듈 목록](#-word--pdf--ppt--excel) 참조 |
+| 쓰다가 불편한 걸 발견했다 | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) — 말하면 자동 기록 |
+| **Claude Code가 아니라 Codex를 쓴다** | [CODEX.md](CODEX.md) — 훅 미작동 환경, 별도 유의사항 |
 
 ---
 
 ## sci-toolkit이 뭔가요? / What is sci-toolkit?
 
-`skills/` 아래 폴더 하나하나가 "이럴 때는 이렇게" 정리해 둔 지침이고, 필요하면
-보조 스크립트가 같이 딸려 있습니다. 코드가 아니라 문서라서 Claude Code가 대화
-맥락을 보고 알아서 골라 읽습니다. 따로 실행시킬 필요는 없습니다.
+`skills/` 아래 폴더 하나하나가 "이럴 때는 이렇게" 정리한 지침, 필요하면 보조
+스크립트 동반. 코드가 아니라 문서라 Claude Code가 대화 맥락을 보고 알아서
+골라 읽음 — 직접 실행 불필요.
 
 ## 무엇이 들어 있나 (스킬 28종)
 
@@ -46,12 +46,12 @@ python doctor.py   →   11 OK / 0 FAIL
 | **문서 변환** | `markitdown`(PDF·docx·xlsx·이미지OCR → Markdown) · `journal-presentation-maker` |
 | **검증·개발 규율** | `scientific-validation` · `code-quality` · `git-workflow-manager` · `skill-developer` |
 
-> **Word · PDF · PPT · Excel** 은 스킬 없이 그냥 됩니다 — Claude Code 기본 기능이
-> 처리합니다. 원고 QC 도구 7종은 `skills/manuscript-pipeline/scripts/` 에 있습니다.
+> **Word · PDF · PPT · Excel** 은 스킬 없이 처리 — Claude Code 기본 기능. 원고
+> QC 도구 7종은 `skills/manuscript-pipeline/scripts/` 에 위치.
 
 ## 쓰는 법
 
-평소 대화하듯 말하면 됩니다.
+평소 대화하듯 말하면 됨.
 
 ```
 "이 주제로 논문 찾아줘"     "primer 설계해줘"      "이 데이터 통계 뭐 써야 해?"
@@ -61,9 +61,9 @@ python doctor.py   →   11 OK / 0 FAIL
 설치는 필요한 것만 골라서:
 
 ```bash
-python install/install.py --list                      # 뭐가 있는지 보기
+python install/install.py --list                      # 카탈로그 확인
 python install/install.py --preset paper-writing --apply
-python doctor.py                                      # PASS 나오면 준비 끝
+python doctor.py                                      # PASS 시 준비 완료
 ```
 
 ---
@@ -73,15 +73,15 @@ python doctor.py                                      # PASS 나오면 준비 �
 
 <br>
 
-문서 작업은 스킬 없이도 됩니다. "이 워드 파일 고쳐줘"라고 하면 평소처럼 동작합니다.
-해당 스킬을 저장소에 안 넣은 건 기능이 없어서가 아니라, 재배포가 금지된 Anthropic
-소유 자산이라서입니다 ([docs/12](docs/12_문서스킬_직접_준비하기.md)).
+문서 작업은 스킬 없이도 동작. "이 워드 파일 고쳐줘"라고 하면 평소처럼 처리됨.
+해당 스킬을 저장소에 안 넣은 이유는 기능 부재가 아니라, 재배포 금지된 Anthropic
+소유 자산이기 때문 ([docs/12](docs/12_문서스킬_직접_준비하기.md)).
 
-PDF·문서를 텍스트로 읽어야 할 때는 `markitdown`을 쓰면 됩니다. PDF·docx·pptx·xlsx·
-이미지(OCR)를 Markdown으로 바꿔 주고, `paper-extract`와 `journal-presentation-maker`도
-논문 PDF를 읽을 때 실제로 이 경로를 탑니다.
+PDF·문서를 텍스트로 읽어야 할 때는 `markitdown` 사용. PDF·docx·pptx·xlsx·이미지
+(OCR)를 Markdown으로 변환하며, `paper-extract`와 `journal-presentation-maker`도
+논문 PDF를 읽을 때 이 경로를 탐.
 
-원고 QC·편집 도구 7종은 랩에서 직접 만든 것이라 그대로 들어 있습니다:
+원고 QC·편집 도구 7종은 랩에서 직접 제작한 것이라 그대로 포함:
 
 ```bash
 # 추적변경이 있으면 python-docx 텍스트는 틀린다 — 넣기 전에 반드시 확인
@@ -97,30 +97,29 @@ python skills/manuscript-pipeline/scripts/word_com_ops.py --help    # Windows + 
 
 <br>
 
-`scripts/ref_fetch.py`는 공개(OA) 경로로만 받습니다. CrossRef·OpenAlex·Unpaywall을
-교차검증해 OA PDF를 모으고, 페이월 논문은 우회하지 않고 `oa_status: closed`로 남깁니다.
+`scripts/ref_fetch.py`는 공개(OA) 경로 전용. CrossRef·OpenAlex·Unpaywall 교차검증으로
+OA PDF를 수집하고, 페이월 논문은 우회 없이 `oa_status: closed`로 표시.
 
 ```bash
 python scripts/ref_fetch.py --doi 10.1016/j.example.2026.01.001 --download
 ```
 
-**기관 구독 논문(고려대 도서관 등)** 은 학교 인증이 필요해 이 스크립트가 대신
-받아주지 않습니다. 다음 순서로 직접 받으세요.
+**기관 구독 논문(고려대 도서관 등)** 은 학교 인증 필요, 스크립트 대신 불가.
+다음 순서로 직접 수령.
 
-1. `refs_report.json` 에서 `oa_status: closed` 인 DOI를 추린다
-2. **교내망**이거나 도서관 원격접속(EZproxy 등)에 로그인한 상태에서 그 DOI를 연다
-3. 받은 PDF를 작업 폴더에 두고 파일 경로로 알려준다
+1. `refs_report.json` 에서 `oa_status: closed` 인 DOI 추림
+2. **교내망**이거나 도서관 원격접속(EZproxy 등) 로그인 상태에서 해당 DOI 접속
+3. 받은 PDF를 작업 폴더에 두고 파일 경로로 안내
 
-> ⚠️ **외부망에서는 접근이 막힙니다**
-> - 교외에서 기관 구독 논문 링크를 그대로 열면 페이월 화면만 나옵니다. 오류가 아니라
->   인증이 안 된 상태일 뿐입니다. 먼저 도서관 원격접속에 로그인하세요.
-> - 원격접속 세션은 시간이 지나면 끊깁니다. 여러 편 받다가 중간부터 실패하면
->   대개 세션 만료니 재로그인하고 이어서 받으세요.
-> - 자동 대량 다운로드는 하지 마세요. 짧은 시간에 여러 편을 긁으면 출판사가 기관 IP
->   전체를 차단할 수 있고, 그 피해는 연구실 전체가 떠안습니다. 필요한 편만 사람이
->   직접 받으세요.
-> - 이 툴킷은 페이월 우회나 스크래핑을 하지 않습니다(`ref_fetch.py` 설계 원칙).
->   AI에게 "우회해서 받아줘"라고 시키지 마세요.
+> ⚠️ **외부망 접근 제한**
+> - 교외에서 기관 구독 논문 링크를 그대로 열면 페이월 화면만 표시. 오류가 아니라
+>   인증 미완료 상태 — 먼저 도서관 원격접속 로그인 필요.
+> - 원격접속 세션은 시간 경과 시 만료. 여러 편 받다가 중간부터 실패하면
+>   대개 세션 만료 — 재로그인 후 계속.
+> - 자동 대량 다운로드 금지. 짧은 시간에 여러 편을 긁으면 출판사가 기관 IP 전체를
+>   차단할 수 있고, 그 피해는 연구실 전체가 부담. 필요한 편만 사람이 직접 수령.
+> - 이 툴킷은 페이월 우회·스크래핑 미지원(`ref_fetch.py` 설계 원칙).
+>   AI에게 "우회해서 받아줘" 요청 금지.
 
 </details>
 
@@ -151,7 +150,7 @@ python scripts/ref_fetch.py --doi 10.1016/j.example.2026.01.001 --download
 
 <br>
 
-스킬은 디렉토리 하나일 뿐이라 등록 절차가 따로 없습니다.
+스킬은 디렉토리 하나에 불과 — 별도 등록 절차 없음.
 
 ```bash
 python install/install.py --list                          # 카탈로그·프리셋
@@ -160,16 +159,16 @@ python install/install.py --skills primer-design --apply  # 개별
 python install/install.py --skills docx --dest ./my-skills --apply
 ```
 
-- `--dest`를 생략하면 환경을 감지해 알아서 정합니다(Claude Code면 `~/.claude/skills`).
-  어디에 넣는지 출력해 주니 확인하면 됩니다.
-- 기존 파일은 지우지 않습니다. 같은 이름은 갱신하고, 대상에만 있던 파일은 남깁니다.
-  완전 교체가 필요하면 `--force`를 명시하세요.
-- 폴더 하나만 복사해도 동작합니다. 전체를 넣을 필요는 없습니다.
+- `--dest` 생략 시 환경 감지 후 자동 배치(Claude Code면 `~/.claude/skills`).
+  배치 위치는 출력으로 확인 가능.
+- 기존 파일 유지. 같은 이름은 갱신, 대상에만 있던 파일은 보존. 완전 교체 필요 시
+  `--force` 명시.
+- 폴더 하나만 복사해도 동작 — 전체 설치 불필요.
 
-**베이스 환경**: Claude Code(구독). 대부분의 스킬이 API 키 없이 동작하고, 일부 외부 DB
-조회 스킬만 무료 API나 선택적 키를 씁니다. 각 `SKILL.md`에 명시돼 있습니다.
+**베이스 환경**: Claude Code(구독). 대부분 스킬은 API 키 불필요, 일부 외부 DB
+조회 스킬만 무료 API나 선택적 키 사용. 각 `SKILL.md`에 명시.
 
-Codex 등 다른 에이전트를 쓴다면 [CODEX.md](CODEX.md) 를 먼저 읽으세요.
+Codex 등 다른 에이전트 사용 시 [CODEX.md](CODEX.md) 선독 권장.
 
 </details>
 
@@ -180,16 +179,15 @@ Codex 등 다른 에이전트를 쓴다면 [CODEX.md](CODEX.md) 를 먼저 읽�
 
 <br>
 
-- 개인정보·계정정보·연구비 정보는 들어 있지 않습니다. `.distignore`로 패키징 단계에서
-  자동 제외되고, `doctor.py`의 SENTINEL 스캔이 시크릿·개인식별정보·미공개 연구 마커를
-  기계적으로 검사합니다.
-- 스킬을 직접 추가·수정할 때 개인 토큰·이메일·연구비 번호는 넣지 마세요. 넣으면
-  `doctor.py`가 FAIL로 잡아냅니다.
-- 랩 밖으로 재배포하기 전에는 관리자에게 먼저 확인하세요.
-- **라이선스**: 저장소 전체는 MIT([LICENSE](LICENSE))지만 스킬마다 자체 라이선스가
-  있어서, 재배포 전 각 `SKILL.md` 앞머리를 확인해야 합니다 ([NOTICE.md](NOTICE.md)).
-  `docx`·`pdf`·`pptx`·`xlsx`는 Anthropic 소유라 이 저장소에는 포함하지 않았습니다.
-  다만 문서 작업 자체는 Claude Code 기본 기능으로 그대로 됩니다.
+- 개인정보·계정정보·연구비 정보 미포함. `.distignore`로 패키징 단계에서 자동 제외,
+  `doctor.py`의 SENTINEL 스캔이 시크릿·개인식별정보·미공개 연구 마커를 기계 검사.
+- 스킬 직접 추가·수정 시 개인 토큰·이메일·연구비 번호 금지 — 포함 시 `doctor.py`
+  FAIL 처리.
+- 랩 밖 재배포 전 관리자 확인 필수.
+- **라이선스**: 저장소 전체는 MIT([LICENSE](LICENSE))지만 스킬별 자체 라이선스
+  존재, 재배포 전 각 `SKILL.md` 앞머리 확인 필요 ([NOTICE.md](NOTICE.md)).
+  `docx`·`pdf`·`pptx`·`xlsx`는 Anthropic 소유라 이 저장소 미포함. 다만 문서 작업
+  자체는 Claude Code 기본 기능으로 동작.
 
 This distribution ships with no personal data, account credentials, or funding
 information: `.distignore` strips it at packaging time, and `doctor.py`'s SENTINEL
