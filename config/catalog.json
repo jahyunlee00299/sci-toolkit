@@ -223,6 +223,12 @@
       "requires": [],
       "size_kb": 3
     },
+    "avoid-ai-writing": {
+      "category": "validation",
+      "role": "AI 작문 티(em-dash·상투어·템플릿 문구) 감지·교정 — 원고·메일·보고서 최종 점검",
+      "requires": [],
+      "size_kb": 154
+    },
     "conda-env-manager": {
       "category": "data-stats",
       "role": "conda 환경 진단·생성·복구, import 스캔, 버전 충돌 해소",
