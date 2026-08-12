@@ -69,8 +69,8 @@ python install/install.py
 ```
 python install/install.py --list
 ```
-스킬 32개와 프리셋 목록이 카테고리별로 나옵니다. 그중 4개(docx·xlsx·pdf·pptx)는
-Anthropic 소유라 이 저장소에 동봉되지 않고 안내만 나옵니다 — 실제로 설치되는 것은 27개입니다.
+스킬 33개와 프리셋 목록이 카테고리별로 나옵니다. 그중 4개(docx·xlsx·pdf·pptx)는
+Anthropic 소유라 이 저장소에 동봉되지 않고 안내만 나옵니다 — 실제로 설치되는 것은 29개입니다.
 
 ### 이미 뭘 설치할지 아는 경우 (한 줄로)
 
@@ -84,7 +84,7 @@ python install/install.py --skills primer-design,literature-review --apply
 
 **프리셋 목록**: `paper-writing`(논문 작성) · `literature`(문헌 조사) ·
 `molbio`(분자생물학) · `data-figures`(데이터·그림) · `documents`(문서 작업) ·
-`all`(전체 — 동봉 28개, 외부 4개는 안내만)
+`all`(전체 — 동봉 29개, 외부 4개는 안내만)
 
 - 설치 대상 폴더는 기본이 `~/.claude/skills/`입니다. 다르면 `--dest <경로>` 로 지정하세요.
 - 설치라고 해서 빌드/컴파일이 필요한 게 아닙니다 — **폴더 복사가 곧 설치**입니다.
