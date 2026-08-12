@@ -3,6 +3,10 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.21] — 2026-08-13
+
+- docs: sync QUICKSTART.md skill counts (28->29 shipped, 32->33 cataloged)
+
 ## [1.2.20] — 2026-08-13
 
 - fix: normalize avoid-ai-writing to LF, update skill count to 29
