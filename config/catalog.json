@@ -52,6 +52,14 @@
     "notion": {
       "role": "페이지 검색·추가 + DB 조회·행추가 (write-guard)",
       "needs": "Notion Integration 토큰"
+    },
+    "calendar": {
+      "role": "Google Calendar 일정 조회 + 생성 (참석자=outward 경고, 수정·삭제 없음)",
+      "needs": "Google OAuth 클라이언트 + 토큰 (최초 1회 브라우저 동의)"
+    },
+    "sheets": {
+      "role": "Google Sheets 값 조회 + 행 추가 (append-only, 기존 셀 불가침)",
+      "needs": "Google OAuth 클라이언트 + 토큰 (최초 1회 브라우저 동의)"
     }
   },
   "skills": {

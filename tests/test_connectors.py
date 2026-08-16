@@ -6,13 +6,13 @@
 왜 이 파일이 필요한가
 ---------------------
 커넥터는 이 저장소에서 **바깥으로 나가는 유일한 코드**다(메일 발송, PR 생성,
-Asana/Notion 쓰기). 그런데 260816 감사 시점까지 5종 중 어느 것도 전용 테스트가
+Asana/Notion 쓰기, 캘린더 초대, 시트 행 추가). 그런데 260816 감사 시점까지 어느 것도 전용 테스트가
 없었다 — argparse 표면도, dry-run 페이로드도, --write 게이트도 회귀 안전망 밖에
 있었다. 나가는 코드가 조용히 깨지면 되돌리기 어렵다.
 
 무엇을 검사하는가 (전부 오프라인)
 --------------------------------
-1. 5종의 argparse 가 실제로 파싱되는가 — 서브커맨드 이름이 문서와 일치하는가
+1. 각 커넥터의 argparse 가 실제로 파싱되는가 — 서브커맨드 이름이 문서와 일치하는가
 2. 쓰기 명령은 --write 없이 **아무것도 보내지 않는가** (dry-run 격리)
 3. --write 가 있으면 실제로 전송 경로를 타는가 (게이트가 반대로 막고 있지 않은가)
 4. 토큰이 없을 때의 동작이 명령마다 **의도한 대로** 갈리는가
@@ -93,6 +93,8 @@ EXPECTED = {
     "asana_connector":    ["me", "tasks", "add-task", "add-comment", "add-subtask"],
     "notion_connector":   ["search", "page", "append"],
     "notion_db_connector": ["list-dbs", "schema", "query", "add-row"],
+    "calendar_connector": ["calendars", "list", "agenda", "add-event"],
+    "sheets_connector":   ["info", "read", "append"],
 }
 
 MODS = {}
@@ -136,6 +138,19 @@ DRYRUN_CASES = [
      dict(workspace="ws-1", name="task name", notes="n",
           assignee=None, write=False),
      "task name"),
+    # 구글 커넥터는 http() 가 아니라 _google_auth 를 통해 나간다 — 아래에서 별도 처리.
+]
+
+# 구글 2종: 네트워크 차단 지점이 다르므로(gauth.api_post/api_get) 따로 돌린다.
+GOOGLE_DRYRUN = [
+    ("calendar_connector", "cmd_add_event",
+     dict(calendar="primary", summary="회의", start="2026-08-20T14:00:00",
+          end="2026-08-20T15:00:00", description=None, location=None,
+          attendee=None, write=False),
+     "회의"),
+    ("sheets_connector", "cmd_append",
+     dict(sheet="SID", range="S1!A:C", row="a,b,c", write=False),
+     "a"),
 ]
 
 for mod_name, fn_name, kwargs, must_contain in DRYRUN_CASES:
@@ -163,6 +178,66 @@ for mod_name, fn_name, kwargs, must_contain in DRYRUN_CASES:
 
 
 # ─────────────────────────────────────────────────────────────
+print("\n[2b] 구글 커넥터 dry-run — 토큰 조회조차 하지 않는다")
+
+# 구글 2종은 인증이 파일 읽기라, dry-run 이 access_token() 을 부르면 토큰 파일이
+# 없는 사람에게서 미리보기가 죽는다. 그래서 '네트워크 안 탐'보다 강한 조건 —
+# access_token() 자체를 부르지 않는가 — 를 본다.
+for mod_name, fn_name, kwargs, must_contain in GOOGLE_DRYRUN:
+    mod = MODS.get(mod_name)
+    if mod is None or not hasattr(mod, fn_name):
+        check(f"{mod_name}.{fn_name} dry-run", False, "함수 없음")
+        continue
+
+    touched = []
+
+    def _spy_token(*a, _t=touched, **k):
+        _t.append("access_token")
+        raise AssertionError("dry-run 이 토큰을 조회했다")
+
+    args = argparse.Namespace(**kwargs)
+    buf = io.StringIO()
+    try:
+        with mock.patch.object(mod.gauth, "access_token", _spy_token), \
+             mock.patch.object(mod.gauth, "api_post", _forbid_network), \
+             mock.patch.object(mod.gauth, "api_get", _forbid_network):
+            with redirect_stdout(buf):
+                mod.__dict__[fn_name](args, None)
+        out = buf.getvalue()
+        ok = "[DRY-RUN]" in out and must_contain in out and not touched
+        check(f"{mod_name}.{fn_name} — 토큰 없이 미리보기", ok,
+              f"touched={touched} out={out[:140]!r}")
+    except NetworkTouched as exc:
+        check(f"{mod_name}.{fn_name} — 토큰 없이 미리보기", False, str(exc))
+    except Exception as exc:  # noqa: BLE001
+        check(f"{mod_name}.{fn_name} — 토큰 없이 미리보기", False,
+              f"{type(exc).__name__}: {exc}")
+
+# 캘린더 초대는 남에게 나가는 동작이다 — 미리보기가 그 사실을 반드시 알려야 한다.
+_cal = MODS.get("calendar_connector")
+if _cal is not None:
+    buf = io.StringIO()
+    with mock.patch.object(_cal.gauth, "api_post", _forbid_network):
+        with redirect_stdout(buf):
+            _cal.cmd_add_event(argparse.Namespace(
+                calendar="primary", summary="s", start="2026-08-20",
+                end="2026-08-21", description=None, location=None,
+                attendee=["a@b.com"], write=False), None)
+    out = buf.getvalue()
+    check("calendar add-event — 참석자 있으면 outward 경고", "outward" in out,
+          "초대장이 나가는데 미리보기가 경고하지 않는다")
+
+# 시트는 additive-only 여야 한다 — 수정/삭제 서브커맨드가 생기면 정책 위반.
+_sh = MODS.get("sheets_connector")
+if _sh is not None:
+    subs = [a for a in _sh.build_parser()._actions
+            if isinstance(a, argparse._SubParsersAction)]
+    names = set(subs[0].choices) if subs else set()
+    banned = names & {"update", "delete", "clear", "set", "write-cell"}
+    check("sheets — 수정/삭제 서브커맨드 없음(additive-only)", not banned,
+          f"금지 서브커맨드가 생겼다: {sorted(banned)}")
+
+
 print("\n[3] --write 게이트 — 있으면 전송 경로를 실제로 탄다")
 
 # 게이트가 반대로 잠겨(항상 dry-run) 있으면 커넥터가 조용히 무력해진다.
@@ -319,5 +394,5 @@ if _fail:
     for f in _failures:
         print(f"  - {f}")
     sys.exit(1)
-print("ALL PASS — 커넥터 5종이 오프라인 계약을 지킨다")
+print(f"ALL PASS — 커넥터 {len(EXPECTED)}종이 오프라인 계약을 지킨다")
 sys.exit(0)
