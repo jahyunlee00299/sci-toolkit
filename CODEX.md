@@ -260,12 +260,58 @@ Then tell Codex where they are, e.g. in your project `AGENTS.md`:
 > Skills live in `./skills/`. Before a task that matches a row in the §0
 > routing table, read that skill's `SKILL.md` and follow it.
 
-## Document skills (docx / pdf / pptx / xlsx)
+## Document skills (docx / pdf / pptx / xlsx) — you have OpenAI's, not Anthropic's
 
-Not in this repository — they are Anthropic's and their license forbids
-redistribution. See `docs/12_문서스킬_직접_준비하기.md`. Under Codex you will
-not have them at all, so for Word/Excel work use the lab-authored tools that
-did ship, in `skills/manuscript-pipeline/scripts/`:
+This repository ships none of them: they are Anthropic's and their license
+forbids redistribution (`docs/12_문서스킬_직접_준비하기.md`). That does **not**
+leave you without office tooling under Codex — it means you use a different
+implementation, and the routing table rows that name `docx`/`pptx`/`xlsx`/`pdf`
+resolve to OpenAI's bundled equivalents instead.
+
+Verified 2026-08-16 on Codex CLI 0.147.0. Five plugins ship under
+`$CODEX_HOME/plugins/cache/openai-primary-runtime/`, all registered
+`enabled = true` in `~/.codex/config.toml` — active by default, not opt-in:
+
+| Codex plugin | Covers | Notes |
+|---|---|---|
+| `presentations` | `.pptx`, Google Slides | Bundled 26-layout template library; template-following mode inherits a supplied deck's masters |
+| `documents` | `.docx`, Google Docs | Built on `python-docx` plus an OOXML patch layer for tracked changes and comments |
+| `spreadsheets` | `.xlsx`/`.xls`/`.csv`/`.tsv`, Google Sheets | Also drives a live Excel instance |
+| `pdf` | Read / create / render / extract | `reportlab`, `pdfplumber`/`pypdf`, Poppler |
+| template&#8209;creator | Turns an existing artifact into a reusable personal skill | |
+
+Two constraints worth knowing before you plan the work, both stated in the
+plugins' own `SKILL.md` files:
+
+- **`presentations` forbids the python&#8209;pptx library** and works only through
+  its own sandboxed JS API. Do not try to script a deck around it.
+- **`presentations` forbids programmatically drawn images** (matplotlib output,
+  vector shapes built in code) for slide visuals.
+
+That second one collides with how this toolkit makes scientific slides, so
+route around it — see below.
+
+### Making a scientific deck under Codex
+
+`journal-presentation-maker` assumes the Claude-side `pptx` skill, whose figure
+pipeline (pull a figure out of a paper PDF, crop it, place it) has no
+counterpart here. Under Codex, split the work:
+
+1. **Make the figures first, outside the deck.** `publication-figures` produces
+   PNGs and `scripts/figure_lint.py` gates them — unchanged under Codex, both
+   are plain Python.
+2. **Then hand `presentations` finished image files.** Placing an existing PNG
+   is not "programmatically drawing" one, so this stays inside its rules.
+3. Keep the content gates as they are: numbers still trace to their source
+   (§3), notation still goes through `academic-term-rules`.
+
+Do not ask `presentations` to plot your data. It will either refuse or produce
+something you would not put in a talk.
+
+### Lab-authored Word tools still work
+
+Independent of either vendor's skills, these shipped with this package and run
+on plain `python-docx` (plus `pywin32` for the COM tools):
 
 ```bash
 python skills/manuscript-pipeline/scripts/manuscript_text.py FILE.docx --count-only
@@ -273,5 +319,5 @@ python skills/manuscript-pipeline/scripts/figure_caption_check.py FILE.docx
 python skills/manuscript-pipeline/scripts/word_com_ops.py --help    # Windows + Word
 ```
 
-These need `python-docx` (and `pywin32` for the Word COM tools). They do not
-depend on the Anthropic skills.
+The 🔒 gate in §0 for extracting `.docx` text (`--count-only` first, exit 10 =
+tracked changes) applies whichever office skill you used to make the file.
