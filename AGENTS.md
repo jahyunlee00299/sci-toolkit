@@ -31,11 +31,13 @@ special characters with plain ASCII equivalents when writing in that language.
 > not the reverse, so the generic file stays the source of truth.
 
 > **Codex note**: everything in this file applies to you. One thing does not
-> carry over: the guards in `hooks/` run as `PreToolUse` hooks under Claude
-> Code, and **Codex has no equivalent** — nothing inspects a command before it
-> executes. The seven rules those guards enforce therefore become rules you
-> follow by reading them. They are spelled out, with the exact patterns, in
-> **[`CODEX.md`](CODEX.md)**. Read it before your first destructive or
+> carry over automatically: the guards in `hooks/` run as `PreToolUse` hooks
+> under Claude Code, and **under Codex nothing runs them unless you wire them
+> yourself** — so by default no check inspects a command before it executes.
+> The seven rules those guards enforce therefore become rules you follow by
+> reading them. They are spelled out, with the exact patterns, in
+> **[`CODEX.md`](CODEX.md)** — which also covers Codex's own hook and rules
+> mechanisms, and its sub-agent tools. Read it before your first destructive or
 > outward-facing action.
 
 ---

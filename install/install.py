@@ -33,6 +33,7 @@ for _s in (_sys.stdout, _sys.stderr):
 
 import argparse
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -280,18 +281,20 @@ def default_dest() -> tuple[Path, str]:
     """설치 대상 기본값을 환경에서 정한다. (경로, 근거) 를 돌려준다.
 
     `~/.claude/skills` 를 무조건 기본값으로 쓰면 Codex 사용자에게는 아무 의미가
-    없는 폴더에 설치된다 — 그쪽은 스킬 등록 개념이 없고 AGENTS.md 가 가리키는
-    경로를 읽을 뿐이다. 그래서 무엇이 있는지 보고 정한다.
+    없는 폴더에 설치된다. 그래서 무엇이 있는지 보고 정한다.
+
+    Codex 도 스킬 레지스트리가 있다 — `$CODEX_HOME/skills`(기본 `~/.codex/skills`)
+    가 user scope 정본이고, 세션 시작 시 그 목록이 주입된다(0.147.0 실측).
+    CODEX_HOME 을 존중해야 커스텀 홈을 쓰는 설치본에서도 맞는 곳에 들어간다.
     """
     home = Path.home()
     claude = home / ".claude"
-    codex = home / ".codex"
+    codex_home = os.environ.get("CODEX_HOME")
+    codex = Path(codex_home) if codex_home else home / ".codex"
     if claude.is_dir() and not codex.is_dir():
         return claude / "skills", "Claude Code 환경 감지"
     if codex.is_dir() and not claude.is_dir():
-        # Codex 는 스킬 레지스트리가 없다. 현재 폴더에 두고 AGENTS.md 가
-        # 가리키게 하는 편이 정직하다 — 자세한 건 CODEX.md.
-        return Path.cwd() / "skills", "Codex 환경 감지 (CODEX.md 참조)"
+        return codex / "skills", "Codex 환경 감지"
     if claude.is_dir() and codex.is_dir():
         return claude / "skills", "Claude Code·Codex 모두 감지 — Claude 쪽 기본"
     return Path.cwd() / "skills", "에이전트 미감지 — 현재 폴더"
