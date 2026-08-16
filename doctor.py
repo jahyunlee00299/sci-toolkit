@@ -879,6 +879,7 @@ SELF_TEST_SCRIPTS = [
     ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
     ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),
     ("tests/test_connectors.py", "REST connectors (dry-run isolation, --write gate, token gating)"),
+    ("tests/test_service_routing.py", "service/skill routing (connector-silent steering, dead skill refs)"),
 ]
 
 
