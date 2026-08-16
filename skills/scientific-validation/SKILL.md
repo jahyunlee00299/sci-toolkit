@@ -72,8 +72,10 @@ Every fitted parameter must (a) land inside its physical range, (b) NOT sit on a
 (c) be actually identifiable from the data.
 
 - **Physical range.** Each parameter has a known plausible window. Out-of-window = unit error or wrong mechanism.
-  Domain windows live in `kinetic-bo-pipeline` SKILL.md ("Decision Points: Physical Plausibility Criteria")
-  and a starter table is in `scripts/sci_validate.py` (`PHYSICAL_RANGES`). Examples:
+  The shipped table is `PHYSICAL_RANGES` in `scripts/sci_validate.py` — read it there, and widen it in
+  that file when a new parameter class appears. (A lab may keep further domain windows in its own
+  kinetics/BO pipeline skill; that skill is not part of this package, so do not send the reader to it.)
+  Examples:
   - `kcat_true` (dehydrogenase): **1–50 s⁻¹**; <0.1 or >500 → suspect Vmax(mM/s)-vs-kcat(1/s) unit error.
   - `Km` (mM): typically 0.01–10; <0.01 or >50 → caution.
   - `effectiveness_factor`: 0.15–1.0; >1.0 is **non-physical** (can't exceed unity).

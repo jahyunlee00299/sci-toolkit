@@ -209,3 +209,67 @@ journal-presentation-maker 2곳=페이월 렌더·슬라이드 육안검사, mar
   것으로 오해할 여지는 남는다. 검사 자체는 `--write` 시점에 반드시 수행된다.
 - Google Calendar / 공유 Sheets 는 여전히 REST 커넥터가 없다(문서에 명시된 기존
   예외). 이번 작업 범위 밖 — 커넥터 신규 작성은 별건이다.
+
+---
+
+## 260816b — 적대검증 후속: 커넥터 침묵 유도 제거 + 라우팅 게이트
+
+### 범위 / 레이어
+
+cross-cutting 레이어. 260816 감사가 "MCP 유도 위반 0건"으로 결론냈으나,
+독립 적대검증이 **그 결론을 반증**했다. 이 항목은 그 반증의 처리다.
+
+### 무엇이 잘못됐었나
+
+- **감사 범위 오류**: 앞선 감사는 `skills/**/SKILL.md` 만 훑고 그것을 전체인 양
+  보고했다. 실제 MCP 언급은 21개 파일 114건(대부분 반MCP 정책문이라 안전
+  결론 자체는 유지). 범위를 좁혀놓고 전칭으로 말한 것이 문제.
+- **자기확증 구조**: 감사를 자기 수정본(HEAD = `merge: rest-over-mcp-260816`)
+  위에서 돌렸다. 교과서적 self-confirmation 배치라 사각지대가 그대로 남았다.
+- **실제 위반 1건**: `skills/academic-term-rules/.prompt.md:162` §11
+  "Notion Page Writing Rules" 가 Notion 페이지 작성을 지시하면서
+  `notion_connector.py` 를 한 번도 언급하지 않았다. 커넥터를 안 알려주는
+  침묵이 곧 유도다 — 에이전트는 가진 도구(=MCP)로 넘어간다.
+  MCP 라는 단어가 없어 문자열 검색에, 점 파일이라 SKILL.md 글롭에 각각 걸리지
+  않는 이중 사각이었다.
+
+### 조치
+
+| 지점 | 동작 | 발화 확인 |
+|---|---|---|
+| `.prompt.md` 삭제 | `SKILL.md`(17절)의 구버전(12절) 고아 파일. 참조 0건, 고유 내용은 §11 Notion 절뿐이며 그것이 위반 당사자. 현행 §11은 Superscript 규칙으로 교체돼 있었다 | ✅ `git rm`, 이력 보존 |
+| `scientific-validation/SKILL.md:75` | 미배포 스킬(kinetic-bo-pipeline)을 1순위로 가리키던 것을 배포되는 `scripts/sci_validate.py` `PHYSICAL_RANGES` 로 교체 | ✅ 검사 B |
+| `tests/test_service_routing.py` | 신규 — 검사 A(커넥터 침묵) + 검사 B(죽은 스킬 참조) | ✅ 2/2 |
+| `doctor.py SELF_TEST_SCRIPTS` | 신규 등록 | ✅ 21→22종 |
+
+`.prompt.md` 삭제의 부수 효과: §11이 연구 이미지를 `catbox.moe`(익명 공개
+호스팅)에 올리라고 권했다. 랩 배포판에 있어서는 안 될 조언이라 함께 사라졌다.
+
+### 증거 / 반증
+
+- **반증 1 실패 → 설계 수정**: 삭제한 `.prompt.md` 를 되살려도 검사 A가
+  **못 잡았다**(EXIT=0). 원인은 행동어를 본문에서만 찾은 것 — 제목은
+  "Notion Page **Writing** Rules" 인데 본문은 "use `<br>`", "must use public
+  URLs" 라 `write`/`작성` 이 안 걸렸다. 지시성은 제목에 실린다. 제목+본문을
+  함께 보도록 고치고 어간 매칭(`writ`)으로 바꿨다.
+- **반증 1 재시도 통과**: 같은 파일 복원 → `FAIL … .prompt.md:162` 검출, EXIT=1.
+- **반증 2 통과**: 없는 스킬 이름을 스킬로 호명하는 한 줄 삽입 →
+  검사 B가 파일:줄과 함께 검출, EXIT=1. 원복 확인.
+- 오탐 제거: 검사 B 초판이 x-axis · margin-top · load-bearing 같은 케밥 토큰을
+  전부 주워 11건 오탐. 허용목록을 늘리는 대신 **판별 문법을 바꿨다** —
+  ``` `foo` 스킬 ``` / ``` skill `foo` ``` / `Skill("foo")` 처럼 저자가 "이건
+  스킬"이라고 명시한 자리만 본다. 오탐 11 → 0.
+  검사 A도 "GitHub auto-detects theme"(렌더링 설명) 오탐 1건을 지시성 판정으로 제거.
+- Regress: `doctor.py` 12 OK / 0 WARN / 0 FAIL, self-test 22/22.
+  `test_doc_counts.py` 가 README 개수 22→23 미갱신을 잡아 해소.
+
+### 남은 위험 / 의도적 한계
+
+- 두 검사 모두 **어휘 기반**이다. 적대검증자도 같은 한계를 지적했다 — 열거한
+  패턴 밖의 표현으로 유도하면 통과한다. 의미 판정이 아니라 "저자가 명시한
+  자리"만 보는 보수적 설계라, 놓치는 쪽으로 실패한다(오탐보다 미탐).
+- 검사 A는 커넥터 보유 3서비스(notion·asana·github)만 본다. mail 은 서비스명이
+  일반명사라 제목 매칭 오탐이 커서 제외했다 — mail 유도는 `AGENTS.md §9`
+  draft-first 게이트와 `test_connectors.py` 의 SMTP 부재 단언이 대신 막는다.
+- 캘린더·공유시트는 여전히 커넥터가 없다(문서화된 예외). 그 두 서비스로의
+  MCP 안내는 검사 대상이 아니며, 그것이 의도다.
