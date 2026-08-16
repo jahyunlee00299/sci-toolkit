@@ -103,17 +103,23 @@ def cmd_repo(args, token):
 
 
 def cmd_open_pr(args, token):
-    repo_url = f"{API_ROOT}/repos/{args.repo}"
-    repo_data = http("GET", repo_url, token)
-    is_fork = bool(repo_data.get("fork"))
-    parent = (repo_data.get("parent") or {}).get("full_name")
+    # fork 가드는 저장소를 조회해야 판정된다 → 토큰이 필요하다. 토큰 없이 부른
+    # dry-run 은 페이로드만 보여주고, 가드를 "통과"한 게 아니라 "아직 못 돌렸다"고
+    # 밝힌다. 여기서 조용히 넘어가면 --write 없이 본 미리보기가 upstream 안전을
+    # 확인해 준 것처럼 읽힌다.
+    fork_checked = token is not None
+    if fork_checked:
+        repo_url = f"{API_ROOT}/repos/{args.repo}"
+        repo_data = http("GET", repo_url, token)
+        is_fork = bool(repo_data.get("fork"))
+        parent = (repo_data.get("parent") or {}).get("full_name")
 
-    if is_fork and parent and parent == args.repo:
-        sys.exit(
-            "[거부] 이 저장소는 fork이며 --repo 가 가리키는 대상이 바로 그 upstream(parent) 저장소입니다.\n"
-            "  upstream에 대한 push/PR은 명시적인 사람의 직접 조작이 필요합니다.\n"
-            "  대신 본인 fork에서 PR을 여세요 (예: --repo <your-username>/<repo>)."
-        )
+        if is_fork and parent and parent == args.repo:
+            sys.exit(
+                "[거부] 이 저장소는 fork이며 --repo 가 가리키는 대상이 바로 그 upstream(parent) 저장소입니다.\n"
+                "  upstream에 대한 push/PR은 명시적인 사람의 직접 조작이 필요합니다.\n"
+                "  대신 본인 fork에서 PR을 여세요 (예: --repo <your-username>/<repo>)."
+            )
 
     body_preview = {
         "title": args.title,
@@ -128,6 +134,9 @@ def cmd_open_pr(args, token):
         print(f"  대상 저장소: {args.repo}")
         print("  생성될 PR (draft):")
         print(json.dumps(body_preview, ensure_ascii=False, indent=2))
+        if not fork_checked:
+            print("  [주의] 토큰이 없어 fork/upstream 검사를 아직 돌리지 못했습니다.")
+            print("         --write 실행 시 검사 후 upstream 대상이면 거부됩니다.")
         print("  실행하려면 --write 를 추가하세요.")
         return
 
@@ -180,7 +189,9 @@ def main():
         parser.print_help()
         print("\n[안내] 읽기(issues/prs/repo)는 바로 실행됩니다. 쓰기(open-pr)는 --write 가 있어야 실행됩니다.")
         return
-    token = cred.require("github", "token")
+    # dry-run(쓰기 명령인데 --write 없음)은 토큰 없이도 미리보기 가능하게 한다.
+    is_dryrun_write = hasattr(args, "write") and not args.write
+    token = None if is_dryrun_write else cred.require("github", "token")
     args.func(args, token)
 
 

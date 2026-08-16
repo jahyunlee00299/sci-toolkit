@@ -162,7 +162,9 @@ def main():
         parser.print_help()
         print("\n[안내] 읽기(search/page)는 바로 실행됩니다. 쓰기(append)는 --write 가 있어야 실행됩니다.")
         return
-    token = cred.require("notion", "token")
+    # dry-run(쓰기 명령인데 --write 없음)은 토큰 없이도 미리보기 가능하게 한다.
+    is_dryrun_write = hasattr(args, "write") and not args.write
+    token = None if is_dryrun_write else cred.require("notion", "token")
     args.func(args, token)
 
 
