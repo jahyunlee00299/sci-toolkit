@@ -22,13 +22,20 @@ Do NOT use when:
 
 ## Execution Method
 
-This skill runs as a **multi-agent team via TeamCreate**, not a single inline run. The team has:
-- 1 main coordinator (handles user decisions, orchestration, and direct DB INSERT)
-- 1 `crossref-verifier` agent (CrossRef DOI verification + RIS generation)
-- 1 `openalex-verifier` agent (OpenAlex cross-check + new ref verification)
-- 1 `ref-resolver` agent (hallucination recovery + citation rewrite plan)
+A non-trivial run (≥10 refs) splits into four roles. Use **whatever delegation
+mechanism your agent provides** — a sub-agent/task tool under Claude Code,
+`spawn_agent` under Codex. Do not hard-code one vendor's API here; if your agent
+has no delegation at all, run the roles sequentially in one context instead.
 
-Spawn this team at the start of any non-trivial run (≥10 refs). For ≤5 refs, the main can do everything inline.
+- **coordinator** — user decisions, orchestration, and the direct DB INSERT
+- **crossref-verifier** — CrossRef DOI verification + RIS generation
+- **openalex-verifier** — OpenAlex cross-check + new-ref verification
+- **ref-resolver** — hallucination recovery + citation rewrite plan
+
+For ≤5 refs, skip delegation — the overhead of spinning up separate contexts
+exceeds the work (§6). Whichever way you run it, the verification gate applies
+unchanged: a sub-agent reporting "done" is not evidence, so re-read the actual
+output before trusting it (§2).
 
 ## Pipeline (10 phases)
 

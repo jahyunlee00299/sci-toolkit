@@ -193,10 +193,11 @@ agent for what one or two direct reads would answer, and prefer a single
 verifier holding the whole artifact over parallel verifiers each holding a
 fragment.
 
-> Two skills in this package request a team: `journal-presentation-maker` and
-> `endnote-citation-injection`. The latter names `TeamCreate`, a **retired**
-> Claude Code API — treat that instruction as "use whatever delegation your
-> agent provides," which under Codex means `spawn_agent`.
+> Two skills in this package ask for delegation: `journal-presentation-maker`
+> and `endnote-citation-injection`. Both are written against roles rather than a
+> vendor API, so under Codex they map onto `spawn_agent` directly. Neither needs
+> a team below its stated threshold — `endnote-citation-injection` says to run
+> ≤5 refs inline, and §6 says the same thing generally.
 
 ---
 

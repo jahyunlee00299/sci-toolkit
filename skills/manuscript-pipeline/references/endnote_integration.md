@@ -2,7 +2,7 @@
 
 > 단일/소수 DOI를 본문에 점진적으로 삽입할 때의 워크플로우.
 > **대량 batch 변환(10개 이상, hallucination 검증 필요)** 은 `endnote-citation-injection` 스킬 사용.
-> Track Changes XML 삽입 패턴은 docx 스킬(이 저장소에 없음 — docs/12 참조)(이 저장소에 없음 — docs/12 참조) 참조.
+> Track Changes XML 삽입 패턴은 docx 스킬(이 저장소에 없음 — docs/12 참조) 참조.
 
 DOI를 기준으로 서지정보 수집 → 실재성/정합성 검증 → 인용 삽입 순서로 진행한다.
 
