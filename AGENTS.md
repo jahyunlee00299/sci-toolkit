@@ -69,7 +69,7 @@ and read its exit code rather than judging by eye.
 | Fit / optimize / calibrate a model | the relevant analysis skill → **`scientific-validation`** | 🔒 `scientific-validation/scripts/sci_validate.py` — mass balance, physical plausibility, parameter sanity. |
 | Report any number in a document/report/email | — | 🔒 §3 SSOT: re-derive from the canonical script/raw data. A number that only exists in chat history is not verified. |
 | Design primers / cloning | `primer-design` | Sequence re-checked against the construct; order sheet re-read before sending. |
-| Make slides | `pptx`(외부) / `journal-presentation-maker` | Numbers and claims traced to their source (§3). |
+| Make slides | figures first via `publication-figures` → `journal-presentation-maker` + the office skill your agent ships (see the note below the table) | Numbers and claims traced to their source (§3). Slide figures are finished image files, never plotted by the slide skill. |
 | Convert a file (PDF/docx/xlsx → md) | `markitdown`, `paper-extract` (또는 외부 `pdf`·`xlsx`) | Spot-check the output against the source; conversion silently drops content. |
 | Search the live web | `research-search` → built-in WebSearch / WebFetch | Cite sources; separate what a source said from your inference. No API key is needed. |
 | Send/post anything outward (mail, issue, task, page) | the connector in `scripts/connectors/` | 🔒 §9 draft-first: **stop at the draft.** A human sends it. |
@@ -77,10 +77,25 @@ and read its exit code rather than judging by eye.
 | Set up / install / "it's not working" | `doctor.py` | 🔒 `python doctor.py` must print `PASS` — quote the failing line, don't paraphrase. |
 | The user says something in this toolkit is broken, confusing, missing, or annoying ("이거 불편해요", "왜 안 되지", "자꾸 실패해요", "이런 게 있으면 좋겠는데") | fix it if you can, **and** `scripts/feedback_log.py add "<what>"` | Ask **one** question to fill in what you cannot infer, then record. Do not interrogate — an incomplete record beats no record. See §10. |
 
-> **외부 의존**: `docx`·`pdf`·`pptx`·`xlsx` 는 Anthropic 소유 스킬이라 이 저장소가
-> 재배포할 수 없다. 표에서 이들을 가리키는 행은 그 스킬이 사용자 환경에 있을 때만
-> 성립한다. 없으면 `docs/12_문서스킬_직접_준비하기.md` 를 따를 것. 랩 자체 제작
-> 원고 QC 도구 7종은 `manuscript-pipeline/scripts/` 로 옮겨 그대로 쓸 수 있다.
+> **외부 의존 — 오피스 문서(docx·pdf·pptx·xlsx)**: 이 저장소는 오피스 스킬을
+> 재배포하지 않는다. 표에서 `docx`·`pdf`·`pptx`·`xlsx` 를 가리키는 행은 **네가
+> 돌고 있는 에이전트가 제공하는 오피스 스킬**로 읽어라 — 구현이 무엇이든 그 행의
+> 게이트(🔒)는 그대로 적용된다.
+>
+> - **Claude Code** — Anthropic 오피스 스킬(사용자 환경에 있을 때)
+> - **Codex** — 자체 번들 오피스 플러그인이 기본 활성이다. 이름과 제약은
+>   `CODEX.md` 를 볼 것(슬라이드 쪽에 그림 관련 제약이 있다)
+> - **둘 다 없음** — `docs/12_문서스킬_직접_준비하기.md`
+>
+> 어느 쪽이든 **산출물 검증 게이트는 동일하다**: `.docx` 텍스트 추출은
+> `manuscript_text.py --count-only` 를 먼저 통과해야 하고(exit 10 = 추적변경),
+> figure 는 `scripts/figure_lint.py`, 수치는 §3 SSOT 를 탄다. 랩 자체 제작 원고 QC
+> 도구 7종(`manuscript-pipeline/scripts/`)은 오피스 스킬과 무관하게 동작한다.
+>
+> 슬라이드에 들어갈 그림은 **먼저 `publication-figures` 로 만들고 완성된 이미지
+> 파일을 넘겨라.** 슬라이드 스킬에 데이터를 주고 플롯을 그리게 하지 말 것 —
+> 그림의 출처 추적(§3)과 회귀 방지(§5)가 그 순간 끊기고, 에이전트에 따라서는
+> 아예 금지된 동작이다.
 
 ### Rules that override the table
 
