@@ -273,3 +273,69 @@ cross-cutting 레이어. 260816 감사가 "MCP 유도 위반 0건"으로 결론�
   draft-first 게이트와 `test_connectors.py` 의 SMTP 부재 단언이 대신 막는다.
 - 캘린더·공유시트는 여전히 커넥터가 없다(문서화된 예외). 그 두 서비스로의
   MCP 안내는 검사 대상이 아니며, 그것이 의도다.
+
+---
+
+## 260816c — 구글 캘린더·시트 커넥터 (MCP 마지막 예외 제거)
+
+### 범위 / 레이어
+
+core. `docs/05` 와 `connectors/README.md` 는 오래 "캘린더·공유 시트는 커넥터가
+없어 MCP 가 **유일한 정당한 예외**"라고 안내해 왔다. 그 예외가 남아 있는 한
+REST-우선 정책에 구멍이 하나 뚫린 채였다. 이 항목이 그 구멍을 닫는다.
+
+### 설계 판단 2개
+
+**stdlib 전용.** README 의 기존 TODO 는 google-api-python-client 설치를
+전제했지만, 나머지 커넥터 5종은 전부 urllib 만 쓴다 — "폴더만 복사하면 동작"이
+이 패키지의 원칙이라 구글만 예외를 두면 그게 깨진다. 그래서 refresh-token 교환을
+`_google_auth.py` 에 직접 구현했다(약 150줄). 최초 1회 브라우저 동의만 사람이
+하고, 그 뒤 갱신은 라이브러리 없이 돈다.
+
+**기존 토큰 재사용.** 토큰 파일을 구글 표준 형식(`access_token`/`refresh_token`/
+`expiry_date`)으로 읽으므로, 이미 다른 도구로 구글 토큰을 만들어 둔 사람은
+`token_cache_path` 가 그 파일을 가리키게만 하면 된다. 개인 경로는 문서·코드
+어디에도 넣지 않았다 — 랩 배포판이라 일반형만 싣는다.
+
+### 입출력 / 상태 소유
+
+| 지점 | 동작 | 발화 확인 |
+|---|---|---|
+| `_google_auth.access_token()` | 만료 60초 전 갱신, 파일에 다시 저장. 저장 실패는 경고만(이번 호출은 진행) | ✅ 수동 실행 |
+| `calendar_connector` 읽기 | calendars / list / agenda — 플래그 없이 | ✅ argparse 검사 |
+| `calendar add-event` | `--write` 필요. `--attendee` 있으면 outward 경고 선행 | ✅ 테스트 [2b] |
+| `sheets` 읽기 | info / read | ✅ argparse 검사 |
+| `sheets append` | `--write` 필요, `INSERT_ROWS` 로 기존 행 불가침 | ✅ 테스트 [2b] |
+| `tests/test_connectors.py` | 5종 → 7종, 31 → 41 검사 | ✅ 41/41 |
+| `config/catalog.json` connectors | calendar·sheets 등재 | ✅ |
+| `docs/05` · `docs/06` · `AGENTS.md §9` · `connectors/README.md` | "커넥터 없는 예외" 서술 제거, MCP 최후수단은 브라우저 탐색으로 한정 | ✅ 잔존 0건 grep |
+
+### 의도적으로 만들지 않은 것
+
+- **캘린더 수정·삭제 없음.** 남의 일정을 지우는 실수를 이 도구로는 낼 수 없어야 한다.
+- **시트 update·delete 없음.** 공유 시트의 기존 셀을 덮어쓰면 남이 넣은 값이
+  사실상 복구 불가로 사라진다(구글 버전기록을 사람이 뒤져야 한다). Notion 커넥터가
+  additive-only 인 것과 같은 이유. 기존 값 수정은 사람이 브라우저에서 한다.
+
+### 증거 / 반증
+
+- 오프라인 테스트 41/41. 구글 2종은 네트워크 차단만으로 부족해 **`access_token()`
+  호출 자체를 스파이**한다 — dry-run 이 토큰을 조회하면 토큰 파일이 없는 사람에게서
+  미리보기가 죽기 때문이다.
+- **반증 1**: `sheets` 에 `update` 서브커맨드를 심자 → additive-only 검사 FAIL,
+  exit 1. 원복 확인.
+- **반증 2**: `calendar` 의 `is_outward` 를 False 로 고정하자 → outward 경고 검사
+  FAIL, exit 1. 원복 확인.
+- CSV 파싱 확인: `--row 'a,"b,c",d'` → 3셀(단순 split 이면 4셀로 밀린다).
+- 실행 확인: 토큰 미설정 상태에서 dry-run 성공, `--write` 는 발급 안내와 함께 exit 1.
+- Regress: `doctor.py` 12 OK / 0 WARN / 0 FAIL, self-test 22/22.
+
+### 남은 위험 / 의도적 한계
+
+- **최초 OAuth 동의는 자동화하지 않았다.** 동의 화면을 스크립트가 대신 누르는 것은
+  하면 안 되는 종류의 자동화다. 그래서 이 커넥터는 "토큰이 이미 있다"를 전제하고,
+  없으면 발급 경로를 안내하며 종료한다.
+- `_google_auth` 는 refresh token 폐기(`invalid_grant`)를 감지해 재발급을 안내하지만,
+  재발급 자체는 사람 몫이다.
+- scope 는 토큰에 실려 있고 이 코드가 검사하지 않는다. 읽기 전용 scope 로 발급했다면
+  `--write` 는 API 가 403 으로 거절하며, 그 메시지를 그대로 보여준다.
