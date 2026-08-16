@@ -449,7 +449,8 @@ they extend §7 (Safety Baseline).
 
 - **Avoid MCP-style always-on connections.** For any service that already
   ships a REST/API connector script (`scripts/connectors/`) — mail, GitHub,
-  Asana, Notion — use that connector with a scoped personal token instead
+  Asana, Notion, calendar, shared sheets — use that connector with a scoped
+  personal token (or, for calendar/sheets, a one-time OAuth consent) instead
   of the tool's built-in "connect" button. A connector invocation only
   touches what that one command asked for; an MCP connection stays open to
   the whole account for every future turn regardless of whether the current
