@@ -122,6 +122,7 @@ OUTSIDE_ALLOWLIST = {
     "python-docx", "scikit-image", "sci-toolkit", "claude-code",
     # 커넥터 CLI 서브커맨드 (docs/07·08 의 사용 예시)
     "list-dbs", "add-row", "add-task", "add-comment", "add-subtask",
+    "add-event",  # calendar_connector (docs/05 §4-4)
     "list-tasks", "get-page", "add-page",
     # 문서 안의 플레이스홀더 예시
     "key-here", "your-token", "project-id",

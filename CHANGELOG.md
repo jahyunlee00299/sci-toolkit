@@ -3,6 +3,14 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.28] — 2026-08-16
+
+- feat(connectors): add Google Calendar and Sheets, stdlib-only
+
+## [1.2.27] — 2026-08-16
+
+- fix(skills): replace retired TeamCreate API with role-based delegation
+
 ## [1.2.26] — 2026-08-16
 
 - fix(routing): drop connector-silent Notion steering; gate the class

@@ -26,7 +26,9 @@ manuscript·Word·docx·SI·표·인용·교정 등 **단일 docx 파일을 다�
 - 통과 후에만 OneDrive 원본 교체. 실패 시 fixer에 반려.
 
 ## 도구 선택
-- **TeamCreate**: 사람이 단계 사이 검토·결정에 개입할 때(분석 결과 보고 → 사용자 결정 → 편집). 대화형.
+- **대화형 위임**(에이전트가 제공하는 sub-agent/task 도구): 사람이 단계 사이 검토·결정에
+  개입할 때(분석 결과 보고 → 사용자 결정 → 편집). 특정 벤더 API 이름에 묶지 말 것 —
+  Claude Code면 sub-agent, Codex면 `spawn_agent`, 없으면 한 컨텍스트에서 순차 실행.
 - **Workflow 도구**: 결정적 파이프라인이 필요하고 사용자가 "workflow" opt-in 했을 때.
   `pipeline(tables, analyze, ...)`로 표별 분석 fan-out → 패치 수집 → 단일 reduce 단계서 편집.
   편집 단계는 반드시 **단일 agent()** (worktree isolation은 docx엔 무의미 — zip 바이너리).
@@ -41,7 +43,7 @@ manuscript·Word·docx·SI·표·인용·교정 등 **단일 docx 파일을 다�
 
 **DOCX 5대 금지 준수** (docx 무결성): pack.py / del안의 delText 누락 / ins 안의 del 중첩 /
 floating delText / comment anchor 오삽입. comment anchor는 id=max+1, commentRangeStart는 w:p 직속 run 경계,
-`rfind('<w:del ')` 공백 필수. incremental_edit.py + 4단계 preflight. (상세 → docx 스킬(이 저장소에 없음 — docs/12 참조)(이 저장소에 없음 — docs/12 참조))
+`rfind('<w:del ')` 공백 필수. incremental_edit.py + 4단계 preflight. (상세 → docx 스킬(이 저장소에 없음 — docs/12 참조))
 
 **언제 tracked vs 직접 편집:**
 - 사용자가 검토할 본문/표/수치/문구 변경 → **tracked + comment 권장**.

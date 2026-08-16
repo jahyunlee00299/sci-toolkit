@@ -95,7 +95,7 @@ Parse → classify → point-by-point draft → tone policy → JSON/table/lette
 
 ## EndNote Citation Integration
 
-DOI 기준 DB 검색 → 정합성 확인 → 없으면 RIS 생성 → 인용 삽입. **단일/소수 DOI**는 EndNote helper CLI의 `doi-resolve` (provided separately); 상세 워크플로우·출력 해석·댓글 포맷·규칙 → `references/endnote_integration.md`. **대량 batch 변환(10+ , hallucination 검증)** → `endnote-citation-injection` 스킬. **Track Changes XML 삽입 패턴** → docx 스킬(이 저장소에 없음 — docs/12 참조)(이 저장소에 없음 — docs/12 참조). INSERT 전 CrossRef DOI 검증 필수.
+DOI 기준 DB 검색 → 정합성 확인 → 없으면 RIS 생성 → 인용 삽입. **단일/소수 DOI**는 EndNote helper CLI의 `doi-resolve` (provided separately); 상세 워크플로우·출력 해석·댓글 포맷·규칙 → `references/endnote_integration.md`. **대량 batch 변환(10+ , hallucination 검증)** → `endnote-citation-injection` 스킬. **Track Changes XML 삽입 패턴** → docx 스킬(이 저장소에 없음 — docs/12 참조). INSERT 전 CrossRef DOI 검증 필수.
 
 ## DOCX Safe Editing
 DOCX 편집(ZIP 무결성 보존, incremental_edit 세션, 4단계 preflight + Word COM ground-truth, tracked changes, comment anchor)은 **docx 스킬이 단일 진실원천(SSOT)**. python-docx `Document().save()` 금지. manuscript 작업 시 docx 스킬 프로토콜을 그대로 따른다.
