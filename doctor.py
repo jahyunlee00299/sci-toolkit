@@ -878,6 +878,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_env_detect.py", "shell-env detection (Windows Git-Bash/WSL branches)"),
     ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
     ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),
+    ("tests/test_connectors.py", "REST connectors (dry-run isolation, --write gate, token gating)"),
 ]
 
 
