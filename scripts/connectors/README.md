@@ -99,6 +99,29 @@ python notion_connector.py append --page-id <id> --text "..." --write
 | Asana/Notion 쓰기 | dry-run | `--write` |
 | 삭제·merge·archive | **없음** | 제공하지 않음 |
 
+### dry-run 은 토큰 없이 돌아갑니다 (예외 1건)
+
+`--write` 없이 부른 쓰기 명령은 **토큰이 없어도** 전송될 페이로드를 보여줍니다.
+토큰을 발급받기 전에 "무엇이 나가는지" 먼저 확인할 수 있습니다.
+
+```bash
+# 토큰이 없어도 이건 됩니다 — 페이로드만 출력
+python github_connector.py open-pr --repo me/r --head feat --base main --title "..."
+```
+
+다만 **dry-run 은 예행연습이 아닙니다.** 페이로드를 보여줄 뿐, 그 요청이 수락될지·
+대상이 실존하는지·안전검사를 통과했는지는 말해주지 않습니다. 토큰이 없어 검사를
+못 돌린 경우 커넥터가 미리보기에 그 사실을 적습니다 — 아무 말이 없다고 "검사 통과"로
+읽지 마세요. (예: `open-pr` 의 fork/upstream 검사는 저장소 조회가 필요해서, 토큰이
+없으면 `--write` 시점에 수행됩니다.)
+
+**예외 — `notion_db_connector.py add-row`** 는 `--write` 없이도 토큰을 요구합니다.
+이 명령의 미리보기는 속성명·타입을 실제 DB 스키마와 대조해야 의미가 있어서, 대조
+없이 만든 페이로드를 보여주면 검증된 것처럼 오해되기 때문입니다.
+
+> 회귀 테스트: `python tests/test_connectors.py` (자격증명·네트워크 불필요).
+> `doctor.py` 가 자동 실행합니다.
+
 ## 캘린더 / 공유 스프레드시트 — 📌 미제공 (향후 추가 가능)
 
 **지금 상태**: Google Calendar·Sheets 는 **스크립트 커넥터가 아직 없습니다.**

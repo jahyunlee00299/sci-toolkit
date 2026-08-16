@@ -237,6 +237,17 @@ def _build_property_payload(prop_type, name, raw_value):
 
 
 def cmd_add_row(args, token):
+    # add-row 의 dry-run 은 실제 스키마를 읽어야 성립한다 — 속성명이 존재하는지,
+    # 타입이 무엇인지 모르면 미리보기가 "이 페이로드가 맞다"고 말해줄 수 없다.
+    # 그래서 이 명령만은 dry-run 에도 토큰을 요구한다. 토큰 없이 만든 미리보기를
+    # 보여주는 편이 친절해 보이지만, 검증되지 않은 페이로드를 검증된 것처럼
+    # 보여주는 셈이라 더 나쁘다.
+    if token is None:
+        sys.exit(
+            "[오류] add-row 는 --write 없이도 Notion 토큰이 필요합니다.\n"
+            "  미리보기가 속성명·타입을 실제 스키마와 대조해야 의미가 있기 때문입니다.\n"
+            "  토큰 설정: python scripts/connectors/register_token.py"
+        )
     schema = _get_schema(args.db, token)
     props_schema = schema.get("properties", {})
 
@@ -343,7 +354,9 @@ def main():
             "쓰기(add-row)는 --write 가 있어야 실행됩니다."
         )
         return
-    token = cred.require("notion", "token")
+    # dry-run(쓰기 명령인데 --write 없음)은 토큰 없이도 미리보기 가능하게 한다.
+    is_dryrun_write = hasattr(args, "write") and not args.write
+    token = None if is_dryrun_write else cred.require("notion", "token")
     args.func(args, token)
 
 

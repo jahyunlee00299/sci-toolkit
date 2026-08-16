@@ -158,3 +158,54 @@
 - 팀(organization) 소속 저장소에서 `assignees`에 저장소 협업자가 아닌
   로그인을 넣으면 GitHub API가 조용히 무시한다(에러 없음) — 이 기능은
   "발견자가 이 저장소의 협업자"라는 전제를 검증하지 않는다.
+
+---
+
+## 260816 — REST 커넥터 회귀 안전망 + dry-run 토큰 계약 통일
+
+### 범위 / 레이어
+
+cross-cutting 레이어. 사용자 요청은 "스킬·워크플로우가 MCP 말고 REST API로 접근하게
+만들자"였으나, **선행조사 결과 정책 위반은 0건이었다** — `AGENTS.md §9`,
+`docs/05`, `scripts/connectors/README.md` 가 이미 REST 우선을 규정하고 커넥터
+5종이 존재한다. 스킬의 MCP 언급 4곳은 전부 정당(primer-design=자체 로컬 엔진,
+journal-presentation-maker 2곳=페이월 렌더·슬라이드 육안검사, markitdown=상류
+프로젝트 각주). 그래서 작업을 **정책 신설이 아니라 잔여 격차 메우기**로 재정의했다.
+
+### 입출력 / 상태 소유
+
+| 지점 | 동작 | 발화 확인 |
+|---|---|---|
+| `github/notion/notion_db main()` | 쓰기 명령 + `--write` 없음 → 토큰 요구 안 함 (asana 와 동일 규칙) | ✅ 테스트 [4] |
+| `github cmd_open_pr` | 토큰 없으면 fork 검사를 **건너뛰되 미리보기에 명시** | ✅ 테스트 [2] |
+| `notion_db cmd_add_row` | 의도적 예외 — 스키마 대조가 미리보기의 존재 이유라 토큰 요구 | ✅ 테스트 [4] |
+| `doctor.py SELF_TEST_SCRIPTS` | `tests/test_connectors.py` 신규 등록 | ✅ 20→21종, PASS 출력에 표시 |
+| `AGENTS.md §0` | "외부 서비스 읽기" 행 신설 (기존엔 outward 행만 존재) | ✅ `test_agents_routing.py` |
+| `AGENTS.md §9` | `--write` 계약 절 신설 (dry-run 은 토큰 불필요 / 예행연습 아님) | — 문서 |
+
+### 증거 / 반증
+
+- `tests/test_connectors.py` 신규 — **31/31 통과, 자격증명·네트워크 0**.
+  argparse 5종 · dry-run 격리 · `--write` 게이트 · 토큰 게이팅 · 메일 draft-first.
+  `http()` 를 폭탄으로 몽키패치해 dry-run 이 네트워크를 건드리면 그 자체를 실패로 잡는다.
+- **반증 1 (게이트 무력화)**: `notion append` 의 `if not args.write:` 를 `if False:` 로
+  바꿔 항상 전송되게 만들자 → 2건 FAIL, exit 1, "dry-run 경로가 네트워크를 호출했다"로
+  원인 지목. 원복 확인.
+- **반증 2 (토큰 게이트 약화)**: `github` 이 `--write` 에도 토큰을 요구하지 않게 만들자
+  → `--write 는 토큰 요구` FAIL, exit 1. 원복 확인.
+- 테스트 초안이 `--project` 를 가정했으나 실제는 `--workspace` 였다 —
+  **코드가 아니라 테스트를 고쳤다**(테스트를 통과시키려 코드를 바꾸지 않음).
+- Regress: `doctor.py` 12 OK / 0 WARN / 0 FAIL, self-test 21/21.
+  `test_doc_counts.py` 가 README 개수 21→22 미갱신을 잡아냈고 문서를 고쳐 해소.
+  `make_checksums.py` 가 미추적 파일을 거부해 커밋 순서를 강제했다(게이트 정상 작동).
+
+### 남은 위험 / 의도적 한계
+
+- `mail_connector send` 는 TTY + 타이핑 확인이라 자동 테스트로 발송 경로를 끝까지
+  몰 수 없다. 대신 "draft/reply 구간에 SMTP 흔적 없음"과 "isatty 존재"를 소스
+  수준에서 단언한다 — 행위 테스트가 아니라 구조 테스트다.
+- `github open-pr` 은 토큰 없는 dry-run 에서 fork 검사를 못 돌린다. 미리보기에
+  경고를 출력하지만, **사용자가 그 줄을 읽지 않으면** upstream 안전이 확인된
+  것으로 오해할 여지는 남는다. 검사 자체는 `--write` 시점에 반드시 수행된다.
+- Google Calendar / 공유 Sheets 는 여전히 REST 커넥터가 없다(문서에 명시된 기존
+  예외). 이번 작업 범위 밖 — 커넥터 신규 작성은 별건이다.

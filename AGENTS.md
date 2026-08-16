@@ -72,7 +72,8 @@ and read its exit code rather than judging by eye.
 | Make slides | figures first via `publication-figures` → `journal-presentation-maker` + the office skill your agent ships (see the note below the table) | Numbers and claims traced to their source (§3). Slide figures are finished image files, never plotted by the slide skill. |
 | Convert a file (PDF/docx/xlsx → md) | `markitdown`, `paper-extract` (또는 외부 `pdf`·`xlsx`) | Spot-check the output against the source; conversion silently drops content. |
 | Search the live web | `research-search` → built-in WebSearch / WebFetch | Cite sources; separate what a source said from your inference. No API key is needed. |
-| Send/post anything outward (mail, issue, task, page) | the connector in `scripts/connectors/` | 🔒 §9 draft-first: **stop at the draft.** A human sends it. |
+| Read anything from an external service (my tasks, issues, pages, inbox) | the connector in `scripts/connectors/` — reads need no flag (`mail list`, `github issues`, `asana tasks`, `notion search`) | Report what the service returned, not what you remember. Never reach for an always-on app connection when a connector covers the service (§9). |
+| Send/post anything outward (mail, issue, task, page) | the connector in `scripts/connectors/` | 🔒 §9 draft-first: **stop at the draft.** A human sends it. Without `--write` a connector only previews; that preview is not proof the write would succeed. |
 | Write or restructure code | — | §1 SOLID; §2 verification gate before claiming it works. |
 | Set up / install / "it's not working" | `doctor.py` | 🔒 `python doctor.py` must print `PASS` — quote the failing line, don't paraphrase. |
 | The user says something in this toolkit is broken, confusing, missing, or annoying ("이거 불편해요", "왜 안 되지", "자꾸 실패해요", "이런 게 있으면 좋겠는데") | fix it if you can, **and** `scripts/feedback_log.py add "<what>"` | Ask **one** question to fill in what you cannot infer, then record. Do not interrogate — an incomplete record beats no record. See §10. |
@@ -481,6 +482,27 @@ they extend §7 (Safety Baseline).
 - Prefer composing via the service's own draft mechanism (a real Drafts
   folder) so the human sends from the normal UI, rather than staging text
   somewhere non-standard.
+
+### The `--write` contract (what a dry-run does and does not prove)
+
+Every write-capable connector command refuses to act without `--write`; it
+prints the exact payload instead. Two consequences worth stating, because
+getting either backwards is how a preview turns into a surprise:
+
+- **A dry-run runs without credentials.** Previewing a write does not require
+  a token, so you can inspect what *would* be sent before any token exists.
+  The one deliberate exception is a command whose preview must be checked
+  against live schema to mean anything — there, the connector says so and
+  asks for the token rather than showing an unvalidated payload.
+- **A dry-run is not a rehearsal.** It shows the payload; it does not prove
+  the request would be accepted, that the target exists, or that a safety
+  check passed. When a connector could not run one of its guards without a
+  token, it says so in the preview — read that line rather than assuming
+  silence means "checked and fine."
+
+Never remove or weaken a `--write` gate to make an automation smoother. If a
+flow needs many writes, have the human approve the batch — do not make the
+gate disappear.
 
 ### Reading vs. writing vs. sending
 
