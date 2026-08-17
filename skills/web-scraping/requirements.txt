@@ -1,0 +1,41 @@
+# web-scraping skill dependencies
+# Stack chosen for being lightweight, actively maintained, and
+# MIT/BSD/Apache-2.0 licensed only.
+#
+# Install (base or research-agent conda env):
+#   pip install -r requirements.txt
+#
+# The optional dynamic-rendering dependency (Playwright) is listed at the
+# bottom and is NOT required for static / academic / file-harvest modes.
+
+# --- core: HTTP + static HTML extraction ----------------------------------
+httpx>=0.27            # HTTP client (sync + async, HTTP/2). requests successor.
+selectolax>=0.3.21     # fastest HTML parser (lexbor backend); primary parser.
+trafilatura>=2.0       # main-content text + metadata extraction -> Markdown.
+lxml>=5.0              # XPath / JATS XML parsing; fallback parser.
+beautifulsoup4>=4.12   # lenient parser for malformed HTML; final fallback.
+pandas>=2.0            # pandas.read_html for HTML table extraction.
+
+# --- academic metadata ----------------------------------------------------
+habanero>=1.2          # Crossref REST API client (DOI + metadata, polite pool).
+arxiv>=2.1             # official arXiv API wrapper.
+
+# --- file harvesting / conversion ----------------------------------------
+markitdown>=0.1        # document -> Markdown conversion (delegated step).
+
+# --- optional: dynamic JS rendering (install only when needed) ------------
+# Static extraction handles most research/public-data pages. Install the
+# browser path explicitly when a page is JavaScript-rendered:
+#   pip install playwright
+#   playwright install chromium
+# playwright>=1.44
+
+# --- optional: EZproxy auto-login (--auto-login flag) ---------------------
+# Required for Selenium-based Korea Univ library auto-login.
+# Chrome or Chromium must also be installed on the system.
+# Install:
+#   pip install selenium>=4.0 webdriver-manager>=4.0 requests
+# requests is a transient dependency of selenium; listed explicitly here.
+# selenium>=4.0
+# webdriver-manager>=4.0
+# requests>=2.28
