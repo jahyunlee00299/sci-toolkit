@@ -272,6 +272,12 @@
       "role": "에이전트/모델 라우팅 — 작업을 최소 비용 티어로 배정 (스폰·티어·구조 3게이트, 게이트 훅 패턴, 로그 기반 조정)",
       "requires": [],
       "size_kb": 8
+    },
+    "web-scraping": {
+      "category": "literature",
+      "role": "웹 크롤링·학술 메타데이터(Crossref/arXiv/bioRxiv)·PDF 일괄수집",
+      "requires": [],
+      "size_kb": 244
     }
   },
   "presets": {
@@ -329,7 +335,7 @@
     },
     "all": {
       "label": "전체 설치",
-      "desc": "33개 스킬 모두",
+      "desc": "34개 스킬 모두",
       "skills": [
         "__ALL__"
       ]
