@@ -114,7 +114,7 @@ python fetch_academic.py --source biorxiv --server medrxiv \
 `pdf_links`에 전문 PDF URL이 있으면 `harvest_files.py`로 바로 내려받을 수 있다.
 
 PubMed/OpenAlex 검색이 필요하면 이 스킬 대신 `pubmed-database`,
-`openalex-database`, `biopython` 스킬을 쓴다 (역할 분담, 중복 회피).
+`openalex-database` 스킬이나 Biopython(Bio.Entrez) 패키지를 쓴다 (역할 분담, 중복 회피).
 
 ### 2.3 fetch_dynamic.py — 동적 JS 페이지
 

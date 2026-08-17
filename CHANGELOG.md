@@ -3,6 +3,14 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.31] — 2026-08-17
+
+- fix(web-scraping): resolve CI failures from doctor gate
+
+## [1.2.30] — 2026-08-17
+
+- chore: bump version to 1.2.29 for web-scraping skill addition
+
 ## [1.2.29] — 2026-08-17
 
 - feat(skills): add web-scraping skill (lab-shared)

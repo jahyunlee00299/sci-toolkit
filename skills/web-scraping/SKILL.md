@@ -248,19 +248,21 @@ papers = CrossrefProvider().search("target compound", limit=5)
 ## Integration with Other Skills
 
 - `markitdown` — 수집한 PDF/DOCX를 Markdown으로 변환 (harvest_files `--convert`).
-- `pubmed-database`, `openalex-database`, `biopython` library — PubMed/OpenAlex 검색.
-  이 스킬은 중복하지 않고 Crossref/arXiv/bioRxiv만 담당.
+- `pubmed-database`, `openalex-database` 스킬, 또는 Biopython(Bio.Entrez) 파이썬
+  패키지를 직접 import — PubMed/OpenAlex 검색. 이 스킬은 중복하지 않고
+  Crossref/arXiv/bioRxiv만 담당.
 - `literature-review` — 체계적 문헌고찰. 이 스킬로 수집한 메타데이터를 입력으로 활용.
 - `onedrive` — OneDrive 경로 저장 시. OneDrive Safety 규칙(recursive glob 금지,
   대용량 파일 사전 확인) 준수.
 
 ## 기관 교외접속 PDF 다운로드 규칙
-1. OA 논문 먼저 수집 → `python scripts/pdf_download_tracker.py log OA`
-   (또는 your own helper script for tracking download quota)
-2. 교외접속 필요분만 → `python scripts/pdf_download_tracker.py log [출판사]`
-   - ScienceDirect = Elsevier (동일 카운터)
-3. 작업 전 반드시 한도 확인: `python scripts/pdf_download_tracker.py status`
-4. 기관 도서관 정책 위반 시 접근 정지 가능 — 출판사별 일일/월간 한도를 준수할 것
+1. OA 논문 먼저 수집 — 기관 접근(EZproxy 등)이 필요 없는 다운로드는 한도에서 제외.
+2. 교외접속(EZproxy 등)이 필요한 다운로드만 한도 추적 대상 — 필요하면 별도의
+   다운로드 카운터 스크립트를 만들어 출판사별 건수를 기록할 것
+   (예: ScienceDirect·JBC는 둘 다 Elsevier이므로 동일 카운터로 합산).
+3. 작업 전 반드시 그날/그 시간대의 누적 건수를 확인 — 기관 한도는 자정 리셋이
+   아니라 롤링 윈도우(예: ~24h)로 걸리는 경우가 많다 (§4 rate-limit 항목 참고).
+4. 기관 도서관 정책 위반 시 접근 정지 가능 — 출판사별 일일/월간 한도를 준수할 것.
 
 ## 제출 전 ref 원문 대조 감사
 

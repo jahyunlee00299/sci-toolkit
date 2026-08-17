@@ -1,6 +1,6 @@
 # web-scraping skill dependencies
-# Stack chosen per the GitHub tool survey (researcher, 2026-05-23):
-# lightweight, actively maintained, MIT/BSD/Apache-2.0 only.
+# Stack chosen for being lightweight, actively maintained, and
+# MIT/BSD/Apache-2.0 licensed only.
 #
 # Install (base or research-agent conda env):
 #   pip install -r requirements.txt

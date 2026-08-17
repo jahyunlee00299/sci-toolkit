@@ -289,13 +289,15 @@ def _doi_to_safe_filename(doi: str) -> str:
 # --------------------------------------------------------------------------
 # Downloaded-file identity verification
 # --------------------------------------------------------------------------
-# 260728 실측 사고: DOI 10.1016/j.lwt.2021.112199 (Baptista 2021, LWT, tagatose)로
-# 받은 파일이 실제로는 2005년 포르투갈어 문학논문(JSTOR, PageMaker 7.0, 691 KB)이었다.
-# 매니페스트에는 status=success / method=html_link 로 기록됐다.
+# Real incident: a download for one DOI silently resolved to an unrelated
+# paper (a decades-old humanities article from a different journal/publisher,
+# hundreds of KB, PDF-shaped). The manifest recorded it as status=success.
 #
-# 당시 저장 후 검사는 **크기 1 KB 초과** 하나뿐이라 691 KB 파일은 당연히 통과했고,
-# 매직바이트(%PDF-)조차 보지 않았다. "파일을 받았다"와 "그 논문을 받았다"는 다르다.
-# 여기서 막지 못하면 사후 감사가 전수로 뒤져야 하므로, 다운로드 시점에 차단한다.
+# The only check at the time was "size > 1 KB", so the wrong file sailed
+# through — it never even checked the magic bytes (%PDF-). "A file arrived"
+# and "the requested paper arrived" are not the same claim. If this isn't
+# caught at download time, catching it later means auditing every file by
+# hand — so it's enforced here instead.
 
 _PDF_STOPWORDS = {
     "the", "and", "for", "from", "with", "via", "using", "a", "an", "of", "in",
