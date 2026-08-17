@@ -10,7 +10,7 @@ the artifact isn't done until the gate passes, and the gate is a script, not a
 suggestion.
 
 ```
-스킬 29종 · 회귀 테스트 23종 · 안전 가드 7종
+스킬 30종 · 회귀 테스트 23종 · 안전 가드 7종
 python doctor.py   →   11 OK / 0 FAIL
 ```
 
@@ -35,11 +35,11 @@ python doctor.py   →   11 OK / 0 FAIL
 스크립트 동반. 코드가 아니라 문서라 Claude Code가 대화 맥락을 보고 알아서
 골라 읽음 — 직접 실행 불필요.
 
-## 무엇이 들어 있나 (스킬 29종)
+## 무엇이 들어 있나 (스킬 30종)
 
 | 분야 | 스킬 |
 |---|---|
-| **논문 검색·작성** | `research-search`(진입점) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `academic-term-rules` · `endnote-citation-injection` |
+| **논문 검색·작성** | `research-search`(진입점) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `web-scraping` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `academic-term-rules` · `endnote-citation-injection` |
 | **분자생물학·실험** | `primer-design` · `experiment-hub` |
 | **Figure** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
 | **데이터·통계** | `stats-workflow` · `statsmodels` · `lab-data-analysis` · `conda-env-manager` · `get-available-resources` |

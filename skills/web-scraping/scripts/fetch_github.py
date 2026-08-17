@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
-"""fetch_github.py — GitHub repo/release/issue monitoring via the official REST API.
+"""fetch_github.py — GitHub repo *discovery and monitoring* via the official REST API.
 
 A 5th mode for the web-scraping skill, dedicated to GitHub. Unlike the HTML
 scrapers, this talks only to the GitHub REST API (https://api.github.com),
 so robots.txt / page rendering are irrelevant. It uses GITHUB_PAT from
 ~/.secrets/secrets.json for the 5000 req/h authenticated rate limit
 (unauthenticated is 60/h and unusable for monitoring).
+
+Not a duplicate of `scripts/connectors/github_connector.py`: that connector
+reads/writes issues, PRs, and a specific repo's metadata for a repo you
+already know. This script is for *discovery* — finding new/trending repos
+matching a search query, or diffing a watchlist's releases/issues over time.
+Use the connector for "what's happening in repo X"; use this for "what's out
+there matching query Y".
 
 Signals supported
 -----------------
