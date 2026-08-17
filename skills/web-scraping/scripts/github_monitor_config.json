@@ -1,0 +1,22 @@
+{
+  "_comment": "Example field catalog for fetch_github.py --config. GitHub search rules: do NOT combine multiple topic: qualifiers with OR (422). Use ONE topic: per field, or free-text OR in name/description. min_stars filters noise; since_days = recency window. Copy this file and edit `fields`/`watchlist` to your own research interests.",
+  "defaults": { "since_days": 30, "min_stars": 1, "limit": 12 },
+  "fields": [
+    { "name": "enzyme-biocatalysis", "query": "biocatalysis OR \"enzyme engineering\" OR \"enzyme cascade\" in:name,description,readme", "min_stars": 1 },
+    { "name": "bayesian-optimization", "query": "topic:bayesian-optimization", "min_stars": 2 },
+    { "name": "active-learning", "query": "topic:active-learning", "min_stars": 5 },
+    { "name": "kinetic-ode-fitting", "query": "\"kinetic modeling\" OR \"parameter estimation\" OR \"system identification\" in:name,description", "min_stars": 1 },
+    { "name": "protein-structure", "query": "topic:protein-structure", "min_stars": 5 },
+    { "name": "molecular-docking", "query": "topic:molecular-docking", "min_stars": 5 },
+    { "name": "scientific-ml", "query": "topic:scientific-machine-learning", "min_stars": 5 },
+    { "name": "physics-informed-nn", "query": "topic:physics-informed-neural-networks", "min_stars": 5 },
+    { "name": "bioinformatics", "query": "topic:bioinformatics", "min_stars": 15 },
+    { "name": "web-scraping", "query": "topic:web-scraping", "min_stars": 30 }
+  ],
+  "watchlist": [
+    "BioSTEAMDevelopmentGroup/biosteam",
+    "pymc-devs/pymc",
+    "anyoptimization/pymoo",
+    "anthropics/claude-code"
+  ]
+}
