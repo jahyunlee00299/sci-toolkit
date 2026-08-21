@@ -10,7 +10,9 @@ outward-action notice. There is no complete/delete subcommand.
 형식 규칙(사용자가 겪던 '형식 이상' 방지 — 랩 검증):
 - 모든 요청은 ensure_ascii=False + charset=utf-8 → 한글 안 깨짐.
 - 서식 댓글/설명(--html / --html-notes)은 sanitize_html() 이 강제: <body> 래핑,
-  <p> 금지(xml_parsing_error), 줄바꿈 &#10;, '→' 문자 금지.
+  <p> 금지(xml_parsing_error), 줄바꿈은 실제 개행(\n) 그대로, '→' 문자 금지.
+  (&#10; 엔티티는 Asana sanitizer 가 &amp;#10; 로 재이스케이프해 리터럴 노출 —
+  issue #4 실측. 레거시 입력의 &#10; 은 자동으로 실제 개행으로 복원한다.)
 - 기본 댓글/설명은 plain text (짧은 글엔 이게 안전).
 """
 from __future__ import annotations
@@ -147,7 +149,9 @@ def sanitize_html(html):
     """Asana html_text 형식 규칙을 강제/점검한다 (사용자가 겪던 '형식 이상' 방지).
 
     규칙(랩 검증): ①<body>...</body> 래핑 필수 ②<p> 금지(xml_parsing_error)
-    ③줄바꿈은 리터럴 \\n 대신 &#10; ④'→' 화살표 문자 금지(XML 파싱 에러).
+    ③줄바꿈은 실제 개행 문자(\\n) 그대로 — &#10; 엔티티는 Asana sanitizer 가
+    &amp;#10; 로 재이스케이프해 화면에 리터럴 노출된다(issue #4 실측)
+    ④'→' 화살표 문자 금지(XML 파싱 에러).
     위반이 자동교정 불가하면 오류로 알려 준다.
     """
     if "→" in html:
@@ -155,12 +159,13 @@ def sanitize_html(html):
                  "'->' 또는 단어로 바꾸세요.")
     if "<p>" in html or "</p>" in html:
         sys.exit("[형식 오류] <p> 태그는 Asana 에서 xml_parsing_error 를 냅니다. "
-                 "줄바꿈은 &#10; 를 쓰세요.")
+                 "줄바꿈은 실제 개행 문자를 그대로 쓰세요.")
     # <body> 래핑 자동 보정
     if "<body>" not in html:
         html = f"<body>{html}</body>"
-    # 리터럴 개행 → &#10; (안전한 형식으로 자동 변환)
-    html = html.replace("\r\n", "&#10;").replace("\n", "&#10;")
+    # 개행 정규화: CRLF → LF. 레거시 &#10; 입력(과거 도움말이 안내하던 형식)은
+    # 실제 개행으로 복원한다 — Asana 는 html_text 안의 진짜 LF 만 줄바꿈으로 렌더링.
+    html = html.replace("\r\n", "\n").replace("&#10;", "\n")
     return html
 
 
@@ -185,6 +190,23 @@ def cmd_add_comment(args, token):
     result = http("POST", f"{API_ROOT}/tasks/{args.task}/stories", token, data=payload)
     story = result.get("data", {})
     print(f"[완료] 댓글 등록됨 (gid={story.get('gid')})")
+
+    # 등록 직후 자체 검증 (issue #4 회귀 방지): 재조회한 html_text 에 &#10; 이
+    # 남아 있으면 개행이 리터럴로 노출되고 있는 것 — 실패로 알린다.
+    if args.html and story.get("gid"):
+        try:
+            fetched = http("GET",
+                           f"{API_ROOT}/stories/{story['gid']}?opt_fields=html_text",
+                           token)
+            html_text = (fetched.get("data") or {}).get("html_text") or ""
+            if "#10;" in html_text:
+                sys.exit("[검증 실패] 등록된 댓글에 &#10; 리터럴이 남아 있습니다 "
+                         "(줄바꿈 미적용). issue #4 회귀 — 코드를 확인하세요.")
+            print("[검증] 재조회 결과 &#10; 리터럴 없음 — 줄바꿈 정상.")
+        except SystemExit:
+            raise
+        except Exception as exc:  # noqa: BLE001 — 댓글 자체는 이미 등록됨
+            print(f"[주의] 등록 후 재조회 검증 실패(댓글은 등록됨): {exc}")
 
 
 def cmd_add_subtask(args, token):
@@ -246,7 +268,7 @@ def build_parser():
     sp.add_argument("--task", required=True, help="댓글을 달 작업 gid")
     sp.add_argument("--text", required=True, help="댓글 내용")
     sp.add_argument("--html", action="store_true",
-                    help="서식 있는 댓글(html_text). <body>자동래핑·<p>금지·&#10;줄바꿈·→금지 검증됨")
+                    help="서식 있는 댓글(html_text). <body>자동래핑·<p>금지·실제개행(\\n)줄바꿈·→금지 검증됨")
     sp.add_argument("--write", action="store_true", help="실제로 댓글을 답니다 (없으면 dry-run)")
     sp.set_defaults(func=cmd_add_comment)
 
