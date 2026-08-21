@@ -3,15 +3,27 @@ c49cd947fe89496cb06426d2a994e86ab40f0f1263aec92f1a068a0e8ba7ee48 *./.claude-plug
 0d1017752f3b1dd450e2f7ef802598c76997aeac9101cba0884269d57ef8ce1d *./.gitattributes
 630991f4e8a144a1dbbdfa3e25d0fa4e930f897f5facf15dd962e04f7aa0aa39 *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
+<<<<<<< HEAD
 ebec626c5c62c9e9ce3d17f1ac78307ee52654abd44023a175c2193d90dd8fe5 *./AGENTS.md
 4aa13ddd70ddac3a274eeee92523ca2954f239bc99ea4f07ae92a178663eaa1e *./CHANGELOG.md
+=======
+d0d21a41e0c42b04fac3f34d4953d150aee62b5a68791ac6bc3651b2d9b6b36c *./AGENTS.md
+c6154cc77eca6cb0f8f375ee7ecf09e4eccb0210875b6350c1d72a1c70ded164 *./CHANGELOG.md
+>>>>>>> 0f6e2e8 (chore: refresh SHA256SUMS for adopted discipline skills)
 4ac19e3464e06c6aac016c7ad38d7a7e412790f5cb307b2b861dc22e5c40746e *./CLAUDE.md
 03054818a0a84ab6dc345a37007d7e8111ec30a1c90ce572eb72a1347df8435e *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
+<<<<<<< HEAD
 6bfabe6d4bc5a52a11c941043c7c5d93391f5fc7e35e0d0c915deb3946440cb5 *./NOTICE.md
 59103f8a067e1619a60cf7765278fb984f3dbbf9454e88d240ad316e085f38f8 *./QUICKSTART.md
 e62afa12b50ab6fe6f24665c35404ac8ff4ee642f18da736df041f9f9cf20a2a *./README.md
 dc2759b91a1783e50a1773f5862adb747d9386c4be3f7d4dfc605688f5cbe423 *./config/catalog.json
+=======
+d84d192db29df471b5d44fa0abe9512b0b0c2151d66469cc6bd38fe1f100118d *./NOTICE.md
+db7ef8d17e3314dae086d753c178728524119f6b29c9714f7dd0e879f5ac25f1 *./QUICKSTART.md
+de963aba524417d8afe8684f92ed77c2cb9bed41417567e9456956612876bb77 *./README.md
+237d27ef74f4e90193d55b06c09d4259b486e8048c329479afadf516d840428e *./config/catalog.json
+>>>>>>> 0f6e2e8 (chore: refresh SHA256SUMS for adopted discipline skills)
 66b13c08489b1c7cf5c35331bb584a408005b1c7dadba0ddd1ce2acb6fd1a041 *./config/credentials.example.json
 db5af4c40a5a4b2c2dadf6ea992a362aca630c094099224fcb1563e5a61be1c7 *./config/institutions.json
 dc0bed2a780bc3056be894815b2c490ae906d851be7d5de4c6b2a74961fee65c *./docs/00_시작하기.md
@@ -30,7 +42,11 @@ c5cb795bb0f7959a1531b97b8220e4daa480a5deb51ac769d3ac2cca74a6a355 *./docs/09_원�
 8b656b08de26edb5799a594104878de21b5249a3f57e5300af6ed0616b99f69d *./docs/13_토큰_발급_Chrome으로_받기.md
 a826fa5b01717127fc1da76e6c7ec696d77ad49e17e07ed97f452daa2aebb2af *./docs/feature-connectivity-ledger.md
 77ab0f7dfa903cb620c00663920bd02de9d8872ed3c1b2e75018691d1d987086 *./doctor.ps1
+<<<<<<< HEAD
 d0820ba130e3be20224cedc695ca3c45b8dcf304c1ff88dd1aa75242f355e63a *./doctor.py
+=======
+4dbecdfe4b00ce40e0f817906c0257d48cb0d84724df372a729d8271d05b37cf *./doctor.py
+>>>>>>> 0f6e2e8 (chore: refresh SHA256SUMS for adopted discipline skills)
 f97ad27c812f81df36d7a6990f69ce11a2b192975ba2e0881e03952d3aefb978 *./evals/codex_compliance_probe.py
 3986c22328fa7d5b0b658faa8411e8870b6267a8e3d2d7fe4eac15b10555973a *./evals/codex_compliance_schema.json
 2a28be5789e6c13e3f5abec5bb538e9f450bd661dcb69c66dca838bcf92ee738 *./evals/routing_probe.py
@@ -91,11 +107,12 @@ d779f214ad36a4a186ec721d64ce2c8b7026c676ecb4cece603cd5bd2e4d2680 *./skills/avoid
 821346695f1d4131314b8222d039030ac0a71755863c38b423e8818dd9bff6da *./skills/biorxiv-database/references/api_guide.md
 16baf9d7e29504ce7f15f693c69b56ea8872ea9681e86511986dc154a234bedc *./skills/biorxiv-database/scripts/preprint_search.py
 b97fd625bfda34500a948204874e432108a87fae4e5295a83244ba4ee21895b3 *./skills/biorxiv-database/tests/test_preprint_search.py
-be8e524c414327d126197d057ee0a460383aa7005aa09ab663398dc79d73b7ea *./skills/code-quality/SKILL.md
+e65ca0b1f04e1c2c0e2ccab1e50e55ff737dd0de6ed9e6f0e32d4ebfef742e69 *./skills/code-quality/SKILL.md
 da65b2d756692b657c4f7f5a66b28d50a820e51d3e4db3578c6efe4a847ec953 *./skills/conda-env-manager/SKILL.md
 3f3ff21ef51b95e4b6eb40e5426abb111cb45dd8b06c56f748f79181adf1e3af *./skills/conda-env-manager/references/known_conflicts.yml
 acea85901f4dacca49e1b8e8cdb38e3ded67d005f572c5110f26d77c4f6db79d *./skills/conda-env-manager/scripts/check_env.py
 1e0321e69093770b6d3b9ae9d0e047aa35dc3824a90e9aa3ef55a574647ab7fa *./skills/conda-env-manager/scripts/scan_imports.py
+4555cd92710962ddffc2f3cbc9d377d7b7047dfe74399d3fdcd70817d8fb7ae3 *./skills/debugging-loop/SKILL.md
 2ed9c222c5ce5cbc637b49cd753bf1a378d2193e5a5eed76e20010d7e9a6bc3f *./skills/endnote-citation-injection/SKILL.md
 295afeee67755b55a36f576f2a5a7ec7df0ff4f87bbf23c728900f856a7644eb *./skills/endnote-citation-injection/enci_base_collation.py
 67fc0e5f533da3f4596669e6ef56c9d607d267e332b068c26e36726fc228f3a0 *./skills/experiment-hub/SKILL.md
@@ -279,6 +296,7 @@ b260fcc1d604592a1b960249cd835d1cb67f510f054e0270a5939dceb33aafaf *./skills/stats
 0a49d88b034794a147c6b050f19d895133131534344fb8f0e3bb672d0279cf83 *./skills/statsmodels/references/model_selection.md
 f4d8ec3c6b149af355ae3cb33f29bea1776b873867dcc035906753b2b47d5620 *./skills/statsmodels/references/stats_diagnostics.md
 9046111210d39cda57cb2af5f929ab8c68d9c6b4965b14e14431ca51cf90707d *./skills/statsmodels/references/time_series.md
+2f84e4f2ff869624529f3d16911dba47a277c502156456a330af14b949f3ef03 *./skills/test-quality/SKILL.md
 d60bad6e07071d80c355f503a86c730acde8cc5769264654aeef4ef500eddffd *./skills/token-efficient-routing/SKILL.md
 692d48e87d135fd97d9e5e1e229fff1c28f56fecb20c175a05e4449c0e1e040c *./skills/web-scraping/.gitignore
 67c94e37d23b3a07f2def0e4efab6e3df16d537a740463ea2960b0febd9ee21a *./skills/web-scraping/SKILL.md
@@ -298,6 +316,7 @@ c995a494f67e44e680b706aa456ed6d8a88820f02f79308e87488f30b106a1e7 *./skills/web-s
 05484ff7ff7364fe8776a88ec5332a1835cbcc68ed68aca22a9a5daaeba0b5e9 *./skills/web-scraping/tests/test_target_safety.py
 7b859b27826a79426bf4ae7d102ca9254f6b5d75f7a87429e36fbbbc8d2db27e *./tests/conftest.py
 5437e653d4f8d29306cd04b6c39f02a650826817be7f013dc7856938b258eba6 *./tests/requirements.txt
+cbfb663907991e83a2a5be1f32d5c6d12aa61bb2d458b8ea0c6b178ee0edef8f *./tests/test_adopted_discipline_skills.py
 1269d8dd6a3c4745cca0fd6e3b4fdc96c5a16f076fbe1544a5cab929d677a617 *./tests/test_agents_routing.py
 98395e055fbaecead5d03b945491746a6af237d81caa08bb31bc84d23ac59664 *./tests/test_assumption_check.py
 276ce7db36f963fcf35ad7cd4c3439987ffd1a49e6b4c4425cbe7b6dfe1d64d9 *./tests/test_body_typo_lint.py
