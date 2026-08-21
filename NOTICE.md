@@ -46,6 +46,7 @@ Attribution is required by the upstream licenses and is recorded here.
 | `skills/test-quality` | `skills/engineering/tdd` (SKILL.md + tests.md) in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
 | `skills/code-quality` (Mode C, two-axis review only) | `skills/engineering/code-review` in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
 | `skills/spec-first-development`, `skills/test-first-development` | brainstorming / plan-writing / TDD methodology in [obra/superpowers](https://github.com/obra/superpowers) | MIT (Copyright (c) 2025 Jesse Vincent) |
+| `skills/spec-driven-research-dev` | four-phase spec-driven workflow + artifact templates in [github/spec-kit](https://github.com/github/spec-kit) | MIT (Copyright GitHub, Inc.) |
 
 The upstream MIT license permits this use and requires the copyright notice be
 retained; that is what this section does. No upstream file is redistributed
@@ -62,6 +63,22 @@ codebase (data loaders, fitting routines, analysis pipelines) rather than
 vendored, and the surrounding framework of that project (its hooks, commands,
 subagent orchestration, and plugin wiring) is deliberately **not** included.
 MIT permits this adaptation; this notice is the required attribution.
+
+`skills/spec-driven-research-dev/` adapts the four-phase spec-driven workflow
+(specify → plan → tasks → implement) and its artifact templates from:
+
+- **github/spec-kit** — <https://github.com/github/spec-kit> — MIT License,
+  Copyright GitHub, Inc.
+
+The workflow structure, the phase-artifact separation, the `[ID] [P] [Story]`
+task format, and the spec-quality checklist mechanism come from there. The
+prompts and templates were rewritten for research code — the upstream
+originals assume web/app projects, carry an extension-hook system and a CLI
+(`specify`) that this package does not ship, and their templates ask about
+frameworks and endpoints rather than instrument formats, units, failure
+policy, and number provenance. No upstream file is vendored verbatim.
+
+MIT permits this reuse; the attribution above is the condition.
 
 ## Skills with their own terms
 
