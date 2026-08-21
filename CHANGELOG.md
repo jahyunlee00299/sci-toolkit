@@ -3,6 +3,33 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.38] — 2026-08-22
+
+- fix(doctor): credentials-divergence 검사가 옛 secrets 경로만 봤다 (C-66).
+  공용 저장소는 2026-08-16에 `~/.claude/secrets.json` → `~/.secrets/secrets.json`
+  으로 옮겨갔는데 검사는 옛 경로만 stat 해서, 이미 이전을 마친 설치자에게
+  "저장소가 없다"고 **틀린 진단**을 내놓고 있었다. 이제 신규 경로를 먼저 보고
+  옛 경로는 미이전 설치자를 위한 폴백으로만 남긴다. WARN 메시지도 실제로 읽은
+  경로를 그대로 인용한다.
+- fix(tests): `test_credentials_divergence.py` 가 **사용자의 실제 secrets 경로에
+  직접 쓰고 지우고 복원**하고 있었다. 그 경로가 마침 비어 있어서 사고가 안 났을
+  뿐 설계 자체가 위험했다. 임시 홈으로 `HOME`/`USERPROFILE` 을 돌려 실제 홈을
+  건드리지 않게 고쳤다 (`Path.home()` 패치로는 부족 — doctor 는 `expanduser()` 를
+  쓰고 그건 `Path.home()` 을 거치지 않고 환경변수를 직접 읽는다). 검사 강도는
+  낮추지 않았고 8개 케이스 10개 단언 전부 그대로 통과한다.
+- docs(CODEX): 0.147.0에서 실측한 hooks/rules 계약을 0.148.0–0.149.0 릴리스
+  노트에 대조. 다섯 개 실측 사실은 **모두 유효**하다(exit-2 계약·전역 전용 로드
+  경로·payload 형태·trust 게이트·`${CLAUDE_PLUGIN_ROOT}` 미주입 어느 것도
+  뒤집히지 않음). 확장 4건과 위험 1건을 기록: 🔴 훅이 이제 세션 시작 시점에
+  캡처된 환경으로 실행된다(#39314), 훅의 비동기 실행·MCP 도구 호출 지원
+  (#37533/#38705/#39296 — 비동기 훅은 차단할 수 없으므로 이 저장소의 가드는
+  전부 동기 유지), `SessionEnd` 이벤트(#33895)와 타임아웃 훅 프로세스 트리 종료
+  (#37527), `codex exec --full-auto` 제거(#36054), 샌드박스 fail-closed 및 Windows
+  ACL 실패 전파(#39279).
+- docs(AGENTS): `avoid-ai-writing` 을 §0 라우팅 표에 배선. README·catalog.json
+  에는 등재돼 있었지만 **정작 호출을 유발하는 표에는 없었다** — 등재는 배선이
+  아니다. detect 전용이며 수신자 말투가 스킬 제안보다 우선한다는 조건까지 명시.
+
 ## [1.2.37] — 2026-08-22
 
 - chore: normalize proof_stage_audit.md to LF, regenerate SHA256SUMS
