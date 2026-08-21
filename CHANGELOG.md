@@ -11,6 +11,8 @@
 - feat(skills): add `spec-first-development` and `test-first-development` —
   spec/plan-before-code and test-before-implementation discipline, adapted from
   obra/superpowers (MIT, see `NOTICE.md`). Routed from `AGENTS.md` §0.
+- feat(skills): add spec-driven-research-dev — 4단계 명세 흐름(specify→plan→tasks→implement),
+  github/spec-kit(MIT)에서 적응. 연구코드용으로 재작성(단위·실패정책·수치 출처 SSOT 반영)
 
 ## [1.2.33] — 2026-08-21
 
