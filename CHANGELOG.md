@@ -3,6 +3,11 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [Unreleased]
+
+- feat(skills): add spec-driven-research-dev — 4단계 명세 흐름(specify→plan→tasks→implement),
+  github/spec-kit(MIT)에서 적응. 연구코드용으로 재작성(단위·실패정책·수치 출처 SSOT 반영)
+
 ## [1.2.33] — 2026-08-21
 
 - fix(connectors): preserve real newlines in asana add-comment --html

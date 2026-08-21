@@ -10,7 +10,7 @@ the artifact isn't done until the gate passes, and the gate is a script, not a
 suggestion.
 
 ```
-스킬 30종 · 회귀 테스트 24종 · 안전 가드 7종
+스킬 31종 · 회귀 테스트 24종 · 안전 가드 7종
 python doctor.py   →   11 OK / 0 FAIL
 ```
 
@@ -35,7 +35,7 @@ python doctor.py   →   11 OK / 0 FAIL
 스크립트 동반. 코드가 아니라 문서라 Claude Code가 대화 맥락을 보고 알아서
 골라 읽음 — 직접 실행 불필요.
 
-## 무엇이 들어 있나 (스킬 30종)
+## 무엇이 들어 있나 (스킬 31종)
 
 | 분야 | 스킬 |
 |---|---|
@@ -44,7 +44,7 @@ python doctor.py   →   11 OK / 0 FAIL
 | **Figure** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
 | **데이터·통계** | `stats-workflow` · `statsmodels` · `lab-data-analysis` · `conda-env-manager` · `get-available-resources` |
 | **문서 변환** | `markitdown`(PDF·docx·xlsx·이미지OCR → Markdown) · `journal-presentation-maker` |
-| **검증·개발 규율** | `scientific-validation` · `code-quality` · `avoid-ai-writing` · `git-workflow-manager` · `skill-developer` · `token-efficient-routing` |
+| **검증·개발 규율** | `scientific-validation` · `code-quality` · `spec-driven-research-dev` · `avoid-ai-writing` · `git-workflow-manager` · `skill-developer` · `token-efficient-routing` |
 
 > **Word · PDF · PPT · Excel** 은 스킬 없이 처리 — Claude Code 기본 기능. 원고
 > QC 도구 7종은 `skills/manuscript-pipeline/scripts/` 에 위치.
