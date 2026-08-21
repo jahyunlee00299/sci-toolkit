@@ -882,6 +882,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_connectors.py", "REST connectors (dry-run isolation, --write gate, token gating)"),
     ("tests/test_service_routing.py", "service/skill routing (connector-silent steering, dead skill refs)"),
     ("tests/test_adopted_discipline_skills.py", "adopted discipline skills keep their substance"),
+    ("tests/test_development_discipline.py", "spec-first/test-first discipline wiring + core rules"),
 ]
 
 

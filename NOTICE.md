@@ -45,12 +45,23 @@ Attribution is required by the upstream licenses and is recorded here.
 | `skills/debugging-loop` | `skills/engineering/diagnosing-bugs` in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
 | `skills/test-quality` | `skills/engineering/tdd` (SKILL.md + tests.md) in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
 | `skills/code-quality` (Mode C, two-axis review only) | `skills/engineering/code-review` in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
+| `skills/spec-first-development`, `skills/test-first-development` | brainstorming / plan-writing / TDD methodology in [obra/superpowers](https://github.com/obra/superpowers) | MIT (Copyright (c) 2025 Jesse Vincent) |
 
 The upstream MIT license permits this use and requires the copyright notice be
 retained; that is what this section does. No upstream file is redistributed
 verbatim — what was taken is the discipline (build the feedback loop before the
 hypothesis; rank falsifiable hypotheses; tag debug output; the tautological-
 assertion and internal-coupling test failures), not the text.
+
+`skills/spec-first-development/SKILL.md` and
+`skills/test-first-development/SKILL.md` take the three-path classification, the
+approval gate, the no-placeholder rule, and the red-green-refactor cycle with its
+rationalization table from **[obra/superpowers](https://github.com/obra/superpowers)**,
+© 2025 Jesse Vincent, **MIT License**. The text was rewritten for a research
+codebase (data loaders, fitting routines, analysis pipelines) rather than
+vendored, and the surrounding framework of that project (its hooks, commands,
+subagent orchestration, and plugin wiring) is deliberately **not** included.
+MIT permits this adaptation; this notice is the required attribution.
 
 ## Skills with their own terms
 
