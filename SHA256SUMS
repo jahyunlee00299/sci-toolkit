@@ -3,27 +3,15 @@ c49cd947fe89496cb06426d2a994e86ab40f0f1263aec92f1a068a0e8ba7ee48 *./.claude-plug
 0d1017752f3b1dd450e2f7ef802598c76997aeac9101cba0884269d57ef8ce1d *./.gitattributes
 630991f4e8a144a1dbbdfa3e25d0fa4e930f897f5facf15dd962e04f7aa0aa39 *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
-<<<<<<< HEAD
-ebec626c5c62c9e9ce3d17f1ac78307ee52654abd44023a175c2193d90dd8fe5 *./AGENTS.md
-4aa13ddd70ddac3a274eeee92523ca2954f239bc99ea4f07ae92a178663eaa1e *./CHANGELOG.md
-=======
 d0d21a41e0c42b04fac3f34d4953d150aee62b5a68791ac6bc3651b2d9b6b36c *./AGENTS.md
-c6154cc77eca6cb0f8f375ee7ecf09e4eccb0210875b6350c1d72a1c70ded164 *./CHANGELOG.md
->>>>>>> 0f6e2e8 (chore: refresh SHA256SUMS for adopted discipline skills)
+c5f6b1a5b8bb3794bf37c1cab3ef489b88f57957d3a19872057c6e02d069cb47 *./CHANGELOG.md
 4ac19e3464e06c6aac016c7ad38d7a7e412790f5cb307b2b861dc22e5c40746e *./CLAUDE.md
 03054818a0a84ab6dc345a37007d7e8111ec30a1c90ce572eb72a1347df8435e *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
-<<<<<<< HEAD
-6bfabe6d4bc5a52a11c941043c7c5d93391f5fc7e35e0d0c915deb3946440cb5 *./NOTICE.md
-59103f8a067e1619a60cf7765278fb984f3dbbf9454e88d240ad316e085f38f8 *./QUICKSTART.md
-e62afa12b50ab6fe6f24665c35404ac8ff4ee642f18da736df041f9f9cf20a2a *./README.md
-dc2759b91a1783e50a1773f5862adb747d9386c4be3f7d4dfc605688f5cbe423 *./config/catalog.json
-=======
 d84d192db29df471b5d44fa0abe9512b0b0c2151d66469cc6bd38fe1f100118d *./NOTICE.md
 db7ef8d17e3314dae086d753c178728524119f6b29c9714f7dd0e879f5ac25f1 *./QUICKSTART.md
-de963aba524417d8afe8684f92ed77c2cb9bed41417567e9456956612876bb77 *./README.md
+6f429f9f1645a6d1218afa6a9d1e8b710e68bf1243122da4671586dbd2e62c3e *./README.md
 237d27ef74f4e90193d55b06c09d4259b486e8048c329479afadf516d840428e *./config/catalog.json
->>>>>>> 0f6e2e8 (chore: refresh SHA256SUMS for adopted discipline skills)
 66b13c08489b1c7cf5c35331bb584a408005b1c7dadba0ddd1ce2acb6fd1a041 *./config/credentials.example.json
 db5af4c40a5a4b2c2dadf6ea992a362aca630c094099224fcb1563e5a61be1c7 *./config/institutions.json
 dc0bed2a780bc3056be894815b2c490ae906d851be7d5de4c6b2a74961fee65c *./docs/00_시작하기.md
@@ -42,11 +30,7 @@ c5cb795bb0f7959a1531b97b8220e4daa480a5deb51ac769d3ac2cca74a6a355 *./docs/09_원�
 8b656b08de26edb5799a594104878de21b5249a3f57e5300af6ed0616b99f69d *./docs/13_토큰_발급_Chrome으로_받기.md
 a826fa5b01717127fc1da76e6c7ec696d77ad49e17e07ed97f452daa2aebb2af *./docs/feature-connectivity-ledger.md
 77ab0f7dfa903cb620c00663920bd02de9d8872ed3c1b2e75018691d1d987086 *./doctor.ps1
-<<<<<<< HEAD
-d0820ba130e3be20224cedc695ca3c45b8dcf304c1ff88dd1aa75242f355e63a *./doctor.py
-=======
-4dbecdfe4b00ce40e0f817906c0257d48cb0d84724df372a729d8271d05b37cf *./doctor.py
->>>>>>> 0f6e2e8 (chore: refresh SHA256SUMS for adopted discipline skills)
+dbf6a9cee27caedb2cd08419de1e6ebd89e75dc9040767e208c9d937f5e90916 *./doctor.py
 f97ad27c812f81df36d7a6990f69ce11a2b192975ba2e0881e03952d3aefb978 *./evals/codex_compliance_probe.py
 3986c22328fa7d5b0b658faa8411e8870b6267a8e3d2d7fe4eac15b10555973a *./evals/codex_compliance_schema.json
 2a28be5789e6c13e3f5abec5bb538e9f450bd661dcb69c66dca838bcf92ee738 *./evals/routing_probe.py
