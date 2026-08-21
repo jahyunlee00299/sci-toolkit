@@ -34,6 +34,24 @@ written by this lab, not by Anthropic. They have been moved to
 
 None of them import anything from the Anthropic skill.
 
+## Adapted from upstream projects
+
+`skills/spec-driven-research-dev/` adapts the four-phase spec-driven workflow
+(specify → plan → tasks → implement) and its artifact templates from:
+
+- **github/spec-kit** — <https://github.com/github/spec-kit> — MIT License,
+  Copyright GitHub, Inc.
+
+The workflow structure, the phase-artifact separation, the `[ID] [P] [Story]`
+task format, and the spec-quality checklist mechanism come from there. The
+prompts and templates were rewritten for research code — the upstream
+originals assume web/app projects, carry an extension-hook system and a CLI
+(`specify`) that this package does not ship, and their templates ask about
+frameworks and endpoints rather than instrument formats, units, failure
+policy, and number provenance. No upstream file is vendored verbatim.
+
+MIT permits this reuse; the attribution above is the condition.
+
 ## Skills with their own terms
 
 | License | Skills |

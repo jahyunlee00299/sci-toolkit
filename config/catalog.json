@@ -231,6 +231,12 @@
       "requires": [],
       "size_kb": 3
     },
+    "spec-driven-research-dev": {
+      "category": "validation",
+      "role": "새 파이프라인·모듈 재작성 4단계 명세 흐름 (specify→plan→tasks→implement)",
+      "requires": [],
+      "size_kb": 22
+    },
     "avoid-ai-writing": {
       "category": "validation",
       "role": "AI 작문 티(em-dash·상투어·템플릿 문구) 감지·교정 — 원고·메일·보고서 최종 점검",
@@ -335,7 +341,7 @@
     },
     "all": {
       "label": "전체 설치",
-      "desc": "34개 스킬 모두",
+      "desc": "35개 스킬 모두",
       "skills": [
         "__ALL__"
       ]
