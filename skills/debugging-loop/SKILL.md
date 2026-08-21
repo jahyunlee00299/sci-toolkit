@@ -158,8 +158,8 @@ When the symptom is a **wrong number** rather than a crash, the loop's assertion
 must come from an independent source of truth — a hand-worked example, a value
 from the instrument, a published figure. An assertion that recomputes the
 expected value the way the code computes it passes by construction and can never
-go red — the tautological-assertion trap, and the dominant failure mode in
-scientific test suites.
+go red (see the `test-quality` skill for why this is the dominant failure
+in scientific test suites).
 
 Once fixed, any number the bug touched is **provisional** until re-derived from
 its canonical source — see AGENTS.md §3 and the `scientific-validation` skill.
