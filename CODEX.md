@@ -119,6 +119,47 @@ subsystem on 2026-08-16, the hooks contract on 2026-08-21. The hook measurements
 are recorded in [issue #5](https://github.com/jahyunlee00299/sci-toolkit/issues/5)
 — cite that comment rather than re-deriving them.
 
+> **Release-note review, 2026-08-22 (0.147.0 → 0.149.0).** The five measured
+> facts below were re-checked against the 0.148.0 and 0.149.0 release notes.
+> None of the five is contradicted — no note touches the exit-2 contract, the
+> global-only load path, the payload shape, the trust gate, or
+> `${CLAUDE_PLUGIN_ROOT}`. **The contract stands as written.** Four changes
+> extend it, and one is a live hazard:
+>
+> - 🔴 **Hooks now run with the captured session environment** (0.149.0,
+>   [#39314](https://github.com/openai/codex/pull/39314)). A guard that reads an
+>   environment variable now sees the value captured at session start, not the
+>   value at fire time. The guards in `hooks/` are unaffected: they read the
+>   command from stdin, and the only variables they touch (`GUARD_FIELDS`,
+>   `GUARD_HAVE_*`, `REASON_FILE`) are exported by the guard itself moments
+>   before it reads them, within the same process. The hazard is for a *wrapper*
+>   that exports a variable mid-session and expects a later hook to observe it —
+>   that now silently reads the stale value.
+> - **Hooks can run asynchronously and invoke MCP tools** (0.148.0,
+>   [#37533](https://github.com/openai/codex/pull/37533),
+>   [#38705](https://github.com/openai/codex/pull/38705); enabled in sessions by
+>   0.149.0 [#39296](https://github.com/openai/codex/pull/39296)). An async hook
+>   cannot block — its decision arrives after the command has run. **Keep every
+>   guard in this package synchronous.**
+> - **A `SessionEnd` hook event exists** (0.145.0,
+>   [#33895](https://github.com/openai/codex/pull/33895)), matching the event
+>   list below. Timed-out hook process trees are now terminated (0.148.0,
+>   [#37527](https://github.com/openai/codex/pull/37527)) — a guard that hangs
+>   is killed rather than wedging the session.
+> - **`codex exec --full-auto` was removed** in 0.147.0
+>   ([#36054](https://github.com/openai/codex/pull/36054)); use
+>   `--sandbox workspace-write`. Nothing in this package passed that flag.
+> - Sandbox restrictions now **fail closed** for denied or unreadable paths
+>   (0.148.0), and Windows sandbox ACL update failures now propagate instead of
+>   passing silently (0.149.0,
+>   [#39279](https://github.com/openai/codex/pull/39279)). Both make a
+>   misconfigured boundary louder, which is the direction you want.
+>
+> Re-measure rather than trusting this paragraph if you are on 0.150.x or
+> later: the permission subsystem was under active rework across this window
+> (0.149.0 began *rejecting* obsolete app-server permission-profile fields and
+> lossy legacy permission projections, where earlier versions ignored them).
+
 ### Rules — argv-prefix allow/forbid (confirmed to block)
 
 Codex reads `$CODEX_HOME/rules/*.rules` (default `~/.codex/rules/`). Entries
