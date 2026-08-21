@@ -34,6 +34,20 @@ written by this lab, not by Anthropic. They have been moved to
 
 None of them import anything from the Anthropic skill.
 
+## Upstream sources adapted here
+
+`skills/spec-first-development/SKILL.md` and
+`skills/test-first-development/SKILL.md` are adapted from the brainstorming,
+plan-writing, and test-driven-development methodology of
+**[obra/superpowers](https://github.com/obra/superpowers)**, © 2025 Jesse
+Vincent, **MIT License**. The methodology — the three-path classification, the
+approval gate, the no-placeholder rule, the red-green-refactor cycle and its
+rationalization table — comes from there. The text was rewritten for a research
+codebase (data loaders, fitting routines, analysis pipelines) rather than
+vendored, and the surrounding framework of that project (its hooks, commands,
+subagent orchestration, and plugin wiring) is deliberately **not** included.
+MIT permits this adaptation; this notice is the required attribution.
+
 ## Skills with their own terms
 
 | License | Skills |
