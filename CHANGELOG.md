@@ -3,6 +3,15 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.33] — 2026-08-21
+
+- fix(connectors): preserve real newlines in asana add-comment --html
+
+## [1.2.32] — 2026-08-21
+
+- fix(connectors): asana add-comment --html 이 개행을 &#10; 리터럴로 강등시키던 결함 수정 (#4)
+  — 실제 LF 보존, 레거시 &#10; 입력 자동 복원, 등록 후 재조회 자체 검증 추가
+
 ## [1.2.31] — 2026-08-17
 
 - fix(web-scraping): resolve CI failures from doctor gate

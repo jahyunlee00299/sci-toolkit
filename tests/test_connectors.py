@@ -387,6 +387,27 @@ else:
 
 
 # ─────────────────────────────────────────────────────────────
+print("\n[6] Asana sanitize_html — 개행은 실제 \\n 으로 보존된다 (issue #4)")
+
+# &#10; 엔티티는 Asana sanitizer 가 &amp;#10; 로 재이스케이프해 화면에 리터럴로
+# 노출된다(260816 실측). 실제 LF 바이트만 줄바꿈으로 렌더링되므로, sanitize_html
+# 이 개행을 엔티티로 치환하는 순간 이 회귀가 재발한다.
+_asana = MODS.get("asana_connector")
+if _asana is None or not hasattr(_asana, "sanitize_html"):
+    check("asana_connector.sanitize_html 존재", False)
+else:
+    out = _asana.sanitize_html("line1\nline2\r\nline3")
+    check("실제 개행이 &#10; 로 치환되지 않음", "&#10;" not in out, repr(out))
+    check("개행 문자가 보존됨(CRLF는 LF로 정규화)",
+          out == "<body>line1\nline2\nline3</body>", repr(out))
+    legacy = _asana.sanitize_html("a&#10;b")
+    check("레거시 &#10; 입력은 실제 개행으로 복원",
+          legacy == "<body>a\nb</body>", repr(legacy))
+    check("<body> 자동 래핑 유지",
+          _asana.sanitize_html("x") == "<body>x</body>")
+
+
+# ─────────────────────────────────────────────────────────────
 print("\n" + "-" * 60)
 print(f"통과 {_pass} / 실패 {_fail}")
 if _fail:
