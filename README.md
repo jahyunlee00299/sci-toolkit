@@ -11,7 +11,7 @@ suggestion.
 
 ```
 스킬 37종 · 회귀 테스트 28종 · 안전 가드 7종
-python doctor.py   →   11 OK / 0 FAIL
+python doctor.py   →   12 OK / 0 FAIL
 ```
 
 개인 계정·개인정보·연구비 정보는 미포함. 미공개 연구 내용은 기계 검사
