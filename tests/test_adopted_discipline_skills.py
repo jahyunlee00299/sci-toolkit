@@ -76,6 +76,20 @@ REQUIRED_SUBSTANCE: dict[str, list[tuple[str, list[str]]]] = {
          ["converged fit is not a passing test", "known synthetic ground truth",
           "synthetic ground truth"]),
     ],
+    "code-quality": [
+        ("리뷰는 Standards / Spec 2축을 분리해서 본다",
+         ["Review two axes separately", "two axes separately"]),
+        ("축을 가로질러 findings 를 재정렬하지 않는다",
+         ["do not\nrerank findings across the axes",
+          "rerank findings across the axes"]),
+        ("Spec 축은 누락·요청하지 않은 범위 확대·틀린 구현을 구분해 보고한다",
+         ["scope creep"]),
+        ("비교 기준점을 먼저 고정하고 diff 가 비어있지 않은지 확인한다",
+         ["pin the comparison point", "diff is non-empty"]),
+        ("Spec 이 없으면 없다고 말하고 임의로 대체하지 않는다",
+         ["report the Spec axis as unavailable",
+          "no written spec"]),
+    ],
 }
 
 # 스킬이 반드시 가져야 할 frontmatter 필드

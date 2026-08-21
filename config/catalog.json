@@ -227,9 +227,9 @@
     },
     "code-quality": {
       "category": "validation",
-      "role": "SOLID 원칙·파일 크기 한계·체계적 리팩토링 게이트",
+      "role": "SOLID 원칙·파일 크기 한계·체계적 리팩토링 게이트 (리뷰는 Standards/Spec 2축 분리)",
       "requires": [],
-      "size_kb": 3
+      "size_kb": 5
     },
     "avoid-ai-writing": {
       "category": "validation",
