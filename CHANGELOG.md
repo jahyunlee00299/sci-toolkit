@@ -3,6 +3,12 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [Unreleased]
+
+- feat(skills): add `spec-first-development` and `test-first-development` —
+  spec/plan-before-code and test-before-implementation discipline, adapted from
+  obra/superpowers (MIT, see `NOTICE.md`). Routed from `AGENTS.md` §0.
+
 ## [1.2.33] — 2026-08-21
 
 - fix(connectors): preserve real newlines in asana add-comment --html

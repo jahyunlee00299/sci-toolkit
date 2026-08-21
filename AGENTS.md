@@ -74,7 +74,8 @@ and read its exit code rather than judging by eye.
 | Search the live web | `research-search` → built-in WebSearch / WebFetch | Cite sources; separate what a source said from your inference. No API key is needed. |
 | Read anything from an external service (my tasks, issues, pages, inbox) | the connector in `scripts/connectors/` — reads need no flag (`mail list`, `github issues`, `asana tasks`, `notion search`) | Report what the service returned, not what you remember. Never reach for an always-on app connection when a connector covers the service (§9). |
 | Send/post anything outward (mail, issue, task, page) | the connector in `scripts/connectors/` | 🔒 §9 draft-first: **stop at the draft.** A human sends it. Without `--write` a connector only previews; that preview is not proof the write would succeed. |
-| Write or restructure code | — | §1 SOLID; §2 verification gate before claiming it works. |
+| Build a new script/tool/feature, or restructure existing code | `spec-first-development` → `test-first-development` (+ `code-quality` for SOLID) | Design approved **before** any code; spec/plan carry no placeholders; §1 SOLID; §2 verification gate before claiming it works. |
+| Implement or fix anything — a function, a loader, a bug | `test-first-development` | You watched the test fail first, for the expected reason. A test that passed on its first run proves nothing. Never weaken a test to make it pass. |
 | Set up / install / "it's not working" | `doctor.py` | 🔒 `python doctor.py` must print `PASS` — quote the failing line, don't paraphrase. |
 | The user says something in this toolkit is broken, confusing, missing, or annoying ("이거 불편해요", "왜 안 되지", "자꾸 실패해요", "이런 게 있으면 좋겠는데") | fix it if you can, **and** `scripts/feedback_log.py add "<what>"` | Ask **one** question to fill in what you cannot infer, then record. Do not interrogate — an incomplete record beats no record. See §10. |
 
