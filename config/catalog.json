@@ -279,6 +279,12 @@
       "requires": [],
       "size_kb": 244
     },
+    "test-quality": {
+      "category": "validation",
+      "role": "테스트 품질 — 통과해도 아무것도 검증 못 하는 3가지(구현과 같은 방식으로 기대값 재계산·내부 결합·일괄 선작성)와 seam 선정",
+      "requires": [],
+      "size_kb": 7
+    },
     "debugging-loop": {
       "category": "validation",
       "role": "버그 진단 루프 — 가설 세우기 전에 red-capable 재현 루프부터 (재현·최소화·반증가능 가설·회귀 테스트)",
@@ -341,7 +347,7 @@
     },
     "all": {
       "label": "전체 설치",
-      "desc": "35개 스킬 모두",
+      "desc": "36개 스킬 모두",
       "skills": [
         "__ALL__"
       ]

@@ -76,6 +76,7 @@ and read its exit code rather than judging by eye.
 | Send/post anything outward (mail, issue, task, page) | the connector in `scripts/connectors/` | 🔒 §9 draft-first: **stop at the draft.** A human sends it. Without `--write` a connector only previews; that preview is not proof the write would succeed. |
 | Write or restructure code | — | §1 SOLID; §2 verification gate before claiming it works. |
 | A bug that survived the first read — wrong number, crash, empty output, sudden slowdown | `debugging-loop` | 🔒 Name the **one command** that goes red on this bug and green once fixed, and show you ran it, **before** proposing a cause. A fix is not done until that same command is re-run on the original (un-minimised) case. |
+| Write tests, or work out why a green suite missed a real defect | `test-quality` | 🔒 For every assertion, name where the expected value came from. If it was recomputed the way the code computes it, the test passes by construction and verifies nothing. Ask: would this test still pass if the function returned a plausible wrong answer? |
 | Set up / install / "it's not working" | `doctor.py` | 🔒 `python doctor.py` must print `PASS` — quote the failing line, don't paraphrase. |
 | The user says something in this toolkit is broken, confusing, missing, or annoying ("이거 불편해요", "왜 안 되지", "자꾸 실패해요", "이런 게 있으면 좋겠는데") | fix it if you can, **and** `scripts/feedback_log.py add "<what>"` | Ask **one** question to fill in what you cannot infer, then record. Do not interrogate — an incomplete record beats no record. See §10. |
 

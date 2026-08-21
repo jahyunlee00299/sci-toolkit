@@ -56,6 +56,26 @@ REQUIRED_SUBSTANCE: dict[str, list[tuple[str, list[str]]]] = {
          ["no correct seam exists, that is itself the finding",
           "no correct seam exists, that itself is the finding"]),
     ],
+    "test-quality": [
+        ("기대값을 구현과 같은 방식으로 재계산하면 안 된다는 조항",
+         ["recomputed the way the code computes it",
+          "passes by construction"]),
+        ("기대값의 정당한 출처를 명시한다(손계산·계측기·문헌 등 독립 출처)",
+         ["come from outside the implementation",
+          "hand-worked example", "independent source"]),
+        ("내부 결합 테스트의 판별 기준 — 리팩토링에서 깨지는가",
+         ["breaks when you refactor", "coupled to internal",
+          "Coupling to internals"]),
+        ("테스트를 일괄 선작성하면 상상한 동작을 검증하게 된다",
+         ["imagined", "vertical slices"]),
+        ("seam 을 먼저 합의하고 가장 높은 seam 을 고른다",
+         ["Agree the seams before", "highest seam"]),
+        ("탐지력 판정 질문 — 그럴듯한 오답에도 통과하는가",
+         ["plausible wrong answer"]),
+        ("수렴한 fit 은 통과한 테스트가 아니다 (합성 ground truth 로 파라미터 회수)",
+         ["converged fit is not a passing test", "known synthetic ground truth",
+          "synthetic ground truth"]),
+    ],
 }
 
 # 스킬이 반드시 가져야 할 frontmatter 필드
