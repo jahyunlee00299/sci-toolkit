@@ -40,20 +40,44 @@ _skip = 0
 NL = "\n"  # 케이스 안에서 줄바꿈을 만들 때 사용
 
 
-def run_guard(guard: str, command: str) -> int:
+def _is_wsl() -> bool:
+    try:
+        text = Path("/proc/version").read_text(errors="ignore").lower()
+    except OSError:
+        return False
+    return "microsoft" in text or "wsl" in text
+
+
+# conda_multiline_guard.sh / inline_multiline_guard.sh 는 260626 결정에 따라
+# WSL(집컴)에서 멀티라인 인라인 차단을 BLOCK(exit 2)에서 advisory(exit 0 +
+# stderr 경고)로 의도적으로 강등한다(git-bash와 달리 WSL bash는 줄바꿈이
+# 깨지지 않으므로). 이 테스트가 모든 환경에서 exit=2를 기대하도록 고정돼
+# 있었던 것이 WSL 실행에서만 실패하는 원인이었다 — 가드가 아니라 테스트가
+# 두 환경 계약을 반영하지 못했다.
+IS_WSL = _is_wsl()
+WSL_ADVISORY_EXIT = 0 if IS_WSL else 2
+
+
+def run_guard(guard: str, command: str) -> "tuple[int, str]":
     payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": command}})
     proc = subprocess.run(
         ["sh", str(HOOKS / guard)],
         input=payload, capture_output=True, text=True,
         encoding="utf-8", errors="replace", timeout=60,
     )
-    return proc.returncode
+    return proc.returncode, proc.stderr
 
+
+# WSL-advisory 로 강등되는 케이스는 라벨을 ADVISORY_LABELS 에도 등록한다 —
+# WSL 에서 exit=0 이 나왔을 때 그것이 진짜 advisory 강등인지(stderr 경고 있음),
+# 아니면 탐지 자체가 조용히 깨진 것인지(stderr 없음) 를 구분하기 위해서다.
+ADVISORY_LABELS: set[tuple[str, str]] = set()
 
 CASES: dict[str, list[tuple[str, str, int]]] = {
     "conda_multiline_guard.sh": [
         ("conda + 멀티라인 -c",
-         'conda run -n myenv python -c "import os' + NL + 'print(os.getcwd())"', 2),
+         'conda run -n myenv python -c "import os' + NL + 'print(os.getcwd())"',
+         WSL_ADVISORY_EXIT),
         ("conda + 단일라인 -c",
          'conda run -n myenv python -c "print(1)"', 0),
         ("conda + 파일 실행",
@@ -65,12 +89,12 @@ CASES: dict[str, list[tuple[str, str, int]]] = {
     # (python -c 멀티라인은 원본도 통과시킨다 — 범위 밖).
     "inline_multiline_guard.sh": [
         ("변수에 인라인 멀티라인",
-         "content='''line1" + NL + "line2" + NL + "line3'''", 2),
+         "content='''line1" + NL + "line2" + NL + "line3'''", WSL_ADVISORY_EXIT),
         # 이 가드의 `python -c` 판정은 **비ASCII 가 있을 때만** 차단한다.
         # 순수 ASCII 멀티라인은 git-bash 에서 실제로 정상 동작하므로(260801 실측)
         # 막으면 결과가 같은 왕복만 늘어나는 순수 마찰이 된다.
         ("한글 든 멀티라인 -c",
-         'python -c "d={\'한글\':1}' + NL + 'print(d)"', 2),
+         'python -c "d={\'한글\':1}' + NL + 'print(d)"', WSL_ADVISORY_EXIT),
         ("ASCII 멀티라인 -c 는 통과",
          'python -c "a=1' + NL + 'b=2"', 0),
         ("heredoc 로 파일 쓰기는 권장 패턴",
@@ -89,8 +113,14 @@ CASES: dict[str, list[tuple[str, str, int]]] = {
     ],
 }
 
+ADVISORY_LABELS.update({
+    ("conda_multiline_guard.sh", "conda + 멀티라인 -c"),
+    ("inline_multiline_guard.sh", "변수에 인라인 멀티라인"),
+    ("inline_multiline_guard.sh", "한글 든 멀티라인 -c"),
+})
 
-def run_chain(command: str) -> int:
+
+def run_chain(command: str) -> "tuple[int, str]":
     """체인러너를 통해 실행 — 개별 훅이 아니라 실제 배선 경로를 잰다."""
     payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": command}})
     proc = subprocess.run(
@@ -98,7 +128,7 @@ def run_chain(command: str) -> int:
         input=payload, capture_output=True, text=True,
         encoding="utf-8", errors="replace", timeout=120,
     )
-    return proc.returncode
+    return proc.returncode, proc.stderr
 
 
 def main() -> int:
@@ -113,36 +143,51 @@ def main() -> int:
             continue
         print(f"\n[{guard}]")
         for label, cmd, want in cases:
-            got = run_guard(guard, cmd)
+            got, stderr = run_guard(guard, cmd)
             verb = "차단" if want == 2 else "통과"
-            if got == want:
-                _pass += 1
-            else:
+            if got != want:
                 _fail += 1
                 print(f"  FAIL  {verb}: {label} — 기대 exit={want}, 실제 exit={got}")
+                continue
+            if IS_WSL and want == 0 and (guard, label) in ADVISORY_LABELS:
+                # exit=0 이 "advisory 로 정상 강등"인지 "탐지가 조용히 깨진 것"인지
+                # stderr 경고 유무로 구분한다 — 둘 다 exit=0 이라 종료코드만으로는 구별 불가.
+                if "advisory" not in stderr:
+                    _fail += 1
+                    print(f"  FAIL  advisory 경고 누락: {label} — stderr에 'advisory' 없음 "
+                          f"(탐지 자체가 깨졌을 가능성)")
+                    continue
+            _pass += 1
 
     # ── 체인러너 경유 ────────────────────────────────────────────────────
     # 개별 훅이 통과해도 체인에 등록되지 않았으면 실제로는 아무것도 막지 못한다.
     # 배선이 살아 있는지는 실제 경로로 재야 안다(C-58: 배선까지가 기능).
     if (HOOKS / "_run_hooks_chained.sh").is_file():
         print("\n[_run_hooks_chained.sh] 실제 배선 경로")
+        chain_advisory_labels = {"conda 멀티라인", "변수 인라인 멀티라인"}
         chain_cases = [
             ("conda 멀티라인",
-             'conda run -n e python -c "import os' + NL + 'print(1)"', 2),
+             'conda run -n e python -c "import os' + NL + 'print(1)"', WSL_ADVISORY_EXIT),
             ("PowerShell cmdlet", 'Get-Item "C:/Users/Public"', 2),
-            ("변수 인라인 멀티라인", "content='''a" + NL + "b'''", 2),
+            ("변수 인라인 멀티라인", "content='''a" + NL + "b'''", WSL_ADVISORY_EXIT),
             ("force push", 'git push --force origin main', 2),
             ("정상 명령", 'git status', 0),
             ("정상 실행", 'python scripts/run.py', 0),
         ]
         for label, cmd, want in chain_cases:
-            got = run_chain(cmd)
+            got, stderr = run_chain(cmd)
             verb = "차단" if want == 2 else "통과"
-            if got == want:
-                _pass += 1
-            else:
+            if got != want:
                 _fail += 1
                 print(f"  FAIL  {verb}: {label} — 기대 exit={want}, 실제 exit={got}")
+                continue
+            if IS_WSL and want == 0 and label in chain_advisory_labels:
+                if "advisory" not in stderr:
+                    _fail += 1
+                    print(f"  FAIL  advisory 경고 누락: {label} — stderr에 'advisory' 없음 "
+                          f"(탐지 자체가 깨졌을 가능성)")
+                    continue
+            _pass += 1
     else:
         print("\n[_run_hooks_chained.sh] SKIP — 없음")
         _skip += 1
