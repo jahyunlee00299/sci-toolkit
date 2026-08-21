@@ -461,12 +461,18 @@ def check_credentials_divergence(root: Path) -> CheckResult:
 
     [260810] Filed by an actual installer (issue #3): register_token.py makes
     a token work for scripts/connectors/*, but a coexisting ~/.claude install
-    has its own ~/.claude/secrets.json with different key names (notion.token
+    has its own shared secrets store with different key names (notion.token
     vs NOTION_TOKEN) that scripts/connectors/ never touches and vice versa.
     Neither side is broken on its own — doctor.py passed 11/11 while roughly
     30 pre-existing scripts silently failed, because this divergence was
     never checked. This is a WARN, not a FAIL: not having a ~/.claude/
     install at all is the common case and entirely fine.
+
+    [260822] The shared store moved from ~/.claude/secrets.json to
+    ~/.secrets/secrets.json, so a tool-owned directory can no longer claim it.
+    Both are probed, newest location first: an installer who has not migrated
+    yet still gets a correct answer, and one who has is no longer told the
+    store "does not exist" when it plainly does.
     """
     name = "Credentials store divergence"
     creds_path = root / "config" / "credentials.json"
@@ -478,7 +484,7 @@ def check_credentials_divergence(root: Path) -> CheckResult:
     except (OSError, json.JSONDecodeError) as exc:
         return CheckResult(name, STATUS_WARN, f"could not read config/credentials.json: {exc}")
 
-    # service -> (credentials.json section, ~/.claude/secrets.json key)
+    # service -> (credentials.json section, shared secrets-store key)
     # Only services with a plausible ~/.claude/ counterpart are checked —
     # mail/google have no single well-known secrets.json key to compare against.
     SERVICE_KEY_MAP = {
@@ -502,12 +508,19 @@ def check_credentials_divergence(root: Path) -> CheckResult:
     if not registered:
         return CheckResult(name, STATUS_OK, "no services registered in credentials.json yet")
 
-    secrets_path = Path("~/.claude/secrets.json").expanduser()
-    if not secrets_path.is_file():
+    # Newest location first. ~/.claude/secrets.json is the pre-260816 path and
+    # is kept only so an unmigrated installer still gets a correct answer.
+    SECRETS_CANDIDATES = (
+        Path("~/.secrets/secrets.json").expanduser(),
+        Path("~/.claude/secrets.json").expanduser(),
+    )
+    secrets_path = next((c for c in SECRETS_CANDIDATES if c.is_file()), None)
+    if secrets_path is None:
+        looked = " or ".join(str(c) for c in SECRETS_CANDIDATES)
         return CheckResult(
             name, STATUS_WARN,
-            f"credentials.json has {', '.join(registered)} registered, but "
-            f"~/.claude/secrets.json does not exist — any pre-existing "
+            f"credentials.json has {', '.join(registered)} registered, but no "
+            f"shared secrets store was found ({looked}) — any pre-existing "
             f"~/.claude/scripts/ automation that expects that file cannot see "
             f"these tokens (they use different key names: notion.token vs "
             f"NOTION_TOKEN, asana.token vs ASANA_PAT, github.token vs GITHUB_PAT). "
@@ -528,7 +541,7 @@ def check_credentials_divergence(root: Path) -> CheckResult:
         return CheckResult(
             name, STATUS_WARN,
             f"{', '.join(missing_in_secrets)} registered in credentials.json "
-            f"but missing from ~/.claude/secrets.json ({pairs}) — scripts "
+            f"but missing from {secrets_path} ({pairs}) — scripts "
             f"outside scripts/connectors/ that read secrets.json directly "
             f"will not see these tokens.",
         )
