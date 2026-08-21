@@ -3,7 +3,7 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
-## [Unreleased]
+## [1.2.34] — 2026-08-22
 
 - feat(skills): add debugging-loop — 재현 루프를 가설보다 먼저 세우는 버그 진단 규율 (mattpocock/skills 의 diagnosing-bugs 에서 채택, MIT)
 - feat(skills): add test-quality — 통과해도 검증하지 못하는 테스트 3종(구현과 같은 방식의 기대값 재계산·내부 결합·일괄 선작성)과 seam 선정 (mattpocock/skills 의 tdd 에서 채택, MIT)
