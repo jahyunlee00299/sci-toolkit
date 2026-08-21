@@ -3,6 +3,18 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [Unreleased]
+
+- feat(skills): add `analysis-code-testing` — pytest patterns for analysis code
+  (known-answer tests, golden-file regression, float tolerances, seeded
+  reproducibility). Adapted from wshobson/agents `python-testing-patterns` (MIT);
+  web-service patterns (HTTP mocks, retries, token expiry) dropped.
+- feat(skills): add `data-quality-checks` — six-dimension structural check on a
+  raw table before analysis. Adapted from wshobson/agents
+  `data-quality-frameworks` (MIT); Great Expectations/dbt/warehouse tooling
+  replaced with pandas so no extra dependency is required.
+- docs(AGENTS): route both skills in §0; record upstream attribution in NOTICE.md.
+
 ## [1.2.33] — 2026-08-21
 
 - fix(connectors): preserve real newlines in asana add-comment --html
