@@ -78,7 +78,43 @@ class CSVLoader:
 
 ## Mode C — Code Review / Simplify
 
-Check in order:
+### Review two axes separately, and do not merge them
+
+A change can pass one axis and fail the other, and reviewing them as one list
+lets the pass mask the fail:
+
+- **Standards** — does the code follow this project's conventions and the design
+  rules above? Code can follow every convention and still implement the wrong
+  thing.
+- **Spec** — does the code do what was actually asked? Code can do exactly what
+  the request asked and break every convention in the project.
+
+Run them as separate passes and report them under separate headings. **Do not
+rerank findings across the axes** and do not pick a single "worst issue" overall
+— that reranking is precisely what the separation exists to prevent. Give the
+worst issue *within each axis*.
+
+Before reviewing, pin the comparison point explicitly (a commit, a branch, a
+tag), confirm it resolves, and confirm the diff is non-empty. A review of an
+empty or wrong diff reports "no issues found", which reads exactly like a clean
+change.
+
+**On the Spec axis**, report three distinct things — they call for different
+responses:
+
+1. Requirements that are **missing or only partly implemented**.
+2. Behaviour in the diff that **nobody asked for** (scope creep). Deleting this
+   is usually cheaper than reviewing it.
+3. Requirements that **look implemented but appear wrong**.
+
+Quote the line of the request or spec that each finding is measured against. A
+Spec finding with nothing quoted is an opinion about the design, which belongs on
+the Standards axis instead.
+
+If there is no written spec, say so and report the Spec axis as unavailable
+rather than silently substituting your own idea of what was wanted.
+
+### Standards axis — check in order:
 1. Can any function be split? (>50 lines = consider)
 2. Is there repeated logic? → extract helper
 3. Are there unnecessary abstractions?
