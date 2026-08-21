@@ -278,6 +278,12 @@
       "role": "웹 크롤링·학술 메타데이터(Crossref/arXiv/bioRxiv)·PDF 일괄수집",
       "requires": [],
       "size_kb": 244
+    },
+    "debugging-loop": {
+      "category": "validation",
+      "role": "버그 진단 루프 — 가설 세우기 전에 red-capable 재현 루프부터 (재현·최소화·반증가능 가설·회귀 테스트)",
+      "requires": [],
+      "size_kb": 8
     }
   },
   "presets": {
@@ -335,7 +341,7 @@
     },
     "all": {
       "label": "전체 설치",
-      "desc": "34개 스킬 모두",
+      "desc": "35개 스킬 모두",
       "skills": [
         "__ALL__"
       ]

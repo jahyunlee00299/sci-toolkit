@@ -3,6 +3,10 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [Unreleased]
+
+- feat(skills): add debugging-loop — 재현 루프를 가설보다 먼저 세우는 버그 진단 규율 (mattpocock/skills 의 diagnosing-bugs 에서 채택, MIT)
+
 ## [1.2.33] — 2026-08-21
 
 - fix(connectors): preserve real newlines in asana add-comment --html
