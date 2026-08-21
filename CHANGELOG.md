@@ -3,6 +3,14 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.37] — 2026-08-22
+
+- chore: normalize proof_stage_audit.md to LF, regenerate SHA256SUMS
+
+## [1.2.36] — 2026-08-22
+
+- feat(manuscript-pipeline): add the proof/galley stage audit
+
 ## [1.2.35] — 2026-08-22
 
 - feat(avoid-ai-writing): korean-tells.md — 한국어 AI 문체 감지 보강 (epoko77-ai/im-not-ai 채택, MIT)
