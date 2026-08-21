@@ -34,6 +34,24 @@ written by this lab, not by Anthropic. They have been moved to
 
 None of them import anything from the Anthropic skill.
 
+## Adapted from upstream projects
+
+Some skills here were **adapted**, not vendored: the mechanism was taken and
+rewritten in this repository's own format and voice, targeted at research work.
+Attribution is required by the upstream licenses and is recorded here.
+
+| Skill in this repo | Adapted from | Upstream license |
+|---|---|---|
+| `skills/debugging-loop` | `skills/engineering/diagnosing-bugs` in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
+| `skills/test-quality` | `skills/engineering/tdd` (SKILL.md + tests.md) in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
+| `skills/code-quality` (Mode C, two-axis review only) | `skills/engineering/code-review` in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
+
+The upstream MIT license permits this use and requires the copyright notice be
+retained; that is what this section does. No upstream file is redistributed
+verbatim — what was taken is the discipline (build the feedback loop before the
+hypothesis; rank falsifiable hypotheses; tag debug output; the tautological-
+assertion and internal-coupling test failures), not the text.
+
 ## Skills with their own terms
 
 | License | Skills |
