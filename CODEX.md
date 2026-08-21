@@ -24,12 +24,12 @@ Codex additionally has `approval_policy` and `sandbox_mode` in
 specific command contains* — necessary, but not a substitute for the
 content-level checks below.
 
-> **Note (verified 2026-08-16, Codex CLI 0.147.0).** Earlier versions of this
-> file said Codex had no hook mechanism at all. That is no longer true, and the
-> correction matters enough to state precisely — see
+> **Note (measured 2026-08-16 and 2026-08-21, Codex CLI 0.147.0).** Earlier
+> versions of this file said Codex had no hook mechanism at all. It does, and
+> the guards in `hooks/` can be wired into it — but only through an adapter,
+> because Codex ignores the exit-2 contract they are written against. See
 > [§ Codex-native enforcement](#codex-native-enforcement-hooks-and-rules) below
-> for what is confirmed, what is still unverified, and why you should not yet
-> rely on it.
+> for the measured contract and the wiring procedure.
 
 ### 1. Credentials — never read, write, or print
 
@@ -90,7 +90,12 @@ something else:
   use bash syntax, or wrap the whole thing:
   `powershell.exe -NoProfile -Command "…"`.
 
-> If you want these enforced rather than merely documented, run the guards
+> To get these enforced rather than merely documented, wire the guards into
+> Codex's own hook mechanism — see
+> [§ Codex-native enforcement](#codex-native-enforcement-hooks-and-rules) for
+> the measured contract and the three-step procedure.
+>
+> Until that is set up, or to check a single command by hand, run the chain
 > yourself before acting:
 > ```bash
 > echo '{"tool_name":"Bash","tool_input":{"command":"<the command>"}}' \
@@ -106,11 +111,13 @@ something else:
 ## Codex-native enforcement: hooks and rules
 
 Codex has two enforcement mechanisms of its own. They are **separate
-subsystems**, they behave differently, and only one of them is proven to block.
+subsystems** and they behave differently: rules block on their own, hooks block
+only through the adapter described below.
 
-Everything below was measured against **Codex CLI 0.147.0 on 2026-08-16**.
-Where a claim could not be verified, it says so — do not upgrade a
-"not verified" line into a "works" line without re-measuring.
+Everything below was measured against **Codex CLI 0.147.0**: the rules
+subsystem on 2026-08-16, the hooks contract on 2026-08-21. The hook measurements
+are recorded in [issue #5](https://github.com/jahyunlee00299/sci-toolkit/issues/5)
+— cite that comment rather than re-deriving them.
 
 ### Rules — argv-prefix allow/forbid (confirmed to block)
 
@@ -130,40 +137,154 @@ prefix_rule(pattern=["git", "push", "--force"], decision="forbidden")
   patterns in rule 1, or the cloud-path and Windows-shell traps in rules 4–7 —
   because those depend on what is *inside* the command, not on its first tokens.
 
-### Hooks — same schema as this package, contract unverified
+### Hooks — measured contract
 
-`codex features list` reports `hooks  stable  true`, and the CLI exposes
-`--dangerously-bypass-hook-trust`, so hooks are real and trust-gated.
+Codex fires `PreToolUse` hooks, and this package's guards can read its payload
+unchanged. But **Codex does not honour the exit-code contract they are written
+against**, so wiring them in as-is gets you guards that run and never block.
+The five facts that matter:
 
-Codex hook files use **the same JSON schema as this package's
-`hooks/hooks.json`** — verified by structural comparison against the
-`hooks.json` files shipped by Codex's own plugins:
+| # | Fact | Consequence for this package |
+|---|---|---|
+| (1) | Hook config loads from **global `~/.codex/hooks.json` only** | A project-local `hooks.json` or `.codex/hooks.json` is ignored — silently |
+| (2) | stdin payload is **identical to Claude Code's** | The guards parse `tool_name` / `tool_input` as-is; no translation needed |
+| (3) | **`exit 2` does not block** — the command runs anyway | Every guard here needs the adapter below |
+| (4) | Without `--dangerously-bypass-hook-trust`, hooks are **silently skipped** | Headless runs need that flag or they get no enforcement and no warning |
+| (5) | `${CLAUDE_PLUGIN_ROOT}` is **not injected** | `~/.codex/hooks.json` must use absolute paths |
+
+**(1) Load path.** Only `~/.codex/hooks.json` is read. A project-local
+`hooks.json`, a `.codex/hooks.json` in the project, and a `hooks = "<path>"`
+key in `config.toml` were each measured and each failed — the `config.toml`
+key is a struct (`HooksToml`), not a path, and the string form belongs to
+plugin manifests. `codex features list` reports `plugin_hooks removed`, so the
+global file is the only live path. The file format is the same schema as this
+package's `hooks/hooks.json`:
 
 ```json
 {"hooks": {"PreToolUse": [{"matcher": "Bash|Write|Edit",
-  "hooks": [{"type": "command", "command": "./path/to/guard.sh"}]}]}}
+  "hooks": [{"type": "command", "command": "/abs/path/to/hook.sh"}]}]}}
 ```
 
 Event names present in the binary: `PreToolUse`, `PostToolUse`, `SessionStart`,
 `SessionEnd`, `UserPromptSubmit`.
 
-**What is NOT verified, and why it matters:**
+**(2) Payload.** Captured verbatim:
 
-| Unverified | Consequence |
-|---|---|
-| The exit-code contract (is exit 2 a block?) | A guard could run, "fail", and the command proceeds anyway |
-| The stdin payload format | The guards parse `tool_name` / `tool_input` from stdin JSON; if Codex passes something else they see an empty command and pass everything |
-| Where a non-plugin hook file must live to be loaded | Wiring may silently no-op |
+```json
+{"session_id":"...","turn_id":"...","transcript_path":"...","cwd":"...",
+ "hook_event_name":"PreToolUse","model":"...","permission_mode":"...",
+ "tool_name":"Bash","tool_input":{"command":"echo hooktest"},"tool_use_id":"..."}
+```
 
-A guard that runs but cannot read the command is worse than no guard: it
-produces a green light on an unchecked command. **So do not assume the wiring
-works because you created the file.** Prove it first — make a guard that should
-block actually block, on a command you know is forbidden — and only then rely
-on it. Until you have done that, keep using the manual `_run_hooks_chained.sh`
-call above.
+`tool_name` plus `tool_input.command` — exactly what the guards in `hooks/`
+already read. This is deliberate on Codex's side: the binary carries the
+comment *"Claude requires `reason` when `decision` is `block`; we enforce that
+semantic rule."* A command run through PowerShell still arrives as
+`tool_name: "Bash"`.
 
-If you do verify the contract, please record it via
-`python scripts/feedback_log.py add "..."` so this section can be finished.
+**(3) Blocking — this is the one that changes the wiring.** A hook that exits 2
+with a reason on stderr is **ignored**; the command executes and reports
+success. Codex blocks only when the hook writes
+
+```json
+{"decision":"block","reason":"..."}
+```
+
+to **stdout** and exits **0**, which surfaces as
+`Command blocked by PreToolUse hook: <reason>`.
+
+Every guard in `hooks/` speaks exit 2. Wired in raw, they would run, detect the
+violation, print their reason — and let the command through. That is a guard
+producing a green light on an unchecked command, which is worse than no guard
+at all. Use the adapter.
+
+**(4) Trust gate.** Without `--dangerously-bypass-hook-trust`, `codex exec`
+skips hooks entirely: no firing, no warning, nothing in the log. The tradeoff
+is real and it is not symmetric — *without* the flag you get no enforcement
+**and no signal that enforcement is missing**, which is the failure mode this
+whole section exists to prevent. *With* it you get a warning on every run, and
+hooks that actually fire. For headless automation, pass the flag. (The TUI has
+its own hooks-review UI with persisted `trusted_hash` state; not measured here.)
+
+**(5) Path expansion.** The captured environment holds only `CODEX_MANAGED_*`
+variables. `${CLAUDE_PLUGIN_ROOT}`, which this package's `hooks/hooks.json`
+relies on, is never set — resolve it to an absolute path when you copy the file.
+
+### Wiring the guards under Codex
+
+**a) Install the hook config globally.** Copy or merge this package's
+`hooks/hooks.json` into `~/.codex/hooks.json`, rewriting
+`${CLAUDE_PLUGIN_ROOT}` to an absolute path (fact 5). If you already have a
+`~/.codex/hooks.json`, merge into its `PreToolUse` array rather than replacing
+the file.
+
+**b) Wrap every guard in the exit-2 adapter.** `hooks/_codex_json_adapter.sh`
+runs a guard and translates `exit 2` + stderr into the `{"decision":"block"}`
+JSON Codex acts on (fact 3). Point it at `_run_hooks_chained.sh` to get the
+whole guard chain in one hook:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh /abs/path/to/sci-toolkit/hooks/_codex_json_adapter.sh /abs/path/to/sci-toolkit/hooks/_run_hooks_chained.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh /abs/path/to/sci-toolkit/hooks/_codex_json_adapter.sh /abs/path/to/sci-toolkit/hooks/_run_hooks_chained.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+The adapter's translation table:
+
+| Guard exits | Adapter emits | Adapter exit |
+|---|---|---|
+| `2` | `{"decision":"block","reason":"<guard stderr>"}` | `0` |
+| `0` | nothing (or the guard's own hook JSON, passed through) | `0` |
+| anything else | nothing, plus a `WARN` on stderr | `0` |
+
+The last row is permissive on purpose: a crashed or half-installed guard must
+not brick every tool call. It warns loudly instead, so a dead guard cannot
+quietly pass for a working one.
+
+`tests/test_codex_hook_adapter.py` pins this translation — including that a
+reason containing quotes, Windows backslashes, non-ASCII, or newlines still
+produces *parseable* JSON. That last part is not cosmetic: malformed JSON means
+Codex cannot read the decision, and the block degrades back into an allow.
+
+**c) Pass `--dangerously-bypass-hook-trust` on headless runs** (fact 4), or the
+hooks will not fire and nothing will tell you.
+
+**d) Prove it once.** Wiring is not enforcement until you have watched it
+block. Run a command you know is forbidden and confirm you get
+`Command blocked by PreToolUse hook: ...`:
+
+```bash
+codex exec --dangerously-bypass-hook-trust 'run: git push --force origin main'
+```
+
+You can also exercise the adapter directly, without Codex:
+
+```bash
+echo '{"tool_name":"Bash","tool_input":{"command":"<the command>"}}' \
+  | sh hooks/_codex_json_adapter.sh hooks/_run_hooks_chained.sh
+# prints {"decision":"block",...} when a guard refuses; silent when it allows
+```
 
 ---
 
