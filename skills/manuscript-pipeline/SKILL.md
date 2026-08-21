@@ -1,6 +1,6 @@
 ---
 name: manuscript-pipeline
-description: End-to-end academic manuscript pipeline — structure → write → self-review → polish. Covers IMRAD drafting, journal-specific styles (Nature/Angewandte/Elsevier/ACS), peer-review checklist, cover letter generation, and EndNote citation insertion. Use when producing or editing a manuscript for submission. For searching/synthesizing prior literature use literature-review; for brainstorming or discussing results use research-ideation.
+description: End-to-end academic manuscript pipeline — structure → write → self-review → polish → proof. Covers IMRAD drafting, journal-specific styles (Nature/Angewandte/Elsevier/ACS), peer-review checklist, cover letter generation, EndNote citation insertion, and the post-acceptance proof/galley audit (proof, page proof, 교정지, publisher correction request on a 24-48h deadline). Use when producing or editing a manuscript for submission, or when checking a typeset proof before approving it. For searching/synthesizing prior literature use literature-review; for brainstorming or discussing results use research-ideation.
 ---
 
 # Manuscript Pipeline — Meta-Skill
@@ -33,17 +33,20 @@ Eight modes. Pick one based on the request:
 | `revise-response` | "리비전 대응", "reviewer comment 답변" | Point-by-point JSON + Word table + letter | `references/templates.md` |
 | `docx-edit` | existing file path passed, "이 docx 수정", "본문 교정", "tracked change 삽입" | Edited DOCX + changelog | docx skill + Phase 4 |
 | `academic-qc` | "학술 표기 규칙 전수 교정", "표기 통일 전수", "명명법 일괄 적용" | step별 교정본 + 최종 통합 DOCX | `references/academic_qc_rules.md` |
+| `proof-audit` | "proof", "galley", "교정지", "proof 확인", "page proof", 출판사 교정 요청 · 24~48h 회신 기한 | 수정필요/권장/관찰 3분류 + 각 항목의 교체문자열 | `references/proof_stage_audit.md` |
 
 **Router disambiguation** (was a bug — both matched "학술 규칙 수정"):
 - `academic-qc` = **전수/일괄** 표기 규칙 교정 (종명·효소·약어·단위 systematic sweep, step0~6 산출).
 - `docx-edit` = **특정 위치** 텍스트/구조 편집 (지정한 문장·표·인용 수정). 학술 규칙을 일부만 손볼 때도 docx-edit.
 - 표기 규칙 정의 자체는 항상 `academic-term-rules` 스킬(SSOT).
+- `proof-audit` = **게재 확정 후 인쇄 직전** 단계. `academic-qc`/`review`와 갈리는 축은 "원고를 고칠 수 있는가"다 — proof는 SSOT 접근이 없고 되돌릴 수도 없어서, 원고↔rawdata 대조가 아니라 **인쇄된 값끼리** 재현되는지를 본다. 투고 전이면 `academic-qc`, 승인 대기 중이면 `proof-audit`.
 
 ## Pipeline Phases
 
 ```
 1. Structure & Outline → 2. Section Writing (IMRAD) → 3. Self-Review (+ Consistency Gate)
    → 4. Polish & Submit Prep → 5. Revision Response (post-review)
+   → 6. Proof / Galley Audit (post-acceptance, irreversible — references/proof_stage_audit.md)
 ```
 
 ---
