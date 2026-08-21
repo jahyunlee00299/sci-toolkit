@@ -881,6 +881,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),
     ("tests/test_connectors.py", "REST connectors (dry-run isolation, --write gate, token gating)"),
     ("tests/test_service_routing.py", "service/skill routing (connector-silent steering, dead skill refs)"),
+    ("tests/test_spec_driven_workflow.py", "spec-driven workflow (4 phases, templates, attribution, wiring)"),
 ]
 
 
