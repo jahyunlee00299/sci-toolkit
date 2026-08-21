@@ -44,6 +44,11 @@ Trigger detect mode when the user says "detect," "flag only," "audit only," "jus
 
 **Iterate to convergence (optional).** Rewrite mode already runs one corrective second pass (see Output format) — that built-in pass *is* pass 2, so `--iterate` does not stack on top of it. When the writer asks to "iterate," "keep going until it's clean," or passes `--iterate N`, repeat the audit→rewrite cycle until no patterns remain or **N passes** are reached. Cap **N at 2**: a rewrite plus one corrective pass clears the flagged patterns, and a third pass costs a full regeneration while rarely finding more. Report how many passes it took ("converged in 2 passes").
 
+## Korean text (한국어) — local supplement
+
+<!-- LOCAL ADDITION (not upstream, 2026-08-22): preserve this section when syncing from upstream. -->
+When the text under audit is Korean or mixed Korean/English, also read `korean-tells.md` in this skill folder — a detect-only taxonomy of Korean-specific tells (번역투, 종결어미 리듬 균일성, 형식명사 남발, AI 관용구 등; categories A–J with S1–S3 severities, adapted from epoko77-ai/im-not-ai, MIT). The patterns in this SKILL.md are English-tuned and miss most Korean tells. For Korean text, run detect mode against both catalogs; per the supplement's own rules, Korean deliverables are always detect-only and a documented recipient/author voice overrides any flag.
+
 ---
 
 In **rewrite** mode, your job is to:

@@ -49,6 +49,7 @@ Attribution is required by the upstream licenses and is recorded here.
 | `skills/spec-driven-research-dev` | four-phase spec-driven workflow + artifact templates in [github/spec-kit](https://github.com/github/spec-kit) | MIT (Copyright GitHub, Inc.) |
 | `skills/analysis-code-testing` | `plugins/python-development/skills/python-testing-patterns` in [wshobson/agents](https://github.com/wshobson/agents) | MIT (Copyright (c) 2024 Seth Hobson) |
 | `skills/data-quality-checks` | `plugins/data-engineering/skills/data-quality-frameworks` in [wshobson/agents](https://github.com/wshobson/agents) | MIT (Copyright (c) 2024 Seth Hobson) |
+| `skills/avoid-ai-writing/korean-tells.md` (Korean detect-only supplement; the skill itself is vendored upstream MIT) | `skills/humanize-korean/references/ai-tell-taxonomy.md` (Korean AI Tell Taxonomy v2.0) in [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai) | MIT |
 
 The upstream MIT license permits this use and requires the copyright notice be
 retained; that is what this section does. No upstream file is redistributed

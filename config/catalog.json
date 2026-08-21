@@ -263,7 +263,7 @@
     },
     "avoid-ai-writing": {
       "category": "validation",
-      "role": "AI 작문 티(em-dash·상투어·템플릿 문구) 감지·교정 — 원고·메일·보고서 최종 점검",
+      "role": "AI 작문 티(em-dash·상투어·템플릿 문구) 감지·교정 — 원고·메일·보고서 최종 점검. 한국어 tell(번역투·종결어미 리듬·형식명사)은 korean-tells.md 보강 카탈로그로 감지",
       "requires": [],
       "size_kb": 154
     },
