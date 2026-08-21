@@ -868,6 +868,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_hooks_guards.py", "hook guards (block/allow)"),
     ("tests/test_env_guards.py", "environment-mismatch guards"),
     ("tests/test_hook_wiring.py", "hook file <-> chain-runner wiring (orphaned/dangling guards)"),
+    ("tests/test_codex_hook_adapter.py", "Codex hook adapter (exit-2 -> block-JSON translation)"),
     ("tests/test_feedback_log.py", "feedback channel"),
     ("tests/test_research_marker_scan.py", "research-marker scanner"),
     ("tests/test_feedback_sanitize.py", "feedback sanitize gate"),
