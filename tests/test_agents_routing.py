@@ -36,6 +36,11 @@ NOT_A_PATH = {
     "not_found",
     "PROJECT_STRUCTURE.md",
 }
+# 이 저장소의 스킬이 아니라 사용자가 설치해 쓰는 실행기 이름. §0 이 게이트 명령으로
+# 직접 부르는 것들이라 스킬 이름 패턴(소문자+하이픈)에 걸리지만, `skills/` 아래에
+# 있을 이유가 없다. 여기에 추가할 때는 "정말 외부 CLI 인가"를 확인할 것 —
+# 오타난 스킬 이름을 여기 넣으면 이 검사가 무력화된다.
+RUNNER_COMMANDS = {"pytest"}
 # 경로 안에 플레이스홀더가 있으면 실물 대조 불가
 PLACEHOLDER_RE = re.compile(r"<[^>]+>")
 
@@ -116,6 +121,8 @@ def main():
                 ok.append((t, f"skills/{t}"))
             elif t in EXTERNAL_SKILLS:
                 ok.append((t, "external (Anthropic-owned, see docs/12)"))
+            elif t in RUNNER_COMMANDS:
+                ok.append((t, "external runner (user-installed CLI)"))
             elif t not in NOT_A_PATH:
                 dead_skills.append(t)
 

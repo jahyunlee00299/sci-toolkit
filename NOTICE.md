@@ -34,6 +34,24 @@ written by this lab, not by Anthropic. They have been moved to
 
 None of them import anything from the Anthropic skill.
 
+## Adapted from upstream projects
+
+Two skills are adaptations of units from
+[`wshobson/agents`](https://github.com/wshobson/agents) (MIT, Copyright (c) 2024
+Seth Hobson). Neither is a verbatim copy: the upstream text was rewritten for
+laboratory analysis work, the tool-specific material was dropped, and the
+upstream `model:`/agent-type routing fields do not carry over — skills in this
+package are model-neutral.
+
+| Skill here | Upstream unit | License |
+|---|---|---|
+| `analysis-code-testing` | `plugins/python-development/skills/python-testing-patterns` | MIT |
+| `data-quality-checks` | `plugins/data-engineering/skills/data-quality-frameworks` | MIT |
+
+MIT requires the copyright notice be retained; this section is that notice.
+`tests/test_adopted_skills.py` pins this section, the `upstream:` front-matter
+lines, and the model-neutrality of both skills.
+
 ## Skills with their own terms
 
 | License | Skills |
