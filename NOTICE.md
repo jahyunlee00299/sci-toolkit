@@ -47,6 +47,8 @@ Attribution is required by the upstream licenses and is recorded here.
 | `skills/code-quality` (Mode C, two-axis review only) | `skills/engineering/code-review` in [mattpocock/skills](https://github.com/mattpocock/skills) | MIT (Copyright (c) 2026 Matt Pocock) |
 | `skills/spec-first-development`, `skills/test-first-development` | brainstorming / plan-writing / TDD methodology in [obra/superpowers](https://github.com/obra/superpowers) | MIT (Copyright (c) 2025 Jesse Vincent) |
 | `skills/spec-driven-research-dev` | four-phase spec-driven workflow + artifact templates in [github/spec-kit](https://github.com/github/spec-kit) | MIT (Copyright GitHub, Inc.) |
+| `skills/analysis-code-testing` | `plugins/python-development/skills/python-testing-patterns` in [wshobson/agents](https://github.com/wshobson/agents) | MIT (Copyright (c) 2024 Seth Hobson) |
+| `skills/data-quality-checks` | `plugins/data-engineering/skills/data-quality-frameworks` in [wshobson/agents](https://github.com/wshobson/agents) | MIT (Copyright (c) 2024 Seth Hobson) |
 
 The upstream MIT license permits this use and requires the copyright notice be
 retained; that is what this section does. No upstream file is redistributed
@@ -79,6 +81,18 @@ frameworks and endpoints rather than instrument formats, units, failure
 policy, and number provenance. No upstream file is vendored verbatim.
 
 MIT permits this reuse; the attribution above is the condition.
+
+Two skills are adaptations of units from
+[`wshobson/agents`](https://github.com/wshobson/agents) (MIT, Copyright (c) 2024
+Seth Hobson). Neither is a verbatim copy: the upstream text was rewritten for
+laboratory analysis work, the tool-specific material was dropped, and the
+upstream `model:`/agent-type routing fields do not carry over — skills in this
+package are model-neutral.
+
+
+MIT requires the copyright notice be retained; this section is that notice.
+`tests/test_adopted_skills.py` pins this section, the `upstream:` front-matter
+lines, and the model-neutrality of both skills.
 
 ## Skills with their own terms
 

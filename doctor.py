@@ -884,6 +884,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_adopted_discipline_skills.py", "adopted discipline skills keep their substance"),
     ("tests/test_development_discipline.py", "spec-first/test-first discipline wiring + core rules"),
     ("tests/test_spec_driven_workflow.py", "spec-driven workflow (4 phases, templates, attribution, wiring)"),
+    ("tests/test_adopted_skills.py", "adopted-skill contract (upstream attribution, model-neutral, no vendored deps)"),
 ]
 
 

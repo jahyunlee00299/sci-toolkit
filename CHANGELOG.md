@@ -13,6 +13,15 @@
   obra/superpowers (MIT, see `NOTICE.md`). Routed from `AGENTS.md` §0.
 - feat(skills): add spec-driven-research-dev — 4단계 명세 흐름(specify→plan→tasks→implement),
   github/spec-kit(MIT)에서 적응. 연구코드용으로 재작성(단위·실패정책·수치 출처 SSOT 반영)
+- feat(skills): add `analysis-code-testing` — pytest patterns for analysis code
+  (known-answer tests, golden-file regression, float tolerances, seeded
+  reproducibility). Adapted from wshobson/agents `python-testing-patterns` (MIT);
+  web-service patterns (HTTP mocks, retries, token expiry) dropped.
+- feat(skills): add `data-quality-checks` — six-dimension structural check on a
+  raw table before analysis. Adapted from wshobson/agents
+  `data-quality-frameworks` (MIT); Great Expectations/dbt/warehouse tooling
+  replaced with pandas so no extra dependency is required.
+- docs(AGENTS): route both skills in §0; record upstream attribution in NOTICE.md.
 
 ## [1.2.33] — 2026-08-21
 
