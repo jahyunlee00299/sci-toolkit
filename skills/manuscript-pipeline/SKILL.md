@@ -12,6 +12,15 @@ Integrates manuscript drafting + scientific writing + peer review + revision res
 > 다섯 선언을 먼저 확인한다 — 모든 숫자·인용·표기는 하나의 SSOT에서만 나오고 손으로
 > 베끼지 않는다는 원칙. 논문 신뢰를 지키는 핵심이다.
 
+
+> **Life-science content in a delegated call.** When a MAP-stage or verification
+> sub-question touches molecular biology (enzyme mechanism, mutagenesis, primer
+> or sequence content), keep it **one subject per agent call**. A bundled prompt
+> of this kind can be refused whole by a provider-side classifier before any
+> model reads it, and the dead branch returns empty — which reads as "no
+> findings" rather than "blocked". If a sub-agent returns empty, check its error
+> text before believing the emptiness. See `AGENTS.md` §6b.
+
 ## Trigger
 
 Use when: drafting a manuscript, writing a section (Intro/Methods/Results/Discussion), self-reviewing before submission, writing a cover letter or reviewer response, parsing reviewer comments, interpreting results, editing an existing DOCX, or delegating long edits to a background/remote worker.
