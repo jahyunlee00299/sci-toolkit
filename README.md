@@ -25,6 +25,7 @@ python doctor.py   →   12 OK / 0 FAIL
 | AI가 자꾸 엉뚱하게 한다 | [AGENTS.md](AGENTS.md) §0 라우팅 표 → "§0대로 해줘" |
 | Word/PDF/PPT/Excel 을 다루고 싶다 | 그냥 말하면 처리됨 — Claude Code 기본 기능. 원고 QC 도구는 [모듈 목록](#-word--pdf--ppt--excel) 참조 |
 | 쓰다가 불편한 걸 발견했다 | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) — 말하면 자동 기록 |
+| 터미널이 안 읽힌다 (색·한글 폭·탭 구분) | [docs/14_터미널_읽기좋게](docs/14_터미널_읽기좋게.md) — `python scripts/terminal_setup.py` |
 | **Claude Code가 아니라 Codex를 쓴다** | [CODEX.md](CODEX.md) — 훅 미작동 환경, 별도 유의사항 |
 
 ---
