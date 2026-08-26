@@ -3,6 +3,10 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.40] — 2026-08-26
+
+- Add terminal_setup: colour scheme, CJK-correct font, tab colours, history search
+
 ## [1.2.39] — 2026-08-26
 
 - docs: life-science requests can be blocked above the model (AGENTS.md 6b)
