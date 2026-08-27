@@ -339,3 +339,37 @@ REST-우선 정책에 구멍이 하나 뚫린 채였다. 이 항목이 그 구�
   재발급 자체는 사람 몫이다.
 - scope 는 토큰에 실려 있고 이 코드가 검사하지 않는다. 읽기 전용 scope 로 발급했다면
   `--write` 는 API 가 403 으로 거절하며, 그 메시지를 그대로 보여준다.
+
+## 2026-08-27 — Dead-automation detection (doctor.py)
+
+**Scope / layer** — cross-cutting verification check in `doctor.py`; opt-in via
+`config/automations.json`.
+
+**Why** — an automation that breaks but keeps running is invisible. Logs are
+written by healthy and dead runs alike, so log mtime cannot separate them, and
+zero output looks exactly like a healthy idle state. Two local cases had run
+that way unnoticed for months (a conversation indexer stopped in May; an OTel
+sink left a 0-byte log since August) — both fully implemented, neither
+producing. The check counts the produced **artifact** instead of the log.
+
+**Inputs / outputs** — reads `config/automations.json` (name, artifact glob,
+`max_age_days`, optional `min_bytes`); emits a `CheckResult` (OK / WARN, never
+FAIL). Newest matching artifact decides freshness.
+
+**Evidence** — `tests/test_dead_automation.py`, 14 cases, all passing;
+registered in `SELF_TEST_SCRIPTS` so `doctor.py` runs it. Full `doctor.py`
+run: 11 OK, 1 WARN, 0 new FAIL.
+
+**Refutation** — 11 adverse cases executed: stale (30d > 7d), zero-byte,
+below-`min_bytes`, missing artifact, four malformed-entry shapes, empty list,
+unparseable JSON, `~` home-relative miss. Both directions pinned — the
+must-NOT-warn cases (fresh output, old sibling beside a new file, no config)
+guard against false alarms, which would train users to ignore doctor.
+
+**Deferred risk** — thresholds are the user's estimate, not a measured fact,
+so findings stay advisory (WARN). The check verifies that output *appears*,
+not that its content is correct.
+
+**Pre-existing, untouched** — `tests/test_assumption_check.py` fails on this
+machine for a missing `scipy`; unrelated to this branch and present on
+`origin/main`.
