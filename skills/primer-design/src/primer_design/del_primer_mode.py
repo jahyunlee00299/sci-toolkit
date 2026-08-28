@@ -2,20 +2,21 @@
 """
 iPCR Deletion Primer Designer
 ===============================
-iPCRDesignerBase를 상속하여 결실(deletion) 프라이머 설계.
+Designs deletion primers by subclassing iPCRDesignerBase.
 
-설계 원리 (back-to-back overlapping):
-  원본: ...AAATTT [DEL_REGION] GGGCCC...
+Design principle (back-to-back overlapping):
+  Original: ...AAATTT [DEL_REGION] GGGCCC...
   F: 5'-[left_overlap (k1 bp)]-[annealing_downstream]-3'
   R: 5'-[RC(right_overlap) (k2 bp)]-[annealing_upstream]-3'
-  overlap = left_before_del + right_after_del (결실 영역 건너뜀)
+  overlap = left_before_del + right_after_del (skips the deleted region)
 
-  Tm 계산: annealing 부분만 (tail은 결실 영역 건너편이라 초기 cycle에서
-  template과 연속 결합 불가).
+  Tm calculation: annealing portion only (the tail sits on the far side of
+  the deleted region, so it cannot bind the template contiguously in the
+  early cycles).
 
-Frameshift 판정:
-  결실 길이 % 3 != 0 → FRAMESHIFT 경고
-  1 bp 결실 시 코돈 내 위치까지 판단 (cds_start 제공 시)
+Frameshift determination:
+  deletion length % 3 != 0 -> FRAMESHIFT warning
+  for a 1 bp deletion, also judge the position within the codon (when cds_start is given)
 """
 
 from Bio.Seq import Seq
@@ -24,7 +25,7 @@ from .subst_primer_mode import iPCRDesignerBase
 
 
 class iPCRDelDesigner(iPCRDesignerBase):
-    """결실 프라이머 설계 (back-to-back overlapping + Tm 기반 품질 판정)."""
+    """Designs deletion primers (back-to-back overlapping + Tm-based quality assessment)."""
 
     def design(self, seq, del_start, del_end,
                target_tm=61.0, overlap_len=18, min_len=18, max_len=35,
@@ -33,14 +34,14 @@ class iPCRDelDesigner(iPCRDesignerBase):
 
         Parameters
         ----------
-        seq : str           template 전체 서열
-        del_start : int     결실 시작 위치 (0-indexed, inclusive)
-        del_end : int       결실 끝 위치 (0-indexed, exclusive)
-        target_tm : float   annealing 목표 Tm (degC)
-        overlap_len : int   overlap 총 길이 (bp)
-        min_len : int       annealing 최소 길이
-        max_len : int       annealing 최대 길이
-        cds_start : int     reading frame 기준 CDS 시작 위치 (선택)
+        seq : str           the full template sequence
+        del_start : int     deletion start position (0-indexed, inclusive)
+        del_end : int       deletion end position (0-indexed, exclusive)
+        target_tm : float   target annealing Tm (degC)
+        overlap_len : int   total overlap length (bp)
+        min_len : int       minimum annealing length
+        max_len : int       maximum annealing length
+        cds_start : int     CDS start position for reading frame reference (optional)
 
         Returns
         -------
@@ -49,7 +50,7 @@ class iPCRDelDesigner(iPCRDesignerBase):
         seq = seq.upper()
         warnings = []
 
-        # 1. 입력 검증
+        # 1. Input validation
         if del_start < 0 or del_end > len(seq) or del_start >= del_end:
             raise ValueError(
                 f"Invalid deletion range: [{del_start}, {del_end}) "
@@ -58,7 +59,7 @@ class iPCRDelDesigner(iPCRDesignerBase):
         del_seq = seq[del_start:del_end]
         del_len = del_end - del_start
 
-        # 2. Frameshift 판단
+        # 2. Frameshift determination
         frameshift_warning = False
         if del_len % 3 == 0:
             warnings.append(
@@ -85,7 +86,7 @@ class iPCRDelDesigner(iPCRDesignerBase):
                     f"FRAMESHIFT: {del_len} bp deletion (not multiple of 3) "
                     f"- reading frame disrupted")
 
-        # 3. Overlap 분할
+        # 3. Overlap splitting
         k1 = overlap_len // 2
         k2 = overlap_len - k1
 
@@ -118,7 +119,7 @@ class iPCRDelDesigner(iPCRDesignerBase):
         right_overlap_rc = str(Seq(right_overlap).reverse_complement())
         r_full = right_overlap_rc + r_ann
 
-        # 6. Overlap 검증
+        # 6. Overlap verification
         f_5prime = f_full[:k1]
         r_5prime = r_full[:k2]
         reconstructed = f_5prime + str(Seq(r_5prime).reverse_complement())
@@ -159,7 +160,7 @@ class iPCRDelDesigner(iPCRDesignerBase):
 
     @staticmethod
     def print_result(result):
-        """결과 출력 포맷터."""
+        """Result output formatter."""
         sep = "=" * 70
         line = "-" * 70
         k1, k2 = result['k1'], result['k2']
@@ -205,10 +206,10 @@ class iPCRDelDesigner(iPCRDesignerBase):
         print()
 
 
-# ── 테스트 ──────────────────────────────────────────────────────────────
+# ── Tests ──────────────────────────────────────────────────────────────
 
 def _run_tests():
-    """iPCRDelDesigner 테스트."""
+    """Tests for iPCRDelDesigner."""
     sep = "=" * 70
     designer = iPCRDelDesigner()
 

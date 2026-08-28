@@ -1,8 +1,10 @@
 # sci-toolkit
 
-**연구실 공용 Claude Code 스킬셋.** 논문 검색·원고 작성·그림 제작·데이터 분석을 AI가
-매번 같은 절차로 처리하게 하는 지침 모음. 절차 끝마다 **검증 게이트**를 둬 "일단
-돌아갔다"가 아니라 "결과가 맞는지 확인" 후 끝냄.
+**A shared Claude Code skillset for the lab.** A collection of instructions that
+gets the AI to handle literature search, manuscript writing, figure production,
+and data analysis the same way every time. Every workflow ends in a
+**verification gate** — it doesn't stop at "it ran," it stops after
+"confirmed the result is correct."
 
 A shared Claude Code skillset for lab work — literature search, manuscript writing,
 figure production, data analysis. Every workflow ends in a **verification gate**:
@@ -10,82 +12,85 @@ the artifact isn't done until the gate passes, and the gate is a script, not a
 suggestion.
 
 ```
-스킬 37종 · 회귀 테스트 28종 · 안전 가드 7종
-python doctor.py   →   12 OK / 0 FAIL
+37 skills · 28 regression tests · 7 safety guards
+python doctor.py   ->   12 OK / 0 FAIL
 ```
 
-개인 계정·개인정보·연구비 정보는 미포함. 미공개 연구 내용은 기계 검사
-(`doctor.py` SENTINEL)로 걸러냄.
+No personal accounts, PII, or funding information included. Undisclosed research
+content is filtered out by a mechanical check (`doctor.py` SENTINEL).
 
-| 나는… | 여기부터 |
+| I am… | start here |
 |---|---|
-| 처음이라 뭐가 뭔지 모르겠다 | [docs/00_시작하기](docs/00_시작하기.md) |
-| 일단 설치부터 | [QUICKSTART.md](QUICKSTART.md) — 필요한 스킬만 골라 설치 |
-| 어떻게 돌아가는지 알고 싶다 | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) |
-| AI가 자꾸 엉뚱하게 한다 | [AGENTS.md](AGENTS.md) §0 라우팅 표 → "§0대로 해줘" |
-| Word/PDF/PPT/Excel 을 다루고 싶다 | 그냥 말하면 처리됨 — Claude Code 기본 기능. 원고 QC 도구는 [모듈 목록](#-word--pdf--ppt--excel) 참조 |
-| 쓰다가 불편한 걸 발견했다 | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) — 말하면 자동 기록 |
-| 터미널이 안 읽힌다 (색·한글 폭·탭 구분) | [docs/14_터미널_읽기좋게](docs/14_터미널_읽기좋게.md) — `python scripts/terminal_setup.py` |
-| **Claude Code가 아니라 Codex를 쓴다** | [CODEX.md](CODEX.md) — 훅 미작동 환경, 별도 유의사항 |
+| new here, not sure what's what | [docs/00_시작하기](docs/00_시작하기.md) (Getting Started) |
+| just want to install first | [QUICKSTART.md](QUICKSTART.md) — install only the skills you need |
+| want to understand how it works | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) (Full Workflow Map) |
+| the AI keeps going off track | [AGENTS.md](AGENTS.md) §0 routing table -> say "follow §0" |
+| want to work with Word/PDF/PPT/Excel | just ask — it's a built-in Claude Code capability. See the [module list](#-word--pdf--ppt--excel) for manuscript QC tools |
+| found something annoying while using it | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) (Filing Feedback) — say it and it's recorded automatically |
+| the terminal is hard to read (colors, Korean-character width, tabs) | [docs/14_터미널_읽기좋게](docs/14_터미널_읽기좋게.md) (Making the Terminal Readable) — `python scripts/terminal_setup.py` |
+| **I use Codex, not Claude Code** | [CODEX.md](CODEX.md) — hooks don't work there; separate notes |
 
 ---
 
-## sci-toolkit이 뭔가요? / What is sci-toolkit?
+## What is sci-toolkit?
 
-`skills/` 아래 폴더 하나하나가 "이럴 때는 이렇게" 정리한 지침, 필요하면 보조
-스크립트 동반. 코드가 아니라 문서라 Claude Code가 대화 맥락을 보고 알아서
-골라 읽음 — 직접 실행 불필요.
+Each folder under `skills/` is a set of instructions organized as "in this
+situation, do this," with a helper script attached where needed. It's documents,
+not code, so Claude Code reads the conversation context and picks the right one
+on its own — nothing needs to be run directly.
 
-## 무엇이 들어 있나 (스킬 37종)
+## What's inside (37 skills)
 
-| 분야 | 스킬 |
+| Area | Skills |
 |---|---|
-| **논문 검색·작성** | `research-search`(진입점) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `web-scraping` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `academic-term-rules` · `endnote-citation-injection` |
-| **분자생물학·실험** | `primer-design` · `experiment-hub` |
-| **Figure** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
-| **데이터·통계** | `data-quality-checks`(분석 전 표 점검) · `lab-data-analysis` · `stats-workflow` · `statsmodels` · `analysis-code-testing` · `conda-env-manager` · `get-available-resources` |
-| **문서 변환** | `markitdown`(PDF·docx·xlsx·이미지OCR → Markdown) · `journal-presentation-maker` |
-| **검증·개발 규율** | `scientific-validation` · `spec-first-development` · `test-first-development` · `code-quality` · `avoid-ai-writing` · `git-workflow-manager` · `skill-developer` · `token-efficient-routing` · `debugging-loop` · `test-quality` · `spec-driven-research-dev` |
+| **Literature search & writing** | `research-search` (entry point) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `web-scraping` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `academic-term-rules` · `endnote-citation-injection` |
+| **Molecular biology & experiments** | `primer-design` · `experiment-hub` |
+| **Figures** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
+| **Data & statistics** | `data-quality-checks` (pre-analysis table check) · `lab-data-analysis` · `stats-workflow` · `statsmodels` · `analysis-code-testing` · `conda-env-manager` · `get-available-resources` |
+| **Document conversion** | `markitdown` (PDF/docx/xlsx/image OCR -> Markdown) · `journal-presentation-maker` |
+| **Verification & development discipline** | `scientific-validation` · `spec-first-development` · `test-first-development` · `code-quality` · `avoid-ai-writing` · `git-workflow-manager` · `skill-developer` · `token-efficient-routing` · `debugging-loop` · `test-quality` · `spec-driven-research-dev` |
 
-> **Word · PDF · PPT · Excel** 은 스킬 없이 처리 — Claude Code 기본 기능. 원고
-> QC 도구 7종은 `skills/manuscript-pipeline/scripts/` 에 위치.
+> **Word, PDF, PPT, Excel** are handled without a skill — a built-in Claude Code
+> capability. The 7 manuscript QC tools live under `skills/manuscript-pipeline/scripts/`.
 
-## 쓰는 법
+## How to use it
 
-평소 대화하듯 말하면 됨.
+Just talk to it normally.
 
 ```
-"이 주제로 논문 찾아줘"     "primer 설계해줘"      "이 데이터 통계 뭐 써야 해?"
-"figure 다시 그려줘"        "원고 표기 검사해줘"    "이 결과 말이 되는지 봐줘"
+"find papers on this topic"     "design a primer for me"      "what stats test should I use for this data?"
+"redraw this figure"            "check the manuscript notation"    "does this result make sense?"
 ```
 
-설치는 필요한 것만 골라서:
+Install only what you need:
 
 ```bash
-python install/install.py --list                      # 카탈로그 확인
+python install/install.py --list                      # check the catalog
 python install/install.py --preset paper-writing --apply
-python doctor.py                                      # PASS 시 준비 완료
+python doctor.py                                      # PASS means ready
 ```
 
 ---
 
 <details>
-<summary><b>📄 Word · PDF · PPT · Excel — 왜 스킬 폴더가 안 보이나</b></summary>
+<summary><b>📄 Word · PDF · PPT · Excel — why there's no skill folder for these</b></summary>
 
 <br>
 
-문서 작업은 스킬 없이도 동작. "이 워드 파일 고쳐줘"라고 하면 평소처럼 처리됨.
-해당 스킬을 저장소에 안 넣은 이유는 기능 부재가 아니라, 재배포 금지된 Anthropic
-소유 자산이기 때문 ([docs/12](docs/12_문서스킬_직접_준비하기.md)).
+Document work runs without a skill. Say "fix this Word file" and it's handled
+the normal way. These skills aren't in the repository not because the
+capability is missing, but because they are Anthropic-owned assets that
+cannot be redistributed ([docs/12](docs/12_문서스킬_직접_준비하기.md), "Preparing Document Skills Yourself").
 
-PDF·문서를 텍스트로 읽어야 할 때는 `markitdown` 사용. PDF·docx·pptx·xlsx·이미지
-(OCR)를 Markdown으로 변환하며, `paper-extract`와 `journal-presentation-maker`도
-논문 PDF를 읽을 때 이 경로를 탐.
+Use `markitdown` when a PDF/document needs to be read as text. It converts
+PDF/docx/pptx/xlsx/images (OCR) to Markdown, and `paper-extract` and
+`journal-presentation-maker` both go through this path when reading a paper PDF.
 
-원고 QC·편집 도구 7종은 랩에서 직접 제작한 것이라 그대로 포함:
+The 7 manuscript QC/editing tools were built in-house by the lab, so they're
+included as-is:
 
 ```bash
-# 추적변경이 있으면 python-docx 텍스트는 틀린다 — 넣기 전에 반드시 확인
+# python-docx text is wrong when tracked changes are present — always check before feeding it in
 python skills/manuscript-pipeline/scripts/manuscript_text.py MANUSCRIPT.docx --count-only
 python skills/manuscript-pipeline/scripts/figure_caption_check.py MANUSCRIPT.docx
 python skills/manuscript-pipeline/scripts/word_com_ops.py --help    # Windows + Word
@@ -94,101 +99,116 @@ python skills/manuscript-pipeline/scripts/word_com_ops.py --help    # Windows + 
 </details>
 
 <details>
-<summary><b>🔑 논문 원문 받기 — OA 우선, 기관 구독은 교내망에서</b></summary>
+<summary><b>🔑 Getting the full paper text — prefer OA, use the campus network for institutional subscriptions</b></summary>
 
 <br>
 
-`scripts/ref_fetch.py`는 공개(OA) 경로 전용. CrossRef·OpenAlex·Unpaywall 교차검증으로
-OA PDF를 수집하고, 페이월 논문은 우회 없이 `oa_status: closed`로 표시.
+`scripts/ref_fetch.py` is open-access (OA) only. It cross-verifies via
+CrossRef/OpenAlex/Unpaywall to collect OA PDFs, and marks a paywalled paper as
+`oa_status: closed` with no workaround.
 
 ```bash
 python scripts/ref_fetch.py --doi 10.1016/j.example.2026.01.001 --download
 ```
 
-**기관 구독 논문(고려대 도서관 등)** 은 학교 인증 필요, 스크립트 대신 불가.
-다음 순서로 직접 수령.
+**Institutionally-subscribed papers** (e.g. via a university library) require
+school authentication and cannot be fetched by script. Get them manually in
+this order:
 
-1. `refs_report.json` 에서 `oa_status: closed` 인 DOI 추림
-2. **교내망**이거나 도서관 원격접속(EZproxy 등) 로그인 상태에서 해당 DOI 접속
-3. 받은 PDF를 작업 폴더에 두고 파일 경로로 안내
+1. Pull the DOIs marked `oa_status: closed` from `refs_report.json`
+2. Visit the DOI while **on the campus network** or logged into the library's
+   remote-access service (e.g. EZproxy)
+3. Place the downloaded PDF in the working folder and point to its file path
 
-> ⚠️ **외부망 접근 제한**
-> - 교외에서 기관 구독 논문 링크를 그대로 열면 페이월 화면만 표시. 오류가 아니라
->   인증 미완료 상태 — 먼저 도서관 원격접속 로그인 필요.
-> - 원격접속 세션은 시간 경과 시 만료. 여러 편 받다가 중간부터 실패하면
->   대개 세션 만료 — 재로그인 후 계속.
-> - 자동 대량 다운로드 금지. 짧은 시간에 여러 편을 긁으면 출판사가 기관 IP 전체를
->   차단할 수 있고, 그 피해는 연구실 전체가 부담. 필요한 편만 사람이 직접 수령.
-> - 이 툴킷은 페이월 우회·스크래핑 미지원(`ref_fetch.py` 설계 원칙).
->   AI에게 "우회해서 받아줘" 요청 금지.
+> ⚠️ **Off-campus access restrictions**
+> - Opening an institutional-subscription paper link directly from off-campus
+>   only shows the paywall screen. That's not an error — it means
+>   authentication hasn't happened yet; log into the library's remote-access
+>   service first.
+> - A remote-access session expires after a while. If several papers download
+>   fine and then it starts failing partway through, that's usually a session
+>   expiring — log back in and continue.
+> - No automated bulk downloading. Scraping many papers in a short time can
+>   get the publisher to block the entire institutional IP range, and the
+>   whole lab pays for that. Fetch only what's needed, and do it by hand.
+> - This toolkit does not support paywall bypass or scraping (a design
+>   principle of `ref_fetch.py`). Never ask the AI to "get around it and
+>   fetch it anyway."
 
 </details>
 
 <details>
-<summary><b>🧰 패키지 구성 — 무엇이 무엇을 하는가</b></summary>
+<summary><b>🧰 Package layout — what does what</b></summary>
 
 <br>
 
-| 항목 | 용도 |
+| Item | Purpose |
 |---|---|
-| `AGENTS.md` | **AI가 따르는 운영 규칙.** §0 라우팅 표가 "어떤 요청 → 어떤 스킬 → 어떤 검증"을 정한다 |
-| `install/install.py` | 선택 설치 — 프리셋/개별 스킬 단위, 의존 스킬 자동 동반, 기존 파일 보존 병합 |
-| `config/catalog.json` | 스킬 카탈로그 SSOT (카테고리·의존성·용량·프리셋) |
-| `hooks/` | 안전 가드 7종 — 시크릿·강제삭제·위험한 git(fork upstream 포함)·클라우드 재귀스캔 + Windows 환경불일치 3종 |
-| `scripts/` | 연구 보조 도구 (HPLC 파서, primer 점검, JCR 검증, `ref_fetch.py` 등) + 외부 연동 커넥터 |
-| `docs/` | 초심자 문서 15종 (시작하기 → 설치 → API/MCP → 토큰·비용 → … → 전체 워크플로우 지도 → Chrome으로 토큰받기) |
-| `tests/` | 회귀 테스트 28종 (시크릿·연구마커, 참조 실존, 라우팅 정합, 비파괴 설치, 능력 소실, 훅 양방향, 훅 파일 배선, Codex 훅 어댑터, 설치 후 doctor 자동실행, 피드백 채널·정화 게이트, credentials 이원화 감지, 커넥터 dry-run·`--write` 게이트, 서비스·스킬 라우팅 실체 확인, 도입 규율 스킬 조항 실존, 개발 규율 스킬 조항 실존, 명세주도 4단계 계약 실존, 채택 스킬 조항 실존). `doctor.py` 가 전부 자동 실행 |
-| `doctor.py` | 무결성·환경 점검. `PASS` 가 나와야 준비된 것 |
-| `evals/` | 라우팅이 **실제로 발동하는지** headless 측정 (느리고 비용 발생 — 수동 실행) |
-| `scripts/capability_diff.py` | 스킬을 고쳐 쓴 뒤 **기능이 조용히 빠지지 않았는지** 구조적으로 대조 |
-| `scripts/feedback_log.py` | 불편·오류 기록 (계정·토큰 불필요) |
-| `SHA256SUMS` | 전체 파일 해시 — 복사·전송 후 손상 검증 |
+| `AGENTS.md` | **The operating rules the AI follows.** The §0 routing table decides "which request -> which skill -> which verification" |
+| `install/install.py` | Selective install — by preset or individual skill, auto-pulling in dependent skills, merging in without touching existing files |
+| `config/catalog.json` | Skill catalog SSOT (categories, dependencies, size, presets) |
+| `hooks/` | 7 safety guards — secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
+| `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
+| `docs/` | 15 beginner docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
+| `tests/` | 28 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence). `doctor.py` runs all of them automatically |
+| `doctor.py` | Integrity/environment check. `PASS` means it's ready |
+| `evals/` | Headless measurement of whether routing **actually fires** (slow, costs money — run manually) |
+| `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |
+| `scripts/feedback_log.py` | Records inconveniences/errors (no account or token needed) |
+| `SHA256SUMS` | Hashes for every file — verify integrity after copying/transferring |
 
 </details>
 
 <details>
-<summary><b>⚙️ 설치 상세 — 어디에, 어떻게</b></summary>
+<summary><b>⚙️ Install details — where, and how</b></summary>
 
 <br>
 
-스킬은 디렉토리 하나에 불과 — 별도 등록 절차 없음.
+A skill is just a directory — there's no separate registration step.
 
 ```bash
-python install/install.py --list                          # 카탈로그·프리셋
-python install/install.py --preset paper-writing --apply  # 프리셋 단위
-python install/install.py --skills primer-design --apply  # 개별
+python install/install.py --list                          # catalog and presets
+python install/install.py --preset paper-writing --apply  # by preset
+python install/install.py --skills primer-design --apply  # individually
 python install/install.py --skills docx --dest ./my-skills --apply
 ```
 
-- `--dest` 생략 시 환경 감지 후 자동 배치(Claude Code면 `~/.claude/skills`).
-  배치 위치는 출력으로 확인 가능.
-- 기존 파일 유지. 같은 이름은 갱신, 대상에만 있던 파일은 보존. 완전 교체 필요 시
-  `--force` 명시.
-- 폴더 하나만 복사해도 동작 — 전체 설치 불필요.
+- If `--dest` is omitted, the environment is auto-detected and placed
+  accordingly (`~/.claude/skills` for Claude Code). The output shows where it
+  landed.
+- Existing files are kept. A same-named file gets updated; a file that only
+  existed at the destination is preserved. Pass `--force` for a full
+  replacement.
+- Copying just one folder works too — a full install isn't required.
 
-**베이스 환경**: Claude Code(구독). 대부분 스킬은 API 키 불필요, 일부 외부 DB
-조회 스킬만 무료 API나 선택적 키 사용. 각 `SKILL.md`에 명시.
+**Base environment**: Claude Code (subscription). Most skills need no API key;
+only a few external-database lookup skills use a free API or an optional key.
+Each `SKILL.md` states which.
 
-Codex 등 다른 에이전트 사용 시 [CODEX.md](CODEX.md) 선독 권장.
+If using another agent such as Codex, read [CODEX.md](CODEX.md) first.
 
 </details>
 
 ---
 
 <details>
-<summary><b>🔒 안전 공지 — 무엇이 들어 있지 않은가</b></summary>
+<summary><b>🔒 Safety notice — what's NOT included</b></summary>
 
 <br>
 
-- 개인정보·계정정보·연구비 정보 미포함. `.distignore`로 패키징 단계에서 자동 제외,
-  `doctor.py`의 SENTINEL 스캔이 시크릿·개인식별정보·미공개 연구 마커를 기계 검사.
-- 스킬 직접 추가·수정 시 개인 토큰·이메일·연구비 번호 금지 — 포함 시 `doctor.py`
-  FAIL 처리.
-- 랩 밖 재배포 전 관리자 확인 필수.
-- **라이선스**: 저장소 전체는 MIT([LICENSE](LICENSE))지만 스킬별 자체 라이선스
-  존재, 재배포 전 각 `SKILL.md` 앞머리 확인 필요 ([NOTICE.md](NOTICE.md)).
-  `docx`·`pdf`·`pptx`·`xlsx`는 Anthropic 소유라 이 저장소 미포함. 다만 문서 작업
-  자체는 Claude Code 기본 기능으로 동작.
+- No PII, account credentials, or funding information is included.
+  `.distignore` strips these out automatically at packaging time, and
+  `doctor.py`'s SENTINEL scan mechanically checks for secrets, personally
+  identifiable information, and undisclosed-research markers.
+- When adding or editing a skill directly, never include a personal token,
+  email, or grant number — `doctor.py` will FAIL if one is present.
+- Get admin confirmation before redistributing outside the lab.
+- **License**: the repository as a whole is MIT ([LICENSE](LICENSE)), but
+  individual skills may carry their own license — check the header of each
+  `SKILL.md` before redistributing ([NOTICE.md](NOTICE.md)). `docx`, `pdf`,
+  `pptx`, and `xlsx` are Anthropic-owned and therefore not included in this
+  repository, though document work itself still works as a built-in Claude
+  Code capability.
 
 This distribution ships with no personal data, account credentials, or funding
 information: `.distignore` strips it at packaging time, and `doctor.py`'s SENTINEL

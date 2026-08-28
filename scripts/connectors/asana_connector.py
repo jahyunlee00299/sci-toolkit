@@ -7,19 +7,23 @@
 dry-run preview is printed. Assigning to someone other than 'me' prints an
 outward-action notice. There is no complete/delete subcommand.
 
-형식 규칙(사용자가 겪던 '형식 이상' 방지 — 랩 검증):
-- 모든 요청은 ensure_ascii=False + charset=utf-8 → 한글 안 깨짐.
-- 서식 댓글/설명(--html / --html-notes)은 sanitize_html() 이 강제: <body> 래핑,
-  <p> 금지(xml_parsing_error), 줄바꿈은 실제 개행(\n) 그대로, '→' 문자 금지.
-  (&#10; 엔티티는 Asana sanitizer 가 &amp;#10; 로 재이스케이프해 리터럴 노출 —
-  issue #4 실측. 레거시 입력의 &#10; 은 자동으로 실제 개행으로 복원한다.)
-- 기본 댓글/설명은 plain text (짧은 글엔 이게 안전).
+Formatting rules (prevents the "formatting looks wrong" problem users hit —
+lab-verified):
+- Every request uses ensure_ascii=False + charset=utf-8 -> non-ASCII text stays intact.
+- Formatted comments/descriptions (--html / --html-notes) are enforced by
+  sanitize_html(): <body> wrapping, <p> forbidden (xml_parsing_error), line
+  breaks kept as real newlines (\n), '->' arrow character forbidden.
+  (The &#10; entity gets re-escaped by Asana's sanitizer into &amp;#10; and
+  shows up as a literal on screen — measured in issue #4. A legacy input's
+  &#10; is automatically restored to a real newline.)
+- Default comment/description is plain text (safer for short text).
 """
 from __future__ import annotations
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# Windows' default console is cp949 and dies on non-ASCII/symbol output. Force UTF-8.
+# Use reconfigure: wrapping in a TextIOWrapper takes ownership of the underlying
+# stream, so once this module is imported, GC'ing the wrapper closes the
+# caller's stdout too (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -43,7 +47,7 @@ API_ROOT = "https://app.asana.com/api/1.0"
 
 
 def http(method, url, token, data=None, headers=None):
-    """urllib 기반 최소 HTTP 헬퍼. 파싱된 JSON을 반환하거나 친절한 한글 오류로 종료."""
+    """Minimal urllib-based HTTP helper. Returns parsed JSON or exits with a clear error."""
     hdrs = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/json",
@@ -53,8 +57,9 @@ def http(method, url, token, data=None, headers=None):
         hdrs.update(headers)
     body = None
     if data is not None:
-        # ensure_ascii=False 필수 — 한글/비ASCII가 \uXXXX 로 깨지지 않게 (랩 검증 규칙).
-        # charset=utf-8 명시 — 댓글·하위작업의 한글 본문 보존.
+        # ensure_ascii=False is required -- keeps non-ASCII text from being escaped
+        # into \uXXXX (lab-verified rule).
+        # charset=utf-8 is explicit -- preserves non-ASCII text in comments/subtask bodies.
         body = json.dumps({"data": data}, ensure_ascii=False).encode("utf-8")
         hdrs["Content-Type"] = "application/json; charset=utf-8"
     req = urllib.request.Request(url, data=body, headers=hdrs, method=method)
@@ -64,25 +69,25 @@ def http(method, url, token, data=None, headers=None):
             return json.loads(raw) if raw else {}
     except urllib.error.HTTPError as e:
         if e.code == 401:
-            sys.exit(f"[오류] 인증 실패(401). 토큰(asana.token)을 확인하세요. (마스킹: {cred.mask(token)})")
+            sys.exit(f"[Error] Authentication failed (401). Check your token (asana.token). (masked: {cred.mask(token)})")
         if e.code == 403:
-            sys.exit("[오류] 403 — API 요청 한도 초과 또는 권한 부족일 수 있습니다.")
+            sys.exit("[Error] 403 -- possibly an API rate limit or insufficient permission.")
         if e.code == 404:
-            sys.exit("[오류] 404 — 리소스를 찾을 수 없습니다. gid/workspace 값을 확인하세요.")
+            sys.exit("[Error] 404 -- resource not found. Check the gid/workspace value.")
         detail = ""
         try:
             detail = e.read().decode("utf-8", "ignore")
         except Exception:
             pass
-        sys.exit(f"[오류] Asana API 오류 {e.code}: {detail[:300]}")
+        sys.exit(f"[Error] Asana API error {e.code}: {detail[:300]}")
     except urllib.error.URLError as e:
-        sys.exit(f"[오류] 네트워크 연결을 확인하세요: {e.reason}")
+        sys.exit(f"[Error] Check your network connection: {e.reason}")
 
 
 def cmd_me(args, token):
     data = http("GET", f"{API_ROOT}/users/me", token)
     me = data.get("data", {})
-    print(f"이름: {me.get('name')}")
+    print(f"Name: {me.get('name')}")
     print(f"gid: {me.get('gid')}")
     print(f"email: {me.get('email')}")
     ws = me.get("workspaces", [])
@@ -96,17 +101,17 @@ def cmd_tasks(args, token):
     if not args.workspace:
         me_data = http("GET", f"{API_ROOT}/users/me", token)
         ws = me_data.get("data", {}).get("workspaces", [])
-        print("[안내] --workspace gid 가 필요합니다. 사용 가능한 workspace:")
+        print("[Notice] --workspace gid is required. Available workspaces:")
         for w in ws:
             print(f"  - {w.get('name')} (gid={w.get('gid')})")
-        print("예: asana_connector.py tasks --workspace <gid>")
+        print("Example: asana_connector.py tasks --workspace <gid>")
         return
     url = f"{API_ROOT}/tasks?assignee=me&workspace={args.workspace}&opt_fields=name,completed,due_on"
     data = http("GET", url, token)
     items = data.get("data", [])
-    print(f"내 작업 {len(items)}건 (workspace={args.workspace})")
+    print(f"{len(items)} of my tasks (workspace={args.workspace})")
     for t in items:
-        status = "완료" if t.get("completed") else "진행중"
+        status = "done" if t.get("completed") else "in progress"
         due = t.get("due_on") or "-"
         print(f"  [{status}] {t.get('name')} (due: {due}, gid={t.get('gid')})")
 
@@ -123,81 +128,87 @@ def cmd_add_task(args, token):
         body_preview["assignee"] = args.assignee
 
     if is_outward:
-        print("[알림] 남에게 배정되는 작업입니다 — 외부로 나가는(outward) 동작입니다.")
+        print("[Notice] This task is being assigned to someone else -- this is an outward action.")
 
     if not args.write:
-        print("[DRY-RUN] --write 플래그가 없어 실제로 실행하지 않습니다.")
-        print("  생성될 작업:")
+        print("[DRY-RUN] --write flag not set, not actually executing.")
+        print("  Task that would be created:")
         print(json.dumps(body_preview, ensure_ascii=False, indent=2))
-        print("  실행하려면 --write 를 추가하세요.")
+        print("  Add --write to actually run this.")
         return
 
     if is_outward:
-        print(f"[알림] {args.assignee} 에게 작업이 배정됩니다. 계속 진행합니다 (--write 지정됨).")
+        print(f"[Notice] This task will be assigned to {args.assignee}. Proceeding (--write given).")
 
     result = http("POST", f"{API_ROOT}/tasks", token, data=body_preview)
     created = result.get("data", {})
-    print(f"[완료] 작업 생성됨: {created.get('name')} (gid={created.get('gid')})")
+    print(f"[Done] Task created: {created.get('name')} (gid={created.get('gid')})")
 
 
-# Asana html_text/html_notes 허용 태그 (이 밖의 태그, 특히 <p> 는 xml_parsing_error).
+# Tags allowed in Asana html_text/html_notes (anything else, especially <p>, causes xml_parsing_error).
 _ALLOWED_HTML_TAGS = ("body", "strong", "em", "u", "s", "code",
                       "a", "ul", "ol", "li", "h1", "h2", "table", "tr", "td")
 
 
 def sanitize_html(html):
-    """Asana html_text 형식 규칙을 강제/점검한다 (사용자가 겪던 '형식 이상' 방지).
+    """Enforce/check Asana's html_text formatting rules (prevents the "formatting looks wrong" problem users hit).
 
-    규칙(랩 검증): ①<body>...</body> 래핑 필수 ②<p> 금지(xml_parsing_error)
-    ③줄바꿈은 실제 개행 문자(\\n) 그대로 — &#10; 엔티티는 Asana sanitizer 가
-    &amp;#10; 로 재이스케이프해 화면에 리터럴 노출된다(issue #4 실측)
-    ④'→' 화살표 문자 금지(XML 파싱 에러).
-    ⑤<table> 은 열 5개 이하로 (260827 실측). Asana 는 내용과 무관하게 모든 <td> 에
-    width="120" 을 박고 좁은 열을 줄여주지 않아, 짧은 값이 많은 표는 댓글 창을 넘친다.
-    값이 짧고 라벨이 하나뿐인 계열(온도 8개, 희석 계열, 사이클 수)은 2차원 데이터가
-    아니라 길어진 한 행이므로 표 대신 "50.0 / 52.6 / 55.1" 처럼 한 줄 텍스트로 쓴다.
-    표는 라벨이 붙은 행(시약/부피, 프라이머/서열/Tm)에만 쓴다.
-    위반이 자동교정 불가하면 오류로 알려 준다.
+    Rules (lab-verified): (1) must be wrapped in <body>...</body> (2) <p> is
+    forbidden (xml_parsing_error) (3) line breaks must be real newline
+    characters (\\n) as-is -- the &#10; entity gets re-escaped by Asana's
+    sanitizer into &amp;#10; and shows up as a literal on screen (measured in
+    issue #4) (4) the '->' arrow character is forbidden (XML parsing error).
+    (5) keep <table> to 5 columns or fewer (measured 260827). Asana pins
+    width="120" on every <td> regardless of content and never shrinks narrow
+    columns, so a table with many short values overflows the comment pane.
+    A series of short values under a single label (e.g. 8 temperatures, a
+    dilution series, cycle counts) isn't really 2D data, just a long single
+    row -- write it as one line of text like "50.0 / 52.6 / 55.1" instead of
+    a table. Reserve tables for genuinely labeled rows (reagent/volume,
+    primer/sequence/Tm).
+    Any violation that can't be auto-corrected is reported as an error.
     """
     if "→" in html:
-        sys.exit("[형식 오류] html_text 에 '→' 문자는 XML 파싱 오류를 냅니다. "
-                 "'->' 또는 단어로 바꾸세요.")
+        sys.exit("[Format error] The '→' character in html_text causes an XML parsing error. "
+                 "Replace it with '->' or a word.")
     if "<p>" in html or "</p>" in html:
-        sys.exit("[형식 오류] <p> 태그는 Asana 에서 xml_parsing_error 를 냅니다. "
-                 "줄바꿈은 실제 개행 문자를 그대로 쓰세요.")
-    # <body> 래핑 자동 보정
+        sys.exit("[Format error] The <p> tag causes xml_parsing_error in Asana. "
+                 "Use a real newline character for line breaks instead.")
+    # Auto-correct: wrap in <body>
     if "<body>" not in html:
         html = f"<body>{html}</body>"
-    # 개행 정규화: CRLF → LF. 레거시 &#10; 입력(과거 도움말이 안내하던 형식)은
-    # 실제 개행으로 복원한다 — Asana 는 html_text 안의 진짜 LF 만 줄바꿈으로 렌더링.
+    # Normalize line breaks: CRLF -> LF. Restore a legacy &#10; input (the
+    # form older help text used to recommend) to a real newline -- Asana
+    # only renders a real LF inside html_text as a line break.
     html = html.replace("\r\n", "\n").replace("&#10;", "\n")
     return html
 
 
 def cmd_add_comment(args, token):
-    """작업에 댓글(story)을 단다. 기본은 plain text, --html 이면 형식 검증 후 html_text."""
+    """Post a comment (story) on a task. Plain text by default; --html validates formatting then sends html_text."""
     if args.html:
         payload = {"html_text": sanitize_html(args.text)}
-        kind = "html_text (형식 검증됨)"
+        kind = "html_text (format-validated)"
     else:
         payload = {"text": args.text}
-        kind = "text (일반)"
+        kind = "text (plain)"
 
     if not args.write:
-        print("[DRY-RUN] --write 플래그가 없어 실제로 실행하지 않습니다.")
-        print(f"  대상 작업 gid: {args.task}")
-        print(f"  댓글 형식: {kind}")
+        print("[DRY-RUN] --write flag not set, not actually executing.")
+        print(f"  Target task gid: {args.task}")
+        print(f"  Comment format: {kind}")
         print(json.dumps(payload, ensure_ascii=False, indent=2))
-        print("  실행하려면 --write 를 추가하세요.")
+        print("  Add --write to actually run this.")
         return
 
-    print("[알림] 댓글은 남에게 보이는 외부 동작입니다.")
+    print("[Notice] A comment is an outward action, visible to other people.")
     result = http("POST", f"{API_ROOT}/tasks/{args.task}/stories", token, data=payload)
     story = result.get("data", {})
-    print(f"[완료] 댓글 등록됨 (gid={story.get('gid')})")
+    print(f"[Done] Comment posted (gid={story.get('gid')})")
 
-    # 등록 직후 자체 검증 (issue #4 회귀 방지): 재조회한 html_text 에 &#10; 이
-    # 남아 있으면 개행이 리터럴로 노출되고 있는 것 — 실패로 알린다.
+    # Self-verify right after posting (guards against the issue #4 regression):
+    # if a re-fetched html_text still has &#10; in it, the line break is
+    # showing up as a literal -- report it as a failure.
     if args.html and story.get("gid"):
         try:
             fetched = http("GET",
@@ -205,17 +216,17 @@ def cmd_add_comment(args, token):
                            token)
             html_text = (fetched.get("data") or {}).get("html_text") or ""
             if "#10;" in html_text:
-                sys.exit("[검증 실패] 등록된 댓글에 &#10; 리터럴이 남아 있습니다 "
-                         "(줄바꿈 미적용). issue #4 회귀 — 코드를 확인하세요.")
-            print("[검증] 재조회 결과 &#10; 리터럴 없음 — 줄바꿈 정상.")
+                sys.exit("[Verification failed] The posted comment still has an &#10; literal in it "
+                         "(line break not applied). This is the issue #4 regression -- check the code.")
+            print("[Verified] No &#10; literal on re-fetch -- line breaks look correct.")
         except SystemExit:
             raise
-        except Exception as exc:  # noqa: BLE001 — 댓글 자체는 이미 등록됨
-            print(f"[주의] 등록 후 재조회 검증 실패(댓글은 등록됨): {exc}")
+        except Exception as exc:  # noqa: BLE001 -- the comment itself was already posted
+            print(f"[Warning] Post-creation re-fetch verification failed (comment was still posted): {exc}")
 
 
 def cmd_add_subtask(args, token):
-    """부모 작업 아래 하위작업을 만든다 (/tasks/{parent}/subtasks 전용 엔드포인트)."""
+    """Create a subtask under a parent task (uses the dedicated /tasks/{parent}/subtasks endpoint)."""
     is_outward = bool(args.assignee) and args.assignee.strip().lower() != "me"
 
     payload = {"name": args.name}
@@ -229,63 +240,64 @@ def cmd_add_subtask(args, token):
         payload["workspace"] = args.workspace
 
     if is_outward:
-        print("[알림] 하위작업이 남에게 배정됩니다 — 외부로 나가는(outward) 동작입니다.")
+        print("[Notice] This subtask is being assigned to someone else -- this is an outward action.")
 
     if not args.write:
-        print("[DRY-RUN] --write 플래그가 없어 실제로 실행하지 않습니다.")
-        print(f"  부모 작업 gid: {args.parent}")
+        print("[DRY-RUN] --write flag not set, not actually executing.")
+        print(f"  Parent task gid: {args.parent}")
         print(json.dumps(payload, ensure_ascii=False, indent=2))
-        print("  실행하려면 --write 를 추가하세요.")
+        print("  Add --write to actually run this.")
         return
 
     result = http("POST", f"{API_ROOT}/tasks/{args.parent}/subtasks", token, data=payload)
     created = result.get("data", {})
-    print(f"[완료] 하위작업 생성됨: {created.get('name')} (gid={created.get('gid')})")
+    print(f"[Done] Subtask created: {created.get('name')} (gid={created.get('gid')})")
 
 
 def build_parser():
     p = argparse.ArgumentParser(
         prog="asana_connector.py",
         description=(
-            "Asana REST 커넥터 (read-first). me/tasks 는 자유 조회, "
-            "add-task 만 쓰기 동작이며 --write 필요. 남에게 배정 시 outward 알림 표시. "
-            "complete/delete 서브커맨드는 존재하지 않습니다."
+            "Asana REST connector (read-first). me/tasks are free reads, "
+            "add-task is the only write action and requires --write. Assigning "
+            "to someone else shows an outward notice. "
+            "There is no complete/delete subcommand."
         ),
     )
     sub = p.add_subparsers(dest="command")
 
-    sp = sub.add_parser("me", help="[READ] 내 프로필/워크스페이스")
+    sp = sub.add_parser("me", help="[READ] my profile/workspaces")
     sp.set_defaults(func=cmd_me)
 
-    sp = sub.add_parser("tasks", help="[READ] 내 작업 목록")
-    sp.add_argument("--workspace", default=None, help="workspace gid (없으면 목록 안내)")
+    sp = sub.add_parser("tasks", help="[READ] my task list")
+    sp.add_argument("--workspace", default=None, help="workspace gid (lists options if omitted)")
     sp.set_defaults(func=cmd_tasks)
 
-    sp = sub.add_parser("add-task", help="[WRITE, --write 필요] 작업 생성")
+    sp = sub.add_parser("add-task", help="[WRITE, requires --write] create a task")
     sp.add_argument("--workspace", required=True)
     sp.add_argument("--name", required=True)
     sp.add_argument("--notes", default="")
-    sp.add_argument("--assignee", default=None, help="'me' 또는 다른 사람 gid/email (미지정 시 배정 안함)")
-    sp.add_argument("--write", action="store_true", help="실제로 작업을 생성합니다 (없으면 dry-run)")
+    sp.add_argument("--assignee", default=None, help="'me' or another person's gid/email (unassigned if omitted)")
+    sp.add_argument("--write", action="store_true", help="Actually create the task (dry-run without this)")
     sp.set_defaults(func=cmd_add_task)
 
-    sp = sub.add_parser("add-comment", help="[WRITE, --write 필요] 작업에 댓글 달기")
-    sp.add_argument("--task", required=True, help="댓글을 달 작업 gid")
-    sp.add_argument("--text", required=True, help="댓글 내용")
+    sp = sub.add_parser("add-comment", help="[WRITE, requires --write] post a comment on a task")
+    sp.add_argument("--task", required=True, help="gid of the task to comment on")
+    sp.add_argument("--text", required=True, help="comment content")
     sp.add_argument("--html", action="store_true",
-                    help="서식 있는 댓글(html_text). <body>자동래핑·<p>금지·실제개행(\\n)줄바꿈·→금지 검증됨")
-    sp.add_argument("--write", action="store_true", help="실제로 댓글을 답니다 (없으면 dry-run)")
+                    help="Formatted comment (html_text). Auto-wraps <body>, forbids <p>, validates real-newline (\\n) breaks and forbids ->")
+    sp.add_argument("--write", action="store_true", help="Actually post the comment (dry-run without this)")
     sp.set_defaults(func=cmd_add_comment)
 
-    sp = sub.add_parser("add-subtask", help="[WRITE, --write 필요] 하위작업 생성")
-    sp.add_argument("--parent", required=True, help="부모 작업 gid")
-    sp.add_argument("--name", required=True, help="하위작업 이름")
-    sp.add_argument("--notes", default="", help="설명(기본 plain, --html-notes 시 서식)")
+    sp = sub.add_parser("add-subtask", help="[WRITE, requires --write] create a subtask")
+    sp.add_argument("--parent", required=True, help="parent task gid")
+    sp.add_argument("--name", required=True, help="subtask name")
+    sp.add_argument("--notes", default="", help="description (plain by default, formatted with --html-notes)")
     sp.add_argument("--html-notes", dest="html_notes", action="store_true",
-                    help="설명을 html_notes 로(형식 검증 동일 적용)")
-    sp.add_argument("--assignee", default=None, help="'me' 또는 다른 사람 gid (미지정 시 배정 안함)")
-    sp.add_argument("--workspace", default=None, help="workspace gid (필요 시)")
-    sp.add_argument("--write", action="store_true", help="실제로 생성합니다 (없으면 dry-run)")
+                    help="Send description as html_notes (same format validation applied)")
+    sp.add_argument("--assignee", default=None, help="'me' or another person's gid (unassigned if omitted)")
+    sp.add_argument("--workspace", default=None, help="workspace gid (if needed)")
+    sp.add_argument("--write", action="store_true", help="Actually create it (dry-run without this)")
     sp.set_defaults(func=cmd_add_subtask)
 
     return p
@@ -296,9 +308,9 @@ def main():
     args = parser.parse_args()
     if not getattr(args, "command", None):
         parser.print_help()
-        print("\n[안내] 읽기(me/tasks)는 바로 실행됩니다. 쓰기(add-task/add-comment/add-subtask)는 --write 가 있어야 실행됩니다.")
+        print("\n[Notice] Reads (me/tasks) run immediately. Writes (add-task/add-comment/add-subtask) require --write to run.")
         return
-    # dry-run(쓰기 명령인데 --write 없음)은 토큰 없이도 미리보기 가능하게 한다.
+    # Allow a dry-run (a write command without --write) to preview without a token.
     is_dryrun_write = hasattr(args, "write") and not args.write
     token = None if is_dryrun_write else cred.require("asana", "token")
     args.func(args, token)

@@ -1,58 +1,91 @@
-# Manuscript/Word/DOCX 다중 에이전트 워크플로우 규칙 (260529 확정)
+# Manuscript/Word/DOCX multi-agent workflow rules (finalized 260529)
 
-**원칙: 분석은 병렬, 한 파일 편집은 한 명이 직렬 (map–reduce).**
-manuscript·Word·docx·SI·표·인용·교정 등 **단일 docx 파일을 다루는 모든 작업**에 적용.
+**Principle: analysis runs in parallel, editing a single file runs serially by one agent (map-reduce).**
+Applies to **any work touching a single docx file** — manuscript, Word, docx, SI, tables, citations, proofing, etc.
 
-## 왜
-`word/document.xml`은 단일 XML. 두 에이전트가 같은 파일을 각자 수정·저장하면 last-write-wins로
-앞 변경이 소실되고, byte offset이 어긋나 OOXML이 깨진다(Word "파일 손상"). 그래서 **편집 주체는 항상 1명**.
+## Why
+`word/document.xml` is a single XML file. If two agents each modify and save
+the same file, last-write-wins destroys the earlier change, and byte offsets
+shift out of sync, corrupting the OOXML (Word reports "file corrupted"). So
+**there is always exactly one editor.**
 
-## 표준 3단계
+## Standard 3-stage flow
 
-### 1) MAP — 분석/진단 병렬 (느린 부분을 쪼갠다)
-여러 에이전트가 **읽기·진단·원문검증·치환안 생성**만 병렬 수행. 영역 분할:
-- 표별(Table S1~S2 / S3~S4 / S5~S6 / …), 섹션별(Intro/Methods/Results), 또는 차원별(수치/인용/이탤릭/철자).
-- 특히 **원문 PDF 정독·문헌값 재계산**처럼 느린 작업이 병렬화 효과 큼.
-- 각 에이전트는 **파일을 수정하지 않고** "수정 패치 명세"만 반환:
-  `{대상 표/블록, 찾을 run 텍스트(고유), 바꿀 내용, 사유}` 리스트.
+### 1) MAP — parallel analysis/diagnosis (split up the slow part)
+Multiple agents run **read/diagnose/verify-against-source/draft-patch
+generation only** in parallel. Split the scope:
+- by table (Table S1-S2 / S3-S4 / S5-S6 / ...), by section
+  (Intro/Methods/Results), or by axis (numbers/citations/italics/spelling).
+- Slow work — especially **close-reading the source PDF and recomputing
+  literature values** — benefits most from parallelization.
+- Each agent **does not modify the file** — it only returns a "patch spec":
+  a list of `{target table/block, run text to find (unique), replacement
+  content, reason}`.
 
-### 2) REDUCE — 편집 직렬 (1명이 패치 취합 적용)
-- **fixer(또는 메인) 1명**이 모든 패치를 순서대로 한 `word/document.xml`에 적용.
-- zipfile로 document.xml만 교체. EndNote 필드(`<w:instrText>`,`<w:fldChar begin>..<end>`) 불가침.
-- 패치 충돌(같은 run 중복 수정) 시 직렬이라 즉시 감지·해소.
+### 2) REDUCE — serial edit (one agent applies the collected patches)
+- **One fixer (or the main agent)** applies every patch in order to a
+  single `word/document.xml`.
+- Replace only document.xml via zipfile. EndNote fields (`<w:instrText>`,
+  `<w:fldChar begin>..<end>`) are untouchable.
+- Because this is serial, a patch conflict (two patches touching the same
+  run) is caught and resolved immediately.
 
-### 3) VERIFY — QC 1명 (Word COM 필수)
-- 4단계 preflight + **Word COM ground-truth** + 포매팅(폰트/줄간격/테두리/정렬).
-- 통과 후에만 OneDrive 원본 교체. 실패 시 fixer에 반려.
+### 3) VERIFY — one QC agent (Word COM required)
+- The 4-stage preflight + **Word COM ground-truth** + formatting
+  (font/line-spacing/borders/alignment).
+- Only replace the OneDrive original after this passes. Send back to the
+  fixer on failure.
 
-## 도구 선택
-- **대화형 위임**(에이전트가 제공하는 sub-agent/task 도구): 사람이 단계 사이 검토·결정에
-  개입할 때(분석 결과 보고 → 사용자 결정 → 편집). 특정 벤더 API 이름에 묶지 말 것 —
-  Claude Code면 sub-agent, Codex면 `spawn_agent`, 없으면 한 컨텍스트에서 순차 실행.
-- **Workflow 도구**: 결정적 파이프라인이 필요하고 사용자가 "workflow" opt-in 했을 때.
-  `pipeline(tables, analyze, ...)`로 표별 분석 fan-out → 패치 수집 → 단일 reduce 단계서 편집.
-  편집 단계는 반드시 **단일 agent()** (worktree isolation은 docx엔 무의미 — zip 바이너리).
+## Choosing a tool
+- **Interactive delegation** (whatever sub-agent/task tool the agent
+  provides): when a human needs to step in between stages to review and
+  decide (report analysis results -> user decision -> edit). Don't tie this
+  to a specific vendor API name — sub-agent for Claude Code, `spawn_agent`
+  for Codex, or sequential execution in one context if neither exists.
+- **Workflow tool**: when a deterministic pipeline is needed and the user
+  has opted into "workflow." Fan out per-table analysis via
+  `pipeline(tables, analyze, ...)` -> collect patches -> edit in a single
+  reduce stage. The edit stage must always be a **single agent()**
+  (worktree isolation is meaningless for docx — it's binary zip data).
 
-## ★ 변경 추적(Track Changes) + 메모(Comment) 적극 사용 (260529 사용자 지시)
+## Use Track Changes + Comments heavily (per the user's 260529 instruction)
 
-수정을 **사용자가 Word에서 검토·수락/거부**할 수 있게, 가능한 한:
-- **본문/표 텍스트 변경 → tracked change**로: 삽입은 `<w:ins w:id=".." w:author="Claude" w:date="..">…<w:r>…</w:r></w:ins>`,
-  삭제는 `<w:del …><w:r><w:delText>…</w:delText></w:r></w:del>`. author는 "Claude"로 통일.
-- **판단·근거·대안이 필요한 곳 → comment**: commentRangeStart/End + commentReference + comments.xml(+commentsExtended/Ids/Extensible 사이드카). 예: "이 수치는 measured-total 기준임", "ref RecNum #N으로 단 이유", "줄간격 원본부터 2.0".
-- 각 결정/수정마다 짧은 comment로 **왜 그렇게 했는지** 남기면 Decision_Log와 이중으로 추적됨.
+So the user can **review and accept/reject edits in Word**, wherever possible:
+- **Body/table text changes -> a tracked change**: an insertion is
+  `<w:ins w:id=".." w:author="Claude" w:date="..">…<w:r>…</w:r></w:ins>`, a
+  deletion is `<w:del …><w:r><w:delText>…</w:delText></w:r></w:del>`. Use
+  "Claude" consistently as the author.
+- **Anywhere that needs judgment, rationale, or an alternative -> a
+  comment**: commentRangeStart/End + commentReference +
+  comments.xml (+ commentsExtended/Ids/Extensible sidecars). E.g.: "this
+  figure is on a measured-total basis," "why this citation uses ref
+  RecNum #N," "line spacing has been 2.0 since the original."
+- Leaving a short comment for each decision/edit explaining **why it was
+  done that way** creates a second, redundant trail alongside the
+  Decision_Log.
 
-**DOCX 5대 금지 준수** (docx 무결성): pack.py / del안의 delText 누락 / ins 안의 del 중첩 /
-floating delText / comment anchor 오삽입. comment anchor는 id=max+1, commentRangeStart는 w:p 직속 run 경계,
-`rfind('<w:del ')` 공백 필수. incremental_edit.py + 4단계 preflight. (상세 → docx 스킬(이 저장소에 없음 — docs/12 참조))
+**Comply with the 5 docx prohibitions** (docx integrity): pack.py /
+missing delText inside a del / a nested del inside an ins / a floating
+delText / a misinserted comment anchor. A comment anchor's id must be
+max+1, commentRangeStart must sit at a run boundary directly under w:p, and
+`rfind('<w:del ')` must be followed by a space. incremental_edit.py + the
+4-stage preflight. (Details -> the docx skill, not in this repo — see
+docs/12)
 
-**언제 tracked vs 직접 편집:**
-- 사용자가 검토할 본문/표/수치/문구 변경 → **tracked + comment 권장**.
-- 기계적·구조적(폰트 통일, 마커 형식, ZIP 빌드) → 직접 편집 가능(단 Decision_Log 기록).
-- 사용자가 "tracked로/메모 달아서"라 하면 항상 tracked+comment.
+**When to use tracked changes vs. a direct edit:**
+- Any body/table/figure/wording change the user should review -> **tracked
+  + comment recommended**.
+- Mechanical/structural work (unifying fonts, marker format, ZIP build) ->
+  a direct edit is fine (but log it in the Decision_Log).
+- If the user says "with tracking / add a comment," always use tracked +
+  comment.
 
-## 금지
-- 두 에이전트가 동일 docx를 동시에 Write/저장하는 구성 금지.
-- docx 편집을 worktree 병렬로 나눠 git merge 시도 금지(바이너리).
-- 에이전트 편집본을 Word COM 검증 없이 채택 금지(이번 세션 SI v36 손상 사례).
+## Prohibited
+- Two agents Writing/saving the same docx concurrently is prohibited.
+- Splitting docx editing across worktrees in parallel and attempting a git
+  merge is prohibited (it's binary).
+- Adopting an agent's edited copy without Word COM verification is
+  prohibited (this session's SI v36 corruption incident).
 
-관련: `manuscript_qc_checklist.md`, docx 스킬(이 저장소에 없음 — docs/12 참조)(preflight·무결성 SSOT).
+Related: `manuscript_qc_checklist.md`, the docx skill (not in this repo —
+see docs/12) (preflight/integrity SSOT).

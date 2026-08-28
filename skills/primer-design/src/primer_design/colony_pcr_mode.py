@@ -2,14 +2,14 @@
 """
 Colony PCR Primer Designer
 ===========================
-Universal primer 기반 colony PCR 프라이머 추천 및
-insert 내부 프라이머 설계.
+Recommends colony PCR primers based on universal primers, and designs
+internal insert primers.
 
-Colony PCR는 Taq polymerase 기반이므로:
+Colony PCR is Taq-polymerase-based, so:
   - Annealing temp = min(F_tm, R_tm) - 5.0
-  - Q5/Phusion 보정 없음
+  - No Q5/Phusion correction
 
-Universal primer DB는 Macrogen Standard Primer 목록 기준.
+The universal primer DB follows the Macrogen Standard Primer list.
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ from .snapgene_parser import parse_snapgene
 
 @dataclass
 class UniversalPrimer:
-    """Macrogen 등 표준 프라이머 정보."""
+    """Standard primer info, e.g. from Macrogen."""
     name: str
     sequence: str       # 5'->3'
     direction: str      # "forward" or "reverse"
@@ -66,7 +66,8 @@ VECTOR_PRIMER_MAP: dict[str, tuple[str, str]] = {
 
 # ── Vector Flanking Defaults ──────────────────────────────────────────────
 # (upstream_bp from primer to insert start, downstream_bp from insert end to primer)
-# 값은 각 벡터의 universal primer binding site ~ MCS 사이 대략적인 거리.
+# The value is the approximate distance from each vector's universal-primer
+# binding site to its MCS.
 
 VECTOR_FLANKING_DEFAULTS: dict[str, tuple[int, int]] = {
     "pET-21a(+)":       (200, 150),
@@ -78,7 +79,8 @@ VECTOR_FLANKING_DEFAULTS: dict[str, tuple[int, int]] = {
     "pMAL-c6T":         (200, 100),
 }
 
-# MCS gap: 빈 벡터(insert 없음)에서 universal primer 사이 MCS 영역 대략적 길이
+# MCS gap: approximate length of the MCS region between universal primers
+# in the empty vector (no insert)
 _MCS_GAP_DEFAULTS: dict[str, int] = {
     "pET-21a(+)":       100,
     "pET-28a(+)":       160,
@@ -93,17 +95,17 @@ _MCS_GAP_DEFAULTS: dict[str, int] = {
 # ── ColonyPCRDesigner ─────────────────────────────────────────────────────
 
 class ColonyPCRDesigner(iPCRDesignerBase):
-    """Colony PCR 프라이머 추천 (Taq-based).
+    """Colony PCR primer recommendation (Taq-based).
 
-    Universal primer 기반으로 colony PCR 조건을 추천하고,
-    필요시 insert 내부 프라이머도 설계.
+    Recommends colony PCR conditions based on universal primers, and
+    designs internal insert primers when needed.
     """
 
     def _resolve_canonical_name(self, vector_name: str) -> str:
-        """벡터 이름을 canonical name으로 변환.
+        """Convert a vector name to its canonical name.
 
-        get_vector()는 data dict를 반환하므로,
-        EXPRESSION_VECTORS에서 동일 dict 객체를 찾아 canonical key를 반환.
+        get_vector() returns a data dict, so find the same dict object in
+        EXPRESSION_VECTORS and return its canonical key.
         """
         vec_data = get_vector(vector_name)
         for canonical, data in EXPRESSION_VECTORS.items():
@@ -117,17 +119,17 @@ class ColonyPCRDesigner(iPCRDesignerBase):
         insert_length_bp: int,
         vector_flanking_bp: int | tuple[int, int] | None = None,
     ) -> dict:
-        """Universal primer 기반 colony PCR 조건 추천.
+        """Recommend colony PCR conditions based on universal primers.
 
         Parameters
         ----------
         vector_name : str
-            벡터 이름 (fuzzy matching 지원, e.g., "pET28a")
+            Vector name (supports fuzzy matching, e.g. "pET28a")
         insert_length_bp : int
-            Insert 길이 (bp)
+            Insert length (bp)
         vector_flanking_bp : int or tuple[int, int] or None
-            Primer ~ insert 사이 flanking 거리.
-            int: 양쪽 동일, tuple: (upstream, downstream), None: 기본값 사용.
+            Flanking distance between primer and insert.
+            int: same on both sides, tuple: (upstream, downstream), None: use defaults.
 
         Returns
         -------
@@ -211,34 +213,34 @@ class ColonyPCRDesigner(iPCRDesignerBase):
         target_tm: float = 58.0,
         target_product_range: tuple[int, int] = (300, 1200),
     ) -> dict:
-        """Universal primer + insert 내부 프라이머 함께 추천.
+        """Recommend a universal primer pair together with internal insert primers.
 
-        Insert가 길 때 universal primer만으로는 밴드가 너무 크거나
-        구분이 어려울 수 있으므로, insert 내부에 annealing하는
-        프라이머 쌍도 함께 설계.
+        When the insert is long, universal primers alone can give a band
+        that is too large or hard to distinguish, so also design a primer
+        pair that anneals inside the insert.
 
         Parameters
         ----------
         vector_name : str
-            벡터 이름
+            Vector name
         insert_seq : str
-            Insert 전체 서열 (DNA)
+            Full insert sequence (DNA)
         target_tm : float
-            내부 프라이머 목표 Tm (Taq 기반, default 58C)
+            Target Tm for the internal primers (Taq-based, default 58C)
         target_product_range : tuple[int, int]
-            내부 프라이머 쌍의 목표 product size 범위 (bp)
+            Target product size range for the internal primer pair (bp)
 
         Returns
         -------
         dict
-            universal: suggest() 결과,
+            universal: the suggest() result,
             internal_f_seq, internal_f_tm,
             internal_r_seq, internal_r_tm,
             internal_product_size, internal_notes
         """
         insert_len = len(insert_seq)
 
-        # 1. Universal primer 추천
+        # 1. Recommend the universal primer
         universal = self.suggest(vector_name, insert_len)
 
         # 2. Internal forward primer: ~100bp from start
@@ -292,28 +294,28 @@ class ColonyPCRDesigner(iPCRDesignerBase):
         vector_name: str,
         cds_feature_name: str | None = None,
     ) -> dict:
-        """SnapGene .dna 파일에서 CDS feature를 찾아 suggest() 호출.
+        """Find a CDS feature in a SnapGene .dna file and call suggest().
 
         Parameters
         ----------
         snapgene_path : str
-            SnapGene .dna 파일 경로
+            Path to the SnapGene .dna file
         vector_name : str
-            벡터 이름
+            Vector name
         cds_feature_name : str or None
-            CDS feature 이름. None이면 첫 번째 CDS를 사용.
+            CDS feature name. If None, uses the first CDS.
 
         Returns
         -------
         dict
-            suggest() 결과 + snapgene_info
+            the suggest() result + snapgene_info
         """
         sequence, is_circular, features = parse_snapgene(snapgene_path)
 
-        # CDS feature 찾기
+        # Find the CDS feature
         cds_features = [f for f in features if f["type"] == "CDS"]
         if not cds_features:
-            # CDS가 없으면 gene type도 시도
+            # If there's no CDS, also try the gene type
             cds_features = [f for f in features if f["type"] in ("CDS", "gene")]
 
         if not cds_features:
@@ -352,16 +354,16 @@ class ColonyPCRDesigner(iPCRDesignerBase):
     def register_primer_pair(
         cls, vector_name: str, forward: str, reverse: str,
     ) -> None:
-        """VECTOR_PRIMER_MAP에 프라이머 쌍 등록/덮어쓰기.
+        """Register/overwrite a primer pair in VECTOR_PRIMER_MAP.
 
         Parameters
         ----------
         vector_name : str
-            벡터 canonical name (EXPRESSION_VECTORS의 key)
+            Vector canonical name (a key in EXPRESSION_VECTORS)
         forward : str
-            Forward primer key (UNIVERSAL_PRIMERS의 key)
+            Forward primer key (a key in UNIVERSAL_PRIMERS)
         reverse : str
-            Reverse primer key (UNIVERSAL_PRIMERS의 key)
+            Reverse primer key (a key in UNIVERSAL_PRIMERS)
         """
         if forward not in UNIVERSAL_PRIMERS:
             raise ValueError(
@@ -386,20 +388,20 @@ class ColonyPCRDesigner(iPCRDesignerBase):
         min_len: int = 18,
         max_len: int = 28,
     ) -> tuple[str | None, float | None]:
-        """Insert 서열 내부에서 target Tm에 가장 가까운 프라이머를 선택.
+        """Select the primer within the insert sequence closest to the target Tm.
 
         Parameters
         ----------
         seq : str
-            Insert 서열
+            Insert sequence
         anchor : int
-            프라이머 시작 위치 (0-indexed)
+            Primer start position (0-indexed)
         direction : str
             "+" (forward) or "-" (reverse)
         target_tm : float
-            목표 Tm
+            Target Tm
         min_len, max_len : int
-            프라이머 길이 범위
+            Primer length range
 
         Returns
         -------
@@ -428,7 +430,7 @@ class ColonyPCRDesigner(iPCRDesignerBase):
                 best_seq = candidate
                 best_tm = tm
 
-            # Tm을 초과하면 더 길게 할 필요 없음
+            # No need to go longer once Tm has been reached
             if tm >= target_tm:
                 break
 
@@ -438,7 +440,7 @@ class ColonyPCRDesigner(iPCRDesignerBase):
 # ── Tests ──────────────────────────────────────────────────────────────────
 
 def _run_tests():
-    """ColonyPCRDesigner 테스트."""
+    """Tests for ColonyPCRDesigner."""
     sep = "=" * 70
     passed = 0
     failed = 0
@@ -511,7 +513,7 @@ def _run_tests():
     print(f"{sep}")
     print("  Test 5: suggest_with_internal() basic test")
     print(sep)
-    # 800bp 가상 insert 서열
+    # An 800bp mock insert sequence
     insert_seq = (
         "ATGCGTAACCTGGCGATCAAGCTGTTCGACGGTACCGATATCCTGCAGAAATTTGCGCCG"
         "GATCTGAACGAATGGCTGCACATCGGTCCTGCGATTGGCACCGATTTCAATCGCCTGATG"
@@ -548,11 +550,11 @@ def _run_tests():
     print(f"{sep}")
     print("  Test 6: register_primer_pair()")
     print(sep)
-    # 원래 pET-21a(+) 매핑 확인
+    # Confirm the original pET-21a(+) mapping
     orig_f, orig_r = VECTOR_PRIMER_MAP["pET-21a(+)"]
     check("original forward", orig_f, "T7promoter")
 
-    # 새 매핑 등록
+    # Register a new mapping
     ColonyPCRDesigner.register_primer_pair("pET-21a(+)", "pET_upstream", "pET_RP")
     new_f, new_r = VECTOR_PRIMER_MAP["pET-21a(+)"]
     check("updated forward", new_f, "pET_upstream")
@@ -561,12 +563,12 @@ def _run_tests():
     r6 = designer.suggest("pET-21a(+)", insert_length_bp=500)
     check("suggest uses updated mapping", r6["f_name"], "pET-upstream")
 
-    # 원래대로 복원
+    # Restore the original
     ColonyPCRDesigner.register_primer_pair("pET-21a(+)", "T7promoter", "T7terminator")
     restored_f, _ = VECTOR_PRIMER_MAP["pET-21a(+)"]
     check("restored forward", restored_f, "T7promoter")
 
-    # 잘못된 프라이머 키 테스트
+    # Test an invalid primer key
     try:
         ColonyPCRDesigner.register_primer_pair("pET-21a(+)", "INVALID", "T7terminator")
         failed += 1

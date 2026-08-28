@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
-"""문서에 적힌 개수가 실제와 맞는지 검사한다.
+"""Checks that counts written in the docs match reality.
 
-README 첫 화면의 `스킬 26종 · 회귀 테스트 12종` 같은 줄은 사용자가 이 패키지를
-판단하는 첫 숫자인데, 스킬을 넣고 빼도 아무도 갱신하지 않는다. 260807 실측:
-스킬 5개를 빼고 1개를 더한 커밋이 `31 → 26` 으로만 고쳤다(뺀 것만 반영하고 더한
-것을 빠뜨림). 실제 동봉 수는 27 이었고, 그 상태로 doctor 10 OK · 테스트 15개
-전부 통과 · CI 초록불이었다 — **아무 검사도 개수를 보고 있지 않았기 때문이다.**
+A line on README's first screen like `26 skills · 12 regression tests` is
+the first number a user judges this package by, yet nobody updates it when
+a skill is added or removed. Measured 260807: a commit that dropped 5
+skills and added 1 only edited `31 → 26` (it accounted for the drop but
+missed the addition). The actual bundled count was 27, and in that state
+doctor reported 10 OK, all 15 tests passed, and CI was green —
+**because nothing was checking the count at all.**
 
-각 숫자의 SSOT:
+SSOT for each number:
 
-  스킬 N종        = config/catalog.json 중 external 이 아닌 것 = skills/ 폴더 수
-                    (둘이 다르면 그 자체가 결함이므로 함께 검사한다)
-  회귀 테스트 N종  = tests/test_*.py 파일 수
-  안전 가드 N종    = hooks/*.sh 중 러너(_run_hooks_chained.sh) 제외
-  초심자 문서 N종  = docs/ 의 번호 붙은 문서(00_ ~ 12_)
+  N skills             = entries in config/catalog.json that aren't external = number of folders in skills/
+                          (if the two disagree, that disagreement is itself a defect, so both are checked together)
+  N regression tests   = number of tests/test_*.py files
+  N safety guards      = hooks/*.sh minus the runner (_run_hooks_chained.sh)
+  N beginner docs      = numbered docs in docs/ (00_ through 12_)
 
-숫자를 새로 문서에 쓸 때는 여기에 검사도 같이 추가할 것. 검사 없는 숫자는
-반드시 낡는다.
+Whenever a count is written into a doc, add a check for it here too. A
+count with no check is guaranteed to go stale.
 """
 from __future__ import annotations
 
@@ -58,7 +60,7 @@ def actual_counts() -> dict[str, int]:
 
 
 def find_counts(path: Path, pattern: str) -> list[tuple[int, int, str]]:
-    """(줄번호, 숫자, 줄) 목록. pattern 은 숫자를 그룹 1로 잡아야 한다."""
+    """List of (line number, number, line). pattern must capture the number as group 1."""
     out = []
     rx = re.compile(pattern)
     for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
@@ -72,31 +74,35 @@ def main() -> int:
     failures: list[str] = []
     checked = 0
 
-    # 0) catalog 와 디스크가 같은 스킬 집합을 말하는가
+    # 0) do catalog and disk agree on the same set of skills?
     checked += 1
     only_catalog = sorted(a["_bundled_set"] - a["_disk_set"])
     only_disk = sorted(a["_disk_set"] - a["_bundled_set"])
     if only_catalog or only_disk:
         failures.append(
-            f"catalog 와 skills/ 폴더가 불일치 — catalog에만 {only_catalog}, "
-            f"디스크에만 {only_disk}")
+            f"catalog and skills/ folder disagree — only in catalog: {only_catalog}, "
+            f"only on disk: {only_disk}")
 
-    # 0.5) tests/ 의 모든 테스트가 doctor 를 통해 실제로 실행되는가
+    # 0.5) does doctor actually run every test under tests/?
     #
-    # doctor 의 SELF_TEST_SCRIPTS 는 하드코딩 목록이고, CI 는 doctor 하나만 부른다.
-    # 그래서 tests/ 에 파일을 놓고 등록을 잊으면 그 테스트는 **어디에서도 돌지
-    # 않으면서** 존재하는 것처럼 보인다 — 초록불이 실제 감지력보다 커지는 전형적인
-    # 방식이다. 지금은 두 개(test_agents_routing·test_skill_references)가 전용
-    # check 로 따로 불리므로 등록 목록에는 없지만 실행은 된다. 판정 기준을
-    # "SELF_TEST_SCRIPTS 에 있는가" 가 아니라 "doctor.py 가 이 파일을 언급하는가"
-    # 로 둔 이유다.
+    # doctor's SELF_TEST_SCRIPTS is a hardcoded list, and CI calls only
+    # doctor. So dropping a file in tests/ and forgetting to register it
+    # means that test **never runs anywhere** while still looking like it
+    # exists — a classic way for green-light coverage to outpace actual
+    # detection power. Right now two files (test_agents_routing,
+    # test_skill_references) are called via their own dedicated check, so
+    # they're absent from the registration list yet still run. That's why
+    # the criterion here is not "is it in SELF_TEST_SCRIPTS" but "does
+    # doctor.py mention this file at all".
     checked += 1
     doctor_src = (ROOT / "doctor.py").read_text(encoding="utf-8")
-    # 실행 지점만 본다. 소스 전체 substring 검색으로 두면 **주석에 이름을 한 줄
-    # 적는 것만으로** 통과한다 — 게이트는 초록불인데 그 테스트는 어디서도 안
-    # 돌아가는 상태를, 게이트가 승인해 준다(260807 실측). 그래서 문자열 리터럴로
-    # 등장하는 `"tests/....py"` 만 실행 경로로 인정한다: SELF_TEST_SCRIPTS 항목과
-    # _run_test_script() 호출이 모두 이 형태다.
+    # Only look at actual execution points. Treating this as a plain
+    # substring search over the whole source would let **writing the name
+    # in a comment on one line** pass the check — a gate that's green while
+    # the test itself runs nowhere, approved by the gate (measured 260807).
+    # So only a string literal that appears as `"tests/....py"` counts as
+    # an execution path: both SELF_TEST_SCRIPTS entries and
+    # _run_test_script() calls take this form.
     executed = set(re.findall(r'["\'](tests/(test_[A-Za-z0-9_]+\.py))["\']',
                               doctor_src))
     executed_names = {name for _full, name in executed}
@@ -104,20 +110,20 @@ def main() -> int:
                        if p.name not in executed_names)
     if unreached:
         failures.append(
-            f"doctor 가 실행하지 않는 테스트 {len(unreached)}개: {unreached}"
-            " — doctor.py 의 SELF_TEST_SCRIPTS 에 추가하라. CI 는 doctor 만 부르므로"
-            " 등록하지 않으면 이 테스트는 영원히 돌지 않는다")
+            f"{len(unreached)} test(s) doctor never runs: {unreached}"
+            " — add them to doctor.py's SELF_TEST_SCRIPTS. CI only calls doctor,"
+            " so an unregistered test never runs, ever")
 
-    # 1) 문서에 적힌 개수
+    # 1) counts written into the docs
     specs = [
-        ("README.md", r"스킬\s+(\d+)종", a["bundled"], "동봉 스킬"),
-        ("README.md", r"회귀 테스트\s+(\d+)종", a["tests"], "회귀 테스트"),
-        ("README.md", r"안전 가드\s+(\d+)종", a["hooks"], "안전 가드"),
-        ("README.md", r"초심자 문서\s+(\d+)종", a["docs"], "초심자 문서"),
-        ("QUICKSTART.md", r"스킬\s+(\d+)개와", a["catalog_total"], "설치기 목록"),
-        ("QUICKSTART.md", r"동봉\s+(\d+)개", a["bundled"], "동봉 스킬"),
-        ("QUICKSTART.md", r"한 번에\s+(\d+)개를", a["bundled"], "동봉 스킬"),
-        ("config/catalog.json", r"(\d+)개 스킬 모두", a["catalog_total"], "all 프리셋"),
+        ("README.md", r"(\d+)\s+skills", a["bundled"], "bundled skills"),
+        ("README.md", r"(\d+)\s+regression tests", a["tests"], "regression tests"),
+        ("README.md", r"(\d+)\s+safety guards", a["hooks"], "safety guards"),
+        ("README.md", r"(\d+)\s+beginner docs", a["docs"], "beginner docs"),
+        ("QUICKSTART.md", r"lists\s+(\d+)\s+skills", a["catalog_total"], "installer listing"),
+        ("QUICKSTART.md", r"(\d+)\s+are actually installable", a["bundled"], "bundled skills"),
+        ("QUICKSTART.md", r"all\s+(\d+)\s+at once", a["bundled"], "bundled skills"),
+        ("config/catalog.json", r"All\s+(\d+)\s+skills", a["catalog_total"], "the 'all' preset"),
     ]
     for fname, pat, expect, label in specs:
         p = ROOT / fname
@@ -125,23 +131,23 @@ def main() -> int:
             continue
         hits = find_counts(p, pat)
         if not hits:
-            continue          # 그 문구가 없는 것은 결함이 아니다
+            continue          # the phrase being absent is not itself a defect
         for ln, got, ctx in hits:
             checked += 1
             if got != expect:
                 failures.append(
-                    f"{fname}:{ln}  {label} {got} → 실제 {expect}   ({ctx})")
+                    f"{fname}:{ln}  {label} says {got} → actual {expect}   ({ctx})")
 
     if failures:
-        print(f"FAIL — 문서 개수 불일치 {len(failures)}건")
+        print(f"FAIL — {len(failures)} doc-count mismatch(es)")
         for f in failures:
             print(f"  - {f}")
-        print("\n문서를 고치거나, 개수 정의가 바뀌었다면 이 테스트의 SSOT 도 함께 고칠 것.")
+        print("\nFix the docs, or if the count's definition changed, update this test's SSOT too.")
         return 1
 
-    print(f"ALL PASS — 문서 개수 {checked}건 "
-          f"(동봉 {a['bundled']} · catalog {a['catalog_total']} · "
-          f"테스트 {a['tests']} · 가드 {a['hooks']} · 문서 {a['docs']})")
+    print(f"ALL PASS — {checked} doc count(s) checked "
+          f"(bundled {a['bundled']} · catalog {a['catalog_total']} · "
+          f"tests {a['tests']} · guards {a['hooks']} · docs {a['docs']})")
     return 0
 
 

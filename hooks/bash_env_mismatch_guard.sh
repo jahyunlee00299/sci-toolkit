@@ -2,17 +2,22 @@
 # PreToolUse(Bash) hook — bash/PowerShell environment-mismatch guard.
 #
 # Rationale (session-log self-improvement audit 2026-06-05):
-#   Windows git-bash 에서 반복되는 실패 패턴:
-#     * PS_var_in_bash (39): Bash 도구에 PowerShell 구문을 그대로 입력 →
-#         `Get-Item ':USERPROFILE\OneDrive*'` 처럼 $env:USERPROFILE 의 $env 가
-#         bash 에서 빈 문자열로 확장돼 `:USERPROFILE` 만 남아 실패.
-#     * cmd_not_found_other (82): jq / python3 / zip 등 이 bash 환경에 없는 명령 가정.
-#     * PS_cmdlet_in_bash (3): Out-File / Get-Content / Copy-Item 을 bash 라인으로 호출.
-#   기존 env_workflow_guard 는 PS `&&`/scp/ssh-var 만 커버 → 이 케이스 미커버.
+#   Recurring failure patterns in Windows git-bash:
+#     * PS_var_in_bash (39): PowerShell syntax typed directly into the Bash
+#         tool -> `Get-Item ':USERPROFILE\OneDrive*'`, where bash expands the
+#         $env in $env:USERPROFILE to an empty string, leaving only
+#         `:USERPROFILE` and failing.
+#     * cmd_not_found_other (82): assumes commands (jq / python3 / zip / etc.)
+#         that don't exist in this bash environment.
+#     * PS_cmdlet_in_bash (3): calling Out-File / Get-Content / Copy-Item as a
+#         plain bash line.
+#   The existing env_workflow_guard only covers PS `&&`/scp/ssh-var — none of
+#   these cases.
 #
-# Behavior: PS cmdlet / $env: / bare zip|jq|python3 이 Bash 도구의 command 로
-#   들어오고 powershell.exe / pwsh 래퍼가 없으면 BLOCK(exit 2), 안내 출력.
-#   powershell.exe -Command "..." 로 감싼 경우는 정상이므로 ALLOW.
+# Behavior: if a PS cmdlet / $env: / bare zip|jq|python3 shows up as the Bash
+#   tool's command with no powershell.exe / pwsh wrapper, BLOCK (exit 2) and
+#   print guidance. A command properly wrapped in
+#   powershell.exe -Command "..." is fine, so ALLOW it.
 #
 # Exit codes: 0 = allow, 2 = block with message.
 
@@ -96,46 +101,53 @@ print("ALLOW")
 case "$verdict" in
   ENV_VAR)
     cat >&2 <<'MSG'
-[bash_env_mismatch_guard] 차단: Bash 도구에서 `$env:VAR` 는 PowerShell 구문이라 bash 가
-빈 문자열로 확장합니다 (예: $env:USERPROFILE → `:USERPROFILE` 만 남아 실패).
+[bash_env_mismatch_guard] BLOCKED: `$env:VAR` is PowerShell syntax, and inside
+the Bash tool bash expands it to an empty string (e.g. $env:USERPROFILE ->
+only `:USERPROFILE` survives, and the command fails).
 
-→ Bash 도구 안에서는:
-   - 홈 경로:  $HOME  또는  /c/Users/<사용자명>
-   - PowerShell 이 꼭 필요하면 래핑:
+-> Inside the Bash tool:
+   - Home path: $HOME  or  /c/Users/<username>
+   - If PowerShell is genuinely needed, wrap it:
        powershell.exe -NoProfile -Command "Get-Item \"$env:USERPROFILE\OneDrive*\""
-   - 클라우드 동기화 폴더의 한글 경로는 와일드카드로 찾으세요:
-       ls -d "$HOME"/OneDrive*/  (한글 리터럴을 bash 에 직접 넣지 말 것)
+   - For Korean-named paths under a cloud-sync folder, use a wildcard:
+       ls -d "$HOME"/OneDrive*/  (never put a Korean literal directly into bash)
 MSG
     exit 2 ;;
   PS_CMDLET)
     cat >&2 <<'MSG'
-[bash_env_mismatch_guard] 차단: PowerShell cmdlet(Get-Item/Out-File/Copy-Item 등)을
-Bash 도구 라인으로 직접 실행했습니다 → `command not found`.
+[bash_env_mismatch_guard] BLOCKED: a PowerShell cmdlet (Get-Item/Out-File/
+Copy-Item, etc.) was run directly as a Bash tool line -> `command not found`.
 
-→ 둘 중 하나로:
-   - bash 네이티브로 변환: Get-Content→cat, Copy-Item→cp, Test-Path→[ -e ], Out-File→>
-   - PS 가 꼭 필요하면 래핑: powershell.exe -NoProfile -Command "..."
-     (한글/$env 포함 시 결과를 C:\Temp\out.txt 로 저장 후 bash 에서 읽기
+-> Do one of the following:
+   - Convert to bash-native: Get-Content->cat, Copy-Item->cp, Test-Path->[ -e ],
+     Out-File->>
+   - If PS is genuinely needed, wrap it: powershell.exe -NoProfile -Command "..."
+     (if the output contains Korean/$env, save it to C:\Temp\out.txt and read
+     that from bash)
 MSG
     exit 2 ;;
   MISSING:jq)
     cat >&2 <<'MSG'
-[bash_env_mismatch_guard] 차단: 이 bash 환경에 `jq` 가 없습니다 (자주 발생합니다).
-→ 대신 python 으로:  python -c "import json,sys; d=json.load(open('f.json')); print(d['k'])"
+[bash_env_mismatch_guard] BLOCKED: `jq` is not available in this bash
+environment (a common trap here).
+-> Use python instead:  python -c "import json,sys; d=json.load(open('f.json')); print(d['k'])"
 MSG
     exit 2 ;;
   MISSING:zip)
     cat >&2 <<'MSG'
-[bash_env_mismatch_guard] 차단: 이 bash 환경에 `zip` 이 없습니다.
-→ python:  python -c "import zipfile; zipfile.ZipFile('o.zip','w').write('f')"
-→ 또는 PS:  powershell.exe -NoProfile -Command "Compress-Archive -Path f -Dest o.zip"
-   (docx 는 절대 zip 으로 재패킹 금지
+[bash_env_mismatch_guard] BLOCKED: `zip` is not available in this bash
+environment.
+-> python:  python -c "import zipfile; zipfile.ZipFile('o.zip','w').write('f')"
+-> or PS:  powershell.exe -NoProfile -Command "Compress-Archive -Path f -Dest o.zip"
+   (never re-zip a docx by hand — repacking corrupts it)
 MSG
     exit 2 ;;
   MISSING:python3)
     cat >&2 <<'MSG'
-[bash_env_mismatch_guard] 차단: 이 환경에서 실행 명령은 `python3` 가 아니라 `python` 입니다.
-→ `python` 사용. 훅/스크립트 안이라면 `command -v python` 로 인터프리터를 먼저 찾으세요.
+[bash_env_mismatch_guard] BLOCKED: in this environment the interpreter is
+`python`, not `python3`.
+-> Use `python`. Inside a hook/script, find the interpreter first with
+   `command -v python`.
 MSG
     exit 2 ;;
 esac

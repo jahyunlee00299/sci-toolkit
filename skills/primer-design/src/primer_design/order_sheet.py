@@ -2,11 +2,11 @@
 """
 Primer Order Sheet Generator
 ==============================
-프라이머 설계 결과를 Macrogen 주문서 형식으로 변환.
+Converts primer design results into Macrogen order-sheet format.
 
-지원 출력:
-  - XLSX (Macrogen Order + Summary + QC 시트)
-  - CSV  (UTF-8 BOM, 한글 Excel 호환)
+Supported outputs:
+  - XLSX (Macrogen Order + Summary + QC sheets)
+  - CSV  (UTF-8 BOM, for Korean-Excel compatibility)
   - Markdown
   - pandas DataFrame
 """
@@ -26,7 +26,7 @@ import pandas as pd
 COST_PER_BASE_KRW = 400    # 50 nmol scale
 MIN_PRIMER_COST_KRW = 5000
 
-# Macrogen 주문서 매핑
+# Mapping to the Macrogen order-sheet format
 _SCALE_TO_UMOL = {
     "25 nmol": 0.025,
     "50 nmol": 0.05,
@@ -76,9 +76,9 @@ class PrimerEntry:
 # ── Order Sheet ────────────────────────────────────────────────────────────
 
 class PrimerOrderSheet:
-    """프라이머 주문서 생성기.
+    """Primer order-sheet generator.
 
-    iPCR 설계 결과(dict)를 받아 Macrogen 주문서 형식의 출력을 생성한다.
+    Takes an iPCR design result (dict) and produces Macrogen order-sheet-format output.
     """
 
     def __init__(
@@ -102,13 +102,13 @@ class PrimerOrderSheet:
         parent: str = "",
         mutation: str = "",
     ) -> tuple[PrimerEntry, PrimerEntry]:
-        """설계 결과 dict에서 F/R 프라이머 엔트리 생성.
+        """Create F/R primer entries from a design-result dict.
 
         Naming priority:
-          1. parent + mutation 제공 시: iPCR_{parent}_{mutation}_F/R
-          2. result에 re_5prime, re_3prime 키 존재 시:
+          1. When parent + mutation are given: iPCR_{parent}_{mutation}_F/R
+          2. When result has re_5prime, re_3prime keys:
              {name_prefix}_{re_5prime}_{re_3prime}_F/R
-          3. 기본: {name_prefix}_{seq_number}_F/R
+          3. Default: {name_prefix}_{seq_number}_F/R
         """
         # Determine names
         if parent and mutation:
@@ -178,7 +178,7 @@ class PrimerOrderSheet:
         gc: float | None = None,
         notes: str = "",
     ) -> PrimerEntry:
-        """사용자 정의 프라이머 추가."""
+        """Add a user-defined primer."""
         seq_upper = sequence.upper()
         entry = PrimerEntry(
             name=name,
@@ -203,7 +203,7 @@ class PrimerOrderSheet:
         results: list[dict],
         name_prefix: str = "iPCR",
     ) -> list[tuple[PrimerEntry, PrimerEntry]]:
-        """여러 설계 결과를 일괄 추가."""
+        """Add multiple design results in a batch."""
         pairs = []
         for result in results:
             pair = self.add_from_design_result(result, name_prefix=name_prefix)
@@ -213,7 +213,7 @@ class PrimerOrderSheet:
     # ── Deduplication ──────────────────────────────────────────────────
 
     def deduplicate(self) -> list[tuple[str, str]]:
-        """서열 중복 제거. 첫 번째 엔트리를 유지하고 나머지를 제거.
+        """Remove duplicate sequences, keeping the first entry and dropping the rest.
 
         Returns
         -------
@@ -237,7 +237,7 @@ class PrimerOrderSheet:
     # ── Summary ────────────────────────────────────────────────────────
 
     def summary(self) -> dict:
-        """주문서 요약 통계."""
+        """Summary statistics for the order sheet."""
         total_primers = len(self.entries)
         total_length_nt = sum(e.length for e in self.entries)
 
@@ -273,10 +273,10 @@ class PrimerOrderSheet:
     # ── Export: XLSX ───────────────────────────────────────────────────
 
     def to_xlsx(self, output_path: str | Path | None = None) -> Path:
-        """Macrogen 주문서 XLSX 생성.
+        """Generate the Macrogen order-sheet XLSX.
 
         Sheet1 "Macrogen Order": No., Primer Name, Sequence, Scale, etc.
-        Sheet2 "Summary": 요약 통계
+        Sheet2 "Summary": summary statistics
         Sheet3 "QC": Tm, GC%, QC Verdict
         """
         import openpyxl
@@ -393,16 +393,16 @@ class PrimerOrderSheet:
     # ── Export: Macrogen Oligo Order ──────────────────────────────────
 
     def to_macrogen_oligo(self, output_path: str | Path | None = None) -> Path:
-        """Macrogen Oligo 주문서 형식 (.xls BIFF8) 생성.
+        """Generate the Macrogen Oligo order-sheet format (.xls BIFF8).
 
-        Macrogen 홈페이지 업로드 호환 형식 (OLE2/BIFF8):
+        Format compatible with upload on the Macrogen homepage (OLE2/BIFF8):
           No. | Oligo Name | 5` - Oligo Seq - 3` | Amount | Purification
 
-        Amount: umol 단위 (0.05 = 50 nmol 기본, 0.025 = 25 nmol)
+        Amount: in umol (0.05 = 50 nmol default, 0.025 = 25 nmol)
         Purification: MOPC (desalting), PAGE, HPLC
-        빈 행 포함 총 1000행 (Macrogen 템플릿 호환).
+        1000 rows total including blank rows (matches the Macrogen template).
 
-        output_path 확장자가 .xlsx면 openpyxl로, .xls(기본)이면 xlwt로 저장.
+        Saved via openpyxl if output_path's extension is .xlsx, via xlwt if .xls (default).
         """
         if output_path is None:
             output_path = self._generate_filename(Path.cwd(), "xls")
@@ -414,29 +414,29 @@ class PrimerOrderSheet:
         return self._write_macrogen_oligo_xls(output_path)
 
     def _write_macrogen_oligo_xls(self, output_path: Path) -> Path:
-        """xlwt로 Macrogen Oligo 주문서 (.xls BIFF8) 생성."""
+        """Generate the Macrogen Oligo order sheet (.xls BIFF8) via xlwt."""
         import xlwt
 
         wb = xlwt.Workbook(encoding="utf-8")
         ws = wb.add_sheet("Sheet")
 
-        # 헤더 스타일
+        # Header style
         header_style = xlwt.easyxf("font: bold on; align: horiz center")
         seq_style = xlwt.easyxf("font: name Consolas, height 200")
 
-        # 컬럼 너비 (1/256 문자 단위)
+        # Column widths (1/256 character units)
         ws.col(0).width = 256 * 6    # No.
         ws.col(1).width = 256 * 35   # Oligo Name
         ws.col(2).width = 256 * 60   # Sequence
         ws.col(3).width = 256 * 10   # Amount
         ws.col(4).width = 256 * 14   # Purification
 
-        # 헤더
+        # Header row
         headers = ["No.", "Oligo Name", "5` - Oligo Seq - 3`", "Amount", "Purification"]
         for col, h in enumerate(headers):
             ws.write(0, col, h, header_style)
 
-        # 데이터 + 빈 행 (총 1000행)
+        # Data + blank rows (1000 rows total)
         for row_num in range(1, 1001):
             ws.write(row_num, 0, row_num)
 
@@ -453,7 +453,7 @@ class PrimerOrderSheet:
         return output_path
 
     def _write_macrogen_oligo_xlsx(self, output_path: Path) -> Path:
-        """openpyxl로 Macrogen Oligo 주문서 (.xlsx) 생성 (fallback)."""
+        """Generate the Macrogen Oligo order sheet (.xlsx) via openpyxl (fallback)."""
         import openpyxl
         from openpyxl.styles import Alignment, Font
 
@@ -497,9 +497,9 @@ class PrimerOrderSheet:
         sample_primer_pairs: list[dict],
         output_path: str | Path | None = None,
     ) -> Path:
-        """Macrogen Standard Sequencing 주문서 형식 (.xlsx) 생성.
+        """Generate the Macrogen Standard Sequencing order-sheet format (.xlsx).
 
-        Macrogen 홈페이지 업로드 호환 형식:
+        Format compatible with upload on the Macrogen homepage:
           # | Sample Name | Primer Name | Sample Concentration (ng/ul) |
           Plate Name | Well Position | Product Size(bp) | Target Size(bp) |
           Primer Sequence(5 to 3) | Primer Concentration (pmol/ul)
@@ -507,23 +507,24 @@ class PrimerOrderSheet:
         Parameters
         ----------
         sample_primer_pairs : list[dict]
-            각 항목:
+            Each item:
             {
-                "sample_name": str,                      # 필수
-                "primer_name": str,                      # 필수
-                "sample_conc": float | None,             # ng/ul — 비워둘 것 (실측값 기입용)
+                "sample_name": str,                      # required
+                "primer_name": str,                      # required
+                "sample_conc": float | None,             # ng/ul — leave blank (filled in with the measured value)
                 "plate_name": str,                       # optional
                 "well_position": str,                    # optional
-                "product_size": int | None,              # bp (확실할 때만 기입, 아니면 생략)
+                "product_size": int | None,              # bp (fill in only when known, otherwise omit)
                 "target_size": int | None,               # bp (optional)
                 "primer_seq": str,                       # optional (5'→3')
-                "primer_conc": float | None,             # pmol/ul (universal primer면 생략)
+                "primer_conc": float | None,             # pmol/ul (omit for a universal primer)
             }
 
         Note
         ----
-        sample_conc는 임의 기본값(예: 100)을 넣지 말 것.
-        실험자가 miniprep 후 실측 농도를 직접 기입하므로 None(빈칸)으로 둔다.
+        Do not put an arbitrary default (e.g. 100) into sample_conc.
+        The experimenter fills in the measured concentration after miniprep,
+        so this is left as None (blank).
         """
         import openpyxl
         from openpyxl.styles import Alignment, Font
@@ -539,7 +540,7 @@ class PrimerOrderSheet:
         ws = wb.active
         ws.title = "Sheet1"
 
-        # Row 1: 주의사항
+        # Row 1: notice
         ws.cell(
             row=1, column=1,
             value="     ※ Only English Alphabet (either capital small letters), "
@@ -547,7 +548,7 @@ class PrimerOrderSheet:
                   "without any blanks.",
         )
 
-        # Row 2: 그룹 헤더
+        # Row 2: group header
         ws.cell(row=2, column=1, value="#")
         ws.cell(row=2, column=2, value="Reaction Information")
         ws.cell(row=2, column=4, value="Sample Information")
@@ -555,7 +556,7 @@ class PrimerOrderSheet:
         for col in [1, 2, 4, 9]:
             ws.cell(row=2, column=col).font = Font(bold=True)
 
-        # Row 3: 컬럼 헤더
+        # Row 3: column header
         col_headers = [
             "#", "Sample Name *", "Primer Name *",
             "Sample Concentration (ng/ul)", "Plate Name", "Well Position",
@@ -567,7 +568,7 @@ class PrimerOrderSheet:
             cell.font = Font(bold=True)
             cell.alignment = Alignment(horizontal="center", wrap_text=True)
 
-        # 데이터 행 (row 4부터)
+        # Data rows (starting at row 4)
         total_rows = max(len(sample_primer_pairs), 1000)
         for row_num in range(1, total_rows + 1):
             row_idx = row_num + 3
@@ -586,7 +587,7 @@ class PrimerOrderSheet:
                 seq_cell.font = Font(name="Consolas", size=10)
                 ws.cell(row=row_idx, column=10, value=sp.get("primer_conc"))
 
-        # 컬럼 너비
+        # Column widths
         widths = [5, 25, 25, 15, 12, 12, 12, 12, 45, 15]
         for i, w in enumerate(widths, 1):
             from openpyxl.utils import get_column_letter
@@ -607,7 +608,7 @@ class PrimerOrderSheet:
     # ── Export: CSV ────────────────────────────────────────────────────
 
     def to_csv(self, output_path: str | Path | None = None) -> Path:
-        """UTF-8 BOM CSV (한글 Excel 호환)."""
+        """UTF-8 BOM CSV (for Korean-Excel compatibility)."""
         if output_path is None:
             output_path = self._generate_filename(Path.cwd(), "csv")
         else:
@@ -620,7 +621,7 @@ class PrimerOrderSheet:
     # ── Export: Markdown ───────────────────────────────────────────────
 
     def to_markdown(self, output_path: str | Path | None = None) -> Path:
-        """Markdown 주문서 생성."""
+        """Generate the Markdown order sheet."""
         if output_path is None:
             output_path = self._generate_filename(Path.cwd(), "md")
         else:
@@ -676,7 +677,7 @@ class PrimerOrderSheet:
     # ── Export: DataFrame ──────────────────────────────────────────────
 
     def to_dataframe(self) -> pd.DataFrame:
-        """pandas DataFrame 변환."""
+        """Convert to a pandas DataFrame."""
         rows = []
         for i, entry in enumerate(self.entries, 1):
             rows.append({
@@ -707,7 +708,7 @@ class PrimerOrderSheet:
 # ── Tests ──────────────────────────────────────────────────────────────────
 
 def _run_tests():
-    """PrimerOrderSheet 기능 테스트."""
+    """Functional tests for PrimerOrderSheet."""
     import os
     import tempfile
 
@@ -891,30 +892,30 @@ def _run_tests():
     assert xls_path.exists(), f"XLS not created: {xls_path}"
     assert xls_path.suffix == ".xls"
 
-    # xlrd로 읽어서 검증
+    # Read back with xlrd to verify
     xls_wb = xlrd.open_workbook(str(xls_path))
     xls_ws = xls_wb.sheet_by_name("Sheet")
     assert xls_ws.nrows == 1001, f"Expected 1001 rows, got {xls_ws.nrows}"
     assert xls_ws.ncols == 5
 
-    # 헤더 검증
+    # Verify the header
     assert xls_ws.cell_value(0, 0) == "No."
     assert xls_ws.cell_value(0, 1) == "Oligo Name"
     assert xls_ws.cell_value(0, 2) == "5` - Oligo Seq - 3`"
     assert xls_ws.cell_value(0, 3) == "Amount"
     assert xls_ws.cell_value(0, 4) == "Purification"
 
-    # 데이터 검증 (5개 프라이머)
+    # Verify the data (5 primers)
     assert xls_ws.cell_value(1, 1) == "iPCR_GeneX_WT_A123T_F"
     assert xls_ws.cell_value(1, 2) == "ATGCGTAACCTGGCGATCAAGCTG"
     assert xls_ws.cell_value(1, 3) == 0.05  # 50 nmol = 0.05 umol
     assert xls_ws.cell_value(1, 4) == "MOPC"
 
-    # 빈 행 검증 (row 6 이후 = 데이터 없음)
+    # Verify the blank rows (row 6 onward = no data)
     assert xls_ws.cell_value(6, 1) == "", f"Expected empty, got '{xls_ws.cell_value(6, 1)}'"
-    assert xls_ws.cell_value(6, 0) == 6.0  # No. 컬럼은 채워져야 함
+    assert xls_ws.cell_value(6, 0) == 6.0  # the No. column must still be filled in
 
-    # 바이너리 헤더로 BIFF8 확인
+    # Confirm BIFF8 via the binary header
     with open(str(xls_path), "rb") as f:
         magic = f.read(8)
     assert magic == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1", "Not a valid OLE2/BIFF8 file"

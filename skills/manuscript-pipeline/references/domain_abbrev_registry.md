@@ -1,29 +1,31 @@
 # Domain Abbreviation Registry (manuscript-pipeline reference)
 
-> 한 프로젝트에서 자주 등장하는 약어를 모아 두는 **예시 레지스트리**다 (아래 표는 예시 — 자기 프로젝트의 약어로 교체해 쓴다).
-> Methods 첫 정의 후 본문 일관성 유지. `[ABBREV]` 코멘트(academic-qc R2) 작성 시 이런 표를 기준으로 검증.
-> 일반 생화학 명명 규칙은 `academic-term-rules` §2·§3.
+> An **example registry** collecting abbreviations that recur often within one project
+> (the table below is a sample — replace it with your own project's abbreviations).
+> Keep body text consistent after the first definition in Methods. When writing an
+> `[ABBREV]` comment (academic-qc R2), validate against a table like this one.
+> General biochemical nomenclature rules live in `academic-term-rules` §2·§3.
 
-| Term | Standard abbrev | 비고 |
+| Term | Standard abbrev | Notes |
 |---|---|---|
 | Glucose | Glc | Glucose-1-phosphate → G1P |
 | Galactose | Gal | D-Galactose as D-Gal |
-| Sucrose phosphorylase | SucP | 효소명 prefix italic 시 *Xx*SucP |
-| Glucose dehydrogenase | GDH | 종 prefix italic: *Xx*GDH (속명 두 글자) |
-| Glycerol dehydrogenase | Gdh | *Xx*Gdh (속 이름에서 두 글자) |
-| NADH oxidase | Nox | 변이체는 *Xx*NoxA 처럼 접미로 구분 |
-| ADP-glucose | ADP-Glc | ADP-glucose 풀네임 사용 금지 |
-| Acetic anhydride | AcH | 본문에서 acetic anhydride 풀네임 첫 사용 후 AcH |
+| Sucrose phosphorylase | SucP | with species-prefix italic: *Xx*SucP |
+| Glucose dehydrogenase | GDH | species-prefix italic: *Xx*GDH (two-letter genus abbreviation) |
+| Glycerol dehydrogenase | Gdh | *Xx*Gdh (two letters from the genus name) |
+| NADH oxidase | Nox | distinguish variants with a suffix, e.g. *Xx*NoxA |
+| ADP-glucose | ADP-Glc | do not use the full name "ADP-glucose" |
+| Acetic anhydride | AcH | use the full name "acetic anhydride" once, then AcH |
 | Acetyl phosphate | AcP | |
 | 5-Fluorouracil | 5-FU | |
-| 2-Deoxyribose-5-phosphate | D-dRib 5P | 띄어쓰기 주의 |
+| 2-Deoxyribose-5-phosphate | D-dRib 5P | watch the spacing |
 | D-glyceraldehyde | D-GA | |
 | D-glyceraldehyde-3-phosphate | D-GAP | |
-| Phosphate (free) | HPO4²⁻ 또는 Pi | 둘 중 일관 사용 |
+| Phosphate (free) | HPO4²⁻ or Pi | use one consistently |
 | Total turnover number | TTN | |
-| Rare sugar (example) | define a short abbrev on first use | 자기 프로젝트의 표적 당류로 교체 |
-| Two structurally similar polymers | 명확한 구분 필요 | reviewer가 혼동을 지적할 수 있는 항목 — 정의를 명확히 |
+| Rare sugar (example) | define a short abbrev on first use | replace with your own project's target sugar |
+| Two structurally similar polymers | needs a clear distinction | an item reviewers may flag as confusing — define precisely |
 
-## 효소명 italic 규칙
-- 종 prefix만 italic, 효소 자체는 roman: `*Ec*XylA` (not *EcXylA*, not EcXylA)
-- 변이체 표기: `*Ec*XylA(G171R/L172R)` 또는 `*Ec*XylA<sup>G171R/L172R</sup>`
+## Enzyme-name italic rule
+- Only the species prefix is italic; the enzyme name itself is roman: `*Ec*XylA` (not *EcXylA*, not EcXylA)
+- Variant notation: `*Ec*XylA(G171R/L172R)` or `*Ec*XylA<sup>G171R/L172R</sup>`

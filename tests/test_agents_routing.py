@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""AGENTS.md §0 라우팅 표가 가리키는 대상이 전부 실존하는지 검사한다.
+"""Checks that everything AGENTS.md §0's routing table points to actually exists.
 
-§0 은 에이전트가 가장 먼저 읽고 따르는 표다. 여기에 없는 스킬이나 스크립트가
-적혀 있으면, 에이전트는 존재하지 않는 도구를 쓰려다 실패하거나 — 더 나쁘게는 —
-그럴듯하게 지어낸다. 문서 중에서 가장 먼저 깨지면 안 되는 부분이라 별도로 검사한다.
+§0 is the table an agent reads and follows first. If it names a skill or
+script that isn't here, the agent either fails trying to use a tool that
+doesn't exist or — worse — plausibly fabricates one. This is checked
+separately because it's the part of the docs that must never be the first
+thing to break.
 
-실행:
-    python tests/test_agents_routing.py           # exit 0 = 통과
+Run:
+    python tests/test_agents_routing.py           # exit 0 = pass
     python tests/test_agents_routing.py --verbose
 """
 import argparse
@@ -15,9 +17,10 @@ import os
 import re
 import sys
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서,
-# import 후 GC 되면 호출자의 stdout 까지 닫아버린다(실측).
+# Windows' default console is cp949 and dies on Korean/symbol output. Force UTF-8.
+# Use reconfigure instead of TextIOWrapper — the wrapper takes ownership of the
+# underlying stream, so once it's GC'd after import, it closes the caller's
+# stdout too (measured).
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         try:
@@ -29,32 +32,34 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AGENTS = os.path.join(ROOT, "AGENTS.md")
 SKILLS_DIR = os.path.join(ROOT, "skills")
 
-# 파일이 아니라 개념/출력물 이름으로 등장하는 것들 — 검사 대상 아님
+# Things that appear as concept/output names, not files — not checked
 NOT_A_PATH = {
-    "refs_report.json",          # ref_fetch.py 가 만들어내는 산출물
-    "discrepancies",             # 리포트 안의 필드 이름
+    "refs_report.json",          # an artifact ref_fetch.py produces
+    "discrepancies",             # a field name inside a report
     "not_found",
     "PROJECT_STRUCTURE.md",
 }
-# 이 저장소의 스킬이 아니라 사용자가 설치해 쓰는 실행기 이름. §0 이 게이트 명령으로
-# 직접 부르는 것들이라 스킬 이름 패턴(소문자+하이픈)에 걸리지만, `skills/` 아래에
-# 있을 이유가 없다. 여기에 추가할 때는 "정말 외부 CLI 인가"를 확인할 것 —
-# 오타난 스킬 이름을 여기 넣으면 이 검사가 무력화된다.
+# Names of runners the user installs themselves, not skills in this repo.
+# §0 calls these directly as gate commands, so they match the skill-name
+# pattern (lowercase + hyphens) but have no reason to live under `skills/`.
+# When adding to this set, confirm it's really an external CLI — dropping a
+# misspelled skill name in here would defeat this check.
 RUNNER_COMMANDS = {"pytest"}
-# 경로 안에 플레이스홀더가 있으면 실물 대조 불가
+# A path containing a placeholder can't be checked against a real file
 PLACEHOLDER_RE = re.compile(r"<[^>]+>")
 
-# 이 패키지가 의존하지만 재배포할 수 없는 Anthropic 소유 스킬.
-# §0 이 이들을 가리키는 것은 죽은 참조가 아니라 외부 의존이다 — 사용자 환경에
-# 있으면 그대로 동작하고, 없으면 docs/12 가 안내한다. doctor.py 의
-# EXTERNAL_SKILLS 와 같은 목록을 유지할 것(한쪽만 고치면 갈라진다).
+# Anthropic-owned skills this package depends on but cannot redistribute.
+# §0 pointing at these is an external dependency, not a dead reference — it
+# works as-is if present in the user's environment, and docs/12 guides them
+# if not. Keep this in sync with doctor.py's EXTERNAL_SKILLS list (editing
+# only one side lets them drift apart).
 EXTERNAL_SKILLS = {"docx", "pdf", "pptx", "xlsx"}
 
 
 def resolve(token, skills):
-    """토큰이 가리키는 실제 파일이 있는지 확인. 있으면 그 경로, 없으면 None."""
+    """Check whether the token points at a real file. Returns its path if so, else None."""
     cand = token.strip()
-    # "python x.py --flag" / "x.py --count-only" -> 실제 경로 부분만
+    # "python x.py --flag" / "x.py --count-only" -> keep only the actual path part
     parts = [p for p in cand.split() if not p.startswith("-")]
     parts = [p for p in parts if p not in ("python", "python3", "bash", "sh")]
     if not parts:
@@ -65,16 +70,16 @@ def resolve(token, skills):
         return "skip"
     if PLACEHOLDER_RE.search(cand):
         return "skip"
-    # 외부 스킬 자체(`docx`) 또는 그 안의 경로(`docx/scripts/x.py`)
+    # the external skill itself (`docx`) or a path inside it (`docx/scripts/x.py`)
     if cand in EXTERNAL_SKILLS or cand.split("/")[0] in EXTERNAL_SKILLS:
         return "skip"
 
     tries = [os.path.join(ROOT, cand)]
-    # `docx/scripts/x.py` 처럼 스킬 이름으로 시작하면 skills/ 아래
+    # if it starts with a skill name like `docx/scripts/x.py`, look under skills/
     head = cand.split("/")[0]
     if head in skills:
         tries.append(os.path.join(SKILLS_DIR, cand))
-    # `scripts/x.py` 처럼 스킬 내부 상대경로면 각 스킬 아래에서 찾는다
+    # a relative path inside a skill like `scripts/x.py` — look under each skill
     if not cand.startswith(("skills/", "scripts/", "tests/", "config/", "install/")):
         tries += [os.path.join(SKILLS_DIR, s, cand) for s in skills]
     elif cand.startswith("scripts/"):
@@ -87,19 +92,19 @@ def resolve(token, skills):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="AGENTS.md §0 라우팅 표 검사")
+    ap = argparse.ArgumentParser(description="Checks AGENTS.md §0's routing table")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args()
 
     if not os.path.isfile(AGENTS):
-        print(f"오류: AGENTS.md 가 없다 — {AGENTS}")
+        print(f"Error: AGENTS.md is missing — {AGENTS}")
         return 2
     text = open(AGENTS, encoding="utf-8").read()
 
     m = re.search(r"^## 0\. Routing.*?(?=^## 1\.)", text, re.S | re.M)
     if not m:
-        print("FAIL — AGENTS.md 에 '## 0. Routing' 섹션이 없다. "
-              "이 표는 에이전트의 진입점이므로 반드시 있어야 한다.")
+        print("FAIL — AGENTS.md has no '## 0. Routing' section. "
+              "This table is the agent's entry point, so it must exist.")
         return 1
     section = m.group(0)
 
@@ -126,27 +131,27 @@ def main():
             elif t not in NOT_A_PATH:
                 dead_skills.append(t)
 
-    print(f"§0 라우팅 표: 토큰 {len(tokens)}개 중 대조 대상 "
-          f"{len(ok) + len(dead_files) + len(dead_skills)}개")
+    print(f"§0 routing table: {len(tokens)} token(s), "
+          f"{len(ok) + len(dead_files) + len(dead_skills)} checked against reality")
     if args.verbose:
         for t, r in ok:
             print(f"   OK  {t}  ->  {r}")
 
     fails = len(dead_files) + len(dead_skills)
     if dead_files:
-        print(f"\n=== 실존하지 않는 파일 {len(dead_files)}건 ===")
+        print(f"\n=== {len(dead_files)} nonexistent file(s) ===")
         for t in dead_files:
             print(f"   {t}")
     if dead_skills:
-        print(f"\n=== 실존하지 않는 스킬 {len(dead_skills)}건 ===")
+        print(f"\n=== {len(dead_skills)} nonexistent skill(s) ===")
         for t in dead_skills:
             print(f"   {t}")
 
     if fails:
-        print(f"\nFAIL — §0 이 없는 것을 가리킨다 {fails}건. "
-              f"에이전트가 이 표를 그대로 따르므로 즉시 고쳐야 한다.")
+        print(f"\nFAIL — §0 points at {fails} thing(s) that don't exist. "
+              f"Agents follow this table literally, so fix it immediately.")
         return 1
-    print("\nALL PASS — §0 의 모든 스킬·스크립트가 실존한다")
+    print("\nALL PASS — every skill/script §0 names actually exists")
     return 0
 
 

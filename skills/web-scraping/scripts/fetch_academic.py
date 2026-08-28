@@ -313,26 +313,29 @@ def _title_tokens(text: str) -> set:
 
 def verify_pdf_identity(path: "Path", doi: str = "",
                         expected: Optional[dict] = None) -> dict:
-    """받은 PDF가 *요청한 논문*인지 확인한다.
+    """Check whether the received PDF is *the requested paper*.
 
-    단일 신호로 판정하지 않는다 — 연도나 저널만 우연히 맞아도 통과해 버리기 때문.
-    본문 DOI(+3) · 제목토큰(+3/2/1) · 제1저자(+2) · 저널(+1) · 연도(+1) 를 합산해
-    >=5 = ok, 3-4 = suspect, 그 미만 = mismatch.
+    Never decides on a single signal — a year or journal matching by chance
+    alone would otherwise pass. Sums body DOI (+3), title tokens (+3/2/1),
+    first author (+2), journal (+1), year (+1); >=5 = ok, 3-4 = suspect,
+    below that = mismatch.
 
-    expected = {"title","first_author","journal","year"} (Crossref 레코드에서 구성).
-    expected 가 없으면 매직바이트/구조 검사만 수행한다(약한 검증).
+    expected = {"title","first_author","journal","year"} (built from the
+    Crossref record). If expected is absent, only the magic-bytes/structure
+    check runs (weak verification).
 
-    반환: {"verdict","score","reasons"} — verdict ∈ ok/suspect/mismatch/not_pdf/no_text
+    Returns: {"verdict","score","reasons"} — verdict is one of
+    ok/suspect/mismatch/not_pdf/no_text.
     """
     reasons: list = []
     try:
         head = path.open("rb").read(5)
     except Exception as exc:
         return {"verdict": "not_pdf", "score": 0,
-                "reasons": [f"열 수 없음: {type(exc).__name__}"]}
+                "reasons": [f"could not open: {type(exc).__name__}"]}
     if head != b"%PDF-":
         return {"verdict": "not_pdf", "score": 0,
-                "reasons": [f"매직바이트가 %PDF- 가 아님 ({head!r}) — 오류/로그인 페이지 가능성"]}
+                "reasons": [f"magic bytes are not %PDF- ({head!r}) — possibly an error/login page"]}
 
     try:
         try:
@@ -347,25 +350,25 @@ def verify_pdf_identity(path: "Path", doi: str = "",
         )
     except Exception as exc:
         return {"verdict": "not_pdf", "score": 0,
-                "reasons": [f"PDF 파싱 실패: {type(exc).__name__} — 손상 파일"]}
+                "reasons": [f"PDF parsing failed: {type(exc).__name__} — corrupted file"]}
 
     if len(text.strip()) < 200:
-        # 스캔본일 수 있다. 자동 판정하지 말고 사람에게 넘긴다.
+        # Might be a scanned copy. Don't auto-decide — hand it to a human.
         return {"verdict": "no_text", "score": 0,
-                "reasons": ["본문 텍스트 거의 없음(스캔본 추정) — 육안 확인 필요"]}
+                "reasons": ["almost no body text (likely a scanned copy) — needs visual check"]}
 
     if not expected:
         return {"verdict": "ok", "score": 0,
-                "reasons": ["기대 메타데이터 없음 — 매직바이트/구조만 확인(약한 검증)"]}
+                "reasons": ["no expected metadata — only magic bytes/structure checked (weak verification)"]}
 
     low = text.lower()
     score = 0
 
     if doi and doi.lower() in low:
         score += 3
-        reasons.append("본문에 DOI 존재(+3)")
+        reasons.append("DOI present in body (+3)")
     elif doi:
-        reasons.append("본문에 DOI 없음")
+        reasons.append("DOI not present in body")
 
     exp_title = expected.get("title") or ""
     tt = _title_tokens(exp_title)
@@ -377,25 +380,25 @@ def verify_pdf_identity(path: "Path", doi: str = "",
             score += 2
         elif overlap >= 0.2:
             score += 1
-        reasons.append(f"제목 토큰 일치 {overlap:.0%}")
+        reasons.append(f"title token overlap {overlap:.0%}")
 
     fa = (expected.get("first_author") or "").lower()
     if len(fa) >= 3:
         if fa in low:
             score += 2
-            reasons.append(f"제1저자 '{fa}' 확인(+2)")
+            reasons.append(f"first author '{fa}' confirmed (+2)")
         else:
-            reasons.append(f"제1저자 '{fa}' 본문에 없음")
+            reasons.append(f"first author '{fa}' not present in body")
 
     jt = _title_tokens(expected.get("journal") or "")
     if jt and len(jt & _title_tokens(text)) / len(jt) >= 0.5:
         score += 1
-        reasons.append("저널명 일치(+1)")
+        reasons.append("journal name matches (+1)")
 
     yr = expected.get("year")
     if yr and str(yr) in text:
         score += 1
-        reasons.append(f"연도 {yr} 확인(+1)")
+        reasons.append(f"year {yr} confirmed (+1)")
 
     verdict = "ok" if score >= 5 else ("suspect" if score >= 3 else "mismatch")
     return {"verdict": verdict, "score": score, "reasons": reasons}
@@ -406,12 +409,12 @@ def verify_pdf_identity(path: "Path", doi: str = "",
 # --------------------------------------------------------------------------
 
 class InstitutionalLibraryAuth:
-    """기관 도서관 자동 로그인 + 세션 쿠키 관리.
+    """Institutional library auto-login + session cookie management.
 
-    실제 Chrome 프로필(User Data)을 사용해 로그인하고, 쿠키를
-    requests.Session에 주입한다. 브라우저에 저장된 자동완성 비밀번호를
-    그대로 활용하므로 secrets.json 자격증명 불필요.
-    세션 만료 감지 시 자동 재로그인.
+    Logs in using the real Chrome profile (User Data) and injects the
+    resulting cookies into a requests.Session. Reuses the auto-fill password
+    already saved in the browser, so no secrets.json credentials are needed.
+    Automatically re-logs in when session expiry is detected.
 
     The obtained cookies are cached to COOKIE_CACHE_FILE as JSON.
     A fresh cache (< COOKIE_MAX_AGE_HOURS) is reused without re-launching
@@ -486,8 +489,8 @@ class InstitutionalLibraryAuth:
         """
         try:
             resp = session.get(self.SESSION_CHECK_URL, timeout=15)
-            # The library menu bar shows "LOGOUT" (or Korean equivalent) when
-            # a session is active; "LOGIN" (or Korean) when not authenticated.
+            # The library menu bar shows "LOGOUT" (or the Korean equivalent)
+            # when a session is active; "LOGIN" (or Korean) when not authenticated.
             text = resp.text
             return "LOGOUT" in text or "로그아웃" in text
         except Exception as exc:
@@ -706,18 +709,18 @@ class CookieNotFoundError(Exception):
 
 
 EZPROXY_COOKIE_GUIDANCE = """\
-EZproxy 다운로드를 위해 기관 도서관 세션 쿠키가 필요합니다.
+An institutional library session cookie is required for EZproxy downloads.
 
-[권장] 자동 로그인 방법 (--auto-login 플래그):
-  1. Chrome에 기관 도서관 사이트 자격증명을 자동완성으로 저장
-  2. --download --auto-login 플래그로 실행 (secrets.json 불필요)
+[Recommended] Auto-login method (--auto-login flag):
+  1. Save your institutional library site credentials as auto-fill in Chrome
+  2. Run with the --download --auto-login flags (no secrets.json needed)
 
-[구 방식] 수동 쿠키 파일:
-  1. Chrome에서 기관 도서관 사이트 로그인
-  2. 브라우저 확장 프로그램(예: "Get cookies.txt LOCALLY")으로
-     EZproxy 도메인 쿠키를 Netscape 형식으로 {cookie_file} 에 저장
-  3. --download --ezproxy 플래그로 실행
-그 후 다시 실행하세요."""
+[Legacy] Manual cookie file:
+  1. Log in to the institutional library site in Chrome
+  2. Use a browser extension (e.g. "Get cookies.txt LOCALLY") to save the
+     EZproxy domain cookie in Netscape format to {cookie_file}
+  3. Run with the --download --ezproxy flags
+Then run it again."""
 
 
 def load_netscape_cookies(cookie_file: str) -> "http.cookiejar.MozillaCookieJar":
@@ -749,7 +752,7 @@ def load_netscape_cookies(cookie_file: str) -> "http.cookiejar.MozillaCookieJar"
 # --------------------------------------------------------------------------
 
 class EZproxyPdfDownloader:
-    """기관 도서관 EZproxy를 통한 구독 저널 PDF 다운로드.
+    """Downloads subscription-journal PDFs via the institutional library's EZproxy.
 
     Institutional library N2 OpenLink proxy.
     Configure PROXY_BASE and LOGIN_URL in InstitutionalLibraryAuth (or subclass)
@@ -763,12 +766,12 @@ class EZproxyPdfDownloader:
          Netscape-format cookie file manually exported from the browser.
          Use the ``--ezproxy`` CLI flag for this mode.
 
-    지원 구독 DB: Elsevier, Springer/Nature, Wiley, ACS, RSC,
+    Supported subscription databases: Elsevier, Springer/Nature, Wiley, ACS, RSC,
                   Taylor & Francis, Oxford, Cambridge
 
-    출판사 도메인 변환 패턴:
+    Publisher domain rewrite pattern:
       pubs.acs.org → pubs-acs-org-ssl.<ezproxy-host>
-      규칙: 도메인의 '.' → '-', 마지막에 '-ssl.<ezproxy-host>' 추가
+      Rule: replace each '.' in the domain with '-', then append '-ssl.<ezproxy-host>'
     """
 
     # Your institution's EZproxy link-resolver base. Set EZPROXY_BASE env var
@@ -1110,14 +1113,14 @@ class EZproxyPdfDownloader:
             ident = verify_pdf_identity(dest, doi=doi, expected=expected)
             if ident["verdict"] in ("mismatch", "not_pdf"):
                 quarantine = dest.with_suffix(dest.suffix + ".REJECTED")
-                dest.replace(quarantine)   # 격리, 삭제 아님 — 진단 가능해야 한다
+                dest.replace(quarantine)   # quarantined, not deleted — must stay diagnosable
                 return {
                     "downloaded_path": None,
                     "download_source": "ezproxy",
                     "download_status": (
                         f"identity {ident['verdict']} (score={ident['score']}): "
                         + "; ".join(ident["reasons"][:3])
-                        + f" -> 격리: {quarantine.name}"
+                        + f" -> quarantined: {quarantine.name}"
                     ),
                     "identity": ident,
                 }
@@ -1143,17 +1146,19 @@ class EZproxyPdfDownloader:
 # --------------------------------------------------------------------------
 
 class LibKeyNomadProvider:
-    """기관 도서관 LibKey Nomad 확장 경유 PDF URL 추출.
+    """Extracts a PDF URL via the institutional library's LibKey Nomad extension.
 
-    LibKey Nomad는 PubMed/DOI 페이지에서 기관 구독 저널의 PDF 직접 링크를
-    자동으로 삽입한다. Chrome MCP를 통해 해당 버튼의 href를 추출한다.
+    LibKey Nomad automatically inserts a direct PDF link for institutionally
+    subscribed journals on PubMed/DOI pages. This extracts that button's href
+    via Chrome MCP.
 
-    동적 JS·EZproxy 인증이 필요할 때만 Chrome MCP fallback 사용.
-    이 클래스는 EZproxy Selenium 보다 가볍고 안정적이므로 source 3.5에 위치.
+    Uses the Chrome MCP fallback only when dynamic JS/EZproxy authentication
+    is required. This class is placed at source 3.5 because it is lighter
+    and more stable than EZproxy's Selenium path.
 
-    요구사항:
-      - Chrome에 LibKey Nomad 확장 설치 (chrome-extension://dihbgbndebgnbjfmelmegjepbnkhlgni/)
-      - Claude Code가 Chrome MCP 연결 상태 (mcp__claude-in-chrome__* 도구 활성)
+    Requirements:
+      - The LibKey Nomad extension installed in Chrome (chrome-extension://dihbgbndebgnbjfmelmegjepbnkhlgni/)
+      - Claude Code has Chrome MCP connected (mcp__claude-in-chrome__* tools active)
     """
 
     PUBMED_BASE = "https://pubmed.ncbi.nlm.nih.gov"
@@ -1164,26 +1169,27 @@ class LibKeyNomadProvider:
 
     @staticmethod
     def _check_chrome_mcp() -> bool:
-        """Claude Code 세션에 Chrome MCP가 연결되어 있는지 확인."""
-        # 실제 MCP 연결 여부는 런타임에 결정되므로 항상 True 반환
-        # (MCP 미연결 시 get_pdf_url에서 None 반환)
+        """Check whether Chrome MCP is connected in the Claude Code session."""
+        # Whether MCP is actually connected is decided at runtime, so this
+        # always returns True (get_pdf_url returns None if MCP isn't connected).
         return True
 
     def get_pdf_url(self, doi: str) -> Optional[str]:
-        """DOI에 대해 LibKey Nomad가 삽입한 PDF 버튼 URL을 추출.
+        """Extract the PDF-button URL LibKey Nomad inserted for a given DOI.
 
-        PubMed 페이지를 Chrome MCP로 열고 LibKey "Download PDF" 버튼 href를 반환.
-        LibKey 버튼이 없거나 Chrome MCP 미연결 시 None 반환.
+        Opens the PubMed page via Chrome MCP and returns the href of the
+        LibKey "Download PDF" button. Returns None if the LibKey button is
+        absent or Chrome MCP isn't connected.
 
-        이 메서드는 Claude Code 세션 내 MCP 도구 호출로만 동작하므로,
-        단독 CLI 실행에서는 항상 None을 반환한다 (graceful degradation).
+        This method only works via an MCP tool call inside a Claude Code
+        session, so a standalone CLI run always returns None (graceful degradation).
         """
-        # CLI/스크립트 단독 실행 환경에서는 Chrome MCP 불가 → skip
-        # Claude Code 세션 내에서는 SKILL.md 지침대로 Claude가 직접 MCP 호출
+        # Chrome MCP is unavailable in a standalone CLI/script run → skip
+        # Inside a Claude Code session, Claude calls MCP directly per SKILL.md's guidance
         return None
 
     def is_available(self) -> bool:
-        """Chrome MCP 연결 여부 (Claude Code 세션 내에서만 True)."""
+        """Whether Chrome MCP is connected (True only inside a Claude Code session)."""
         return self._chrome_mcp_available
 
 
@@ -1194,7 +1200,7 @@ class PdfDownloader:
       1. Crossref ``pdf_links`` (publisher CDN, may be paywalled)
       2. Unpaywall best OA PDF
       3. PubMed Central (PMC) PDF
-      3.5 LibKey Nomad (Chrome MCP; 기관 구독 저널, EZproxy보다 가벼움)
+      3.5 LibKey Nomad (Chrome MCP; institutionally subscribed journals, lighter than EZproxy)
       4. Institutional EZproxy (optional, Selenium-based)
 
     Download failures emit warnings and are recorded in the returned dict
@@ -1248,7 +1254,7 @@ class PdfDownloader:
 
         dest = resolve_within(self.dest_dir, filename, fallback="paper.pdf")
 
-        # 받은 파일이 '요청한 논문'인지 대조할 기준. 이미 record 안에 다 있다.
+        # The criteria for checking that the received file is "the requested paper" — already all present in record.
         expected = {
             "title": record.get("title") or "",
             "first_author": first_author if first_author != "unknown" else "",
@@ -1280,7 +1286,7 @@ class PdfDownloader:
                     return {**record, **result}
 
         # --- source 3.5: LibKey Nomad (Chrome MCP, institutional subscription) ---
-        # Claude Code 세션 내에서만 동작; CLI 단독 실행 시 자동 skip
+        # Only works inside a Claude Code session; auto-skipped in a standalone CLI run
         if doi and self._use_libkey and self._libkey is not None:
             libkey_url = self._libkey.get_pdf_url(doi)
             if libkey_url:
@@ -1303,7 +1309,7 @@ class PdfDownloader:
             result = self._ezproxy.download(
                 doi, ezproxy_dest,
                 rate_limiter=self._client.limiter,
-                expected=expected,          # 정체 검증 기준을 넘겨야 관문이 실효한다
+                expected=expected,          # must pass the identity-verification criteria, or this gate is a no-op
             )
             if result["download_status"].startswith("ok"):
                 return {**record, **result}
@@ -1338,18 +1344,18 @@ class PdfDownloader:
                     "download_source": source,
                     "download_status": f"response too small ({size} B), likely not a PDF",
                 }
-            # 크기만으로는 부족하다 — 691 KB짜리 '남의 논문'이 통과한 전례가 있다.
+            # Size alone isn't enough — a 691 KB "someone else's paper" has passed this way before.
             ident = verify_pdf_identity(dest, doi=doi, expected=expected)
             if ident["verdict"] in ("mismatch", "not_pdf"):
                 quarantine = dest.with_suffix(dest.suffix + ".REJECTED")
-                dest.replace(quarantine)      # 지우지 않고 격리 — 진단 가능해야 한다
+                dest.replace(quarantine)      # quarantined, not deleted — must stay diagnosable
                 return {
                     "downloaded_path": None,
                     "download_source": source,
                     "download_status": (
                         f"identity {ident['verdict']} (score={ident['score']}): "
                         + "; ".join(ident["reasons"][:3])
-                        + f" -> 격리: {quarantine.name}"
+                        + f" -> quarantined: {quarantine.name}"
                     ),
                     "identity": ident,
                 }

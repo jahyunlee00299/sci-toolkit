@@ -1,341 +1,409 @@
 # Feature connectivity ledger
 
-기능 단위마다 한 항목. **무엇을 만들었는가**가 아니라 **무엇에 연결되어
-실제로 발화하는가**를 적는다. 이 워크스페이스에서 가장 흔한 실패는 올바른
-산출물을 만들어 놓고 아무도 호출하지 않는 것이기 때문이다.
+One entry per feature unit. Not **what was built**, but **what it is wired
+to and whether it actually fires**. The most common failure mode in this
+workspace is building the right artifact and having nothing call it.
 
 ---
 
-## 피드백 정화 게이트 (2026-08-07)
+## Feedback sanitization gate (2026-08-07)
 
-**범위** — `feedback_log.py` 가 남긴 기록이 GitHub 이슈로 나가기 전에
-미공개 연구내용·자격증명·개인정보를 차단한다.
+**Scope** — blocks unpublished research content, credentials, and PII from
+reaching GitHub issues before a record left by `feedback_log.py` goes out.
 
-**계층** — cross-cutting (기록 경로 전체에 걸친다)
+**Layer** — cross-cutting (spans the entire logging path)
 
-**왜 필요했는가** — `to_issue()` 는 `what`/`expected`/`actual`/`note` 를
-원문 그대로 이슈 본문에 넣는다. 문서 §"남기면 안 되는 것" 은 있었지만
-**사람에게 주는 안내문일 뿐 실행되는 코드가 아니었다.** 같은 형태의 실패가
-이 워크스페이스에 세 번 있었다(260628 키 평문 노출 · 260706 미공개 수치와
-실명 push · 260807 "제거했다"고 적고 담은 채 배포).
+**Why it was needed** — `to_issue()` drops `what`/`expected`/`actual`/`note`
+verbatim into the issue body. The doc's §"What must not leak" section
+existed, but **it was guidance for a human, not code that actually runs.**
+The same shape of failure has happened three times in this workspace (260628
+plaintext key exposure · 260706 unpublished figures and a real name pushed ·
+260807 something logged as "removed" while still present in the payload).
 
-### 입출력
+### Input/output
 
 | | |
 |---|---|
-| 입력 | `feedback.jsonl` 의 기록 dict (`what`/`expected`/`actual`/`note`) |
-| 출력 | 위험 항목 문자열 목록 (빈 목록 = 통과) |
-| 상태 소유 | 없음 — 순수 함수. 원문을 **수정하지 않는다** |
-| 외부 효과 | 없음 (차단만; 업로드는 기존 경로 그대로) |
+| Input | a record dict from `feedback.jsonl` (`what`/`expected`/`actual`/`note`) |
+| Output | a list of risk-item strings (empty list = pass) |
+| State ownership | none — pure function. Does **not modify** the original text |
+| External effects | none (blocking only; upload uses the existing path) |
 
-### 배선 (어디서 실제로 불리는가)
+### Wiring (where it's actually called)
 
-| 지점 | 동작 | 발화 확인 |
+| Site | Behavior | Firing confirmed |
 |---|---|---|
-| `feedback_log.cmd_add` | 경고만, 기록은 저장 | ✅ E2E: 오염 기록에 `⚠` 출력 |
-| `feedback_log.cmd_export` | **하드 차단** (exit 2), 미리보기 포함 | ✅ E2E: exit 2 확인 |
-| `--approve` | 검사 무시 후 진행 | ✅ E2E: exit 0 + 경고 출력 |
-| `doctor.py SELF_TEST_SCRIPTS` | 테스트 자동 실행 | ✅ doctor 출력에 항목 등장 |
-| `doctor.py SENTINEL_SELF_TEST_FILES` | 테스트 파일 스캔 면제 | ✅ SENTINEL OK 전환 |
+| `feedback_log.cmd_add` | warns only, record still saved | Yes — E2E: `⚠` printed on a contaminated record |
+| `feedback_log.cmd_export` | **hard block** (exit 2), includes a preview | Yes — E2E: confirmed exit 2 |
+| `--approve` | proceeds, ignoring the check | Yes — E2E: confirmed exit 0 + warning printed |
+| `doctor.py SELF_TEST_SCRIPTS` | runs the test automatically | Yes — item appears in doctor output |
+| `doctor.py SENTINEL_SELF_TEST_FILES` | test file exempted from the scan | Yes — confirmed SENTINEL OK |
 
-비대칭 설계인 이유: `add` 에서 차단하면 지친 사람이 신고 자체를 포기한다.
-그러면 이 기능의 존재 이유가 사라진다. 실제 위험은 밖으로 나갈 때 생기므로
-차단은 `export` 에 둔다.
+Why the design is asymmetric: blocking at `add` would just make a tired
+person give up on reporting at all, which erases the whole reason this
+feature exists. The real risk appears when data leaves, so the block sits
+at `export`.
 
-### 증거
+### Evidence
 
-- `tests/test_feedback_sanitize.py` — **50/50 통과**.
-  차단 케이스는 전부 실측된 유출 유형(260628·260706·260807).
-  허용 케이스는 정상적인 불편 신고 — 이게 막히면 기능이 죽는다.
-- 기존 `tests/test_research_marker_scan.py` — **41/41 무손상** (회귀 없음).
-- `doctor.py` — SENTINEL OK, self-test 11건 통과.
+- `tests/test_feedback_sanitize.py` — **50/50 passing**.
+  Every blocked case is a measured leak type from real incidents
+  (260628 · 260706 · 260807). The allowed cases are ordinary friction
+  reports — if those got blocked, the feature would be dead on arrival.
+- Existing `tests/test_research_marker_scan.py` — **41/41 intact** (no
+  regression).
+- `doctor.py` — SENTINEL OK, 11 self-tests passing.
 
-### 반증 (Refute)
+### Refute
 
-적대 검사 24건을 별도로 돌려 **실제 구멍 1건**을 찾았다:
-`E-factor 가 0.71 으로 나옵니다` 가 통과했다. `$`/`%` 붙은 수치만 보고
-**단위 없는 맨 소수**를 안 봤기 때문이고, 260706 에 유출된 E-factor 가
-정확히 그 형태였다. → `MONEY_PCT_RE` 에 맨 소수를 추가하고 그 케이스를
-회귀 테스트에 고정했다.
+Ran 24 separate adversarial cases and found **one real gap**:
+`E-factor comes out to 0.71` passed through. The check only looked at
+numbers attached to `$`/`%` and missed a **bare unitless decimal** — and the
+E-factor that leaked in 260706 was exactly that shape. → Added bare decimals
+to `MONEY_PCT_RE` and pinned that case as a regression test.
 
-**Mutation 확인** — 실명 탐지 라벨을 고의로 망가뜨리자 테스트가 즉시 FAIL
-(48/50). 테스트가 실제로 무언가를 지키고 있다는 증거다. 확인 후 복구.
+**Mutation check** — deliberately broke the real-name detection label and
+the test immediately FAILed (48/50). Evidence that the test is actually
+guarding something. Confirmed, then restored.
 
-또한 SENTINEL 스캔이 **내가 주석에 남긴 실명 2건을 잡아냈다** — 도구가
-저자의 실수를 잡은 사례라 그대로 기록해 둔다. 가명으로 교체했다.
+Also, the SENTINEL scan **caught two real names I had left in a comment
+myself** — a case of the tool catching the author's own mistake, worth
+recording as-is. Replaced with pseudonyms.
 
-### 정수 탐지 — 처음 판단을 실측으로 뒤집었다 (같은 날 추가)
+### Integer detection — a first-pass judgment overturned by measurement (added same day)
 
-초안은 "정수는 오탐이 폭발하니 검사하지 않는다"를 **의도된 한계**로 적었다.
-사용자 지적을 받아 케이스 24건으로 재보니 그 판단이 틀렸다:
+The first draft wrote "integers are skipped because they explode false
+positives" as an **intentional limitation**. The user pushed back, and
+re-measuring against 24 cases showed that judgment was wrong:
 
-| 안 | 놓친 유출 | 오탐 |
+| Approach | Leaks missed | False positives |
 |---|---|---|
-| 맨 소수만 (초안) | **4/7** — `수율이 92 였습니다` 통과 | 1/13 |
-| 맨 정수까지 전부 | 0/7 | **13/13 — 정상 신고 전멸** |
-| 정수 + 수량어 제외 | 0/9 | 0/15 ← 채택 |
+| bare decimals only (first draft) | **4/7** — `yield came out to 92` passed through | 1/13 |
+| all bare integers | 0/7 | **13/13 — every normal report flagged** |
+| integers, excluding counter words | 0/9 | 0/15 ← adopted |
 
-가르는 것은 **숫자의 모양이 아니라 뒤에 오는 말**이다. `92 였습니다`는 값이고
-`3번째 줄`·`2개`·`5분`은 수량이다. "오탐이 폭발한다"는 직관은 맞았지만,
-그것이 "정수를 포기해야 한다"를 뜻하지는 않았다.
+What separates them is **not the shape of the number but the word after
+it**. `92 였습니다` ("came out to 92") is a value; `line 3`, `2 items`,
+`5 minutes` are counts. The intuition "false positives will explode" was
+right, but it didn't mean "give up on integers entirely."
 
-채택안을 다시 적대검사해 **4건이 더 나왔다**:
-- `MPSP 120 달러` **미탐** — `달`(개월)이 `달러`의 앞부분에 매치. 짧은 한글
-  단위어를 접두 매치로 두면 그 글자로 시작하는 모든 단어가 면제된다.
-- 경계를 `(?![가-힣])` 로 막았더니 이번엔 `2개로`·`3행에서`·`7개가` 가
-  전부 오탐(10건). **조사·종결어미를 허용하는 경계**여야 했다 — 실명 탐지에서
-  이미 한 번 겪은 것과 같은 뿌리.
-- `이슈 #42`, `축이 0 부터` 오탐 — 식별자와 경계값은 측정값이 아니다.
+Re-running adversarial cases against the adopted approach turned up **4 more
+findings**:
+- `MPSP 120 dollars` **missed** — the Korean unit word for "month" (달)
+  matched as a prefix of "dollars" (달러). When a short Korean unit word is
+  matched as a prefix, every word starting with that syllable gets exempted.
+- Boundary tightened to `(?![가-힣])` and it immediately flagged `2개로`
+  ("with 2 items"), `3행에서` ("at row 3"), `7개가` ("7 items") as 10 false
+  positives. The boundary had to **allow trailing particles and sentence
+  endings** — the same root cause already hit once before in the real-name
+  detector.
+- `issue #42`, `axis starts at 0` — false positives, because identifiers
+  and boundary values are not measurements.
 
-### 남은 위험 / 의도적 한계
+### Remaining risk / intentional limitations
 
-- **수량어 목록이 오탐 방어선 그 자체다.** `COUNTER_WORD_RE` 를 줄이면 정상
-  신고가 막힌다. 테스트의 MUST_NOT_FLAG 후반부가 그 방어선을 고정한다.
-- **연구 문맥어가 없는 문장의 숫자는 보지 않는다.** `그 값은 92 입니다` 처럼
-  문맥어 없이 값만 있으면 통과한다 — 문맥어 없이 정수를 잡으면 오탐이 통제
-  불가능해진다.
-- **영문 이름은 검사하지 않는다.** 일반 영단어와 구분이 불가능하다.
-- **`--approve` 는 전면 무시다.** 항목별 승인이 아니다. 남용되면 게이트가
-  없는 것과 같아지므로, 사용 흔적이 잦아지면 게이트 쪽을 재보정할 것.
-- `out/feedback.jsonl` 은 `.gitignore` 로 커밋이 막혀 있다. 이 상태를
-  유지할 것 — 정화는 내보내기 경로를 지키지, 커밋 경로를 지키지 않는다.
+- **The counter-word list is itself the false-positive defense line.**
+  Shrinking `COUNTER_WORD_RE` blocks normal reports. The back half of the
+  test's MUST_NOT_FLAG cases pins that defense line in place.
+- **A sentence with no research-context word around its number is not
+  inspected.** A bare value with no context word, like `그 값은 92 입니다`
+  ("that value is 92"), passes through — catching bare integers without a
+  context word makes false positives uncontrollable.
+- **English names are not checked.** They're indistinguishable from
+  ordinary English words.
+- **`--approve` disables the check entirely.** It is not per-item approval.
+  If it gets overused the gate is effectively gone, so if usage becomes
+  frequent, recalibrate the gate itself.
+- `out/feedback.jsonl` is blocked from commits by `.gitignore`. Keep it that
+  way — sanitization protects the export path, not the commit path.
 
 ---
 
-## 피드백 이슈 담당자 = 발견자 본인 (2026-08-10)
+## Feedback issue assignee = the reporter themselves (2026-08-10)
 
-**범위** — `feedback_log.py export --github --write` 로 올라간 GitHub 이슈의
-기본 담당자.
+**Scope** — the default assignee on a GitHub issue filed via
+`feedback_log.py export --github --write`.
 
-**계층** — sub-feature (기존 피드백 정화 게이트 위에 얹는 얕은 추가)
+**Layer** — sub-feature (a shallow addition on top of the existing feedback
+sanitization gate)
 
-**왜 필요했는가** — 이슈는 만들어졌지만 아무에게도 할당되지 않아 담당자가
-없는 채로 쌓였다. "발견한 사람이 담당자" 라는 원칙을 코드가 강제하지 않으면
-관리자 한 명에게 몰리거나(피로) 아무도 안 보거나(방치) 둘 중 하나가 된다.
+**Why it was needed** — issues were created but never assigned to anyone,
+so they piled up ownerless. Unless the code enforces "whoever found it owns
+it," things either pile onto a single maintainer (burnout) or nobody looks
+at them (neglect).
 
-### 입출력
+### Input/output
 
 | | |
 |---|---|
-| 입력 | `--assignee <login>` (선택) / `--no-assignee` (선택) |
-| 출력 | GitHub 이슈 생성 요청의 `assignees` 필드 |
-| 상태 소유 | 없음 |
-| 외부 효과 | `GET /user` (담당자 조회, 옵션 없을 때만) + `POST .../issues` |
+| Input | `--assignee <login>` (optional) / `--no-assignee` (optional) |
+| Output | the `assignees` field on the GitHub issue-creation request |
+| State ownership | none |
+| External effects | `GET /user` (assignee lookup, only when no option given) + `POST .../issues` |
 
-### 동작
+### Behavior
 
-- 옵션 없음(기본값) → 이 명령을 실행한 GitHub 계정(`GET /user`)에게 자동 할당.
-  즉 **발견한 사람 본인**이 기본 담당자다 — 관리자에게 자동으로 몰리지 않는다.
-- `--assignee <login>` → 그 사람에게 할당. `/user` 조회는 건너뛴다(불필요한 호출 방지).
-- `--no-assignee` → 아무에게도 할당하지 않는다.
-- `/user` 조회가 실패해도(오프라인 등) 이슈 생성 자체는 막히지 않는다 —
-  경고만 찍고 할당 없이 진행한다.
+- No option (default) → auto-assigns to the GitHub account running this
+  command (`GET /user`). In other words, **the person who found it** is the
+  default assignee — nothing auto-piles onto a maintainer.
+- `--assignee <login>` → assigns to that person. Skips the `/user` lookup
+  (avoids an unnecessary call).
+- `--no-assignee` → assigns to nobody.
+- Even if the `/user` lookup fails (e.g. offline), issue creation itself is
+  not blocked — it just prints a warning and proceeds with no assignee.
 
-### 배선
+### Wiring
 
-| 지점 | 동작 | 발화 확인 |
+| Site | Behavior | Firing confirmed |
 |---|---|---|
-| `feedback_log.cmd_export` | 기본값 자기-할당, `--write` 시에만 실제 API 호출 | ✅ mock E2E |
-| `--no-assignee` | `/user` 호출 자체를 생략 | ✅ mock E2E |
-| `--assignee` | 지정값 사용, `/user` 호출 생략 | ✅ mock E2E |
-| `doctor.py SELF_TEST_SCRIPTS` | 기존 `test_feedback_log.py` 항목에 이미 등록됨 — 새 테스트가 자동으로 얹힘, 별도 배선 불필요 | ✅ 확인됨 |
+| `feedback_log.cmd_export` | self-assigns by default, only calls the real API under `--write` | Yes — mock E2E |
+| `--no-assignee` | skips the `/user` call entirely | Yes — mock E2E |
+| `--assignee` | uses the given value, skips the `/user` call | Yes — mock E2E |
+| `doctor.py SELF_TEST_SCRIPTS` | already registered under the existing `test_feedback_log.py` entry — the new test rides along automatically, no separate wiring needed | Yes — confirmed |
 
-### 증거 / 반증
+### Evidence / refute
 
-- `tests/test_feedback_log.py` §7 — mock GitHub API로 4가지 케이스 검증
-  (기본 자기-할당·`--no-assignee`·명시적 `--assignee`·`/user` 조회 실패 시
-  크래시 없는 폴백). **전체 23/23 통과**, 기존 16건 회귀 없음.
-- 반증 1건 발견·수정: 첫 버전 테스트가 `_mod.FEEDBACK_PATH`를 몽키패치했으나
-  실제 상수명은 `LOG_PATH` — 그래서 실제 `out/feedback.jsonl`(로컬에 쌓여
-  있던 실사용 기록)까지 함께 mock export에 섞여 나갔다. 격리 실패였지 로직
-  결함은 아니었지만, 값 목록 대신 "전부 같은 담당자인가"로 단언을 고쳐
-  실제 기록이 섞여도 깨지지 않게 했다.
+- `tests/test_feedback_log.py` §7 — verified 4 cases with a mock GitHub API
+  (default self-assign · `--no-assignee` · explicit `--assignee` · crash-free
+  fallback when the `/user` lookup fails). **23/23 total passing**, no
+  regression in the existing 16.
+- One refute found and fixed: the first version of the test monkeypatched
+  `_mod.FEEDBACK_PATH`, but the actual constant name is `LOG_PATH` — so the
+  real `out/feedback.jsonl` (accumulated real records on disk locally) got
+  swept into the mock export too. This was an isolation failure, not a logic
+  defect, but the assertion was rewritten from a value list to "are they all
+  the same assignee" so it wouldn't break even with real records mixed in.
 - Regress: `tests/test_feedback_sanitize.py` 73/73, `test_doc_counts.py` +
-  `test_skill_references.py` 2/2 — 무손상 확인.
+  `test_skill_references.py` 2/2 — confirmed intact.
 
-### 남은 위험 / 의도적 한계
+### Remaining risk / intentional limitations
 
-- 팀(organization) 소속 저장소에서 `assignees`에 저장소 협업자가 아닌
-  로그인을 넣으면 GitHub API가 조용히 무시한다(에러 없음) — 이 기능은
-  "발견자가 이 저장소의 협업자"라는 전제를 검증하지 않는다.
+- In a repo owned by a team (organization), if `assignees` is given a login
+  that isn't a collaborator on the repo, the GitHub API silently ignores it
+  (no error) — this feature does not verify the premise that "the reporter
+  is a collaborator on this repo."
 
 ---
 
-## 260816 — REST 커넥터 회귀 안전망 + dry-run 토큰 계약 통일
+## 260816 — REST connector regression safety net + unifying the dry-run token contract
 
-### 범위 / 레이어
+### Scope / layer
 
-cross-cutting 레이어. 사용자 요청은 "스킬·워크플로우가 MCP 말고 REST API로 접근하게
-만들자"였으나, **선행조사 결과 정책 위반은 0건이었다** — `AGENTS.md §9`,
-`docs/05`, `scripts/connectors/README.md` 가 이미 REST 우선을 규정하고 커넥터
-5종이 존재한다. 스킬의 MCP 언급 4곳은 전부 정당(primer-design=자체 로컬 엔진,
-journal-presentation-maker 2곳=페이월 렌더·슬라이드 육안검사, markitdown=상류
-프로젝트 각주). 그래서 작업을 **정책 신설이 아니라 잔여 격차 메우기**로 재정의했다.
+Cross-cutting layer. The user's request was "make skills/workflows reach
+services via REST API instead of MCP," but **prior-art research found zero
+policy violations** — `AGENTS.md §9`, `docs/05`, and
+`scripts/connectors/README.md` already mandate REST-first, and five
+connectors already exist. All 4 MCP mentions found in skills were legitimate
+(primer-design = its own local engine, journal-presentation-maker's 2 = paywall
+rendering and visual slide inspection, markitdown = an upstream project's own
+footnote). So the task was reframed from **establishing new policy** to
+**closing the remaining gap**.
 
-### 입출력 / 상태 소유
+### Input/output / state ownership
 
-| 지점 | 동작 | 발화 확인 |
+| Site | Behavior | Firing confirmed |
 |---|---|---|
-| `github/notion/notion_db main()` | 쓰기 명령 + `--write` 없음 → 토큰 요구 안 함 (asana 와 동일 규칙) | ✅ 테스트 [4] |
-| `github cmd_open_pr` | 토큰 없으면 fork 검사를 **건너뛰되 미리보기에 명시** | ✅ 테스트 [2] |
-| `notion_db cmd_add_row` | 의도적 예외 — 스키마 대조가 미리보기의 존재 이유라 토큰 요구 | ✅ 테스트 [4] |
-| `doctor.py SELF_TEST_SCRIPTS` | `tests/test_connectors.py` 신규 등록 | ✅ 20→21종, PASS 출력에 표시 |
-| `AGENTS.md §0` | "외부 서비스 읽기" 행 신설 (기존엔 outward 행만 존재) | ✅ `test_agents_routing.py` |
-| `AGENTS.md §9` | `--write` 계약 절 신설 (dry-run 은 토큰 불필요 / 예행연습 아님) | — 문서 |
+| `github/notion/notion_db main()` | write command with no `--write` → does not require a token (same rule as asana) | Yes — test [4] |
+| `github cmd_open_pr` | with no token, **skips** the fork check but says so explicitly in the preview | Yes — test [2] |
+| `notion_db cmd_add_row` | deliberate exception — requires a token because schema comparison is the whole point of the preview | Yes — test [4] |
+| `doctor.py SELF_TEST_SCRIPTS` | newly registered `tests/test_connectors.py` | Yes — 20→21 kinds, shown in PASS output |
+| `AGENTS.md §0` | new "reading external services" row (previously only an outward row existed) | Yes — `test_agents_routing.py` |
+| `AGENTS.md §9` | new `--write` contract section (dry-run needs no token / is not a rehearsal) | — doc only |
 
-### 증거 / 반증
+### Evidence / refute
 
-- `tests/test_connectors.py` 신규 — **31/31 통과, 자격증명·네트워크 0**.
-  argparse 5종 · dry-run 격리 · `--write` 게이트 · 토큰 게이팅 · 메일 draft-first.
-  `http()` 를 폭탄으로 몽키패치해 dry-run 이 네트워크를 건드리면 그 자체를 실패로 잡는다.
-- **반증 1 (게이트 무력화)**: `notion append` 의 `if not args.write:` 를 `if False:` 로
-  바꿔 항상 전송되게 만들자 → 2건 FAIL, exit 1, "dry-run 경로가 네트워크를 호출했다"로
-  원인 지목. 원복 확인.
-- **반증 2 (토큰 게이트 약화)**: `github` 이 `--write` 에도 토큰을 요구하지 않게 만들자
-  → `--write 는 토큰 요구` FAIL, exit 1. 원복 확인.
-- 테스트 초안이 `--project` 를 가정했으나 실제는 `--workspace` 였다 —
-  **코드가 아니라 테스트를 고쳤다**(테스트를 통과시키려 코드를 바꾸지 않음).
+- New `tests/test_connectors.py` — **31/31 passing, zero credentials, zero
+  network**. Covers 5 argparse variants · dry-run isolation · the `--write`
+  gate · token gating · mail draft-first.
+  `http()` is monkeypatched into a bomb so that if dry-run ever touches the
+  network, that itself is caught as a failure.
+- **Refute 1 (gate defeated)**: changed `notion append`'s `if not
+  args.write:` to `if False:` so it always sends → 2 cases FAIL, exit 1,
+  pinpointed as "the dry-run path called the network." Restore confirmed.
+- **Refute 2 (token gate weakened)**: made `github` stop requiring a token
+  even under `--write` → "`--write` requires a token" FAILs, exit 1.
+  Restore confirmed.
+- The first draft of the test assumed `--project`, but the actual flag was
+  `--workspace` — **the test was fixed, not the code** (never bend code to
+  make a test pass).
 - Regress: `doctor.py` 12 OK / 0 WARN / 0 FAIL, self-test 21/21.
-  `test_doc_counts.py` 가 README 개수 21→22 미갱신을 잡아냈고 문서를 고쳐 해소.
-  `make_checksums.py` 가 미추적 파일을 거부해 커밋 순서를 강제했다(게이트 정상 작동).
+  `test_doc_counts.py` caught the README count not being updated 21→22, and
+  the doc was fixed to resolve it.
+  `make_checksums.py` rejected untracked files, forcing the correct commit
+  order (the gate working as intended).
 
-### 남은 위험 / 의도적 한계
+### Remaining risk / intentional limitations
 
-- `mail_connector send` 는 TTY + 타이핑 확인이라 자동 테스트로 발송 경로를 끝까지
-  몰 수 없다. 대신 "draft/reply 구간에 SMTP 흔적 없음"과 "isatty 존재"를 소스
-  수준에서 단언한다 — 행위 테스트가 아니라 구조 테스트다.
-- `github open-pr` 은 토큰 없는 dry-run 에서 fork 검사를 못 돌린다. 미리보기에
-  경고를 출력하지만, **사용자가 그 줄을 읽지 않으면** upstream 안전이 확인된
-  것으로 오해할 여지는 남는다. 검사 자체는 `--write` 시점에 반드시 수행된다.
-- Google Calendar / 공유 Sheets 는 여전히 REST 커넥터가 없다(문서에 명시된 기존
-  예외). 이번 작업 범위 밖 — 커넥터 신규 작성은 별건이다.
-
----
-
-## 260816b — 적대검증 후속: 커넥터 침묵 유도 제거 + 라우팅 게이트
-
-### 범위 / 레이어
-
-cross-cutting 레이어. 260816 감사가 "MCP 유도 위반 0건"으로 결론냈으나,
-독립 적대검증이 **그 결론을 반증**했다. 이 항목은 그 반증의 처리다.
-
-### 무엇이 잘못됐었나
-
-- **감사 범위 오류**: 앞선 감사는 `skills/**/SKILL.md` 만 훑고 그것을 전체인 양
-  보고했다. 실제 MCP 언급은 21개 파일 114건(대부분 반MCP 정책문이라 안전
-  결론 자체는 유지). 범위를 좁혀놓고 전칭으로 말한 것이 문제.
-- **자기확증 구조**: 감사를 자기 수정본(HEAD = `merge: rest-over-mcp-260816`)
-  위에서 돌렸다. 교과서적 self-confirmation 배치라 사각지대가 그대로 남았다.
-- **실제 위반 1건**: `skills/academic-term-rules/.prompt.md:162` §11
-  "Notion Page Writing Rules" 가 Notion 페이지 작성을 지시하면서
-  `notion_connector.py` 를 한 번도 언급하지 않았다. 커넥터를 안 알려주는
-  침묵이 곧 유도다 — 에이전트는 가진 도구(=MCP)로 넘어간다.
-  MCP 라는 단어가 없어 문자열 검색에, 점 파일이라 SKILL.md 글롭에 각각 걸리지
-  않는 이중 사각이었다.
-
-### 조치
-
-| 지점 | 동작 | 발화 확인 |
-|---|---|---|
-| `.prompt.md` 삭제 | `SKILL.md`(17절)의 구버전(12절) 고아 파일. 참조 0건, 고유 내용은 §11 Notion 절뿐이며 그것이 위반 당사자. 현행 §11은 Superscript 규칙으로 교체돼 있었다 | ✅ `git rm`, 이력 보존 |
-| `scientific-validation/SKILL.md:75` | 미배포 스킬(kinetic-bo-pipeline)을 1순위로 가리키던 것을 배포되는 `scripts/sci_validate.py` `PHYSICAL_RANGES` 로 교체 | ✅ 검사 B |
-| `tests/test_service_routing.py` | 신규 — 검사 A(커넥터 침묵) + 검사 B(죽은 스킬 참조) | ✅ 2/2 |
-| `doctor.py SELF_TEST_SCRIPTS` | 신규 등록 | ✅ 21→22종 |
-
-`.prompt.md` 삭제의 부수 효과: §11이 연구 이미지를 `catbox.moe`(익명 공개
-호스팅)에 올리라고 권했다. 랩 배포판에 있어서는 안 될 조언이라 함께 사라졌다.
-
-### 증거 / 반증
-
-- **반증 1 실패 → 설계 수정**: 삭제한 `.prompt.md` 를 되살려도 검사 A가
-  **못 잡았다**(EXIT=0). 원인은 행동어를 본문에서만 찾은 것 — 제목은
-  "Notion Page **Writing** Rules" 인데 본문은 "use `<br>`", "must use public
-  URLs" 라 `write`/`작성` 이 안 걸렸다. 지시성은 제목에 실린다. 제목+본문을
-  함께 보도록 고치고 어간 매칭(`writ`)으로 바꿨다.
-- **반증 1 재시도 통과**: 같은 파일 복원 → `FAIL … .prompt.md:162` 검출, EXIT=1.
-- **반증 2 통과**: 없는 스킬 이름을 스킬로 호명하는 한 줄 삽입 →
-  검사 B가 파일:줄과 함께 검출, EXIT=1. 원복 확인.
-- 오탐 제거: 검사 B 초판이 x-axis · margin-top · load-bearing 같은 케밥 토큰을
-  전부 주워 11건 오탐. 허용목록을 늘리는 대신 **판별 문법을 바꿨다** —
-  ``` `foo` 스킬 ``` / ``` skill `foo` ``` / `Skill("foo")` 처럼 저자가 "이건
-  스킬"이라고 명시한 자리만 본다. 오탐 11 → 0.
-  검사 A도 "GitHub auto-detects theme"(렌더링 설명) 오탐 1건을 지시성 판정으로 제거.
-- Regress: `doctor.py` 12 OK / 0 WARN / 0 FAIL, self-test 22/22.
-  `test_doc_counts.py` 가 README 개수 22→23 미갱신을 잡아 해소.
-
-### 남은 위험 / 의도적 한계
-
-- 두 검사 모두 **어휘 기반**이다. 적대검증자도 같은 한계를 지적했다 — 열거한
-  패턴 밖의 표현으로 유도하면 통과한다. 의미 판정이 아니라 "저자가 명시한
-  자리"만 보는 보수적 설계라, 놓치는 쪽으로 실패한다(오탐보다 미탐).
-- 검사 A는 커넥터 보유 3서비스(notion·asana·github)만 본다. mail 은 서비스명이
-  일반명사라 제목 매칭 오탐이 커서 제외했다 — mail 유도는 `AGENTS.md §9`
-  draft-first 게이트와 `test_connectors.py` 의 SMTP 부재 단언이 대신 막는다.
-- 캘린더·공유시트는 여전히 커넥터가 없다(문서화된 예외). 그 두 서비스로의
-  MCP 안내는 검사 대상이 아니며, 그것이 의도다.
+- `mail_connector send` requires a TTY plus typed confirmation, so an
+  automated test can't drive the send path end to end. Instead it asserts,
+  at the source level, "no SMTP trace in the draft/reply path" and "isatty
+  exists" — a structural test, not a behavioral one.
+- `github open-pr` can't run the fork check in a token-less dry-run. It
+  prints a warning in the preview, but there is still room for a **user who
+  doesn't read that line** to mistakenly believe upstream safety was
+  confirmed. The check itself is always performed at the `--write` step.
+- Google Calendar / shared Sheets still have no REST connector (a
+  pre-existing, documented exception). Out of scope for this work — writing
+  new connectors is a separate task.
 
 ---
 
-## 260816c — 구글 캘린더·시트 커넥터 (MCP 마지막 예외 제거)
+## 260816b — Adversarial-verification follow-up: removing connector-silence steering + a routing gate
 
-### 범위 / 레이어
+### Scope / layer
 
-core. `docs/05` 와 `connectors/README.md` 는 오래 "캘린더·공유 시트는 커넥터가
-없어 MCP 가 **유일한 정당한 예외**"라고 안내해 왔다. 그 예외가 남아 있는 한
-REST-우선 정책에 구멍이 하나 뚫린 채였다. 이 항목이 그 구멍을 닫는다.
+Cross-cutting layer. The 260816 audit concluded "zero MCP-steering
+violations," but an independent adversarial verification **refuted that
+conclusion**. This entry is the handling of that refutation.
 
-### 설계 판단 2개
+### What went wrong
 
-**stdlib 전용.** README 의 기존 TODO 는 google-api-python-client 설치를
-전제했지만, 나머지 커넥터 5종은 전부 urllib 만 쓴다 — "폴더만 복사하면 동작"이
-이 패키지의 원칙이라 구글만 예외를 두면 그게 깨진다. 그래서 refresh-token 교환을
-`_google_auth.py` 에 직접 구현했다(약 150줄). 최초 1회 브라우저 동의만 사람이
-하고, 그 뒤 갱신은 라이브러리 없이 돈다.
+- **Audit scope error**: the earlier audit only swept `skills/**/SKILL.md`
+  and reported it as if it were the whole thing. The actual MCP mentions
+  span 21 files, 114 occurrences (mostly anti-MCP policy text, so the safety
+  conclusion itself still holds) — the problem was narrowing the scope and
+  then speaking as if it were universal.
+- **Self-confirmation structure**: the audit was run on top of its own
+  fix commit (HEAD = `merge: rest-over-mcp-260816`). A textbook
+  self-confirmation setup, so the blind spot stayed exactly where it was.
+- **One actual violation**: `skills/academic-term-rules/.prompt.md:162` §11
+  "Notion Page Writing Rules" instructs writing to a Notion page and never
+  once mentions `notion_connector.py`. Silence about the connector is
+  itself steering — an agent falls back to whatever tool it already has
+  (= MCP). It fell into a double blind spot: no string search caught it
+  because the word "MCP" never appears, and no SKILL.md glob caught it
+  because it's a dotfile.
 
-**기존 토큰 재사용.** 토큰 파일을 구글 표준 형식(`access_token`/`refresh_token`/
-`expiry_date`)으로 읽으므로, 이미 다른 도구로 구글 토큰을 만들어 둔 사람은
-`token_cache_path` 가 그 파일을 가리키게만 하면 된다. 개인 경로는 문서·코드
-어디에도 넣지 않았다 — 랩 배포판이라 일반형만 싣는다.
+### Fix
 
-### 입출력 / 상태 소유
-
-| 지점 | 동작 | 발화 확인 |
+| Site | Action | Firing confirmed |
 |---|---|---|
-| `_google_auth.access_token()` | 만료 60초 전 갱신, 파일에 다시 저장. 저장 실패는 경고만(이번 호출은 진행) | ✅ 수동 실행 |
-| `calendar_connector` 읽기 | calendars / list / agenda — 플래그 없이 | ✅ argparse 검사 |
-| `calendar add-event` | `--write` 필요. `--attendee` 있으면 outward 경고 선행 | ✅ 테스트 [2b] |
-| `sheets` 읽기 | info / read | ✅ argparse 검사 |
-| `sheets append` | `--write` 필요, `INSERT_ROWS` 로 기존 행 불가침 | ✅ 테스트 [2b] |
-| `tests/test_connectors.py` | 5종 → 7종, 31 → 41 검사 | ✅ 41/41 |
-| `config/catalog.json` connectors | calendar·sheets 등재 | ✅ |
-| `docs/05` · `docs/06` · `AGENTS.md §9` · `connectors/README.md` | "커넥터 없는 예외" 서술 제거, MCP 최후수단은 브라우저 탐색으로 한정 | ✅ 잔존 0건 grep |
+| deleted `.prompt.md` | an orphaned older version (12 sections) of `SKILL.md` (17 sections). Zero references, its only unique content was the §11 Notion section, which is the offender itself. The current §11 had already been replaced with superscript-formatting rules | Yes — `git rm`, history preserved |
+| `scientific-validation/SKILL.md:75` | replaced a pointer to an undistributed skill (kinetic-bo-pipeline) as the first-choice option with the distributed `scripts/sci_validate.py` `PHYSICAL_RANGES` | Yes — check B |
+| `tests/test_service_routing.py` | new — check A (connector silence) + check B (dead skill reference) | Yes — 2/2 |
+| `doctor.py SELF_TEST_SCRIPTS` | newly registered | Yes — 21→22 kinds |
 
-### 의도적으로 만들지 않은 것
+A side effect of deleting `.prompt.md`: §11 had also recommended uploading
+research images to `catbox.moe` (anonymous public hosting) — advice that
+has no place in a lab distribution, and it disappeared along with the rest.
 
-- **캘린더 수정·삭제 없음.** 남의 일정을 지우는 실수를 이 도구로는 낼 수 없어야 한다.
-- **시트 update·delete 없음.** 공유 시트의 기존 셀을 덮어쓰면 남이 넣은 값이
-  사실상 복구 불가로 사라진다(구글 버전기록을 사람이 뒤져야 한다). Notion 커넥터가
-  additive-only 인 것과 같은 이유. 기존 값 수정은 사람이 브라우저에서 한다.
+### Evidence / refute
 
-### 증거 / 반증
+- **Refute 1 failed → design fixed**: restoring the deleted `.prompt.md`
+  and check A **still didn't catch it** (EXIT=0). The cause was looking for
+  action verbs only in the body — the title says "Notion Page **Writing**
+  Rules" but the body only says "use `<br>`", "must use public URLs," so
+  "write"/"작성" never matched. Directive intent lives in the title. Fixed
+  to look at title and body together and switched to stem matching
+  (`writ`).
+- **Refute 1 retried, passed**: restoring the same file → detected
+  `FAIL … .prompt.md:162`, EXIT=1.
+- **Refute 2 passed**: inserted a one-line reference naming a nonexistent
+  skill as if it were real → check B detected it with file:line, EXIT=1.
+  Restore confirmed.
+- Removed false positives: the first version of check B picked up every
+  kebab-case token — x-axis, margin-top, load-bearing — as 11 false
+  positives. Instead of growing an allowlist, **the grammar of detection
+  was changed** — it now looks only at places where the author explicitly
+  marked "this is a skill": `` `foo` skill ``, `` skill `foo` ``,
+  `Skill("foo")`. False positives 11 → 0.
+  Check A also dropped one false positive, "GitHub auto-detects theme" (a
+  rendering explanation), from being judged as directive.
+- Regress: `doctor.py` 12 OK / 0 WARN / 0 FAIL, self-test 22/22.
+  `test_doc_counts.py` caught the README count not updated 22→23 and it was
+  resolved.
 
-- 오프라인 테스트 41/41. 구글 2종은 네트워크 차단만으로 부족해 **`access_token()`
-  호출 자체를 스파이**한다 — dry-run 이 토큰을 조회하면 토큰 파일이 없는 사람에게서
-  미리보기가 죽기 때문이다.
-- **반증 1**: `sheets` 에 `update` 서브커맨드를 심자 → additive-only 검사 FAIL,
-  exit 1. 원복 확인.
-- **반증 2**: `calendar` 의 `is_outward` 를 False 로 고정하자 → outward 경고 검사
-  FAIL, exit 1. 원복 확인.
-- CSV 파싱 확인: `--row 'a,"b,c",d'` → 3셀(단순 split 이면 4셀로 밀린다).
-- 실행 확인: 토큰 미설정 상태에서 dry-run 성공, `--write` 는 발급 안내와 함께 exit 1.
+### Remaining risk / intentional limitations
+
+- Both checks are **lexical**. The adversarial verifier pointed out the same
+  limit — phrasing outside the listed patterns still steers undetected.
+  This is a conservative design that judges by "where the author explicitly
+  marked it" rather than by meaning, so it fails toward missing things
+  (false negatives over false positives).
+- Check A only looks at the 3 services with connectors (notion · asana ·
+  github). Mail was excluded because the service name is also an ordinary
+  noun, which produces too many title-matching false positives — mail
+  steering is instead blocked by the `AGENTS.md §9` draft-first gate and
+  `test_connectors.py`'s assertion that no SMTP code path exists.
+- Calendar and shared sheets still have no connector (a documented
+  exception). MCP guidance toward those two services is not in scope for
+  this check, and that is intentional.
+
+---
+
+## 260816c — Google Calendar / Sheets connectors (removing the last MCP exception)
+
+### Scope / layer
+
+Core. `docs/05` and `connectors/README.md` had long stated that "Calendar
+and shared Sheets have no connector, so MCP is the **only legitimate
+exception**." As long as that exception stood, the REST-first policy had one
+hole left open. This entry closes it.
+
+### Two design decisions
+
+**stdlib only.** The README's existing TODO assumed installing
+google-api-python-client, but the other 5 connectors use nothing but
+urllib — "just copy the folder and it works" is this package's core
+principle, and making Google the one exception would break it. So the
+refresh-token exchange was implemented directly in `_google_auth.py`
+(roughly 150 lines). Only the first-time browser consent needs a human; every
+renewal after that runs without a library.
+
+**Reuse existing tokens.** Since the token file is read in Google's standard
+format (`access_token`/`refresh_token`/`expiry_date`), anyone who already has
+a Google token from another tool only needs to point `token_cache_path` at
+that file. No personal path was hardcoded anywhere in the docs or code — this
+is a lab-wide distribution, so only the generic form ships.
+
+### Input/output / state ownership
+
+| Site | Behavior | Firing confirmed |
+|---|---|---|
+| `_google_auth.access_token()` | refreshes 60s before expiry, rewrites to the file. A save failure only warns (the current call still proceeds) | Yes — manual run |
+| `calendar_connector` reads | calendars / list / agenda — no flag needed | Yes — argparse check |
+| `calendar add-event` | requires `--write`. If `--attendee` is given, prints the outward warning first | Yes — test [2b] |
+| `sheets` reads | info / read | Yes — argparse check |
+| `sheets append` | requires `--write`, uses `INSERT_ROWS` so existing rows are untouched | Yes — test [2b] |
+| `tests/test_connectors.py` | 5 kinds → 7 kinds, 31 → 41 checks | Yes — 41/41 |
+| `config/catalog.json` connectors | calendar · sheets registered | Yes |
+| `docs/05` · `docs/06` · `AGENTS.md §9` · `connectors/README.md` | removed the "no-connector exception" wording, MCP is now a last resort limited to browser exploration | Yes — 0 remaining hits by grep |
+
+### Deliberately not built
+
+- **No calendar edit/delete.** This tool should be structurally incapable of
+  the mistake of deleting someone else's event.
+- **No sheet update/delete.** Overwriting an existing cell in a shared sheet
+  effectively destroys whatever value someone else entered (recoverable only
+  by a human digging through Google's version history). Same reasoning as
+  the Notion connector being additive-only. Editing an existing value is a
+  human's job, done in the browser.
+
+### Evidence / refute
+
+- Offline tests 41/41. Network-blocking alone wasn't enough for the two
+  Google connectors, so **the `access_token()` call itself is spied on** —
+  if dry-run ever looks up a token, the preview would break for anyone
+  without a token file.
+- **Refute 1**: planted an `update` subcommand on `sheets` → the
+  additive-only check FAILs, exit 1. Restore confirmed.
+- **Refute 2**: pinned `calendar`'s `is_outward` to False → the outward
+  warning check FAILs, exit 1. Restore confirmed.
+- CSV parsing confirmed: `--row 'a,"b,c",d'` → 3 cells (a naive split would
+  push it to 4).
+- Run confirmed: dry-run succeeds with no token configured; `--write`
+  exits 1 with issuance instructions.
 - Regress: `doctor.py` 12 OK / 0 WARN / 0 FAIL, self-test 22/22.
 
-### 남은 위험 / 의도적 한계
+### Remaining risk / intentional limitations
 
-- **최초 OAuth 동의는 자동화하지 않았다.** 동의 화면을 스크립트가 대신 누르는 것은
-  하면 안 되는 종류의 자동화다. 그래서 이 커넥터는 "토큰이 이미 있다"를 전제하고,
-  없으면 발급 경로를 안내하며 종료한다.
-- `_google_auth` 는 refresh token 폐기(`invalid_grant`)를 감지해 재발급을 안내하지만,
-  재발급 자체는 사람 몫이다.
-- scope 는 토큰에 실려 있고 이 코드가 검사하지 않는다. 읽기 전용 scope 로 발급했다면
-  `--write` 는 API 가 403 으로 거절하며, 그 메시지를 그대로 보여준다.
+- **Initial OAuth consent is not automated.** A script clicking through the
+  consent screen on someone's behalf is the kind of automation that should
+  not exist. So this connector assumes "a token already exists," and if not,
+  it prints the issuance path and exits.
+- `_google_auth` detects a revoked refresh token (`invalid_grant`) and
+  directs the user to reissue it, but reissuing itself is still a human's
+  job.
+- Scope lives in the token and this code does not check it. If it was
+  issued with a read-only scope, `--write` will get a 403 from the API, and
+  that message is shown as-is.

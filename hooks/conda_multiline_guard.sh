@@ -37,28 +37,29 @@ has_newline = "\n" in cmd
 print("BLOCK" if (has_conda and has_pyc and has_newline) else "ALLOW")
 ' 2>/dev/null)
 
-# [260626] WSL(집컴)/헤드리스 위임 오발동 완화: 이 BLOCK 근거는 "Windows git-bash에서
-#   줄바꿈 깨짐". WSL bash는 정상이므로 WSL/headless에서는 advisory(exit 0)로 강등.
-#   노트북 git-bash는 기존 BLOCK 유지.
+# [260626] Mitigate a false trigger on WSL (home PC) / headless delegation: this
+#   BLOCK exists because "newlines get mangled in Windows git-bash". WSL bash
+#   does not have that problem, so downgrade to advisory (exit 0) on WSL/headless.
+#   The laptop's git-bash keeps the existing BLOCK.
 _IS_WSL=0
 [ -f /proc/version ] && grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null && _IS_WSL=1
 if [ "$verdict" = "BLOCK" ] && { [ "$_IS_WSL" = "1" ] || [ "${HEADLESS_DELEGATION:-0}" = "1" ]; }; then
-    echo "[conda_multiline_guard] (WSL/headless advisory) conda run + multiline python -c 감지 — WSL에선 보통 정상. 통과(가급적 .py 파일 권장)." >&2
+    echo "[conda_multiline_guard] (WSL/headless advisory) conda run + multiline python -c detected — usually fine on WSL. Allowed (a .py file is still recommended)." >&2
     exit 0
 fi
 
 if [ "$verdict" = "BLOCK" ]; then
     cat >&2 <<'MSG'
-[conda_multiline_guard] 차단: conda run + multiline `python -c` 는 Windows git-bash에서
-줄바꿈이 깨져 실패합니다.
+[conda_multiline_guard] Blocked: conda run + multiline `python -c` fails on
+Windows git-bash because newlines get mangled.
 
-→ 대신: 임시 .py 파일로 저장 후 실행하세요.
-   예) cat > /tmp/_run.py << 'EOF'
+-> Instead: save it as a temp .py file and run that.
+   e.g.) cat > /tmp/_run.py << 'EOF'
        <python code>
        EOF
        conda run -n <env> python /tmp/_run.py
 
-단일 라인 `python -c "..."` 는 허용됩니다.
+Single-line `python -c "..."` is allowed.
 MSG
     exit 2
 fi

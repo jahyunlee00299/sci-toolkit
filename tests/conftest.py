@@ -1,23 +1,27 @@
-"""pytest 배선 — 이 폴더의 검사는 standalone 스크립트다.
+"""pytest wiring — the checks in this folder are standalone scripts.
 
-각 `test_*.py` 는 `python tests/test_x.py` 로 돌리는 스크립트이고, 모듈 레벨에서
-검사를 수행한 뒤 `sys.exit()` 로 판정을 낸다. 정식 러너는 `doctor.py` 이며,
-그쪽은 각 스크립트를 subprocess 로 실행하므로 이 구조와 잘 맞는다.
+Each `test_*.py` is a script meant to run as `python tests/test_x.py`: it
+performs its check at module level and reports the verdict via `sys.exit()`.
+The real runner is `doctor.py`, which runs each script as a subprocess and
+so fits this structure fine.
 
-문제는 `pytest tests/` 다. 새로 clone 한 사람이 가장 먼저 치는 명령인데, pytest 는
-수집 단계에서 각 파일을 **import** 하므로 검사가 그 자리에서 실행되고 모듈 레벨
-`sys.exit()` 가 INTERNALERROR 로 터진다(실측 2026-08-08). 도구는 멀쩡한데 저장소가
-깨진 것처럼 보였다.
+The problem is `pytest tests/`. It's the first command anyone runs right
+after cloning, but pytest **imports** each file during collection, which
+means the check runs right then and there, and the module-level `sys.exit()`
+blows up as an INTERNALERROR (measured 2026-08-08). The tooling was fine —
+it just looked like the repo was broken.
 
-그래서 여기서 pytest 가 스크립트를 import 하지 않고 **subprocess 로 실행**하도록
-수집 방식을 바꾼다 — doctor.py 가 하는 것과 같은 방식이다. 결과적으로
-`pytest tests/` 와 `python doctor.py` 가 같은 검사를 수행한다.
+So this file changes how pytest collects: instead of importing the scripts,
+it runs them **as a subprocess** — the same way doctor.py does. The upshot
+is that `pytest tests/` and `python doctor.py` perform the same checks.
 
-러너를 별도 `test_*.py` 파일로 두지 않은 이유: tests/ 의 파일 수는 README 에
-적힌 "회귀 테스트 N종" 의 SSOT 이고(test_doc_counts.py), 모든 test_*.py 는
-doctor 가 실행해야 한다는 규칙도 있다. 배선 파일 하나를 추가하면 그 두 검사가
-동시에 어긋나면서, 검사도 아닌 파일을 doctor 목록에 넣게 된다. conftest 는
-pytest 전용 파일이라 어느 쪽 개수에도 잡히지 않는다.
+Why the runner isn't a separate `test_*.py` file of its own: the file count
+under tests/ is the SSOT for the "N regression tests" number quoted in the
+README (test_doc_counts.py), and there's a separate rule that every
+test_*.py must be run by doctor. Adding one more wiring file would throw off
+both checks at once, and it would put a file that isn't itself a check into
+doctor's list. conftest is a pytest-only file, so it's excluded from either
+count.
 """
 from __future__ import annotations
 
@@ -28,7 +32,7 @@ import pytest
 
 
 class SelfCheckItem(pytest.Item):
-    """자체검사 스크립트 하나를 subprocess 로 실행한다."""
+    """Run a single self-check script as a subprocess."""
 
     def __init__(self, *, name, parent, script):
         super().__init__(name, parent)
@@ -46,8 +50,9 @@ class SelfCheckItem(pytest.Item):
                 f"{self.script.name} exited {proc.returncode}\n{detail[-3000:]}")
 
     def repr_failure(self, excinfo, style=None):
-        # 스크립트가 이미 사람이 읽을 형태로 실패를 출력한다. pytest 의 파이썬
-        # 트레이스백을 덧씌우면 정작 읽어야 할 내용이 묻힌다.
+        # The script has already printed its failure in human-readable form.
+        # Layering pytest's own Python traceback on top just buries the part
+        # that actually needs reading.
         if isinstance(excinfo.value, AssertionError):
             return str(excinfo.value)
         return super().repr_failure(excinfo, style)

@@ -59,7 +59,7 @@ Examples
     export NCBI_EMAIL=your_name@your_institution.edu (bash)
     python fetch_public_vector.py L09137 --format fasta
 
-Notes for beginners (초심자를 위한 참고)
+Notes for beginners
 ------------------------------------------
 - "Accession" = the short ID NCBI assigns to a sequence record
   (e.g. "L09137", "NC_001416.1"). You can find it on the NCBI page

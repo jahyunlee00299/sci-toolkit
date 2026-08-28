@@ -1,31 +1,36 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-불편·오류 기록 채널 — 말한 것을 기록으로 남긴다.
+Friction/error logging channel — turn what was said into a record.
 
-왜 필요한가
------------
-툴킷을 쓰다 겪은 불편은 대부분 그 자리에서 우회되고 사라진다. 우회는 개인의
-기억에만 남고, 다음 사람이 같은 곳에서 다시 막힌다. 기록이 있어야 고칠 수 있다.
+Why this exists
+----------------
+Most friction hit while using the toolkit gets worked around on the spot and
+disappears. The workaround only lives in that one person's memory, and the
+next person hits the same wall again. There has to be a record for it to
+ever get fixed.
 
-설계 원칙
----------
-**설정 없이 동작해야 한다.** 툴킷을 USB로 받은 사람은 GitHub 계정도, 토큰도,
-저장소 접근권도 없다. 기록을 남기는 데 그런 게 필요하면 아무도 남기지 않는다.
-그래서 기본 목적지는 로컬 파일(JSONL)이고, GitHub Issue 는 토큰이 있는 사람만
-쓰는 **선택적 승격 경로**다. 관리자는 나중에 수거해 한 번에 올린다.
+Design principles
+------------------
+**Must work with zero configuration.** Someone who got the toolkit off a USB
+drive has no GitHub account, no token, no repo access. If leaving a record
+required any of that, nobody would leave one. So the default destination is
+a local file (JSONL), and a GitHub Issue is a **optional promotion path**
+only for someone who has a token. A maintainer collects and uploads them
+later, in batch.
 
-**한 번만 묻는다.** 재현 절차를 캐물으면 기록 자체를 포기한다. 필수는 "무엇이
-불편했는가" 하나뿐이고, 나머지(어떤 스킬·무엇을 기대했는지·환경)는 있으면 담고
-없으면 비워둔다. 불완전한 기록이 없는 기록보다 낫다.
+**Ask only once.** Interrogating for repro steps makes people give up on
+logging at all. The only required field is "what was the friction" — the
+rest (which skill, what was expected, the environment) is filled in if
+available and left blank otherwise. An incomplete record beats no record.
 
-사용
-----
-    python scripts/feedback_log.py add "docx 표 편집이 계속 실패해요"
-    python scripts/feedback_log.py add "..." --skill docx --expected "표가 수정됨" \
-                                          --actual "51 matches 로 무한루프"
+Usage
+-----
+    python scripts/feedback_log.py add "docx table editing keeps failing"
+    python scripts/feedback_log.py add "..." --skill docx --expected "the table gets edited" \
+                                          --actual "infinite loop at 51 matches"
     python scripts/feedback_log.py list
-    python scripts/feedback_log.py export            # 관리자: 이슈 본문으로 변환
+    python scripts/feedback_log.py export            # maintainer: convert to issue bodies
     python scripts/feedback_log.py export --github --repo owner/name --write
 """
 from __future__ import annotations
@@ -52,21 +57,22 @@ LOG_PATH = ROOT / "out" / "feedback.jsonl"
 
 KINDS = ("bug", "friction", "missing", "docs", "idea")
 
-# ── 정화 게이트 ─────────────────────────────────────────────────────────────
-# 이슈 본문에는 what/expected/actual/note 가 원문 그대로 들어간다(to_issue).
-# 그 경로에 미공개 연구내용·자격증명·개인정보가 실리지 않도록 막는다.
-# 게이트가 없으면 문서 §"남기면 안 되는 것" 은 안내문일 뿐 아무것도 막지
-# 못한다 — 이 워크스페이스에서 이미 세 번 그렇게 샜다(260628·260706·260807).
+# ── sanitization gate ────────────────────────────────────────────────────
+# The issue body carries what/expected/actual/note verbatim (to_issue).
+# This gate keeps that path from carrying unpublished research content,
+# credentials, or personal data. Without a gate, the doc's §"what not to
+# leave in" section is just a notice that stops nothing — this workspace has
+# already leaked that way three times (260628, 260706, 260807).
 try:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from feedback_sanitize import format_report, scan_entry  # type: ignore
-except ImportError:  # pragma: no cover - 모듈이 빠진 배포본
+except ImportError:  # pragma: no cover - a distribution missing the module
     scan_entry = None  # type: ignore[assignment]
     format_report = None  # type: ignore[assignment]
 
 
 def _gate(entry: dict) -> list[str]:
-    """기록 하나를 정화 게이트에 통과시킨다. 반환값이 비면 깨끗함."""
+    """Run one entry through the sanitization gate. An empty return means it's clean."""
     if scan_entry is None:
         return []
     return scan_entry(entry)
@@ -85,7 +91,7 @@ def _now() -> str:
 
 
 def _environment() -> dict:
-    """재현에 필요한 최소 환경. 사용자에게 묻지 않고 자동으로 채운다."""
+    """The minimum environment needed for repro. Filled in automatically, without asking the user."""
     env = {
         "os": f"{platform.system()} {platform.release()}",
         "python": platform.python_version(),
@@ -96,7 +102,7 @@ def _environment() -> dict:
         if out.returncode == 0:
             env["claude"] = out.stdout.strip().splitlines()[0][:60]
     except Exception:
-        pass  # claude CLI 없어도 기록은 남아야 한다
+        pass  # the record must still be saved even without the claude CLI
     return env
 
 
@@ -132,15 +138,16 @@ def read_entries() -> list[dict]:
         try:
             out.append(json.loads(line))
         except json.JSONDecodeError:
-            continue  # 한 줄이 깨져도 나머지는 살린다
+            continue  # keep the rest even if one line is corrupted
     return out
 
 
 def to_issue(entry: dict) -> tuple[str, str]:
-    """기록 하나를 GitHub Issue 의 (제목, 본문)으로 만든다.
+    """Turn one record into a GitHub Issue's (title, body).
 
-    본문에 출처(어디서 나왔는지)를 함께 적는다 — 이슈만 보고도 재현을 시작할 수
-    있어야 하고, 나중에 원본 기록과 대조할 수 있어야 한다.
+    The body also states its provenance (where it came from) — reading the
+    issue alone must be enough to start reproducing it, and it must be
+    possible to cross-reference it against the original record later.
     """
     head = entry["what"].splitlines()[0][:70]
     scope = f"[{entry['skill']}] " if entry.get("skill") else ""
@@ -148,30 +155,30 @@ def to_issue(entry: dict) -> tuple[str, str]:
 
     lines = [entry["what"], ""]
     if entry.get("expected") or entry.get("actual"):
-        lines += ["## 기대 vs 실제", ""]
+        lines += ["## Expected vs actual", ""]
         if entry.get("expected"):
-            lines.append(f"- 기대: {entry['expected']}")
+            lines.append(f"- Expected: {entry['expected']}")
         if entry.get("actual"):
-            lines.append(f"- 실제: {entry['actual']}")
+            lines.append(f"- Actual: {entry['actual']}")
         lines.append("")
     if entry.get("note"):
-        lines += ["## 덧붙임", "", entry["note"], ""]
+        lines += ["## Note", "", entry["note"], ""]
 
     env = entry.get("env") or {}
     lines += [
-        "## 출처",
+        "## Provenance",
         "",
-        "| 항목 | 값 |",
+        "| Field | Value |",
         "|---|---|",
-        f"| 기록 ID | `{entry['id']}` |",
-        f"| 기록 시각 | {entry['ts']} |",
-        f"| 종류 | {entry['kind']} |",
-        f"| 스킬 | {entry.get('skill') or '—'} |",
+        f"| Record ID | `{entry['id']}` |",
+        f"| Recorded at | {entry['ts']} |",
+        f"| Kind | {entry['kind']} |",
+        f"| Skill | {entry.get('skill') or '—'} |",
         f"| OS | {env.get('os', '—')} |",
         f"| Python | {env.get('python', '—')} |",
         f"| Claude Code | {env.get('claude', '—')} |",
         "",
-        "> `scripts/feedback_log.py` 가 만든 기록입니다.",
+        "> A record created by `scripts/feedback_log.py`.",
     ]
     return title, "\n".join(lines)
 
@@ -190,28 +197,29 @@ def mark_exported(ids: set[str]) -> None:
 
 # ── commands ────────────────────────────────────────────────────────────────
 def cmd_add(args) -> int:
-    # 기록 전에 먼저 검사한다. 여기서는 **막지 않고 경고만** 한다 —
-    # 기록 시점에 차단하면 지친 사람이 신고 자체를 포기하고, 그러면 이
-    # 기능의 존재 이유가 사라진다. 대신 맥락이 아직 생생할 때 고칠
-    # 기회를 준다. 실제 차단은 밖으로 나가는 export 에서 한다(비대칭).
+    # Scan before saving. This only **warns, never blocks** — blocking at
+    # save time makes an already-tired person give up on reporting at all,
+    # which erases the reason this feature exists. Instead it gives a chance
+    # to fix it while the context is still fresh. The actual block happens at
+    # export, where the content leaves the machine (asymmetric on purpose).
     draft = {"what": args.what, "expected": args.expected,
              "actual": args.actual, "note": args.note}
     hits = _gate(draft)
 
     entry = add_entry(args.what, kind=args.kind, skill=args.skill,
                       expected=args.expected, actual=args.actual, note=args.note)
-    print(f"기록했습니다 — {entry['id']}  ({LOG_PATH})")
+    print(f"Recorded — {entry['id']}  ({LOG_PATH})")
     missing = [k for k in ("skill", "expected", "actual") if not entry.get(k)]
     if missing:
-        print("  비어 있는 항목: " + ", ".join(missing)
-              + "  (없어도 됩니다. 나중에 채우려면 이 ID로 찾으세요.)")
+        print("  Empty field(s): " + ", ".join(missing)
+              + "  (fine to leave blank — look up this ID later to fill it in.)")
 
     if hits:
-        print("\n⚠ 밖으로 내보낼 수 없는 내용이 들어 있습니다:")
+        print("\n⚠ This contains content that cannot be sent out:")
         _print_hits(hits)
-        print("\n  이 기록은 저장됐지만, 이대로는 이슈로 올라가지 않습니다.")
-        print("  \"무엇이 실패했는가\"만 남기고 \"무슨 데이터로 실패했는가\"는 빼주세요.")
-        print(f"  고치려면 out/feedback.jsonl 에서 {entry['id']} 를 찾아 편집하세요.")
+        print("\n  This record was saved, but will not go to an issue as-is.")
+        print("  Keep only \"what failed\" and remove \"what data it failed with\".")
+        print(f"  To fix it, find {entry['id']} in out/feedback.jsonl and edit it.")
     return 0
 
 
@@ -220,39 +228,40 @@ def cmd_list(args) -> int:
     if args.pending:
         entries = [e for e in entries if not e.get("exported")]
     if not entries:
-        print("기록이 없습니다." if not args.pending else "아직 올리지 않은 기록이 없습니다.")
+        print("No records." if not args.pending else "No records left to upload.")
         return 0
     for e in entries:
         flag = " " if e.get("exported") else "*"
         scope = f"[{e['skill']}] " if e.get("skill") else ""
         print(f"{flag} {e['id']}  {e['ts'][:16]}  {e['kind']:8s} {scope}{e['what'][:60]}")
-    print(f"\n총 {len(entries)}건 (* = 아직 이슈로 올리지 않음)")
+    print(f"\n{len(entries)} total (* = not yet raised as an issue)")
     return 0
 
 
 def cmd_export(args) -> int:
     entries = [e for e in read_entries() if not e.get("exported")]
     if not entries:
-        print("올릴 기록이 없습니다.")
+        print("No records to upload.")
         return 0
 
-    # ── 정화 게이트 (하드 차단) ────────────────────────────────────────
-    # 미리보기까지 포함해 막는다. 미리보기만 통과시키면 그 출력을 복사해
-    # 손으로 올리는 우회가 생기고, 그 경로엔 아무 검사도 없다.
+    # ── sanitization gate (hard block) ──────────────────────────────────
+    # Blocks even the preview. Letting only the preview through opens a
+    # workaround — copy that output and upload it by hand — and that path
+    # has no check at all.
     flagged = [(e, hits) for e in entries if (hits := _gate(e))]
     if flagged and not args.approve:
-        print(f"[차단] {len(flagged)}건에 밖으로 내보낼 수 없는 내용이 있습니다.\n")
+        print(f"[BLOCKED] {len(flagged)} record(s) contain content that cannot be sent out.\n")
         for e, hits in flagged:
             print(f"  {e['id']}  {e['what'][:46]}")
             _print_hits(hits)
             print()
-        print("고친 뒤 다시 실행하세요 — out/feedback.jsonl 에서 해당 ID를 편집하면 됩니다.")
-        print("검사가 틀렸다고 판단되면 --approve 를 붙여 넘길 수 있습니다.")
-        print("  (--approve 는 검사 결과를 무시합니다. 내용을 직접 확인한 뒤에만 쓰세요.)")
+        print("Fix it and run again — edit that ID in out/feedback.jsonl.")
+        print("If you believe the scan is wrong, add --approve to proceed anyway.")
+        print("  (--approve ignores the scan result. Use it only after checking the content yourself.)")
         return 2
 
     if flagged and args.approve:
-        print(f"[경고] --approve 로 {len(flagged)}건의 검사 결과를 무시하고 진행합니다.\n")
+        print(f"[WARN] proceeding with --approve, ignoring the scan result for {len(flagged)} record(s).\n")
 
     if not args.github:
         for e in entries:
@@ -262,12 +271,12 @@ def cmd_export(args) -> int:
             print("-" * 70)
             print(body)
         print("=" * 70)
-        print(f"\n{len(entries)}건. GitHub 이슈로 올리려면:")
+        print(f"\n{len(entries)} record(s). To raise them as GitHub issues:")
         print("  python scripts/feedback_log.py export --github --repo owner/name --write")
         return 0
 
     if not args.repo:
-        print("[오류] --github 를 쓰려면 --repo owner/name 이 필요합니다.")
+        print("[ERROR] --github requires --repo owner/name.")
         return 2
 
     sys.path.insert(0, str(ROOT / "scripts" / "connectors"))
@@ -275,41 +284,43 @@ def cmd_export(args) -> int:
         import _credentials as cred  # type: ignore
         import github_connector as gh  # type: ignore
     except ImportError as e:
-        print(f"[오류] GitHub 커넥터를 불러올 수 없습니다: {e}")
+        print(f"[ERROR] could not load the GitHub connector: {e}")
         return 2
 
     token = cred.get("github", "token") if hasattr(cred, "get") else None
     if not token:
-        print("[안내] GitHub 토큰이 설정되어 있지 않습니다.")
-        print("  config/credentials.json 의 github.token 을 채우거나,")
-        print("  토큰 없이 쓰려면 --github 없이 실행해 본문만 뽑아 수동으로 올리세요.")
+        print("[INFO] no GitHub token configured.")
+        print("  Fill in github.token in config/credentials.json, or")
+        print("  run without --github to extract the body only and upload it manually.")
         return 2
 
     assignee = None
     if not args.no_assignee:
         assignee = args.assignee
         if not assignee:
-            # 기본값: 발견자 본인 — 이 토큰으로 인증된 계정에게 자동 할당한다.
-            # (관리자에게 몰아주지 않는다 — 발견한 사람이 담당자.)
-            # github_connector.http() 는 CLI 단독 실행을 전제로 실패 시
-            # sys.exit() 를 호출한다 — SystemExit 은 BaseException 이라
-            # 일반 Exception 으로는 안 잡힌다(적대검증 260810에서 발견:
-            # 오프라인/401/403/404 상황에서 담당자 조회 실패가 export
-            # 전체를 죽여버렸다). 여기서는 "담당자 조회 실패해도 이슈는
-            # 만든다"는 계약을 지켜야 하므로 SystemExit 도 함께 잡는다.
+            # Default: whoever found it — auto-assign to the account this
+            # token authenticates as. (Not dumped on the maintainer — the
+            # finder is the owner.) github_connector.http() assumes a
+            # standalone CLI run and calls sys.exit() on failure — SystemExit
+            # is a BaseException, so a plain `except Exception` doesn't catch
+            # it (found in the 260810 adversarial verification: an
+            # offline/401/403/404 assignee lookup failure was killing the
+            # entire export). Here the contract "the issue still gets
+            # created even if the assignee lookup fails" must hold, so
+            # SystemExit is caught alongside it.
             try:
                 me = gh.http("GET", f"{gh.API_ROOT}/user", token, None)
                 assignee = me.get("login")
             except (Exception, SystemExit) as e:
-                print(f"[경고] 담당자 자동 조회 실패 ({e}) — 할당 없이 진행합니다.")
+                print(f"[WARN] automatic assignee lookup failed ({e}) — proceeding unassigned.")
 
     if not args.write:
-        print(f"[미리보기] {len(entries)}건을 {args.repo} 에 올릴 예정입니다.")
+        print(f"[PREVIEW] about to upload {len(entries)} record(s) to {args.repo}.")
         if assignee:
-            print(f"  담당자: {assignee}")
+            print(f"  Assignee: {assignee}")
         for e in entries:
             print(f"  - {to_issue(e)[0]}")
-        print("\n실제로 올리려면 --write 를 붙이세요.")
+        print("\nAdd --write to actually upload.")
         return 0
 
     done = set()
@@ -325,39 +336,39 @@ def cmd_export(args) -> int:
         print(f"  #{num}  {title}" + (f"  (assignee: {assignee})" if assignee else ""))
         done.add(e["id"])
     mark_exported(done)
-    print(f"\n{len(done)}건을 올렸습니다.")
+    print(f"\nUploaded {len(done)} record(s).")
     return 0
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="툴킷을 쓰다 겪은 불편·오류를 기록한다 (설정 없이 동작)")
+        description="Record friction/errors hit while using the toolkit (works with zero configuration)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
-    sp = sub.add_parser("add", help="기록 추가")
-    sp.add_argument("what", help="무엇이 불편했는지 (이것만 필수)")
+    sp = sub.add_parser("add", help="add a record")
+    sp.add_argument("what", help="what the friction was (the only required field)")
     sp.add_argument("--kind", choices=KINDS, default="friction")
-    sp.add_argument("--skill", help="관련 스킬 이름 (알면)")
-    sp.add_argument("--expected", help="기대한 결과")
-    sp.add_argument("--actual", help="실제 결과")
-    sp.add_argument("--note", help="덧붙일 말")
+    sp.add_argument("--skill", help="the related skill name (if known)")
+    sp.add_argument("--expected", help="what was expected")
+    sp.add_argument("--actual", help="what actually happened")
+    sp.add_argument("--note", help="anything else to add")
     sp.set_defaults(func=cmd_add)
 
-    sp = sub.add_parser("list", help="기록 보기")
-    sp.add_argument("--pending", action="store_true", help="아직 올리지 않은 것만")
+    sp = sub.add_parser("list", help="view records")
+    sp.add_argument("--pending", action="store_true", help="only records not yet uploaded")
     sp.set_defaults(func=cmd_list)
 
-    sp = sub.add_parser("export", help="이슈 본문으로 변환 / 업로드")
-    sp.add_argument("--github", action="store_true", help="GitHub 이슈로 올린다")
+    sp = sub.add_parser("export", help="convert to issue bodies / upload")
+    sp.add_argument("--github", action="store_true", help="raise as GitHub issues")
     sp.add_argument("--repo", help="owner/name")
-    sp.add_argument("--label", help="쉼표구분 라벨")
+    sp.add_argument("--label", help="comma-separated labels")
     sp.add_argument("--assignee",
-                    help="담당자 GitHub 로그인 (기본값: 발견자 본인 — 이 명령을 실행하는 토큰의 계정)")
+                    help="assignee's GitHub login (default: whoever found it — the account this token authenticates as)")
     sp.add_argument("--no-assignee", action="store_true",
-                    help="아무에게도 할당하지 않는다 (기본 자기-할당을 끈다)")
-    sp.add_argument("--write", action="store_true", help="실제로 올린다(없으면 미리보기)")
+                    help="assign to no one (turns off the default self-assignment)")
+    sp.add_argument("--write", action="store_true", help="actually upload (preview only if omitted)")
     sp.add_argument("--approve", action="store_true",
-                    help="정화 검사 결과를 무시하고 진행한다 (내용을 직접 확인한 경우에만)")
+                    help="proceed despite the sanitization scan's result (only after checking the content yourself)")
     sp.set_defaults(func=cmd_export)
 
     args = ap.parse_args()

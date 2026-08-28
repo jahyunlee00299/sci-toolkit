@@ -9,9 +9,10 @@ this script has no delete/archive subcommand at all.
 """
 from __future__ import annotations
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# Windows' default console is cp949, which dies on Korean/symbol output. Force UTF-8.
+# Use reconfigure(): wrapping in a TextIOWrapper would take ownership of the
+# underlying stream, so once the wrapper is GC'd after this module is imported,
+# it closes the caller's stdout too (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -36,7 +37,7 @@ NOTION_VERSION = "2022-06-28"
 
 
 def http(method, url, token, data=None, headers=None):
-    """urllib 기반 최소 HTTP 헬퍼. 파싱된 JSON을 반환하거나 친절한 한글 오류로 종료."""
+    """Minimal urllib-based HTTP helper. Returns parsed JSON, or exits with a friendly error."""
     hdrs = {
         "Authorization": f"Bearer {token}",
         "Notion-Version": NOTION_VERSION,
@@ -56,29 +57,29 @@ def http(method, url, token, data=None, headers=None):
             return json.loads(raw) if raw else {}
     except urllib.error.HTTPError as e:
         if e.code == 401:
-            sys.exit(f"[오류] 인증 실패(401). 토큰(notion.token)을 확인하세요. (마스킹: {cred.mask(token)})")
+            sys.exit(f"[Error] Authentication failed (401). Check your token (notion.token). (masked: {cred.mask(token)})")
         if e.code == 403:
-            sys.exit("[오류] 403 — 권한 부족(해당 페이지에 integration이 연결되지 않았을 수 있음).")
+            sys.exit("[Error] 403 — insufficient permission (the integration may not be connected to this page).")
         if e.code == 404:
-            sys.exit("[오류] 404 — 페이지/블록을 찾을 수 없습니다. id 를 확인하세요.")
+            sys.exit("[Error] 404 — page/block not found. Check the id.")
         detail = ""
         try:
             detail = e.read().decode("utf-8", "ignore")
         except Exception:
             pass
-        sys.exit(f"[오류] Notion API 오류 {e.code}: {detail[:300]}")
+        sys.exit(f"[Error] Notion API error {e.code}: {detail[:300]}")
     except urllib.error.URLError as e:
-        sys.exit(f"[오류] 네트워크 연결을 확인하세요: {e.reason}")
+        sys.exit(f"[Error] Check your network connection: {e.reason}")
 
 
 def cmd_search(args, token):
     body = {"query": args.query}
     data = http("POST", f"{API_ROOT}/search", token, data=body)
     results = data.get("results", [])
-    print(f"검색어 '{args.query}' 결과 {len(results)}건")
+    print(f"Query '{args.query}' — {len(results)} result(s)")
     for r in results:
         obj_type = r.get("object")
-        title = "(제목 없음)"
+        title = "(no title)"
         props = r.get("properties", {})
         for v in props.values():
             if v.get("type") == "title" and v.get("title"):
@@ -95,7 +96,7 @@ def cmd_page(args, token):
     for name, v in props.items():
         if v.get("type") == "title" and v.get("title"):
             title = "".join(t.get("plain_text", "") for t in v["title"])
-            print(f"제목({name}): {title}")
+            print(f"Title ({name}): {title}")
 
 
 def cmd_append(args, token):
@@ -114,42 +115,42 @@ def cmd_append(args, token):
     }
 
     if not args.write:
-        print("[DRY-RUN] --write 플래그가 없어 실제로 실행하지 않습니다.")
-        print(f"  대상 페이지: {args.page_id}")
-        print("  추가될 블록 (paragraph):")
+        print("[DRY-RUN] --write flag not set, not actually executing.")
+        print(f"  Target page: {args.page_id}")
+        print("  Block to be added (paragraph):")
         print(json.dumps(block_body, ensure_ascii=False, indent=2))
-        print("  실행하려면 --write 를 추가하세요.")
+        print("  Add --write to execute.")
         return
 
-    print("[알림] 페이지에 블록을 추가합니다 (additive only, 삭제/보관 기능 없음).")
+    print("[Notice] Appending a block to the page (additive only, no delete/archive function).")
     url = f"{API_ROOT}/blocks/{args.page_id}/children"
     result = http("PATCH", url, token, data=block_body)
     added = result.get("results", [])
-    print(f"[완료] 블록 {len(added)}개 추가됨.")
+    print(f"[Done] {len(added)} block(s) added.")
 
 
 def build_parser():
     p = argparse.ArgumentParser(
         prog="notion_connector.py",
         description=(
-            "Notion API 커넥터 (read-first). search/page 는 자유 조회, "
-            "append 만 쓰기 동작이며 --write 필요(추가만 가능, 삭제/보관 서브커맨드는 없습니다)."
+            "Notion API connector (read-first). search/page are free reads; "
+            "append is the only write action and requires --write (additive only, no delete/archive subcommand)."
         ),
     )
     sub = p.add_subparsers(dest="command")
 
-    sp = sub.add_parser("search", help="[READ] 검색")
+    sp = sub.add_parser("search", help="[READ] search")
     sp.add_argument("--query", required=True)
     sp.set_defaults(func=cmd_search)
 
-    sp = sub.add_parser("page", help="[READ] 페이지 조회")
+    sp = sub.add_parser("page", help="[READ] look up a page")
     sp.add_argument("--id", required=True, help="page id")
     sp.set_defaults(func=cmd_page)
 
-    sp = sub.add_parser("append", help="[WRITE, --write 필요] 페이지에 텍스트 블록 추가")
+    sp = sub.add_parser("append", help="[WRITE, requires --write] append a text block to a page")
     sp.add_argument("--page-id", required=True)
     sp.add_argument("--text", required=True)
-    sp.add_argument("--write", action="store_true", help="실제로 블록을 추가합니다 (없으면 dry-run)")
+    sp.add_argument("--write", action="store_true", help="Actually append the block (dry-run if omitted)")
     sp.set_defaults(func=cmd_append)
 
     return p
@@ -160,9 +161,9 @@ def main():
     args = parser.parse_args()
     if not getattr(args, "command", None):
         parser.print_help()
-        print("\n[안내] 읽기(search/page)는 바로 실행됩니다. 쓰기(append)는 --write 가 있어야 실행됩니다.")
+        print("\n[Note] Reads (search/page) run immediately. Writes (append) require --write.")
         return
-    # dry-run(쓰기 명령인데 --write 없음)은 토큰 없이도 미리보기 가능하게 한다.
+    # A dry-run (a write command without --write) can preview without a token.
     is_dryrun_write = hasattr(args, "write") and not args.write
     token = None if is_dryrun_write else cred.require("notion", "token")
     args.func(args, token)

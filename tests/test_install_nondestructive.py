@@ -1,26 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-install.py 가 기존 설치본을 파괴하지 않는지 검증한다.
+Verify that install.py does not destroy an existing installation.
 
-배경 (실측, 2026-08-07):
-  install.py 는 대상 스킬 폴더가 이미 있으면 `shutil.rmtree(dst)` 로 통째로 지운 뒤
-  copytree 했다. 그 결과 사용자의 런타임에만 있던 파일 —
-    manuscript-pipeline/scripts/ 7종, endnote-citation-injection/ 3종
-    (safe_refs_update.py 포함), scientific-validation/scripts/ 3종 —
-  이 설치 한 번으로 전부 삭제됐다.
+Background (measured, 2026-08-07):
+  When the target skill folder already existed, install.py wiped it entirely
+  with `shutil.rmtree(dst)` before running copytree. As a result, files that
+  existed only in the user's runtime —
+    7 files under manuscript-pipeline/scripts/, 3 under
+    endnote-citation-injection/ (including safe_refs_update.py), 3 under
+    scientific-validation/scripts/ —
+  were all deleted by a single install.
 
-  260727 사건(incident_pii_sanitize_killed_runtime_skill)과 같은 유형이다:
-  "덮어쓴다"가 사실은 "지우고 새로 만든다"였고, 아무도 그걸 측정하지 않았다.
+  Same failure class as the 260727 incident
+  (incident_pii_sanitize_killed_runtime_skill): "overwrite" actually meant
+  "delete and recreate", and nobody had measured that.
 
-이 테스트가 지키는 계약:
-  1. 배포판에 없고 대상에만 있던 파일은 설치 후에도 남아 있어야 한다.
-  2. 배포판에 있는 파일은 대상에 반영되어야 한다(설치가 no-op이면 안 된다).
-  3. 양쪽에 같은 이름이 있으면 배포판 것이 이긴다(갱신이 목적이므로).
-  4. --force 를 주면 1번을 포기하고 옛 동작(완전 교체)을 한다 — 명시적일 때만.
+The contract this test enforces:
+  1. A file that exists only at the destination, not in the distribution,
+     must still be there after install.
+  2. A file that exists in the distribution must land at the destination
+     (install must not be a no-op).
+  3. When both sides have the same name, the distribution's copy wins (since
+     the point is to update).
+  4. --force gives up guarantee 1 and reverts to the old behavior (full
+     replace) — only when explicitly requested.
 
-케이스는 구현이 아니라 위 계약에서 나왔다. 구현을 고쳐 통과시키지 말고,
-계약이 바뀌었을 때만 이 파일을 고칠 것.
+The cases come from the contract above, not from the implementation. Do not
+fix the implementation to make a case pass — only change this file when the
+contract itself changes.
 """
 from __future__ import annotations
 
@@ -64,67 +72,69 @@ def run_installer(dest: Path, skills: str, *extra: str) -> subprocess.CompletedP
 
 
 def seed_destination(dest: Path, skill: str) -> tuple[Path, Path]:
-    """대상에 '사용자가 이미 가지고 있던' 파일 2개를 심는다.
+    """Plant 2 files at the destination that 'the user already had'.
 
-    - local_only: 배포판에 없는 파일 → 반드시 살아남아야 한다
-    - shared:     배포판에도 있는 파일 → 배포판 내용으로 갱신되어야 한다
+    - local_only: not in the distribution -> must survive
+    - shared:     also in the distribution -> must be updated to the distribution's content
     """
     skill_dir = dest / skill
     (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
     local_only = skill_dir / "scripts" / "user_local_tool.py"
-    local_only.write_text("# 사용자 런타임에만 있는 스크립트\n", encoding="utf-8")
+    local_only.write_text("# A script that exists only in the user's runtime\n", encoding="utf-8")
     shared = skill_dir / "SKILL.md"
-    shared.write_text("STALE — 반드시 배포판 내용으로 교체되어야 한다\n", encoding="utf-8")
+    shared.write_text("STALE — must be replaced with the distribution's content\n", encoding="utf-8")
     return local_only, shared
 
 
 def main() -> int:
     if not INSTALLER.exists():
-        print(f"[오류] 설치기를 찾을 수 없습니다: {INSTALLER}")
+        print(f"[error] Installer not found: {INSTALLER}")
         return 1
 
-    # 의존성이 없고 이 패키지가 실제로 배포하는 스킬로 고정한다.
-    # (예전에는 xlsx 를 썼으나 Anthropic 소유라 패키지에서 빠졌다 — 외부 스킬을
-    #  테스트 대상으로 삼으면 패키지가 멀쩡해도 테스트가 깨진다.)
+    # Pin to a skill this package actually distributes, with no dependencies.
+    # (xlsx used to be used here, but it's Anthropic-owned and was dropped
+    #  from the package — testing against an external skill would break this
+    #  test even when the package itself is fine.)
     skill = "code-quality"
     src_skill_md = ROOT / "skills" / skill / "SKILL.md"
     if not src_skill_md.exists():
-        print(f"[오류] 테스트 대상 스킬이 없습니다: {src_skill_md}")
+        print(f"[error] Test target skill is missing: {src_skill_md}")
         return 1
 
-    print("install.py 비파괴 설치 검증")
+    print("install.py non-destructive install verification")
     print("=" * 60)
 
-    # ── 케이스 1~3: 기본 설치는 비파괴여야 한다 ──────────────────────────
-    print("\n[기본 설치] 기존 파일 보존 + 배포판 내용 반영")
+    # ── Cases 1-3: a default install must be non-destructive ────────────
+    print("\n[default install] preserves existing files + applies the distribution's content")
     with tempfile.TemporaryDirectory() as td:
         dest = Path(td) / "skills"
         local_only, shared = seed_destination(dest, skill)
         proc = run_installer(dest, skill)
 
-        check("설치기가 정상 종료", proc.returncode == 0,
+        check("installer exits cleanly", proc.returncode == 0,
               f"exit={proc.returncode} stderr={proc.stderr[-300:]}")
 
-        # 계약 1 — 대상에만 있던 파일은 살아남는다
-        check("배포판에 없는 기존 파일이 보존됨", local_only.exists(),
-              f"삭제됨: {local_only}")
+        # Contract 1 — a file that existed only at the destination survives
+        check("an existing file not in the distribution is preserved", local_only.exists(),
+              f"deleted: {local_only}")
 
-        # 계약 2 — 배포판 파일이 실제로 들어온다
+        # Contract 2 — a distribution file actually lands
         installed = dest / skill / "SKILL.md"
-        check("배포판 파일이 대상에 설치됨", installed.exists())
+        check("distribution file is installed at the destination", installed.exists())
 
-        # 계약 3 — 같은 이름은 배포판이 이긴다
+        # Contract 3 — same name: the distribution wins
         if installed.exists():
             got = installed.read_text(encoding="utf-8", errors="replace")
-            check("동명 파일은 배포판 내용으로 갱신됨",
+            check("a same-name file is updated to the distribution's content",
                   "STALE" not in got,
-                  "옛 내용이 그대로 남아 있음(설치가 no-op)")
+                  "old content is still there (install was a no-op)")
 
-    # ── 케이스 5: .distignore 가 설치 경로에도 적용되는가 ────────────────
-    # 예전에는 .distignore 를 make_checksums.py 만 읽었고 install.py 는 읽지
-    # 않았다. 즉 "배포 금지" 선언이 매니페스트 범위에만 적용되고 실제 복사에는
-    # 아무 효력이 없었다. 규칙이 배선되지 않은 상태였다는 뜻이다.
-    print("\n[.distignore] 배포 금지 파일은 설치되지 않아야 함")
+    # ── Case 5: does .distignore also apply to the install path? ────────
+    # .distignore used to be read only by make_checksums.py, not install.py.
+    # In other words, a "do not distribute" declaration only scoped the
+    # manifest and had no effect on the actual copy — the rule was declared
+    # but never wired in.
+    print("\n[.distignore] a do-not-distribute file must not get installed")
     planted = ROOT / "skills" / skill / "secrets.json"
     planted_existed = planted.exists()
     if not planted_existed:
@@ -133,34 +143,35 @@ def main() -> int:
         with tempfile.TemporaryDirectory() as td:
             dest = Path(td) / "skills"
             proc = run_installer(dest, skill)
-            check("설치기가 정상 종료(.distignore 경로)", proc.returncode == 0,
+            check("installer exits cleanly (.distignore path)", proc.returncode == 0,
                   f"exit={proc.returncode} stderr={proc.stderr[-300:]}")
-            check("secrets.json 이 설치되지 않음",
+            check("secrets.json is not installed",
                   not (dest / skill / "secrets.json").exists(),
-                  ".distignore 가 설치 경로에 적용되지 않음")
-            check("같은 스킬의 정상 파일은 설치됨",
+                  ".distignore does not apply to the install path")
+            check("a normal file from the same skill is still installed",
                   (dest / skill / "SKILL.md").exists(),
-                  "제외 규칙이 과하게 걸려 정상 파일까지 빠짐")
+                  "the exclusion rule over-matched and dropped a normal file too")
     finally:
         if not planted_existed and planted.exists():
             planted.unlink()
 
-    # ── 케이스 4: --force 는 옛 동작(완전 교체) ─────────────────────────
-    print("\n[--force] 명시적으로 요청했을 때만 완전 교체")
+    # ── Case 4: --force reverts to the old behavior (full replace) ──────
+    print("\n[--force] full replace only when explicitly requested")
     with tempfile.TemporaryDirectory() as td:
         dest = Path(td) / "skills"
         local_only, _ = seed_destination(dest, skill)
         proc = run_installer(dest, skill, "--force")
 
-        check("--force 설치가 정상 종료", proc.returncode == 0,
+        check("--force install exits cleanly", proc.returncode == 0,
               f"exit={proc.returncode} stderr={proc.stderr[-300:]}")
-        check("--force 는 기존 파일을 제거함", not local_only.exists(),
-              "--force 인데도 남아 있음")
+        check("--force removes the existing file", not local_only.exists(),
+              "still present despite --force")
 
-    # ── 케이스 6: --dest 생략 시 환경에 맞는 기본값 ─────────────────────
-    # 예전에는 무조건 ~/.claude/skills 였다. Codex 사용자에게는 아무 의미가 없는
-    # 폴더라(스킬 레지스트리 개념이 없다) 조용히 엉뚱한 곳에 설치된다.
-    print("\n[--dest 생략] 환경을 보고 결정하고, 어디에 넣는지 알린다")
+    # ── Case 6: environment-appropriate default when --dest is omitted ──
+    # It used to be unconditionally ~/.claude/skills. That folder means
+    # nothing to a Codex user (no concept of a skill registry there), so it
+    # would silently install into the wrong place.
+    print("\n[--dest omitted] decide from the environment, and say where it went")
     spec = importlib.util.spec_from_file_location("installer", INSTALLER)
     mod = importlib.util.module_from_spec(spec)
     sys.modules["installer"] = mod
@@ -170,21 +181,21 @@ def main() -> int:
         pass
     if hasattr(mod, "default_dest"):
         dest, why = mod.default_dest()
-        check("경로를 돌려줌", bool(str(dest)), f"dest={dest}")
-        check("근거를 함께 돌려줌", bool(why), "왜 그 경로인지 설명이 없다")
-        check("마지막 구성요소가 skills", Path(dest).name == "skills", f"dest={dest}")
+        check("returns a path", bool(str(dest)), f"dest={dest}")
+        check("returns the reasoning along with it", bool(why), "no explanation for why that path")
+        check("last path component is skills", Path(dest).name == "skills", f"dest={dest}")
     else:
-        check("default_dest 가 존재", False, "install.py 에 함수가 없다")
+        check("default_dest exists", False, "install.py has no such function")
 
     proc = subprocess.run(
         [sys.executable, str(INSTALLER), "--skills", skill],
         capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
-    check("생략해도 정상 종료", proc.returncode == 0, proc.stderr[-200:])
-    check("어디에 설치할지 출력함", "자동 결정" in proc.stdout,
-          "사용자가 설치 위치를 모른 채 진행하게 된다")
+    check("exits cleanly even when omitted", proc.returncode == 0, proc.stderr[-200:])
+    check("prints where it installed to", "자동 결정" in proc.stdout,
+          "the user proceeds without knowing where it was installed")
 
     print("=" * 60)
-    print(f"통과 {_pass} / 실패 {_fail}")
+    print(f"passed {_pass} / failed {_fail}")
     return 1 if _fail else 0
 
 

@@ -1,71 +1,71 @@
 {
-  "_comment": "sci-toolkit skill catalog — SSOT for the selective installer (install/install.py). 'requires' = hard deps the installer MUST auto-pull; deps extracted from each SKILL.md, not guessed. No circular dependencies. 'groups' = top-level buckets that categories roll up into; 'size_kb' measured from disk (du), used by the installer to show install footprint.  | docx·pdf·pptx·xlsx 는 Anthropic 소유 스킬로 이 저장소에 포함되지 않는다(external=true). 의존성 표기는 유지되며, 설치기는 이들을 건너뛰고 안내만 한다.",
+  "_comment": "sci-toolkit skill catalog — SSOT for the selective installer (install/install.py). 'requires' = hard deps the installer MUST auto-pull; deps extracted from each SKILL.md, not guessed. No circular dependencies. 'groups' = top-level buckets that categories roll up into; 'size_kb' measured from disk (du), used by the installer to show install footprint.  | docx/pdf/pptx/xlsx are Anthropic-owned skills and are not bundled in this repo (external=true). Their dependency entries are kept; the installer skips them and only prints guidance.",
   "version": "1.2.0",
   "groups": {
-    "research": "연구 작업 (스킬) — 논문·문헌·실험·데이터·그림·문서·검증",
-    "connect": "외부 연동 (커넥터) — 메일·GitHub·Asana·Notion (draft-first)"
+    "research": "Research work (skills) — papers, literature, experiments, data, figures, documents, validation",
+    "connect": "External integrations (connectors) — mail, GitHub, Asana, Notion (draft-first)"
   },
   "categories": {
     "paper-writing": {
       "group": "research",
-      "label": "논문 작성 (초안·교정·인용·리뷰)"
+      "label": "Paper writing (drafting, proofing, citations, review)"
     },
     "literature": {
       "group": "research",
-      "label": "문헌 조사 (검색·고찰·추출)"
+      "label": "Literature review (search, survey, extraction)"
     },
     "molbio": {
       "group": "research",
-      "label": "분자생물학 (프라이머·서열·DB)"
+      "label": "Molecular biology (primers, sequences, databases)"
     },
     "data-stats": {
       "group": "research",
-      "label": "데이터·통계 (분석·검정·검증)"
+      "label": "Data & statistics (analysis, testing, validation)"
     },
     "figures": {
       "group": "research",
-      "label": "그림·포스터 (publication figure·poster)"
+      "label": "Figures & posters (publication figures, posters)"
     },
     "documents": {
       "group": "research",
-      "label": "문서 작업 (docx·xlsx·pdf·md)"
+      "label": "Document work (docx, xlsx, pdf, md)"
     },
     "validation": {
       "group": "research",
-      "label": "검증 (피어리뷰·타당성·평가)"
+      "label": "Validation (peer review, plausibility, evaluation)"
     }
   },
   "connectors": {
-    "_note": "외부서비스 커넥터 — scripts/connectors/. 스킬과 달리 credentials.json 필요, draft-first/write-guard. 설치 시 scripts/connectors/ 통째 복사 권장(공통 _credentials.py 공유).",
+    "_note": "External service connectors — scripts/connectors/. Unlike skills, these require credentials.json, and are draft-first/write-guarded. On install, copy scripts/connectors/ as a whole (they share the common _credentials.py).",
     "mail": {
-      "role": "메일 draft-first (IMAP 읽기 + SMTP 초안, 발송 3중게이트)",
-      "needs": "IMAP/SMTP 계정 + 앱비밀번호"
+      "role": "Mail draft-first (IMAP read + SMTP draft, triple-gated send)",
+      "needs": "IMAP/SMTP account + app password"
     },
     "github": {
-      "role": "이슈·PR 조회 + PR draft-only + upstream fork-guard",
+      "role": "Issue/PR lookup + PR draft-only + upstream fork-guard",
       "needs": "GitHub PAT"
     },
     "asana": {
-      "role": "작업·댓글·하위작업 (형식 자동검증, write-guard)",
+      "role": "Tasks, comments, subtasks (auto format validation, write-guard)",
       "needs": "Asana PAT"
     },
     "notion": {
-      "role": "페이지 검색·추가 + DB 조회·행추가 (write-guard)",
-      "needs": "Notion Integration 토큰"
+      "role": "Page search/append + DB lookup/row append (write-guard)",
+      "needs": "Notion Integration token"
     },
     "calendar": {
-      "role": "Google Calendar 일정 조회 + 생성 (참석자=outward 경고, 수정·삭제 없음)",
-      "needs": "Google OAuth 클라이언트 + 토큰 (최초 1회 브라우저 동의)"
+      "role": "Google Calendar event lookup + creation (attendees = outward warning, no edit/delete)",
+      "needs": "Google OAuth client + token (one-time browser consent)"
     },
     "sheets": {
-      "role": "Google Sheets 값 조회 + 행 추가 (append-only, 기존 셀 불가침)",
-      "needs": "Google OAuth 클라이언트 + 토큰 (최초 1회 브라우저 동의)"
+      "role": "Google Sheets value lookup + row append (append-only, existing cells untouched)",
+      "needs": "Google OAuth client + token (one-time browser consent)"
     }
   },
   "skills": {
     "manuscript-pipeline": {
       "category": "paper-writing",
-      "role": "논문 초안→작성→셀프리뷰→교정 (IMRAD, 저널별 포맷)",
+      "role": "Manuscript draft -> write -> self-review -> proof (IMRAD, journal-specific formats)",
       "requires": [
         "docx",
         "academic-term-rules"
@@ -74,7 +74,7 @@
     },
     "endnote-citation-injection": {
       "category": "paper-writing",
-      "role": "EndNote 인용 대량 삽입 + DOI 이중검증",
+      "role": "Bulk EndNote citation insertion + dual DOI verification",
       "requires": [
         "docx"
       ],
@@ -82,137 +82,137 @@
     },
     "academic-term-rules": {
       "category": "validation",
-      "role": "학술 용어·표기 규칙 SSOT (종명 이탤릭·단위·kinetics)",
+      "role": "Academic term/notation rules SSOT (species-name italics, units, kinetics)",
       "requires": [],
       "size_kb": 34
     },
     "scientific-validation": {
       "category": "validation",
-      "role": "fit/최적화 결과 과학적 타당성 게이트 (5축)",
+      "role": "Scientific plausibility gate for fit/optimization results (5 axes)",
       "requires": [],
       "size_kb": 43
     },
     "literature-review": {
       "category": "literature",
-      "role": "체계적 문헌고찰 문서 생성 (PRISMA·검증인용·PDF)",
+      "role": "Systematic literature review document generation (PRISMA, verified citations, PDF)",
       "requires": [],
       "size_kb": 81
     },
     "research-search": {
       "category": "literature",
-      "role": "검색 메타 라우터 (최적 백엔드 자동 선택)",
+      "role": "Search meta-router (auto-selects the best backend)",
       "requires": [],
       "size_kb": 9
     },
     "research-lookup": {
       "category": "literature",
-      "role": "무료 API 조회 (OpenAlex+PubMed 자동 라우팅)",
+      "role": "Free API lookups (auto-routes between OpenAlex + PubMed)",
       "requires": [],
       "size_kb": 60
     },
     "biorxiv-database": {
       "category": "literature",
-      "role": "프리프린트 검색 (bioRxiv·medRxiv·arXiv, 키 불필요)",
+      "role": "Preprint search (bioRxiv, medRxiv, arXiv, no key required)",
       "requires": [],
       "size_kb": 51
     },
     "research-ideation": {
       "category": "literature",
-      "role": "브레인스토밍→가설→실험설계",
+      "role": "Brainstorming -> hypothesis -> experiment design",
       "requires": [],
       "size_kb": 4
     },
     "openalex-database": {
       "category": "literature",
-      "role": "OpenAlex 2.4억 논문 쿼리·서지분석",
+      "role": "Query and bibliometric analysis over OpenAlex's 240M+ papers",
       "requires": [],
       "size_kb": 51
     },
     "pubmed-database": {
       "category": "literature",
-      "role": "PubMed E-utilities (MeSH·Boolean·배치)",
+      "role": "PubMed E-utilities (MeSH, Boolean, batch)",
       "requires": [],
       "size_kb": 45
     },
     "paper-extract": {
       "category": "documents",
-      "role": "논문 PDF/docx에서 표·그림·본문 추출",
+      "role": "Extract tables/figures/body text from a paper PDF/docx",
       "requires": [],
       "size_kb": 16
     },
     "primer-design": {
       "category": "molbio",
-      "role": "프라이머 설계 (iPCR·RE 클로닝·발현검증·주문서)",
+      "role": "Primer design (iPCR, RE cloning, expression check, order sheets)",
       "requires": [],
       "size_kb": 639
     },
     "lab-data-analysis": {
       "category": "data-stats",
-      "role": "랩 데이터 EDA (kinetic·HPLC·gel, MSDS/GHS)",
+      "role": "Lab data EDA (kinetic, HPLC, gel, MSDS/GHS)",
       "requires": [],
       "size_kb": 3
     },
     "data-quality-checks": {
       "category": "data-stats",
-      "role": "분석 전 원본 표 구조 점검 (완전성·유일성·유효성·일관성·정확성·최신성 6축)",
+      "role": "Pre-analysis raw-table structure check (6 axes: completeness, uniqueness, validity, consistency, accuracy, timeliness)",
       "requires": [],
       "size_kb": 7
     },
     "analysis-code-testing": {
       "category": "data-stats",
-      "role": "분석 코드 pytest 테스트 (known-answer·golden-file 회귀·허용오차·시드 재현성)",
+      "role": "pytest testing for analysis code (known-answer/golden-file regression, tolerance, seed reproducibility)",
       "requires": [],
       "size_kb": 9
     },
     "stats-workflow": {
       "category": "data-stats",
-      "role": "통계 3단계 (탐색→검정+가정확인→APA 리포팅)",
+      "role": "3-stage statistics workflow (explore -> test + check assumptions -> APA reporting)",
       "requires": [],
       "size_kb": 20
     },
     "publication-figures": {
       "category": "figures",
-      "role": "논문 그림/스킴 라우터 (figure_lint 게이트)",
+      "role": "Paper figure/scheme router (figure_lint gate)",
       "requires": [],
       "size_kb": 228
     },
     "docx": {
       "category": "documents",
-      "role": "Word 문서 생성/편집 (구조검증·트랙변경·수식)  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "role": "Word document creation/editing (structure validation, tracked changes, equations)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
       "requires": [],
       "size_kb": 0,
       "external": true
     },
     "xlsx": {
       "category": "documents",
-      "role": "엑셀 생성/편집 (수식·재계산·오류스캔)  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "role": "Excel creation/editing (formulas, recalculation, error scanning)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
       "requires": [],
       "size_kb": 0,
       "external": true
     },
     "pdf": {
       "category": "documents",
-      "role": "PDF 조작 (병합·분할·양식·OCR)  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "role": "PDF manipulation (merge, split, forms, OCR)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
       "requires": [],
       "size_kb": 0,
       "external": true
     },
     "markitdown": {
       "category": "documents",
-      "role": "파일→마크다운 변환 (PDF/DOCX/PPTX/이미지 등)",
+      "role": "File-to-markdown conversion (PDF/DOCX/PPTX/images, etc.)",
       "requires": [],
       "size_kb": 65
     },
     "pptx": {
       "category": "documents",
-      "role": "발표자료(.pptx) 생성·읽기·편집 — 슬라이드/노트/템플릿  ※ Anthropic 제공 스킬 — 라이선스상 재배포 불가. 각자 Claude Code 환경에서 받아 설치하세요(docs/12 참조).",
+      "role": "Presentation (.pptx) creation/reading/editing -- slides/notes/templates  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
       "requires": [],
       "size_kb": 0,
       "external": true
     },
     "journal-presentation-maker": {
       "category": "documents",
-      "role": "저널클럽·랩미팅 발표자료 자동 작성 및 리뷰",
+      "role": "Automated journal club / lab meeting presentation authoring and review",
       "requires": [
         "pptx",
         "academic-term-rules"
@@ -221,111 +221,111 @@
     },
     "markdown-mermaid-writing": {
       "category": "figures",
-      "role": "Mermaid 다이어그램 표준 — 구조·흐름도 우선 작성",
+      "role": "Mermaid diagram standard -- prefer structure/flow diagrams",
       "requires": [],
       "size_kb": 275
     },
     "generate-image": {
       "category": "figures",
-      "role": "범용 이미지 생성·편집(AI) — 사진·일러스트·컨셉아트",
+      "role": "General-purpose image generation/editing (AI) -- photos, illustration, concept art",
       "requires": [],
       "size_kb": 16
     },
     "statsmodels": {
       "category": "data-stats",
-      "role": "OLS/GLM/혼합모형/ARIMA 등 통계모형 + 진단",
+      "role": "Statistical models (OLS/GLM/mixed models/ARIMA, etc.) + diagnostics",
       "requires": [],
       "size_kb": 99
     },
     "code-quality": {
       "category": "validation",
-      "role": "SOLID 원칙·파일 크기 한계·체계적 리팩토링 게이트 (리뷰는 Standards/Spec 2축 분리)",
+      "role": "SOLID principles, file-size limits, systematic refactoring gate (review split into Standards/Spec axes)",
       "requires": [],
       "size_kb": 5
     },
     "spec-first-development": {
       "category": "validation",
-      "role": "설계·스펙·구현계획을 코드보다 먼저 — 3경로 분류(spike/bounded/architectural), 승인 게이트, 플레이스홀더 금지, 자체검토",
+      "role": "Design/spec/implementation plan before code -- 3-path classification (spike/bounded/architectural), approval gate, no placeholders, self-review",
       "requires": [],
       "size_kb": 13
     },
     "test-first-development": {
       "category": "validation",
-      "role": "실패하는 테스트를 먼저 — red-green-refactor, 수치연구코드의 테스트 종류(기지답·해석적 극한·보존·회귀), 합리화 차단",
+      "role": "Write a failing test first -- red-green-refactor, test kinds for numerical research code (known-answer, analytic limit, conservation, regression), blocks rationalization",
       "requires": [],
       "size_kb": 10
     },
     "spec-driven-research-dev": {
       "category": "validation",
-      "role": "새 파이프라인·모듈 재작성 4단계 명세 흐름 (specify→plan→tasks→implement)",
+      "role": "4-stage spec workflow for a new pipeline/module rewrite (specify -> plan -> tasks -> implement)",
       "requires": [],
       "size_kb": 22
     },
     "avoid-ai-writing": {
       "category": "validation",
-      "role": "AI 작문 티(em-dash·상투어·템플릿 문구) 감지·교정 — 원고·메일·보고서 최종 점검. 한국어 tell(번역투·종결어미 리듬·형식명사)은 korean-tells.md 보강 카탈로그로 감지",
+      "role": "Detect/fix AI-writing tells (em-dash, cliches, template phrasing) -- final check for manuscripts, mail, reports. Korean-language tells (translationese, ending-rhythm patterns, bound nouns) are detected via the korean-tells.md supplementary catalog",
       "requires": [],
       "size_kb": 154
     },
     "conda-env-manager": {
       "category": "data-stats",
-      "role": "conda 환경 진단·생성·복구, import 스캔, 버전 충돌 해소",
+      "role": "conda environment diagnosis, creation, repair, import scanning, version-conflict resolution",
       "requires": [],
       "size_kb": 24
     },
     "experiment-hub": {
       "category": "molbio",
-      "role": "실험 프로토콜·조건 최적화·이력 기록·실험 비교",
+      "role": "Experiment protocols, condition optimization, history logging, experiment comparison",
       "requires": [],
       "size_kb": 27
     },
     "get-available-resources": {
       "category": "data-stats",
-      "role": "CPU/GPU/메모리/디스크 탐지 — 무거운 계산 전 전략 결정",
+      "role": "Detect CPU/GPU/memory/disk -- decide strategy before heavy computation",
       "requires": [],
       "size_kb": 24
     },
     "git-workflow-manager": {
       "category": "validation",
-      "role": "git 워크플로우 — pull 강제, 임시파일 정리, 커밋 규칙",
+      "role": "git workflow -- enforced pull, temp-file cleanup, commit rules",
       "requires": [],
       "size_kb": 6
     },
     "skill-developer": {
       "category": "validation",
-      "role": "새 스킬 작성·트리거 설정 가이드",
+      "role": "Guide for writing a new skill and setting up triggers",
       "requires": [],
       "size_kb": 5
     },
     "token-efficient-routing": {
       "category": "validation",
-      "role": "에이전트/모델 라우팅 — 작업을 최소 비용 티어로 배정 (스폰·티어·구조 3게이트, 게이트 훅 패턴, 로그 기반 조정)",
+      "role": "Agent/model routing -- assigns work to the cheapest adequate tier (3 gates: spawn, tier, structure; gate-hook patterns; log-based tuning)",
       "requires": [],
       "size_kb": 8
     },
     "web-scraping": {
       "category": "literature",
-      "role": "웹 크롤링·학술 메타데이터(Crossref/arXiv/bioRxiv)·PDF 일괄수집",
+      "role": "Web crawling, academic metadata (Crossref/arXiv/bioRxiv), bulk PDF harvesting",
       "requires": [],
       "size_kb": 244
     },
     "test-quality": {
       "category": "validation",
-      "role": "테스트 품질 — 통과해도 아무것도 검증 못 하는 3가지(구현과 같은 방식으로 기대값 재계산·내부 결합·일괄 선작성)와 seam 선정",
+      "role": "Test quality -- 3 ways a passing test verifies nothing (recomputes the expected value the same way the implementation does, is coupled to internals, or was mass-written up front) plus seam selection",
       "requires": [],
       "size_kb": 7
     },
     "debugging-loop": {
       "category": "validation",
-      "role": "버그 진단 루프 — 가설 세우기 전에 red-capable 재현 루프부터 (재현·최소화·반증가능 가설·회귀 테스트)",
+      "role": "Bug-diagnosis loop -- get a red-capable repro loop before forming a hypothesis (reproduce, minimize, falsifiable hypothesis, regression test)",
       "requires": [],
       "size_kb": 8
     }
   },
   "presets": {
     "paper-writing": {
-      "label": "논문 작성",
-      "desc": "논문 초안부터 교정·인용·피어리뷰까지",
+      "label": "Paper writing",
+      "desc": "From manuscript draft through proofing, citations, and peer review",
       "skills": [
         "manuscript-pipeline",
         "endnote-citation-injection",
@@ -333,8 +333,8 @@
       ]
     },
     "literature": {
-      "label": "문헌 조사",
-      "desc": "논문 검색·체계적 고찰·추출",
+      "label": "Literature review",
+      "desc": "Paper search, systematic review, extraction",
       "skills": [
         "research-search",
         "research-lookup",
@@ -346,15 +346,15 @@
       ]
     },
     "molbio": {
-      "label": "분자생물학 실험",
-      "desc": "프라이머 설계·서열 분석·생물정보 DB",
+      "label": "Molecular biology experiments",
+      "desc": "Primer design, sequence analysis, bioinformatics databases",
       "skills": [
         "primer-design"
       ]
     },
     "data-figures": {
-      "label": "데이터 분석 & 그림",
-      "desc": "데이터 EDA → 통계 → 논문 그림 → 타당성 검증",
+      "label": "Data analysis & figures",
+      "desc": "Data EDA -> statistics -> publication figures -> plausibility validation",
       "skills": [
         "data-quality-checks",
         "lab-data-analysis",
@@ -367,8 +367,8 @@
       ]
     },
     "documents": {
-      "label": "문서 작업",
-      "desc": "Word·엑셀·PDF·마크다운 파일 다루기",
+      "label": "Document work",
+      "desc": "Working with Word, Excel, PDF, and Markdown files",
       "skills": [
         "docx",
         "xlsx",
@@ -378,8 +378,8 @@
       ]
     },
     "all": {
-      "label": "전체 설치",
-      "desc": "41개 스킬 모두",
+      "label": "Install everything",
+      "desc": "All 41 skills",
       "skills": [
         "__ALL__"
       ]

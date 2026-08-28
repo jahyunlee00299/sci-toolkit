@@ -10,189 +10,196 @@ metadata:
 
 # Web Scraping
 
-연구·서류작업을 위한 재사용 가능한 웹크롤링 스킬. 정적 HTML, 동적 JS 페이지,
-학술 메타데이터, 문서 파일 수집을 4개 모드로 다룬다. 모든 스크립트는 CLI
-실행과 Python import 양쪽으로 쓸 수 있다.
+A reusable web-crawling skill for research and paperwork. Covers static HTML,
+dynamic JS pages, academic metadata, and document-file collection across 4
+modes. Every script works both as a CLI and as a Python import.
 
 ## Execution Method
 
-코드 실행이 필요한 작업은 **Bash 도구**로 `scripts/` 하위 스크립트를 실행한다.
-긴 크롤링(여러 페이지, 대량 다운로드)은 subagent에 위임하고, 단일 페이지
-추출은 직접 실행해도 된다.
+For tasks that require running code, execute the scripts under `scripts/`
+with the **Bash tool**. Delegate long crawls (many pages, bulk downloads) to
+a subagent; a single-page extraction is fine to run directly.
 
 ## When to Use This Skill
 
-- 웹페이지에서 본문 텍스트·표·링크를 추출할 때 ("크롤링", "스크래핑", "추출")
-- 논문 메타데이터(DOI, 저자, 전문 PDF 링크)를 Crossref/arXiv/bioRxiv에서 수집할 때
-- JavaScript로 렌더링되는 동적 페이지의 콘텐츠가 필요할 때
-- 페이지에 링크된 PDF/xlsx/docx 파일을 일괄 다운로드할 때 ("논문 다운로드")
-- 수집한 문서를 Markdown으로 변환해 분석에 쓰려 할 때
+- Extracting body text/tables/links from a web page ("crawl", "scrape", "extract")
+- Gathering paper metadata (DOI, authors, full-text PDF links) from Crossref/arXiv/bioRxiv
+- Needing content from a dynamic page rendered by JavaScript
+- Bulk-downloading PDF/xlsx/docx files linked from a page ("download the paper")
+- Converting a collected document to Markdown for analysis
 
 ## When NOT to Use
 
-- PubMed / OpenAlex 검색 → 기존 `pubmed-database`, `openalex-database`,
-  `biopython`(Bio.Entrez) 라이브러리를 우선 사용. 이 스킬은 Crossref/arXiv/bioRxiv만 다룬다.
-- 이미 받은 로컬 문서의 변환만 필요 → `markitdown` 스킬을 직접 사용.
-- 체계적 문헌고찰 → `literature-review` 스킬.
+- PubMed / OpenAlex search -> prefer the existing `pubmed-database`,
+  `openalex-database` skills, or the `biopython` (Bio.Entrez) library.
+  This skill only covers Crossref/arXiv/bioRxiv.
+- Converting an already-downloaded local document -> use the `markitdown` skill directly.
+- A systematic literature review -> use the `literature-review` skill.
 
-## PDF 다운로드 우선순위 (fetch_academic.py --download)
+## PDF download priority (fetch_academic.py --download)
 
 ```
-1. Crossref pdf_links      (출판사 CDN, OA 논문 즉시)
-2. Unpaywall              (OA 버전 자동 탐색)
-3. PubMed Central (PMC)   (무료 전문 저장소)
-3.5 LibKey Nomad          (기관 구독 저널 — Chrome MCP 경유, --libkey 플래그)
-4. EZproxy (Selenium)     (최후 수단, --ezproxy / --auto-login 플래그)
+1. Crossref pdf_links      (publisher CDN, immediate for OA papers)
+2. Unpaywall              (automatically finds an OA version)
+3. PubMed Central (PMC)   (free full-text repository)
+3.5 LibKey Nomad          (institutional-subscription journals — via Chrome MCP, --libkey flag)
+4. EZproxy (Selenium)     (last resort, --ezproxy / --auto-login flags)
 ```
 
-**LibKey Nomad (source 3.5, 권장):** 기관 도서관 구독 저널 원문 접근.
-Chrome에 LibKey Nomad 확장 + Claude Code Chrome MCP 연결 상태에서 `--download --libkey` 사용.
-EZproxy Selenium보다 가볍고 빠름. 동적 JS가 필요한 경우에만 Chrome MCP 사용.
+**LibKey Nomad (source 3.5, recommended):** full-text access for
+institutional-library subscription journals. Use `--download --libkey` with
+the LibKey Nomad Chrome extension installed and Claude Code's Chrome MCP
+connected. Lighter and faster than EZproxy Selenium. Only use Chrome MCP
+when dynamic JS is actually required.
 
-**EZproxy (source 4, deprecated):** LibKey 실패 시 최후 수단.
-`--auto-login` (Chrome 저장 자격증명) 또는 `--ezproxy` (수동 쿠키).
+**EZproxy (source 4, deprecated):** last resort when LibKey fails.
+`--auto-login` (Chrome's saved credentials) or `--ezproxy` (manual cookie).
 
-### OA/PMC 다운로드 실전 함정
+### Real-world traps in OA/PMC downloads
 
-**1. PMC PDF는 신 도메인 + 브라우저 필수.**
-- ✅ `https://pmc.ncbi.nlm.nih.gov/articles/<PMCID>/` — **신 도메인**, 브라우저 자동화로 작동.
-  패턴: navigate → interactive 요소에서 `href="pdf/<file>.pdf"` 찾기 → 그 절대 URL navigate → 다운로드.
-- ❌ `https://www.ncbi.nlm.nih.gov/pmc/articles/<PMCID>/pdf/` — **구 도메인, 봇 차단**
-  (1816 byte "Preparing to download..." HTML). urllib/requests 직접 접근은 신·구 둘 다 차단 → **반드시 브라우저**.
+**1. A PMC PDF requires the new domain + a browser.**
+- Yes: `https://pmc.ncbi.nlm.nih.gov/articles/<PMCID>/` — the **new domain**, works via browser automation.
+  Pattern: navigate -> find `href="pdf/<file>.pdf"` on an interactive element -> navigate to that absolute URL -> download.
+- No: `https://www.ncbi.nlm.nih.gov/pmc/articles/<PMCID>/pdf/` — **old domain, bot-blocked**
+  (returns 1816-byte "Preparing to download..." HTML). Direct urllib/requests access is blocked on both the old and new domains -> **a browser is required**.
 
-**2. "PMC에 있음 ≠ OA subset."**
-- PMC 등재돼도 author-deposit이면 출판사 저작권 유지 → 봇 다운 불가.
-- 판별: `pmc/utils/oa/oa.fcgi?id=<PMCID>` → `href`(tgz/pdf) 있으면 진짜 OA, `"is not Open Access"`면 기관 접근(EZproxy 등)이 필요.
-- 진짜 OA subset이어도 tgz에 PDF 없고 XML/이미지만이면 → 신 PMC 도메인 브라우저로 재시도.
+**2. "Listed in PMC" does not mean "in the OA subset."**
+- Even when listed in PMC, an author-deposit article keeps the publisher's copyright -> bot downloads are blocked.
+- To tell the difference: `pmc/utils/oa/oa.fcgi?id=<PMCID>` — an `href` (tgz/pdf) means it's genuinely OA; `"is not Open Access"` means institutional access (EZproxy, etc.) is needed.
+- Even in a genuinely OA subset, if the tgz has no PDF and only XML/images, retry via a browser on the new PMC domain.
 
-**3. PMID→DOI/PMCID(idconv)는 ≤4개 batch 필수.**
-- `pmc/utils/idconv/v1.0/?ids=<csv>` — 큰 batch(10+)는 전부 status=error.
-- PMID 키 매칭 시 `str(pmid).strip()` 정규화(dict 매칭 실패 방지).
+**3. PMID->DOI/PMCID (idconv) requires batches of 4 or fewer.**
+- `pmc/utils/idconv/v1.0/?ids=<csv>` — a larger batch (10+) comes back entirely as status=error.
+- Normalize with `str(pmid).strip()` when matching on the PMID key (prevents dict-matching failures).
 
-**4. 출판사별 "막힘"의 실제 원인은 CAPTCHA가 아닌 경우가 더 많다.**
-여러 기관 EZproxy에서 다수 출판사를 실측 비교한 결과, 진짜 Cloudflare/reCAPTCHA
-차단은 소수이고 대부분은 세션 만료·URL 패턴 노후화·SSO 설정 문제였다.
-"이 출판사는 CAPTCHA가 뜬다"고 가정하지 말고 아래 체크리스트로 먼저 원인을 좁힐 것.
+**4. A publisher-specific "block" is more often something other than a CAPTCHA.**
+Measured across multiple institutional EZproxy setups and many publishers: real
+Cloudflare/reCAPTCHA blocks were a minority, and most cases were session
+expiry, a stale URL pattern, or an SSO configuration problem. Don't assume
+"this publisher throws a CAPTCHA" — narrow the cause first using the
+checklist below.
 
-- **JBC(J Biol Chem)는 ScienceDirect/Elsevier 호스팅** (ASBMB 표기에 속지 말 것) → Elsevier 한도 대상.
-- **원본 출판사 사이트에 doi.org 리다이렉트로 직행하면 Cloudflare 챌린지가 뜨는 경우가 있다** (예: ScienceDirect). 기관 프록시(EZproxy 등)를 정확히 경유하면 대부분 정상 로딩된다 — 프록시를 안 거치고 원본 도메인으로 바로 가는 경로부터 의심할 것.
-- **일부 출판사 플랫폼은 진짜로 봇 차단을 강하게 건다**(예: Microbiology Society는 Cloudflare 챌린지에서 완전히 종결되는 것을 실측). 이런 사이트는 자동화 대상에서 제외하고 사람이 직접 처리.
-- **"CAPTCHA처럼 보이지만 실은 SSO/OAuth 설정 오류"인 경우도 있다** — 예: 출판사가 Auth0 등 제3자 SSO를 쓰는데, 기관이 프록시 도메인을 변경한 뒤 그 신규 호스트가 SSO의 콜백 URL 허용목록에 등록이 안 돼 있으면 "Callback URL mismatch" 에러가 뜬다. 이건 사용자/스크립트가 못 고치는 기관-대-출판사 설정 문제이므로 도서관/전산 담당자에게 문의해야 한다.
-- **출판사가 플랫폼을 마이그레이션하면 옛 URL 패턴이 통째로 404가 될 수 있다** — 원본 사이트 자체에서 그 URL로 재현되는지 먼저 확인해서 "차단"과 "링크가 죽음"을 구분할 것. `/doi/full/<DOI>` 같은 구형 경로가 죽고 `/doi/<DOI>`가 신형 정답인 경우가 실측됨.
-- LibKey 같은 링크 리졸버가 PDF 직링크 대신 **"ARTICLE LINK"/"LIBRARY ACCESS OPTIONS"만** 주면 그 출판사엔 리졸버의 PDF 직링크가 없다는 뜻 — 출판사 페이지 직접 접근이나 PMC로 우회.
-- 정찰(어디서 막히는지 확인)할 때 임의로 지어낸 DOI/PII로 테스트하면 "진짜 404"와 "진짜 차단"을 구분 못 한다 — Crossref API로 실재하는 최신 DOI를 먼저 확보하고 테스트할 것.
+- **JBC (J Biol Chem) is hosted on ScienceDirect/Elsevier** (don't be misled by the ASBMB branding) -> counts against the Elsevier limit.
+- **Going straight to the original publisher site via a doi.org redirect sometimes triggers a Cloudflare challenge** (e.g. ScienceDirect). Routing precisely through the institutional proxy (EZproxy, etc.) usually loads normally — suspect a path that skips the proxy and goes straight to the origin domain first.
+- **Some publisher platforms genuinely enforce strong bot-blocking** (e.g. Microbiology Society was measured to dead-end completely at a Cloudflare challenge). Exclude such sites from automation and let a human handle them directly.
+- **Some cases look like a CAPTCHA but are actually an SSO/OAuth configuration error** — e.g. a publisher uses a third-party SSO like Auth0, and after the institution changes its proxy domain, if that new host isn't registered on the SSO's callback-URL allowlist, a "Callback URL mismatch" error appears. This is an institution-to-publisher configuration problem that neither the user nor a script can fix — it needs to go to the library/IT contact.
+- **When a publisher migrates platforms, old URL patterns can 404 entirely** — first confirm whether that URL reproduces on the origin site itself, to separate "blocked" from "the link is dead." Measured case: a legacy path like `/doi/full/<DOI>` was dead while `/doi/<DOI>` was the new correct form.
+- If a link resolver like LibKey gives only **"ARTICLE LINK"/"LIBRARY ACCESS OPTIONS"** instead of a direct PDF link, that publisher has no direct PDF link through the resolver — go direct to the publisher page or route through PMC instead.
+- When scouting (checking where things get blocked), testing with an arbitrarily made-up DOI/PII can't distinguish "a genuine 404" from "a genuine block" — first secure a real, recent DOI via the Crossref API and test with that.
 
-**5. rate-limit은 자정-기준 트래커를 믿지 말 것.**
-- 상업 출판사의 기관 다운로드 한도는 보통 **롤링 윈도우(예: ~24h)** 로 걸린다 → "오늘 N건" 같은 자정 리셋 트래커는 과소집계되어 실제로는 한도를 넘겨 차단(CAPTCHA/이용정지)당할 수 있다.
-- 24h 롤링 기준으로 재확인하고, 연속/일괄 다운로드는 피할 것(건당 수초~수십초 간격).
-- 짧은 시간에 같은 출판사에서 다량(10편 이상) 연속 다운로드하면 기관 전체가 그 출판사 DB에서 일정 기간(예: 한 달) 차단될 수 있다 — OA를 먼저 소진하고 구독분은 천천히, 소량씩.
+**5. Don't trust a midnight-based tracker for rate limits.**
+- A commercial publisher's institutional download limit is usually enforced over a **rolling window (e.g. ~24h)** -> a midnight-reset tracker like "N today" undercounts, so you can actually exceed the limit and get blocked (CAPTCHA/suspension) without the tracker showing it.
+- Re-check against a 24h rolling basis, and avoid consecutive/bulk downloads (space them a few seconds to tens of seconds apart).
+- Downloading a large volume (10+ papers) in a row from the same publisher in a short time can get the entire institution blocked from that publisher's database for a period (e.g. a month) — exhaust OA sources first, and go slowly/in small batches for subscription content.
 
-**6. 구독 논문 = 브라우저로 출판사 페이지 직접 열기가 1순위.**
-- 실패 순서 교훈: curl 직접 → HTML 로그인페이지만 옴(세션 없음). 링크 리졸버 우회 서비스(EBSCO/ProQuest류)로 돌면 **별도 로그인 팝업 벽**("기관 찾기")으로 막히는 경우가 있다(도서관 포털 로그인만으론 그 서비스로 세션이 전파 안 됨). 링크 리졸버(LibKey 등)가 해당 저널의 PDF 직링크를 못 주면 "LIBRARY ACCESS OPTIONS"만 나온다.
-- **정답 = 브라우저 자동화로 출판사 논문 페이지(`link.springer.com/article/{DOI}` 등) 직접 navigate → 페이지의 PDF 링크(`/content/pdf/{DOI}.pdf` 등) 클릭/navigate.** 브라우저에 기관 구독 세션(IP/쿠키)이 살아있으면 그대로 다운로드됨(로그인 팝업 없음).
-- **curl로 못 받으면 우회 서비스로 돌지 말 것** — 출판사 페이지 직접 접근을 먼저. 우회 경로는 오히려 로그인 벽이 더 많다. 2-3회 벽에 막히면 rabbit hole → 사용자에게 직접 다운로드 요청(대개 브라우저에서 "PDF파일 보기" 원클릭이라 어렵지 않음).
-- 자격증명 입력·로그인 대행 금지(보안). 사용자가 기관 로그인만 해주면 그 세션에서 이어받기 가능.
+**6. For a subscription paper, opening the publisher page directly in a browser is priority #1.**
+- Lesson from a failure sequence: a direct curl only returned an HTML login page (no session). Routing through a link-resolver bypass service (EBSCO/ProQuest-type) can hit a **separate login popup wall** ("find your institution") — a library-portal login alone doesn't propagate a session to that service. If a link resolver (LibKey, etc.) can't supply a direct PDF link for that journal, all you get is "LIBRARY ACCESS OPTIONS."
+- **The answer: use browser automation to navigate directly to the publisher's article page (e.g. `link.springer.com/article/{DOI}`) -> click/navigate to the page's PDF link (e.g. `/content/pdf/{DOI}.pdf`).** If the browser has a live institutional-subscription session (IP/cookies), the download just works (no login popup).
+- **If curl can't get it, don't switch to a bypass service** — try direct publisher-page access first. The bypass path actually tends to hit more login walls. If you hit 2-3 walls, it's a rabbit hole — ask the user to download it directly instead (usually a one-click "view PDF" in their browser, not hard for them).
+- Never enter credentials or perform a login on the user's behalf (security). Once the user does the institutional login themselves, the session can be picked up from there.
 
 ## 4 Modes
 
-| 모드 | 스크립트 | 용도 |
+| Mode | Script | Purpose |
 |---|---|---|
-| 정적 HTML | `fetch_static.py` | 본문 텍스트·표·링크 추출 (requests/httpx + selectolax/trafilatura) |
-| 학술 메타데이터 | `fetch_academic.py` | Crossref/arXiv/bioRxiv 검색 + DOI·전문 PDF 링크 |
-| 동적 JS | `fetch_dynamic.py` | Playwright headless 렌더링 후 추출 (선택적 의존성) |
-| 파일 수집 | `harvest_files.py` | 페이지의 PDF/xlsx/docx 자동 탐색·다운로드 + markitdown 변환 |
+| Static HTML | `fetch_static.py` | Extract body text/tables/links (requests/httpx + selectolax/trafilatura) |
+| Academic metadata | `fetch_academic.py` | Search Crossref/arXiv/bioRxiv + DOI/full-text PDF links |
+| Dynamic JS | `fetch_dynamic.py` | Extract after Playwright headless rendering (optional dependency) |
+| File harvesting | `harvest_files.py` | Auto-discover/download PDF/xlsx/docx from a page + markitdown conversion |
 
-공통 모듈 `_common.py`가 robots.txt 체크, 도메인별 rate limiter, 응답 캐시,
-재시도/백오프 HTTP 클라이언트, provenance 기록을 제공한다.
+The shared module `_common.py` provides robots.txt checking, a per-domain
+rate limiter, a response cache, a retry/backoff HTTP client, and provenance
+logging.
 
 ## Setup
 
 ```bash
-# 의존성 설치 (base 또는 research-agent conda env)
+# Install dependencies (base or the research-agent conda env)
 pip install -r requirements.txt
 
-# 동적 모드를 쓸 때만 추가 (선택)
+# Only needed if you'll use dynamic mode (optional)
 pip install playwright
 playwright install chromium
 ```
 
 ## Usage
 
-스크립트는 모두 `scripts/` 디렉터리에서 실행한다 (`_common.py` import 때문).
+All scripts are run from the `scripts/` directory (because of the `_common.py` import).
 
-### 1. 정적 HTML — fetch_static.py
+### 1. Static HTML — fetch_static.py
 
 ```bash
 cd scripts
 
-# 본문 텍스트 추출 (boilerplate 제거, Markdown 출력)
+# Extract body text (boilerplate removed, Markdown output)
 python fetch_static.py "https://example.com/article" --mode text -o out.json
 
-# 표 + 링크 동시 추출
+# Extract tables + links at once
 python fetch_static.py "https://example.com/data" --mode tables links -o out.json
 
-# rate-limit 조정 (도메인당 2초 간격)
+# Adjust the rate limit (2-second interval per domain)
 python fetch_static.py "https://example.com" --mode text --delay 2.0
 ```
 
-모드: `text` (본문+메타데이터), `tables` (모든 HTML 표 → 행 데이터),
-`links` (절대 URL+앵커 텍스트), `html` (원본 HTML).
+Modes: `text` (body + metadata), `tables` (every HTML table -> row data),
+`links` (absolute URL + anchor text), `html` (raw HTML).
 
-### 2. 학술 메타데이터 — fetch_academic.py
+### 2. Academic metadata — fetch_academic.py
 
 ```bash
 cd scripts
 
-# Crossref 키워드 검색
+# Crossref keyword search
 python fetch_academic.py --source crossref --query "enzyme cascade biosynthesis" -n 10
 
-# Crossref DOI 단건 조회
+# Crossref single-DOI lookup
 python fetch_academic.py --source crossref --doi 10.1039/D0GC00000A
 
-# arXiv 검색
+# arXiv search
 python fetch_academic.py --source arxiv --query "enzyme cascade optimization" -n 5
 
-# bioRxiv 최근 30일 프리프린트
+# bioRxiv preprints from the last 30 days
 python fetch_academic.py --source biorxiv --recent 30 --server biorxiv
 ```
 
-각 결과는 제목·저자·연도·DOI·전문 PDF 링크를 통일된 형식으로 반환한다.
-Crossref는 polite pool(`mailto`)을 사용한다.
+Each result returns title/authors/year/DOI/full-text PDF link in a unified
+format. Crossref uses the polite pool (`mailto`).
 
-### 3. 동적 JS 페이지 — fetch_dynamic.py
+### 3. Dynamic JS pages — fetch_dynamic.py
 
-정적 추출이 빈 결과를 주거나 JS 렌더링이 명확할 때만 사용.
+Use only when static extraction returns an empty result, or JS rendering is
+clearly required.
 
 ```bash
 cd scripts
 
-# JS 렌더링 후 본문 추출
+# Extract body text after JS rendering
 python fetch_dynamic.py "https://spa-site.com/page" --mode text
 
-# 특정 요소가 나타날 때까지 대기 후 표 추출
+# Wait for a specific element to appear, then extract tables
 python fetch_dynamic.py "https://site.com/results" --mode tables \
     --wait-selector "#results-table"
 ```
 
-Playwright 미설치 시 명확한 설치 안내 메시지를 출력하고 종료한다.
+If Playwright isn't installed, this prints a clear install message and exits.
 
-### 4. 파일 수집 — harvest_files.py
+### 4. File harvesting — harvest_files.py
 
 ```bash
 cd scripts
 
-# 페이지의 PDF/xlsx 링크 미리보기 (다운로드 안 함)
+# Preview a page's PDF/xlsx links (no download)
 python harvest_files.py "https://journal.com/article" --discover-only --ext pdf
 
-# PDF만 다운로드 + Markdown 변환
+# Download PDFs only + convert to Markdown
 python harvest_files.py "https://journal.com/si" -o ./downloads \
     --ext pdf docx xlsx --convert --report harvest.json
 ```
 
-다운로드는 스트리밍 방식(대용량 PDF도 메모리 절약)이고,
-`--convert` 시 `markitdown` 패키지로 Markdown 변환을 연계한다.
+Downloads use streaming (memory-efficient even for large PDFs), and
+`--convert` chains into Markdown conversion via the `markitdown` package.
 
-## Python Import (재사용)
+## Python Import (reusable)
 
 ```python
 import sys
@@ -209,29 +216,35 @@ with PoliteHttpClient(HttpClientConfig(min_delay=1.0)) as client:
 papers = CrossrefProvider().search("target compound", limit=5)
 ```
 
-## Safety Rules (반드시 준수)
+## Safety Rules (must be followed)
 
-이 스킬은 윤리적·합법적 크롤링만 한다 — `_common.py`에 강제 구현되어 있다.
+This skill only does ethical, legal crawling — enforced in `_common.py`.
 
-1. **robots.txt 준수** — 요청 전 대상 도메인 robots.txt를 확인하고 `Disallow`
-   경로는 차단한다. `--ignore-robots`는 명시적 권한이 있을 때만 사용한다.
-2. **Rate limiting** — 도메인당 최소 1초 간격(기본값), robots.txt의
-   `Crawl-delay`가 더 길면 그 값을 따른다.
-3. **식별 가능한 User-Agent** — 연락처(이메일)를 포함한 정직한 UA를 보낸다.
-   브라우저 위장은 하지 않는다 (연구·공공 데이터 용도엔 불필요).
-4. **공식 API 우선** — HTML 스크래핑보다 Crossref/arXiv 등 공식 API를 항상 우선한다.
-5. **HTTP 429 / Retry-After 존중** — 지수 백오프 + 최대 재시도 제한.
-6. **캐싱** — 동일 URL 반복 요청을 막아 서버 부하를 줄이고 재현성을 높인다
-   (`.cache/`, 기본 24h TTL, `--no-cache`로 비활성화).
-7. **저작권·이용약관** — 로그인/페이월 콘텐츠 우회 금지. Sci-Hub 등 비합법
-   경로 배제. 소속 기관 도서관 EZproxy 등 합법적 기관 접근을 사용한다.
-8. **데이터 출처 기록** — 모든 출력 JSON에 `provenance`(원본 URL, 수집 시각,
-   방법)를 기록한다.
-9. **공개 repo 주의** — raw 크롤링 데이터를 public repo에 커밋하지 않는다.
+1. **robots.txt compliance** — checks the target domain's robots.txt before
+   any request and blocks `Disallow` paths. Only use `--ignore-robots` with
+   explicit permission.
+2. **Rate limiting** — a minimum 1-second interval per domain (default), or
+   robots.txt's `Crawl-delay` when it's longer.
+3. **An identifiable User-Agent** — sends an honest UA that includes a
+   contact (email). Never impersonates a browser (unnecessary for research/
+   public-data use).
+4. **Prefer official APIs** — always prefers an official API (Crossref,
+   arXiv, etc.) over HTML scraping.
+5. **Honors HTTP 429 / Retry-After** — exponential backoff + a maximum
+   retry limit.
+6. **Caching** — prevents repeated requests to the same URL, reducing
+   server load and improving reproducibility (`.cache/`, default 24h TTL,
+   disable with `--no-cache`).
+7. **Copyright / terms of service** — never bypasses login/paywalled
+   content. Excludes illegitimate routes like Sci-Hub. Uses legitimate
+   institutional access such as the affiliated library's EZproxy.
+8. **Records data provenance** — every output JSON logs `provenance`
+   (source URL, retrieval time, method).
+9. **Public repo caution** — never commits raw crawled data to a public repo.
 
 ## Output Format
 
-모든 스크립트는 JSON을 출력한다 (`-o`/`--report`로 파일 저장, 미지정 시 stdout).
+Every script outputs JSON (`-o`/`--report` to save to a file, stdout if omitted).
 
 ```json
 {
@@ -247,41 +260,69 @@ papers = CrossrefProvider().search("target compound", limit=5)
 
 ## Integration with Other Skills
 
-- `markitdown` — 수집한 PDF/DOCX를 Markdown으로 변환 (harvest_files `--convert`).
-- `pubmed-database`, `openalex-database` 스킬, 또는 Biopython(Bio.Entrez) 파이썬
-  패키지를 직접 import — PubMed/OpenAlex 검색. 이 스킬은 중복하지 않고
-  Crossref/arXiv/bioRxiv만 담당.
-- `literature-review` — 체계적 문헌고찰. 이 스킬로 수집한 메타데이터를 입력으로 활용.
-- `onedrive` — OneDrive 경로 저장 시. OneDrive Safety 규칙(recursive glob 금지,
-  대용량 파일 사전 확인) 준수.
+- `markitdown` — converts collected PDF/DOCX to Markdown (harvest_files `--convert`).
+- `pubmed-database`, `openalex-database` skills, or importing the Biopython
+  (Bio.Entrez) package directly — for PubMed/OpenAlex search. This skill
+  doesn't duplicate that; it only handles Crossref/arXiv/bioRxiv.
+- `literature-review` — systematic literature review, using metadata
+  collected by this skill as input.
+- `onedrive` — when saving to a OneDrive path. Follow OneDrive Safety rules
+  (no recursive glob, confirm large files first).
 
-## 기관 교외접속 PDF 다운로드 규칙
-1. OA 논문 먼저 수집 — 기관 접근(EZproxy 등)이 필요 없는 다운로드는 한도에서 제외.
-2. 교외접속(EZproxy 등)이 필요한 다운로드만 한도 추적 대상 — 필요하면 별도의
-   다운로드 카운터 스크립트를 만들어 출판사별 건수를 기록할 것
-   (예: ScienceDirect·JBC는 둘 다 Elsevier이므로 동일 카운터로 합산).
-3. 작업 전 반드시 그날/그 시간대의 누적 건수를 확인 — 기관 한도는 자정 리셋이
-   아니라 롤링 윈도우(예: ~24h)로 걸리는 경우가 많다 (§4 rate-limit 항목 참고).
-4. 기관 도서관 정책 위반 시 접근 정지 가능 — 출판사별 일일/월간 한도를 준수할 것.
+## Institutional off-campus-access PDF download rules
+1. Collect OA papers first — downloads that don't need institutional access
+   (EZproxy, etc.) don't count against the limit.
+2. Only downloads requiring off-campus access (EZproxy, etc.) are tracked
+   against the limit — if needed, build a separate download-counter script
+   to log per-publisher counts (e.g. ScienceDirect and JBC are both
+   Elsevier, so sum them into the same counter).
+3. Always check the cumulative count for that day/time window before
+   working — institutional limits are often enforced as a rolling window
+   (e.g. ~24h) rather than a midnight reset (see the §4 rate-limit item above).
+4. Violating institutional library policy can suspend access — respect
+   each publisher's daily/monthly limit.
 
-## 제출 전 ref 원문 대조 감사
+## Pre-submission reference-PDF cross-check audit
 
-원고 참고문헌 PDF를 "다 받았는지" 판정할 때:
+When judging whether manuscript reference PDFs are "all collected":
 
-1. **원고(docx)가 SSOT** — 다운로드 목록/폴더가 아니라 **최신 정본 원고에서 실제 ref 목록을 추출**해 기준으로 삼는다.
-   `manuscript_text.py <docx> --count-only`로 tracked-change 여부 먼저 확인(CITE 필드는 EN.CITE로 카운트) → `--mode accept`로 텍스트 추출 → 번호별 (첫저자성, 연도, 저널) 파싱.
-2. **폴더가 여러 개면 상위집합을 정본으로** — 파일명 규칙이 달라도(`저자_연도.pdf` vs `저자연도_태그_약어.pdf`) 저자성+연도 정규화 매칭으로 대조. 상위집합 폴더 하나를 정본, 나머지는 부분집합으로 처리.
-3. **"MISSING"을 다운로드 대상과 구분** — 책/북챕터(원문없음 확정)와 **서지 오류**를 걸러낸다.
-   ⚠️ 서지오류 사각지대: 저자+연도 매칭은 **연도만 틀린 케이스를 놓친다**. 예) Wong & Whitesides "JACS 2002, **103**, 4890" → JACS vol.103은 **1981년**(연도 오기, PDF는 wong_1981로 이미 있음). vol/page가 맞으면 CrossRef로 연도 독립검증 → 다운로드가 아니라 **원고/EndNote 서지 정정** 대상.
-4. **EndNote 원고의 서지 정정은 텍스트 find-replace 금지** — 참고문헌이 `ADDIN EN.CITE` 필드로 렌더링되면 텍스트만 고쳐도 다음 "Update Citations"에서 되돌아가고 필드가 깨질 수 있다. 근본 수정 = **EndNote 라이브러리(sdb.eni)의 해당 레퍼런스 필드**를 고친 뒤 Update.
-5. 오다운로드 잔재(`*_FIRSTPAGE_ONLY`, `*_WRONG_*`, `*_BROKEN*.bak`)는 **영구삭제 말고 `_quarantine/`로 격리**. Korean OneDrive 경로는 mv가 잠기므로 PowerShell `Move-Item -LiteralPath`.
+1. **The manuscript (docx) is the SSOT** — use the actual reference list
+   **extracted from the latest canonical manuscript**, not a download list
+   or folder, as the baseline.
+   Run `manuscript_text.py <docx> --count-only` first to check for tracked
+   changes (a CITE field counts as EN.CITE) -> extract text with
+   `--mode accept` -> parse each numbered entry as (first author surname, year, journal).
+2. **When there are multiple folders, treat the superset as canonical** —
+   even with differing filename conventions (`author_year.pdf` vs.
+   `authoryear_tag_abbrev.pdf`), cross-check by normalized
+   surname+year matching. Treat one superset folder as canonical and the
+   rest as subsets.
+3. **Distinguish "MISSING" from an actual download target** — filter out
+   books/book chapters (confirmed to have no accessible full text) from
+   **bibliographic errors**.
+   Warning — a bibliographic-error blind spot: author+year matching
+   **misses a case where only the year is wrong**. Example: Wong &
+   Whitesides "JACS 2002, **103**, 4890" -> JACS vol. 103 is actually from
+   **1981** (a wrong year in the citation; the PDF already exists as
+   wong_1981). If the vol/page are correct, independently verify the year
+   via CrossRef -> this is not a download target, it's a
+   **manuscript/EndNote bibliographic correction** target.
+4. **Never fix an EndNote manuscript's bibliography with a text
+   find-replace** — if the reference renders as an `ADDIN EN.CITE` field,
+   fixing only the text can revert on the next "Update Citations" and
+   break the field. The real fix: correct that reference's field in the
+   **EndNote library (sdb.eni)** itself, then Update.
+5. Quarantine mis-downloaded leftovers (`*_FIRSTPAGE_ONLY`, `*_WRONG_*`,
+   `*_BROKEN*.bak`) into **`_quarantine/` rather than permanently
+   deleting them**. On a Korean OneDrive path, `mv` gets locked, so use
+   PowerShell's `Move-Item -LiteralPath`.
 
 ## Resources
 
-- `scripts/_common.py` — 공통 인프라 (robots, rate limiter, cache, HTTP client, provenance)
-- `scripts/fetch_static.py` — 정적 HTML 추출
-- `scripts/fetch_academic.py` — 학술 메타데이터 (Crossref/arXiv/bioRxiv)
-- `scripts/fetch_dynamic.py` — 동적 JS 렌더링 (Playwright)
-- `scripts/harvest_files.py` — 문서 파일 수집
-- `requirements.txt` — 의존성
-- `references/usage.md` — 상세 사용 예시 + 트러블슈팅
+- `scripts/_common.py` — shared infrastructure (robots, rate limiter, cache, HTTP client, provenance)
+- `scripts/fetch_static.py` — static HTML extraction
+- `scripts/fetch_academic.py` — academic metadata (Crossref/arXiv/bioRxiv)
+- `scripts/fetch_dynamic.py` — dynamic JS rendering (Playwright)
+- `scripts/harvest_files.py` — document file harvesting
+- `requirements.txt` — dependencies
+- `references/usage.md` — detailed usage examples + troubleshooting

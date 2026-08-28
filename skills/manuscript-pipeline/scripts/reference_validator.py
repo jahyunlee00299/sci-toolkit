@@ -22,7 +22,7 @@ Checks (each emits findings; nothing is auto-fixed):
 
 Output: text report (always) + JSON (--json). Exit code:
   0  PASS (no HIGH-severity findings)
-  2  HIGH-severity findings present -> blocks "최종본" declaration until manual review.
+  2  HIGH-severity findings present -> blocks declaring the manuscript "final" until manual review.
 WARNING/INFO findings do not block.
 
 Usage:
@@ -69,7 +69,8 @@ ENDNOTE_INSTR = ("ADDIN EN.CITE", "ADDIN EN.REF", "ADDIN EN.REFLIST")
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 DOI_RE = re.compile(r"10\.\d{4,9}/[-._;()/:a-zA-Z0-9]+")
 
-# 본문에서 인용 주변의 저자 성과 연도를 뽑기 위한 패턴 (유형 2 방어용)
+# Patterns for extracting the author surname and year near a citation in body text
+# (defense for the type-2 case below)
 _YEAR_RE = re.compile(r"\b(19|20)\d{2}[a-z]?\b")
 _SURNAME_RE = re.compile(r"\b([A-Z][a-zçéèáñöüä\-]{2,})\b")
 
@@ -185,16 +186,18 @@ def _extract_dois(doc_xml):
     seen = []
     for m in DOI_RE.finditer(text):
         d = m.group(0).rstrip(".)];,").lower()
-        if d not in seen:        # 중복 제거 (구버전은 누락 — 동일 DOI 반복 호출 방지)
+        if d not in seen:        # dedupe (an earlier version missed this — prevents repeat calls for the same DOI)
             seen.append(d)
     return seen
 
 
 def _doi_context(doc_xml, doi, window=400):
-    """DOI 출현 위치 앞쪽 window 글자에서 저자 성/연도 후보를 뽑는다 (유형 2 방어).
+    """Extract candidate author surname/year from the `window` characters before a DOI's
+    occurrence (defense for the type-2 case below).
 
-    윈도우를 넉넉히(400자) 잡는다 — 제목이 길면 저자가 DOI에서 멀어지므로,
-    좁은 윈도우는 제목/저널 단어만 잡아 false positive를 낸다.
+    Use a generous window (400 chars) — a long title pushes the author further from
+    the DOI, and a narrow window would catch only title/journal words and produce
+    false positives.
 
     Returns: (surnames:set[str-lower], years:set[str])
     """
@@ -203,7 +206,7 @@ def _doi_context(doc_xml, doi, window=400):
     idx = low.find(doi.lower())
     if idx < 0:
         return set(), set()
-    seg = text[max(0, idx - window): idx]   # DOI 앞쪽(저자/연도가 보통 앞에 옴)
+    seg = text[max(0, idx - window): idx]   # before the DOI (author/year usually precede it)
     surnames = {s.lower() for s in _SURNAME_RE.findall(seg)}
     years = {m.group(0)[:4] for m in _YEAR_RE.finditer(seg)}
     return surnames, years
@@ -219,16 +222,17 @@ def _fetch_crossref(doi, email):
 
 
 def _crossref_check(doi, email, ctx_surnames=None, ctx_years=None):
-    """CrossRef로 DOI를 검증한다.
+    """Verify a DOI via CrossRef.
 
     Returns dict:
         {"status": "ok"|"not_found"|"unreachable"|"mismatch",
          "title": str, "detail": str}
 
-    - not_found  : 404 = 존재하지 않는 DOI (hallucination 신호)
-    - unreachable: 네트워크/타임아웃 = 검증 불가 (절대 pass로 처리 안 함, fail-closed)
-    - mismatch   : DOI는 실재하나 본문 인용의 저자/연도와 불일치 (실재 DOI 오인용)
-    - ok         : 실재 + (문맥 주어졌으면) 저자/연도 일치
+    - not_found  : 404 = the DOI does not exist (hallucination signal)
+    - unreachable: network/timeout = cannot verify (never treated as pass — fail-closed)
+    - mismatch   : the DOI is real but doesn't match the body citation's author/year
+                   (a real DOI attached to the wrong claim)
+    - ok         : real + (when context was available) author/year match
     """
     try:
         data = _fetch_crossref(doi, email)
@@ -242,11 +246,13 @@ def _crossref_check(doi, email, ctx_surnames=None, ctx_years=None):
 
     title = (msg.get("title") or [""])[0]
 
-    # 유형 2 방어: 본문 인용 주변 저자/연도가 resolve된 논문과 맞는가?
-    # false positive 비용이 크므로(정상 인용 차단 = 도구 불신) 신뢰도를 차등화한다:
-    #   저자 AND 연도 둘 다 불일치 -> 'mismatch' (HIGH, 강한 오인용 신호)
-    #   저자만 불일치(연도는 맞음/모름) -> 'mismatch_weak' (WARNING, 차단 안 함)
-    # 저자 매칭은 윈도우/추출 한계로 누락될 수 있으나, 연도까지 어긋나면 오인용 확률 급증.
+    # Type-2 defense: does the author/year near the body citation match the resolved paper?
+    # False positives are expensive (blocking a valid citation erodes trust in the tool),
+    # so confidence is tiered:
+    #   author AND year both mismatch -> 'mismatch' (HIGH, strong miscitation signal)
+    #   author mismatch only (year matches/unknown) -> 'mismatch_weak' (WARNING, does not block)
+    # Author matching can miss due to window/extraction limits, but a year mismatch on top
+    # sharply raises the odds of a real miscitation.
     if ctx_surnames or ctx_years:
         cr_families = {a.get("family", "").lower() for a in msg.get("author", []) if a.get("family")}
         cr_year = ""
@@ -260,10 +266,11 @@ def _crossref_check(doi, email, ctx_surnames=None, ctx_years=None):
         if not author_ok or not year_ok:
             bits = []
             if not author_ok:
-                bits.append(f"본문저자{sorted(ctx_surnames)} vs CrossRef저자{sorted(cr_families)}")
+                bits.append(f"body author {sorted(ctx_surnames)} vs CrossRef author {sorted(cr_families)}")
             if not year_ok:
-                bits.append(f"본문연도{sorted(ctx_years)} vs CrossRef연도'{cr_year}'")
-            # 연도까지 어긋나야 강한 신호. 저자만 어긋나면 약한 신호(추출 한계 가능성).
+                bits.append(f"body year {sorted(ctx_years)} vs CrossRef year '{cr_year}'")
+            # A strong signal needs the year to mismatch too; author-only mismatch is weak
+            # (could be an extraction limit).
             strong = (not author_ok) and (not year_ok) and bool(ctx_years)
             return {
                 "status": "mismatch" if strong else "mismatch_weak",
@@ -286,30 +293,30 @@ def check_dois(doc_xml, findings, email, pdf_dir):
             n_unresolved += 1
             findings.append(Finding(
                 "HIGH", "doi_hallucinated",
-                f"{doi} -> CrossRef 404 (존재하지 않는 DOI)",
-                "AI가 지어낸 DOI일 가능성이 높음. DOI를 확인하거나 인용을 삭제/교체하세요.",
+                f"{doi} -> CrossRef 404 (DOI does not exist)",
+                "Likely an AI-invented DOI. Verify the DOI, or remove/replace the citation.",
             ))
         elif st == "unreachable":
             n_unresolved += 1
             findings.append(Finding(
                 "HIGH", "doi_unverified",
-                f"{doi} -> 검증 불가 ({res['detail']})",
-                "망 연결 확인 후 재실행. 검증 전 통과 처리 금지(fail-open 방지).",
+                f"{doi} -> could not verify ({res['detail']})",
+                "Check your network connection and re-run. Never treat as passed before verification (fail-open prevention).",
             ))
         elif st == "mismatch":
             n_mismatch += 1
             findings.append(Finding(
                 "HIGH", "doi_context_mismatch",
-                f"{doi} -> 실재하나 본문 인용과 불일치: {res['detail']} (CrossRef='{res['title']}')",
-                "실재 DOI를 엉뚱한 주장/논문에 붙였을 가능성(오인용). 해당 논문이 정말 그 "
-                "주장을 하는지 확인하세요.",
+                f"{doi} -> real DOI, but mismatched with the body citation: {res['detail']} (CrossRef='{res['title']}')",
+                "A real DOI may be attached to the wrong claim/paper (miscitation). Confirm "
+                "that paper actually makes that claim.",
             ))
         elif st == "mismatch_weak":
-            # 저자만 불일치(연도는 맞음/불명) — 추출 한계 가능성. 차단(HIGH) 아닌 WARNING.
+            # Author mismatch only (year matches/unknown) — likely an extraction limit. WARNING, not a block.
             findings.append(Finding(
                 "WARNING", "doi_author_unmatched",
-                f"{doi} -> 저자 매칭 실패(연도는 일치/불명): {res['detail']} (CrossRef='{res['title']}')",
-                "대개 추출 한계(저자가 멀리 있음)지만, 오인용일 수도 있으니 한 번 확인 권장.",
+                f"{doi} -> author match failed (year matches/unknown): {res['detail']} (CrossRef='{res['title']}')",
+                "Usually an extraction limit (author is far from the DOI in text), but could be a miscitation — worth a quick check.",
             ))
         time.sleep(_RATE_LIMIT_DELAY)
 
@@ -389,7 +396,7 @@ def _load_email():
 def main():
     ap = argparse.ArgumentParser(description="EndNote/citation integrity gate for docx.")
     ap.add_argument("docx", type=Path)
-    # 방어: --crossref 기본 ON. 끄려면 명시적으로 --no-crossref.
+    # Defensive default: --crossref is ON by default. Pass --no-crossref explicitly to turn it off.
     ap.add_argument("--crossref", dest="crossref", action="store_true", default=True,
                     help="verify DOIs via CrossRef (default ON)")
     ap.add_argument("--no-crossref", dest="crossref", action="store_false",

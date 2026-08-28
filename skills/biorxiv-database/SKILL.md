@@ -1,6 +1,6 @@
 ---
 name: biorxiv-database
-description: Search preprints (출판전 논문) across bioRxiv, medRxiv, arXiv, Research Square and ChemRxiv using free keyless APIs, and hand the results to scripts/ref_fetch.py for PDF retrieval and BibTeX. Use when looking for the newest unpublished work, checking whether a result has already been posted, or gathering 최신 논문 검색 before peer-reviewed literature exists. Triggers — 프리프린트, preprint, bioRxiv, medRxiv, arXiv, 출판전 논문, 최신 논문 검색, 프리프린트 검색, 사전공개 논문, preprint search, latest preprints.
+description: Search preprints across bioRxiv, medRxiv, arXiv, Research Square and ChemRxiv using free keyless APIs, and hand the results to scripts/ref_fetch.py for PDF retrieval and BibTeX. Use when looking for the newest unpublished work, checking whether a result has already been posted, or gathering 최신 논문 검색 before peer-reviewed literature exists. Triggers — 프리프린트, preprint, bioRxiv, medRxiv, arXiv, 출판전 논문, 최신 논문 검색, 프리프린트 검색, 사전공개 논문, preprint search, latest preprints.
 license: MIT license
 ---
 

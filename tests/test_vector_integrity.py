@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
-"""동봉된 SnapGene 벡터가 실제로 읽히는지 검사한다.
+"""Checks that the bundled SnapGene vectors actually parse.
 
-260807 실측: `.gitattributes` 가 `* text=auto eol=lf` 만 두고 `*.dna` 를 바이너리로
-선언하지 않아, 줄바꿈 정규화가 벡터 파일 **안쪽**의 CRLF 두 바이트를 접었다.
-`.dna` 는 `[1B type][4B big-endian length][payload]` 연쇄라 payload 에서 바이트가
-사라지면 그 뒤 오프셋이 전부 밀린다. 결과:
+Measured 260807: `.gitattributes` had only `* text=auto eol=lf` and did not
+declare `*.dna` as binary, so line-ending normalization collapsed CRLF byte
+pairs **inside** the vector files. `.dna` is a chain of
+`[1B type][4B big-endian length][payload]` records, so once bytes vanish
+from a payload, every offset after it shifts. Result:
 
-    pACYCDuet-1  features 19 → 0
-    pET-21a(+)   features 15 → 0
-    pET-28a(+)   features 16 → 0
-    pMAL-c6T     features 18 → 0      (pETDuet-1 만 무사)
+    pACYCDuet-1  features 19 -> 0
+    pET-21a(+)   features 15 -> 0
+    pET-28a(+)   features 16 -> 0
+    pMAL-c6T     features 18 -> 0      (pETDuet-1 was the only one unaffected)
 
-**서열은 그대로 남고 파서는 예외를 던지지 않는다.** `parse_snapgene()` 은 빈
-feature 목록을 정상 반환하고, `colony_pcr_mode.suggest_from_snapgene()` 은 CDS
-feature 로 동작하므로 프라이머 설계가 "아무것도 못 찾음" 으로 조용히 틀린다.
-doctor·테스트 전부와 CI 가 초록불인 채였다 — 아무도 이 축을 보지 않았다.
+**The sequence itself survives and the parser throws no exception.**
+`parse_snapgene()` returns a normal, empty feature list, and
+`colony_pcr_mode.suggest_from_snapgene()` operates on CDS features, so primer
+design fails silently as "found nothing." doctor, every test, and CI all
+stayed green — nobody was checking this axis.
 
-그래서 검사는 **파일이 존재하는가**가 아니라 **파싱해서 내용이 나오는가**를 본다.
-바이트 손상은 크기나 해시로는 "달라졌다"만 알 수 있고 "쓸 수 있는가"는 알 수 없다.
+So this check does not ask **does the file exist** but **does parsing it
+produce content**. Byte corruption is visible in size or hash only as
+"something changed," never as "is this still usable."
 """
 from __future__ import annotations
 
@@ -35,28 +38,29 @@ ROOT = Path(__file__).resolve().parent.parent
 VECTORS = ROOT / "skills" / "primer-design" / "vectors"
 SRC = ROOT / "skills" / "primer-design" / "src"
 
-# 각 벡터가 최소한 이만큼의 feature 를 가져야 한다. 실측값보다 낮게 잡아 두어
-# SnapGene 버전 차이로 주석이 한둘 늘고 주는 것은 통과시키되, 0 으로 무너지는
-# 손상은 반드시 잡는다.
+# Each vector must have at least this many features. Set below the measured
+# values so a SnapGene version difference adding/dropping an annotation or
+# two still passes, while corruption that collapses the count to 0 is
+# always caught.
 MIN_FEATURES = 5
 MIN_SEQUENCE = 1000
 
 
 def main() -> int:
     if not VECTORS.is_dir():
-        print("SKIP — primer-design 벡터 폴더가 없다 (선택 설치)")
+        print("SKIP — no primer-design vectors folder (optional install)")
         return 0
 
     sys.path.insert(0, str(SRC))
     try:
         from primer_design.snapgene_parser import parse_snapgene
     except Exception as e:                      # noqa: BLE001
-        print(f"SKIP — 파서를 불러올 수 없다: {type(e).__name__}: {e}")
+        print(f"SKIP — could not import the parser: {type(e).__name__}: {e}")
         return 0
 
     files = sorted(VECTORS.glob("*.dna"))
     if not files:
-        print("SKIP — .dna 벡터가 없다")
+        print("SKIP — no .dna vectors found")
         return 0
 
     failures: list[str] = []
@@ -64,26 +68,26 @@ def main() -> int:
         try:
             seq, _circular, feats = parse_snapgene(str(f))
         except Exception as e:                  # noqa: BLE001
-            failures.append(f"{f.name}: 파싱 실패 — {type(e).__name__}: {e}")
+            failures.append(f"{f.name}: parse failed — {type(e).__name__}: {e}")
             continue
         n_seq = len(seq or "")
         n_feat = len(feats or [])
         if n_seq < MIN_SEQUENCE:
-            failures.append(f"{f.name}: 서열이 {n_seq}bp — 최소 {MIN_SEQUENCE} 기대")
+            failures.append(f"{f.name}: sequence is {n_seq}bp — expected at least {MIN_SEQUENCE}")
         if n_feat < MIN_FEATURES:
             failures.append(
-                f"{f.name}: feature {n_feat}개 — 최소 {MIN_FEATURES} 기대. "
-                "바이너리가 줄바꿈 정규화로 손상됐을 때 나타나는 값이다 "
-                "(.gitattributes 의 `*.dna binary` 선언을 확인하라)")
+                f"{f.name}: {n_feat} feature(s) — expected at least {MIN_FEATURES}. "
+                "This is the signature of binary corruption from line-ending "
+                "normalization (check the `*.dna binary` declaration in .gitattributes)")
 
     if failures:
-        print(f"FAIL — 벡터 무결성 {len(failures)}건")
+        print(f"FAIL — {len(failures)} vector integrity issue(s)")
         for x in failures:
             print(f"  - {x}")
         return 1
 
     total = sum(len(parse_snapgene(str(f))[2] or []) for f in files)
-    print(f"ALL PASS — 벡터 {len(files)}개, feature 총 {total}개 파싱됨")
+    print(f"ALL PASS — {len(files)} vector(s), {total} feature(s) parsed total")
     return 0
 
 

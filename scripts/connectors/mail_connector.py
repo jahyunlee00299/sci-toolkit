@@ -1,37 +1,41 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""메일 커넥터 — IMAP/SMTP 표준 라이브러리만 사용하는 sci-toolkit 메일 연동 스크립트.
+"""Mail connector — sci-toolkit mail integration script using only the IMAP/SMTP standard library.
 
-⭐ 핵심 안전 원칙 (DRAFT-FIRST, AGENTS.md §9) ⭐
-    이 스크립트는 메일을 작성하면 항상 IMAP 임시보관함(Drafts)에만 저장합니다.
-    자동으로 발송하는 경로는 존재하지 않습니다.
+⭐ Core safety principle (DRAFT-FIRST, AGENTS.md §9) ⭐
+    This script only ever saves a composed mail to the IMAP Drafts folder.
+    There is no path that sends automatically.
 
-    - `draft` / `reply` 서브커맨드는 메일을 만들어 Drafts 폴더에 APPEND 할 뿐,
-      SMTP 발송을 절대 호출하지 않습니다.
-    - 실제 발송이 가능한 유일한 경로는 `send` 서브커맨드이며, 다음 두 가지를
-      *모두* 충족해야만 발송 로직에 도달합니다.
-        1) 커맨드라인에 `--send` 플래그를 명시적으로 준다.
-        2) 대화형 프롬프트에서 정확히 대문자 `SEND` 를 타이핑해 확인한다.
-      표준입력이 tty가 아닌 비대화형 환경(cron, 파이프, 자동화 파이프라인 등)에서는
-      `send` 자체를 거부합니다 — 사람의 확인 없이는 어떤 경로로도 발송이 불가능합니다.
+    - The `draft` / `reply` subcommands only build a message and APPEND it
+      to the Drafts folder — they never call SMTP send.
+    - The only path that can actually send is the `send` subcommand, and it
+      only reaches the send logic when *both* of the following hold:
+        1) the `--send` flag is given explicitly on the command line.
+        2) the interactive prompt is confirmed by typing the exact uppercase
+           word `SEND`.
+      In a non-interactive environment where stdin isn't a tty (cron, a
+      pipe, an automation pipeline, etc.), `send` itself is refused — no
+      path can send without a human confirming it.
 
-    "연결은 쉽게, 발송은 신중하게." (docs/05_외부서비스_연동.md)
+    "Connecting is easy; sending is deliberate." (docs/05_external_service_integration.md)
 
-사용 예:
+Usage examples:
     python mail_connector.py list --account work --n 10
     python mail_connector.py read --account work --uid 12345
-    python mail_connector.py draft --account work --to a@b.com --subject "제목" --body "내용"
-    python mail_connector.py reply --account work --uid 12345 --body "회신 내용"
-    python mail_connector.py send --account work --to a@b.com --subject "제목" --body "내용" --send
+    python mail_connector.py draft --account work --to a@b.com --subject "Subject" --body "Body"
+    python mail_connector.py reply --account work --uid 12345 --body "Reply body"
+    python mail_connector.py send --account work --to a@b.com --subject "Subject" --body "Body" --send
 
-자격증명은 config/credentials.json (config/credentials.example.json 참고, mail.accounts.<account>)
-또는 그 안에서 가리키는 환경변수(ENV:NAME)에서 읽습니다. 비밀번호는 화면에 출력되지 않습니다.
+Credentials are read from config/credentials.json (see
+config/credentials.example.json, mail.accounts.<account>) or the
+environment variable it points to (ENV:NAME). Passwords are never printed.
 """
 from __future__ import annotations
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# Windows' default console is cp949 and dies on Korean/symbol output. Force UTF-8.
+# Use reconfigure: wrapping in TextIOWrapper would take ownership of the
+# underlying stream, so once this module is imported and the wrapper gets
+# GC'd, it closes the caller's stdout too (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -57,15 +61,15 @@ try:
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
 except Exception:
-    pass  # 일부 환경(파이프 리다이렉트 등)에서는 reconfigure 불가 — 무시하고 진행
+    pass  # reconfigure isn't possible in some environments (e.g. piped redirect) — ignore and proceed
 
 
 # --------------------------------------------------------------------------
-# 자격증명 헬퍼
+# Credential helpers
 # --------------------------------------------------------------------------
 
 def _account_field(account: str, field: str, required: bool = True):
-    """mail.accounts.<account>.<field> 값을 읽는다. 필수인데 없으면 안내 후 종료."""
+    """Read mail.accounts.<account>.<field>. If required and missing, print guidance and exit."""
     if required:
         return cred.require("mail", "accounts", account, field)
     return cred.get("mail", "accounts", account, field)
@@ -83,7 +87,7 @@ def _load_account(account: str) -> dict:
 
 
 # --------------------------------------------------------------------------
-# IMAP 연결/유틸
+# IMAP connection / utilities
 # --------------------------------------------------------------------------
 
 def _imap_connect(acc: dict) -> imaplib.IMAP4_SSL:
@@ -94,24 +98,24 @@ def _imap_connect(acc: dict) -> imaplib.IMAP4_SSL:
         return conn
     except imaplib.IMAP4.error as e:
         sys.exit(
-            "[오류] IMAP 로그인에 실패했습니다.\n"
-            f"  세부사항: {e}\n"
-            "  - 비밀번호가 일반 로그인 비밀번호라면, 앱 비밀번호(App Password)를 발급받아 사용하세요"
-            "(Gmail 등 2단계 인증 계정은 필수).\n"
-            "  - config/credentials.json 의 user/password, 환경변수 설정을 다시 확인하세요."
+            "[Error] IMAP login failed.\n"
+            f"  Details: {e}\n"
+            "  - If your password is your regular login password, issue and use an App Password instead"
+            " (required for accounts with 2-step verification, e.g. Gmail).\n"
+            "  - Double-check the user/password in config/credentials.json or your environment variables."
         )
     except (OSError, ssl.SSLError) as e:
         sys.exit(
-            "[오류] IMAP 서버에 연결할 수 없습니다.\n"
-            f"  세부사항: {e}\n"
-            f"  - host/port를 확인하세요 (현재: {acc.get('imap_host')}:{acc.get('imap_port')}).\n"
-            "  - 방화벽/네트워크 상태, 993 포트(SSL) 접근 가능 여부를 확인하세요."
+            "[Error] Could not connect to the IMAP server.\n"
+            f"  Details: {e}\n"
+            f"  - Check host/port (currently: {acc.get('imap_host')}:{acc.get('imap_port')}).\n"
+            "  - Check your firewall/network status and whether port 993 (SSL) is reachable."
         )
 
 
 def _decode_mime_words(s: str | None) -> str:
     if not s:
-        return "(없음)"
+        return "(none)"
     try:
         return str(make_header(decode_header(s)))
     except Exception:
@@ -119,8 +123,9 @@ def _decode_mime_words(s: str | None) -> str:
 
 
 def _find_drafts_mailbox(conn: imaplib.IMAP4_SSL) -> str:
-    """Drafts 메일함 이름을 자동 탐지한다. 흔한 이름들을 우선 시도하고,
-    목록에서 'draft'가 포함된 첫 메일함으로 폴백, 그래도 없으면 'Drafts'."""
+    """Auto-detect the Drafts mailbox name. Tries common names first, falls
+    back to the first mailbox whose name contains 'draft', and finally to
+    'Drafts' if nothing matches."""
     common_names = ["Drafts", "[Gmail]/Drafts", "INBOX.Drafts"]
 
     typ, data = conn.list()
@@ -133,15 +138,15 @@ def _find_drafts_mailbox(conn: imaplib.IMAP4_SSL) -> str:
                 line = raw.decode("utf-8", errors="replace")
             except AttributeError:
                 line = str(raw)
-            # 형식 예: (\HasNoChildren \Drafts) "/" "[Gmail]/Drafts"
-            # 마지막 따옴표로 감싼 토큰이 실제 메일함 이름인 경우가 대부분
+            # Example format: (\HasNoChildren \Drafts) "/" "[Gmail]/Drafts"
+            # The last quoted token is usually the actual mailbox name
             if '"' in line:
                 parts = line.rsplit('"', 2)
                 if len(parts) >= 2:
                     mailbox_names.append(parts[-2])
             else:
                 mailbox_names.append(line.strip().split(" ")[-1])
-            # \Drafts 특수 속성 플래그가 붙어 있으면 최우선으로 채택
+            # If the \Drafts special-use flag is present, take it as the top priority
             if "\\Drafts" in line:
                 name = mailbox_names[-1] if mailbox_names else None
                 if name:
@@ -161,7 +166,7 @@ def _find_drafts_mailbox(conn: imaplib.IMAP4_SSL) -> str:
 def _fetch_message(conn: imaplib.IMAP4_SSL, uid: str):
     typ, data = conn.uid("fetch", uid, "(RFC822)")
     if typ != "OK" or not data or data[0] is None:
-        sys.exit(f"[오류] UID {uid} 메시지를 찾을 수 없습니다.")
+        sys.exit(f"[Error] Could not find message UID {uid}.")
     raw = data[0][1]
     return email.message_from_bytes(raw)
 
@@ -177,19 +182,19 @@ def _plain_text_body(msg) -> str:
                         part.get_content_charset() or "utf-8", errors="replace"
                     )
                 except Exception:
-                    return "(본문 디코딩 실패)"
-        return "(텍스트 본문 없음 — 첨부/HTML만 존재할 수 있음)"
+                    return "(failed to decode body)"
+        return "(no plain-text body — may contain only an attachment/HTML)"
     else:
         try:
             return msg.get_payload(decode=True).decode(
                 msg.get_content_charset() or "utf-8", errors="replace"
             )
         except Exception:
-            return "(본문 디코딩 실패)"
+            return "(failed to decode body)"
 
 
 # --------------------------------------------------------------------------
-# 서브커맨드: list (읽기 전용)
+# Subcommand: list (read-only)
 # --------------------------------------------------------------------------
 
 def cmd_list(args):
@@ -198,16 +203,16 @@ def cmd_list(args):
     try:
         typ, _ = conn.select(args.mailbox, readonly=True)
         if typ != "OK":
-            sys.exit(f"[오류] 메일함 '{args.mailbox}'을(를) 열 수 없습니다.")
+            sys.exit(f"[Error] Could not open mailbox '{args.mailbox}'.")
 
         typ, data = conn.search(None, "ALL")
         if typ != "OK" or not data or not data[0]:
-            print("(메시지가 없습니다.)")
+            print("(No messages.)")
             return
         uids = data[0].split()
-        recent = uids[-args.n:][::-1]  # 최신순
+        recent = uids[-args.n:][::-1]  # newest first
 
-        print(f"[{args.account}] {args.mailbox} 최근 {len(recent)}건")
+        print(f"[{args.account}] {args.mailbox} — {len(recent)} most recent")
         print("-" * 70)
         for uid in recent:
             typ, msg_data = conn.fetch(uid, "(BODY.PEEK[HEADER.FIELDS (FROM SUBJECT DATE)])")
@@ -217,10 +222,10 @@ def cmd_list(args):
             msg = email.message_from_bytes(header_bytes)
             from_ = _decode_mime_words(msg.get("From"))
             subject = _decode_mime_words(msg.get("Subject"))
-            date_ = msg.get("Date") or "(날짜 없음)"
+            date_ = msg.get("Date") or "(no date)"
             print(f"UID {uid.decode()}\n  From   : {from_}\n  Subject: {subject}\n  Date   : {date_}\n")
     except imaplib.IMAP4.error as e:
-        sys.exit(f"[오류] IMAP 조회 중 오류가 발생했습니다: {e}")
+        sys.exit(f"[Error] IMAP query failed: {e}")
     finally:
         try:
             conn.close()
@@ -230,7 +235,7 @@ def cmd_list(args):
 
 
 # --------------------------------------------------------------------------
-# 서브커맨드: read (읽기 전용)
+# Subcommand: read (read-only)
 # --------------------------------------------------------------------------
 
 def cmd_read(args):
@@ -239,19 +244,19 @@ def cmd_read(args):
     try:
         typ, _ = conn.select(args.mailbox, readonly=True)
         if typ != "OK":
-            sys.exit(f"[오류] 메일함 '{args.mailbox}'을(를) 열 수 없습니다.")
+            sys.exit(f"[Error] Could not open mailbox '{args.mailbox}'.")
 
         msg = _fetch_message(conn, args.uid)
         print("-" * 70)
         print(f"From    : {_decode_mime_words(msg.get('From'))}")
         print(f"To      : {_decode_mime_words(msg.get('To'))}")
         print(f"Subject : {_decode_mime_words(msg.get('Subject'))}")
-        print(f"Date    : {msg.get('Date') or '(날짜 없음)'}")
-        print(f"Message-ID: {msg.get('Message-ID') or '(없음)'}")
+        print(f"Date    : {msg.get('Date') or '(no date)'}")
+        print(f"Message-ID: {msg.get('Message-ID') or '(none)'}")
         print("-" * 70)
         print(_plain_text_body(msg))
     except imaplib.IMAP4.error as e:
-        sys.exit(f"[오류] IMAP 조회 중 오류가 발생했습니다: {e}")
+        sys.exit(f"[Error] IMAP query failed: {e}")
     finally:
         try:
             conn.close()
@@ -261,7 +266,7 @@ def cmd_read(args):
 
 
 # --------------------------------------------------------------------------
-# Drafts 저장 공통 로직
+# Shared Drafts-save logic
 # --------------------------------------------------------------------------
 
 def _append_to_drafts(conn: imaplib.IMAP4_SSL, acc: dict, msg: EmailMessage):
@@ -274,14 +279,14 @@ def _append_to_drafts(conn: imaplib.IMAP4_SSL, acc: dict, msg: EmailMessage):
             msg.as_bytes(),
         )
         if typ != "OK":
-            sys.exit(f"[오류] Drafts 저장에 실패했습니다 (메일함: {drafts_name}): {resp}")
+            sys.exit(f"[Error] Failed to save to Drafts (mailbox: {drafts_name}): {resp}")
     except imaplib.IMAP4.error as e:
         sys.exit(
-            f"[오류] Drafts 폴더('{drafts_name}')에 저장하는 중 오류가 발생했습니다: {e}\n"
-            "  서버가 다른 이름의 Drafts 메일함을 쓸 수 있습니다 — 서버 메일함 목록을 확인하세요."
+            f"[Error] Error while saving to the Drafts folder ('{drafts_name}'): {e}\n"
+            "  The server may use a Drafts mailbox under a different name — check the server's mailbox list."
         )
-    print(f"[{acc['user']}] '{drafts_name}' 폴더에 저장 완료.")
-    print("초안(Drafts)에 저장했습니다. 발송은 메일 앱에서 직접 하세요.")
+    print(f"[{acc['user']}] Saved to folder '{drafts_name}'.")
+    print("Saved to Drafts. Send it yourself from your mail app.")
 
 
 def _read_body_arg(args) -> str:
@@ -290,10 +295,10 @@ def _read_body_arg(args) -> str:
             with open(args.body_file, encoding="utf-8") as f:
                 return f.read()
         except OSError as e:
-            sys.exit(f"[오류] --body-file을 읽을 수 없습니다: {e}")
+            sys.exit(f"[Error] Could not read --body-file: {e}")
     if args.body is not None:
         return args.body
-    sys.exit("[오류] --body 또는 --body-file 중 하나는 반드시 지정해야 합니다.")
+    sys.exit("[Error] You must specify either --body or --body-file.")
 
 
 def _build_message(acc: dict, to: str, subject: str, body: str, cc: str | None = None) -> EmailMessage:
@@ -309,7 +314,7 @@ def _build_message(acc: dict, to: str, subject: str, body: str, cc: str | None =
 
 
 # --------------------------------------------------------------------------
-# 서브커맨드: draft (Drafts 저장만, 발송 없음)
+# Subcommand: draft (Drafts save only, never sends)
 # --------------------------------------------------------------------------
 
 def cmd_draft(args):
@@ -325,7 +330,7 @@ def cmd_draft(args):
 
 
 # --------------------------------------------------------------------------
-# 서브커맨드: reply (원본 조회 → 회신 헤더 구성 → Drafts 저장만, 발송 없음)
+# Subcommand: reply (fetch original → build reply headers → Drafts save only, never sends)
 # --------------------------------------------------------------------------
 
 def cmd_reply(args):
@@ -336,17 +341,17 @@ def cmd_reply(args):
     try:
         typ, _ = conn.select(args.mailbox, readonly=True)
         if typ != "OK":
-            sys.exit(f"[오류] 메일함 '{args.mailbox}'을(를) 열 수 없습니다.")
+            sys.exit(f"[Error] Could not open mailbox '{args.mailbox}'.")
 
         original = _fetch_message(conn, args.uid)
 
-        orig_subject = _decode_mime_words(original.get("Subject")) or "(제목 없음)"
+        orig_subject = _decode_mime_words(original.get("Subject")) or "(no subject)"
         subject = orig_subject if orig_subject.lower().startswith("re:") else f"Re: {orig_subject}"
 
         orig_from = original.get("From") or ""
         to_addr = args.to or orig_from
         if not to_addr:
-            sys.exit("[오류] 회신 대상 주소를 확인할 수 없습니다. --to 를 명시하세요.")
+            sys.exit("[Error] Could not determine a reply recipient. Specify --to.")
 
         orig_msg_id = original.get("Message-ID") or ""
         orig_refs = original.get("References") or ""
@@ -355,7 +360,7 @@ def cmd_reply(args):
         orig_date = original.get("Date") or ""
         orig_body = _plain_text_body(original)
         quoted = "\n".join(f"> {line}" for line in orig_body.splitlines())
-        full_body = f"{body}\n\n--- 원본 메시지 ({_decode_mime_words(orig_from)}, {orig_date}) ---\n{quoted}"
+        full_body = f"{body}\n\n--- Original message ({_decode_mime_words(orig_from)}, {orig_date}) ---\n{quoted}"
 
         msg = _build_message(acc, to_addr, subject, full_body, cc=args.cc)
         if orig_msg_id:
@@ -369,22 +374,22 @@ def cmd_reply(args):
 
 
 # --------------------------------------------------------------------------
-# 서브커맨드: send (유일한 실제 발송 경로 — --send 플래그 + 타이핑 확인 필수)
+# Subcommand: send (the only real send path — requires --send flag + typed confirmation)
 # --------------------------------------------------------------------------
 
 def cmd_send(args):
     if not args.send:
         sys.exit(
-            "[거부] --send 플래그 없이는 발송 로직에 도달할 수 없습니다.\n"
-            "  메일을 임시보관함에만 저장하려면 `draft` 서브커맨드를 사용하세요:\n"
+            "[Refused] The send logic cannot be reached without the --send flag.\n"
+            "  To only save a message to Drafts, use the `draft` subcommand:\n"
             "    python mail_connector.py draft --account ... --to ... --subject ... --body ..."
         )
 
     if not sys.stdin.isatty():
         sys.exit(
-            "[거부] 비대화형 환경(파이프/스크립트/자동화)에서는 실제 발송을 거부합니다.\n"
-            "  발송 확인은 사람이 터미널에서 직접 입력해야 합니다.\n"
-            "  대화형 터미널에서 `python mail_connector.py send ... --send` 를 다시 실행하세요."
+            "[Refused] Actual sending is refused in a non-interactive environment (pipe/script/automation).\n"
+            "  Send confirmation must be typed by a human directly in a terminal.\n"
+            "  Re-run `python mail_connector.py send ... --send` from an interactive terminal."
         )
 
     acc = _load_account(args.account)
@@ -392,7 +397,7 @@ def cmd_send(args):
     msg = _build_message(acc, args.to, args.subject, body, cc=args.cc)
 
     print("=" * 70)
-    print("다음 메일을 실제로 발송합니다 — 되돌릴 수 없습니다.")
+    print("The following mail is about to be sent for real — this cannot be undone.")
     print("=" * 70)
     print(f"From   : {acc['user']}")
     print(f"To     : {args.to}")
@@ -403,9 +408,9 @@ def cmd_send(args):
     print(body)
     print("=" * 70)
 
-    confirm = input("정말로 발송하려면 정확히 SEND 라고 입력하세요: ")
+    confirm = input("To actually send, type exactly SEND: ")
     if confirm != "SEND":
-        sys.exit("발송 취소됨")
+        sys.exit("Send cancelled")
 
     try:
         ctx = ssl.create_default_context()
@@ -415,20 +420,20 @@ def cmd_send(args):
             smtp.send_message(msg)
     except smtplib.SMTPAuthenticationError as e:
         sys.exit(
-            "[오류] SMTP 인증에 실패했습니다.\n"
-            f"  세부사항: {e}\n"
-            "  - 앱 비밀번호(App Password)가 필요한 계정인지 확인하세요(일반 로그인 비밀번호 아님).\n"
-            "  - config/credentials.json 의 user/password, 환경변수 설정을 다시 확인하세요."
+            "[Error] SMTP authentication failed.\n"
+            f"  Details: {e}\n"
+            "  - Check whether this account requires an App Password (not your regular login password).\n"
+            "  - Double-check the user/password in config/credentials.json or your environment variables."
         )
     except (OSError, smtplib.SMTPException, ssl.SSLError) as e:
         sys.exit(
-            "[오류] SMTP 서버 연결/발송 중 오류가 발생했습니다.\n"
-            f"  세부사항: {e}\n"
-            f"  - host/port를 확인하세요 (현재: {acc.get('smtp_host')}:{acc.get('smtp_port')}).\n"
-            "  - 587 포트(STARTTLS) 접근 가능 여부, 방화벽/네트워크 상태를 확인하세요."
+            "[Error] Error connecting to or sending via the SMTP server.\n"
+            f"  Details: {e}\n"
+            f"  - Check host/port (currently: {acc.get('smtp_host')}:{acc.get('smtp_port')}).\n"
+            "  - Check whether port 587 (STARTTLS) is reachable and your firewall/network status."
         )
 
-    print("발송 완료.")
+    print("Send complete.")
 
 
 # --------------------------------------------------------------------------
@@ -439,38 +444,38 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="mail_connector.py",
         description=(
-            "sci-toolkit 메일 커넥터 — DRAFT-FIRST 원칙: draft/reply는 항상 IMAP Drafts에만 저장하고 "
-            "절대 자동 발송하지 않습니다. 실제 발송은 `send --send` + 대화형 'SEND' 타이핑 확인이 "
-            "모두 있어야만 가능합니다."
+            "sci-toolkit mail connector — DRAFT-FIRST principle: draft/reply always save only to "
+            "IMAP Drafts and never auto-send. Actually sending requires both `send --send` and "
+            "typing 'SEND' at the interactive confirmation prompt."
         ),
         epilog=(
-            "예시:\n"
+            "Examples:\n"
             "  mail_connector.py list --account work\n"
             "  mail_connector.py read --account work --uid 12345\n"
-            "  mail_connector.py draft --account work --to a@b.com --subject 제목 --body 내용\n"
-            "  mail_connector.py reply --account work --uid 12345 --body 회신내용\n"
-            "  mail_connector.py send --account work --to a@b.com --subject 제목 --body 내용 --send\n"
+            "  mail_connector.py draft --account work --to a@b.com --subject Subject --body Body\n"
+            "  mail_connector.py reply --account work --uid 12345 --body ReplyBody\n"
+            "  mail_connector.py send --account work --to a@b.com --subject Subject --body Body --send\n"
             "\n"
-            "⭐ draft/reply = 항상 안전(Drafts 저장만). send는 --send 플래그와 'SEND' 타이핑 확인 "
-            "둘 다 있어야 실제로 나갑니다."
+            "⭐ draft/reply = always safe (Drafts save only). send only goes out for real when both "
+            "the --send flag and typed 'SEND' confirmation are present."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     sub = parser.add_subparsers(dest="command")
 
-    p_list = sub.add_parser("list", help="최근 메일 목록 조회 (읽기 전용)")
+    p_list = sub.add_parser("list", help="List recent mail (read-only)")
     p_list.add_argument("--account", choices=["work", "personal"], default="work")
-    p_list.add_argument("--n", type=int, default=10, help="조회할 메시지 개수 (기본 10)")
+    p_list.add_argument("--n", type=int, default=10, help="Number of messages to list (default 10)")
     p_list.add_argument("--mailbox", default="INBOX")
     p_list.set_defaults(func=cmd_list)
 
-    p_read = sub.add_parser("read", help="UID로 메일 1건 조회 (읽기 전용)")
+    p_read = sub.add_parser("read", help="Fetch one message by UID (read-only)")
     p_read.add_argument("--account", choices=["work", "personal"], default="work")
-    p_read.add_argument("--uid", required=True, help="조회할 메시지 UID")
+    p_read.add_argument("--uid", required=True, help="UID of the message to fetch")
     p_read.add_argument("--mailbox", default="INBOX")
     p_read.set_defaults(func=cmd_read)
 
-    p_draft = sub.add_parser("draft", help="새 메일 작성 → Drafts 저장만 (발송 안 함)")
+    p_draft = sub.add_parser("draft", help="Compose a new mail → save to Drafts only (does not send)")
     p_draft.add_argument("--account", choices=["work", "personal"], default="work")
     p_draft.add_argument("--to", required=True)
     p_draft.add_argument("--cc")
@@ -479,11 +484,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_draft.add_argument("--body-file")
     p_draft.set_defaults(func=cmd_draft)
 
-    p_reply = sub.add_parser("reply", help="원본 메일에 대한 회신 작성 → Drafts 저장만 (발송 안 함)")
+    p_reply = sub.add_parser("reply", help="Compose a reply to an original message → save to Drafts only (does not send)")
     p_reply.add_argument("--account", choices=["work", "personal"], default="work")
-    p_reply.add_argument("--uid", required=True, help="회신 대상 원본 메시지 UID")
+    p_reply.add_argument("--uid", required=True, help="UID of the original message to reply to")
     p_reply.add_argument("--mailbox", default="INBOX")
-    p_reply.add_argument("--to", help="지정하지 않으면 원본 발신자에게 회신")
+    p_reply.add_argument("--to", help="If unset, replies to the original sender")
     p_reply.add_argument("--cc")
     p_reply.add_argument("--body")
     p_reply.add_argument("--body-file")
@@ -491,7 +496,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_send = sub.add_parser(
         "send",
-        help="[위험] 실제 SMTP 발송 — --send 플래그 + 대화형 'SEND' 타이핑 확인 필수",
+        help="[Dangerous] Actually sends via SMTP — requires --send flag + typed interactive 'SEND' confirmation",
     )
     p_send.add_argument("--account", choices=["work", "personal"], default="work")
     p_send.add_argument("--to", required=True)
@@ -502,7 +507,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_send.add_argument(
         "--send",
         action="store_true",
-        help="이 플래그 없이는 발송 거부됨(그래도 대화형 SEND 확인이 추가로 필요)",
+        help="Without this flag, sending is refused (interactive SEND confirmation is still additionally required)",
     )
     p_send.set_defaults(func=cmd_send)
 
@@ -516,10 +521,10 @@ def main(argv=None):
     if not getattr(args, "command", None):
         parser.print_help()
         print(
-            "\n⭐ 기본 원칙: 이 스크립트는 draft-first 입니다. "
-            "메일은 항상 Drafts에만 저장되고, 자동 발송은 절대 하지 않습니다.\n"
-            "실제 발송이 필요하면 `send` 서브커맨드에 --send 플래그를 주고, "
-            "대화형 프롬프트에서 'SEND'를 직접 입력해야 합니다."
+            "\n⭐ Core principle: this script is draft-first. "
+            "Mail is always saved only to Drafts, and never auto-sent.\n"
+            "If you actually need to send, pass the --send flag to the `send` subcommand "
+            "and type 'SEND' directly at the interactive prompt."
         )
         return
 
