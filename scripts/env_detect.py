@@ -64,8 +64,8 @@ def detect() -> dict:
             result.update(shell_ok=True, shell_path=sh, shell_source="PATH")
         else:
             result["advice"].append(
-                f"[안내] {system}인데 sh/bash 를 PATH에서 못 찾았습니다 — 이례적인 환경입니다. "
-                "훅이 실행되는지 `bash --version` 으로 직접 확인하세요."
+                f"[Notice] This is {system} but sh/bash wasn't found on PATH — an unusual setup. "
+                "Check directly with `bash --version` whether hooks can run."
             )
         return result
 
@@ -86,10 +86,11 @@ def detect() -> dict:
             result["shell_path"] = cand
             result["shell_source"] = "known_location"
             result["advice"].append(
-                f"[조치 필요] Git Bash가 {cand} 에 있지만 PATH에 없고 "
-                f"{GIT_BASH_ENV_VAR} 환경변수도 안 잡혀 있습니다. Claude Code는 이 경우 훅 실행에 "
-                "cmd.exe를 쓰는데, cmd.exe는 .sh 파일을 실행할 수 없어 훅이 조용히 실패합니다.\n"
-                f"  고치는 법: ~/.claude/settings.json 의 \"env\" 에 다음을 추가하세요.\n"
+                f"[Action needed] Git Bash is at {cand} but it isn't on PATH, and "
+                f"the {GIT_BASH_ENV_VAR} environment variable isn't set either. In this case Claude "
+                "Code falls back to cmd.exe for hook execution, and cmd.exe can't run .sh files, "
+                "so hooks fail silently.\n"
+                f"  Fix: add the following to \"env\" in ~/.claude/settings.json.\n"
                 f'    "{GIT_BASH_ENV_VAR}": "{cand}"'
             )
             return result
@@ -98,18 +99,18 @@ def detect() -> dict:
         result["shell_path"] = which_bash
         result["shell_source"] = "wsl_stub"
         result["advice"].append(
-            f"[조치 필요] PATH의 bash가 WSL 런처({which_bash})입니다 — WSL 배포판이 완전히 "
-            "설정돼 있지 않으면 훅이 실패할 수 있습니다. Git Bash 설치를 권장합니다: "
+            f"[Action needed] The bash on PATH is the WSL launcher ({which_bash}) — if the WSL "
+            "distro isn't fully set up, hooks may fail. Installing Git Bash is recommended: "
             "https://git-scm.com/download/win"
         )
         return result
 
     result["advice"].append(
-        "[조치 필요] 이 Windows 환경에서 sh/bash를 찾지 못했습니다. Claude Code 훅은 기본적으로 "
-        "cmd.exe로 떨어지는데, cmd.exe는 .sh 파일을 실행할 수 없어 훅(시크릿 스캔·위험한 git·docx "
-        "손상 방지 등)이 전부 조용히 꺼진 채로 동작합니다.\n"
-        "  고치는 법: Git for Windows 설치(https://git-scm.com/download/win) 후 "
-        f"~/.claude/settings.json 의 \"env\" 에 \"{GIT_BASH_ENV_VAR}\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\" 추가."
+        "[Action needed] Could not find sh/bash on this Windows setup. Claude Code hooks fall "
+        "back to cmd.exe by default, and cmd.exe can't run .sh files, so hooks (secret scanning, "
+        "dangerous-git guard, docx-corruption prevention, etc.) all run silently disabled.\n"
+        "  Fix: install Git for Windows (https://git-scm.com/download/win), then add "
+        f"\"{GIT_BASH_ENV_VAR}\": \"C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe\" to \"env\" in ~/.claude/settings.json."
     )
     return result
 

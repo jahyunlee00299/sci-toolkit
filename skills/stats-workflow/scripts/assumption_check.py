@@ -1,40 +1,46 @@
 #!/usr/bin/env python3
-"""통계 검정 전 가정(assumption)을 실제로 검사하고, 맞는 검정을 지목한다.
+"""Actually checks statistical-test assumptions before testing, and names the right test.
 
-`SKILL.md` Phase 2 의 결정 트리와 가정 검정을 그대로 실행 가능한 형태로 옮긴 것이다.
-사람이 눈으로 "정규분포 같아 보인다" 하고 넘어가는 지점을 막는 게 목적이다.
+This is the decision tree and assumption checks from `SKILL.md` Phase 2,
+carried over into an executable form. The goal is to stop the point where a
+human eyeballs a plot, thinks "looks normal enough," and moves on.
 
-무엇을 하는가
--------------
-1. 데이터를 읽고(csv/tsv/xlsx) 그룹별로 나눈다
-2. **정규성** — n < 50 이면 Shapiro-Wilk, n >= 50 이면 D'Agostino-Pearson
-3. **등분산성** — Levene (2군 이상일 때)
-4. 위 결과로 SKILL.md 결정 트리를 따라 **써야 할 검정을 지목**한다
-5. 요청하면 그 검정을 실제로 수행하고 **APA 7판 서식 + 효과크기**까지 출력한다
+What it does
+------------
+1. Reads the data (csv/tsv/xlsx) and splits it by group
+2. **Normality** — Shapiro-Wilk if n < 50, D'Agostino-Pearson if n >= 50
+3. **Equal variance** — Levene (when there are 2+ groups)
+4. Follows the SKILL.md decision tree from the above results to **name the
+   test that should be used**
+5. If requested, actually runs that test and prints **APA 7th-edition
+   formatting + effect size**
 
-사용
-----
-    # 가정만 검사하고 어떤 검정을 써야 하는지 보기
+Usage
+-----
+    # Check assumptions only, and see which test to use
     python assumption_check.py data.csv --value od600 --group strain
 
-    # 검정까지 수행하고 APA 형식으로 출력
+    # Also run the test and print APA-formatted output
     python assumption_check.py data.csv --value od600 --group strain --run
 
-    # 대응표본(paired)
+    # Paired samples
     python assumption_check.py data.csv --value delta --group timepoint --paired --run
 
-    # 단일 그룹을 기준값과 비교
+    # Compare a single group against a reference value
     python assumption_check.py data.csv --value yield --mu 100 --run
 
-종료 코드
----------
-    0  가정 위배 없음 (또는 위배가 있어도 그에 맞는 비모수 검정을 지목함)
-    1  데이터 문제로 판단 불가 (그룹이 하나뿐, n 부족, 결측 과다 등)
-    2  입력/의존성 오류
+Exit codes
+----------
+    0  No assumption violated (or a violation exists but the matching
+       nonparametric test was named)
+    1  Cannot decide due to a data problem (only one group, insufficient n,
+       too many missing values, etc.)
+    2  Input/dependency error
 
-**중요**: 이 도구는 "어떤 검정을 쓸지"를 정해줄 뿐, 그 검정이 연구 질문에 맞는지는
-판단하지 않는다. 대응/독립 여부, 반복측정 구조는 실험 설계에서 나오는 것이므로
-`--paired` 같은 플래그로 **사람이** 알려줘야 한다.
+**Important**: this tool only decides "which test to use" — it does not judge
+whether that test fits your research question. Paired-vs-independent status
+and repeated-measures structure come from the experimental design, so **a
+human** must state them via flags like `--paired`.
 """
 from __future__ import annotations
 
@@ -45,11 +51,12 @@ import sys
 from pathlib import Path
 
 def _force_utf8_stdout() -> None:
-    """Windows 기본 콘솔(cp949)에서 한글·기호 출력에 죽지 않게 한다.
+    """Prevent Windows' default console (cp949) from dying on Korean/symbol output.
 
-    `reconfigure` 를 쓴다. TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-    이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫아버린다
-    (테스트에서 실제로 발생했다). reconfigure 는 같은 객체를 바꾸므로 안전하다.
+    Uses `reconfigure`. Wrapping in a TextIOWrapper would take ownership of
+    the underlying stream, so once the wrapper is GC'd after this module is
+    imported, it closes the caller's stdout too (this actually happened in a
+    test). reconfigure mutates the same object, so it is safe.
     """
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -59,9 +66,9 @@ def _force_utf8_stdout() -> None:
                 pass
 
 ALPHA = 0.05
-SHAPIRO_MAX_N = 50          # SKILL.md: n < 50 이면 Shapiro, 그 이상은 normaltest
+SHAPIRO_MAX_N = 50          # SKILL.md: Shapiro if n < 50, normaltest otherwise
 
-# 효과크기 해석 기준 (SKILL.md Phase 3 표)
+# Effect-size interpretation thresholds (SKILL.md Phase 3 table)
 EFFECT_BANDS = {
     "d":   [(0.2, "small"), (0.5, "medium"), (0.8, "large")],
     "eta2": [(0.01, "small"), (0.06, "medium"), (0.14, "large")],
@@ -70,7 +77,7 @@ EFFECT_BANDS = {
 
 
 def band(kind: str, value: float) -> str:
-    """효과크기 수치를 small/medium/large 로 해석."""
+    """Interpret an effect-size value as small/medium/large."""
     v = abs(value)
     label = "negligible"
     for cut, name in EFFECT_BANDS[kind]:
@@ -80,7 +87,7 @@ def band(kind: str, value: float) -> str:
 
 
 def fmt_p(p: float) -> str:
-    """APA: p < .001 로 쓰고, 그 외에는 소수점 앞 0 을 뺀 세 자리."""
+    """APA style: write p < .001, otherwise three decimal digits with the leading 0 dropped."""
     if p < 0.001:
         return "p < .001"
     return f"p = {p:.3f}".replace("0.", ".")
@@ -90,7 +97,7 @@ def load_table(path: Path):
     try:
         import pandas as pd
     except ImportError:
-        print("오류: pandas 가 필요하다 (pip install pandas)", file=sys.stderr)
+        print("Error: pandas is required (pip install pandas)", file=sys.stderr)
         raise SystemExit(2)
     suf = path.suffix.lower()
     if suf in (".csv", ".txt"):
@@ -99,17 +106,17 @@ def load_table(path: Path):
         return pd.read_csv(path, sep="\t")
     if suf in (".xlsx", ".xls"):
         return pd.read_excel(path)
-    print(f"오류: 지원하지 않는 형식 '{suf}' (.csv/.tsv/.xlsx)", file=sys.stderr)
+    print(f"Error: unsupported format '{suf}' (.csv/.tsv/.xlsx)", file=sys.stderr)
     raise SystemExit(2)
 
 
 def check_normality(values, label):
-    """정규성 검정. n에 따라 Shapiro / D'Agostino 를 고른다 (SKILL.md 규칙)."""
+    """Normality test. Picks Shapiro / D'Agostino based on n (SKILL.md rule)."""
     from scipy import stats
     n = len(values)
     if n < 3:
         return {"group": label, "n": n, "test": None, "p": None,
-                "normal": None, "note": "n < 3 — 정규성 판단 불가"}
+                "normal": None, "note": "n < 3 — cannot assess normality"}
     if n < SHAPIRO_MAX_N:
         stat, p = stats.shapiro(values)
         test = "Shapiro-Wilk"
@@ -118,11 +125,11 @@ def check_normality(values, label):
         test = "D'Agostino-Pearson"
     return {"group": label, "n": n, "test": test, "statistic": float(stat),
             "p": float(p), "normal": bool(p >= ALPHA),
-            "note": "" if p >= ALPHA else "정규성 위배"}
+            "note": "" if p >= ALPHA else "normality violated"}
 
 
 def decide(n_groups, paired, all_normal, equal_var, one_sample):
-    """SKILL.md Phase 2 결정 트리를 그대로 구현."""
+    """A direct implementation of the SKILL.md Phase 2 decision tree."""
     if one_sample:
         return ("One-sample t-test" if all_normal
                 else "Wilcoxon signed-rank (one-sample)")
@@ -132,7 +139,7 @@ def decide(n_groups, paired, all_normal, equal_var, one_sample):
         if not all_normal:
             return "Mann-Whitney U"
         return "Independent t-test" if equal_var else "Welch's t-test"
-    # 3군 이상
+    # 3+ groups
     if paired:
         return "Repeated-measures ANOVA" if all_normal else "Friedman test"
     if not all_normal:
@@ -141,7 +148,7 @@ def decide(n_groups, paired, all_normal, equal_var, one_sample):
 
 
 def run_test(name, groups, mu=None):
-    """지목된 검정을 실제로 수행하고 APA 문자열 + 효과크기를 만든다."""
+    """Actually run the named test and build the APA string + effect size."""
     from scipy import stats
     import numpy as np
 
@@ -164,8 +171,11 @@ def run_test(name, groups, mu=None):
     elif name == "Paired t-test":
         a, b = groups[0], groups[1]
         if len(a) != len(b):
-            raise ValueError(f"대응표본인데 두 그룹 크기가 다르다 ({len(a)} vs {len(b)}). "
-                             "짝이 맞는지 확인하라.")
+            # NOTE: "크기가 다르다" ("sizes differ") below is asserted on verbatim by
+            # tests/test_assumption_check.py — do not translate/remove it without
+            # updating that test too.
+            raise ValueError(f"Paired samples, but the two groups' 크기가 다르다 (sizes differ) ({len(a)} vs {len(b)}). "
+                             "Check that the pairing is correct.")
         t, p = stats.ttest_rel(a, b)
         diff = np.asarray(a) - np.asarray(b)
         d = np.mean(diff) / np.std(diff, ddof=1)
@@ -176,7 +186,8 @@ def run_test(name, groups, mu=None):
     elif name == "Wilcoxon signed-rank":
         a, b = groups[0], groups[1]
         if len(a) != len(b):
-            raise ValueError(f"대응표본인데 두 그룹 크기가 다르다 ({len(a)} vs {len(b)}).")
+            # NOTE: same "크기가 다르다" test dependency as above.
+            raise ValueError(f"Paired samples, but the two groups' 크기가 다르다 (sizes differ) ({len(a)} vs {len(b)}).")
         stat, p = stats.wilcoxon(a, b)
         out.update(statistic=float(stat), p=float(p),
                    apa=f"W = {stat:.1f}, {fmt_p(p)}")
@@ -218,9 +229,9 @@ def run_test(name, groups, mu=None):
                    apa=f"F({k-1}, {n_tot-k}) = {f:.2f}, {fmt_p(p)}, "
                        f"η² = {eta2:.2f}".replace("0.", ".", 1))
         if name == "Welch's ANOVA":
-            out["warning"] = ("등분산 가정이 깨져 Welch's ANOVA 가 적절하나, "
-                              "여기서는 일반 F 통계량을 계산했다. "
-                              "pingouin.welch_anova 등으로 재확인하라.")
+            out["warning"] = ("The equal-variance assumption is violated, so Welch's ANOVA is "
+                              "appropriate, but this computed the ordinary F statistic. "
+                              "Re-verify with pingouin.welch_anova or similar.")
 
     elif name == "Kruskal-Wallis":
         h, p = stats.kruskal(*groups)
@@ -233,52 +244,56 @@ def run_test(name, groups, mu=None):
                    apa=f"χ²({len(groups)-1}) = {stat:.2f}, {fmt_p(p)}")
 
     else:
-        out["note"] = (f"'{name}' 은 이 스크립트가 자동 수행하지 않는다 "
-                       f"(반복측정 구조는 설계 정보가 필요하다). "
-                       f"statsmodels/pingouin 으로 직접 수행하라.")
+        out["note"] = (f"'{name}' is not automatically run by this script "
+                       f"(a repeated-measures structure needs design information). "
+                       f"Run it directly via statsmodels/pingouin.")
     return out
 
 
 def main() -> int:
     _force_utf8_stdout()
     ap = argparse.ArgumentParser(
-        description="통계 검정 전 가정 검사 + 검정 지목 (SKILL.md Phase 2 구현)")
-    ap.add_argument("data", help="데이터 파일 (.csv/.tsv/.xlsx)")
-    ap.add_argument("--value", required=True, help="측정값 열 이름")
-    ap.add_argument("--group", help="그룹 열 이름 (없으면 단일 표본)")
+        description="Check statistical-test assumptions and name the test to use (SKILL.md Phase 2 implementation)")
+    ap.add_argument("data", help="Data file (.csv/.tsv/.xlsx)")
+    ap.add_argument("--value", required=True, help="Name of the measurement column")
+    ap.add_argument("--group", help="Name of the group column (single sample if omitted)")
     ap.add_argument("--mu", type=float,
-                    help="단일 표본일 때 비교할 기준값")
+                    help="Reference value to compare against for a single sample")
     ap.add_argument("--paired", action="store_true",
-                    help="대응표본/반복측정이다 (실험 설계에서 나오는 정보 — 자동 판별 불가)")
+                    help="Data is paired/repeated-measures (comes from the experimental design — cannot be auto-detected)")
     ap.add_argument("--run", action="store_true",
-                    help="지목된 검정을 실제로 수행하고 APA 형식으로 출력")
-    ap.add_argument("--json", help="결과를 이 경로에 JSON 으로 저장")
+                    help="Actually run the named test and print APA-formatted output")
+    ap.add_argument("--json", help="Save the result as JSON at this path")
     args = ap.parse_args()
 
     try:
         from scipy import stats  # noqa: F401
         import numpy as np
     except ImportError:
-        print("오류: scipy, numpy 가 필요하다 (pip install scipy numpy)", file=sys.stderr)
+        print("Error: scipy and numpy are required (pip install scipy numpy)", file=sys.stderr)
         return 2
 
     path = Path(args.data).expanduser().resolve()
     if not path.is_file():
-        print(f"오류: 파일이 없다 — {path}", file=sys.stderr)
+        print(f"Error: file not found — {path}", file=sys.stderr)
         return 2
     df = load_table(path)
 
     if args.value not in df.columns:
-        print(f"오류: '{args.value}' 열이 없다. 있는 열: {list(df.columns)}", file=sys.stderr)
+        # NOTE: "있는 열" ("columns that exist") below is asserted on verbatim by
+        # tests/test_assumption_check.py — do not translate/remove it without
+        # updating that test too.
+        print(f"Error: no '{args.value}' column. 있는 열 (columns that exist): {list(df.columns)}", file=sys.stderr)
         return 2
 
     report = {"file": str(path), "value_col": args.value,
               "group_col": args.group, "paired": args.paired, "alpha": ALPHA}
 
-    # --- 그룹 나누기 ---
+    # --- split into groups ---
     if args.group:
         if args.group not in df.columns:
-            print(f"오류: '{args.group}' 열이 없다. 있는 열: {list(df.columns)}",
+            # NOTE: same "있는 열" test dependency as above.
+            print(f"Error: no '{args.group}' column. 있는 열 (columns that exist): {list(df.columns)}",
                   file=sys.stderr)
             return 2
         labels, groups = [], []
@@ -292,91 +307,97 @@ def main() -> int:
         groups = [df[args.value].dropna().to_numpy(dtype=float)]
         one_sample = True
         if args.mu is None and args.run:
-            print("오류: 그룹 열이 없으면 --mu (비교 기준값) 가 필요하다", file=sys.stderr)
+            print("Error: --mu (the reference value) is required when there is no group column", file=sys.stderr)
             return 2
 
     n_groups = len(groups)
-    print(f"데이터: {path.name}  |  값={args.value}"
-          + (f"  그룹={args.group} ({n_groups}개)" if args.group else "  (단일 표본)"))
+    print(f"Data: {path.name}  |  value={args.value}"
+          + (f"  group={args.group} ({n_groups})" if args.group else "  (single sample)"))
     for lab, g in zip(labels, groups):
         print(f"  {lab}: n={len(g)}, mean={np.mean(g):.4g}, SD={np.std(g, ddof=1):.4g}"
               if len(g) > 1 else f"  {lab}: n={len(g)}")
 
     if n_groups > 1 and any(len(g) < 3 for g in groups):
-        print("\n[중단] n < 3 인 그룹이 있어 가정 검정을 할 수 없다. "
-              "표본을 늘리거나 설계를 재검토하라.")
+        print("\n[Stopped] A group has n < 3, so assumption checks cannot be run. "
+              "Increase the sample size or reconsider the design.")
         return 1
 
-    # --- 정규성 ---
-    print(f"\n[1] 정규성 (α = {ALPHA})")
+    # --- normality ---
+    print(f"\n[1] Normality (α = {ALPHA})")
     norms = [check_normality(g, lab) for lab, g in zip(labels, groups)]
     for nm in norms:
         if nm["test"] is None:
             print(f"  {nm['group']}: {nm['note']}")
         else:
-            verdict = "정규" if nm["normal"] else "**위배**"
+            verdict = "normal" if nm["normal"] else "**violated**"
             print(f"  {nm['group']}: {nm['test']} p = {nm['p']:.4f} → {verdict}")
     report["normality"] = norms
     all_normal = all(nm["normal"] for nm in norms if nm["normal"] is not None)
 
-    # --- 등분산 ---
+    # --- equal variance ---
     equal_var = True
     if n_groups > 1:
         from scipy import stats as _st
         lev_stat, lev_p = _st.levene(*groups)
         equal_var = bool(lev_p >= ALPHA)
-        print(f"\n[2] 등분산성 (Levene)")
+        print(f"\n[2] Equal variance (Levene)")
         print(f"  W = {lev_stat:.4f}, p = {lev_p:.4f} → "
-              f"{'등분산' if equal_var else '**위배**'}")
+              f"{'equal variance' if equal_var else '**violated**'}")
         report["levene"] = {"statistic": float(lev_stat), "p": float(lev_p),
                             "equal_var": equal_var}
     else:
-        print("\n[2] 등분산성 — 그룹이 하나라 해당 없음")
+        print("\n[2] Equal variance — not applicable, only one group")
 
-    # --- 검정 지목 ---
+    # --- name the test ---
     chosen = decide(n_groups, args.paired, all_normal, equal_var, one_sample)
     report["recommended_test"] = chosen
-    print(f"\n[3] 권장 검정: **{chosen}**")
+    print(f"\n[3] Recommended test: **{chosen}**")
     if not all_normal:
-        print("     (정규성 위배 → 비모수 검정으로 전환됨)")
+        print("     (normality violated → switched to a nonparametric test)")
     if n_groups > 1 and not equal_var and all_normal:
-        print("     (등분산 위배 → Welch 계열로 전환됨)")
+        print("     (equal variance violated → switched to the Welch family)")
     if not args.paired and n_groups == 2:
-        print("     ⚠ 대응표본이면 --paired 를 붙여라. 설계 정보는 자동 판별할 수 없다.")
+        print("     ⚠ If this is paired data, add --paired. Design information cannot be auto-detected.")
 
-    # --- 실제 수행 ---
+    # --- actually run it ---
     if args.run:
-        print(f"\n[4] 검정 수행")
+        print(f"\n[4] Running the test")
         try:
             res = run_test(chosen, groups, mu=args.mu)
         except ValueError as exc:
-            print(f"  [중단] {exc}")
+            print(f"  [Stopped] {exc}")
             return 1
         report["result"] = res
         if "apa" in res:
             print(f"  APA: {res['apa']}")
             if res.get("effect"):
                 e = res["effect"]
-                print(f"  효과크기: {e['kind']} = {e['value']:.3f} ({e['band']})")
+                print(f"  Effect size: {e['kind']} = {e['value']:.3f} ({e['band']})")
             sig = res["p"] < ALPHA
-            print(f"  판정: α={ALPHA} 기준 "
-                  f"{'유의함' if sig else '유의하지 않음 (ns)'}")
+            # NOTE: "유의함"/"유의하지 않음" ("significant"/"not significant") below are
+            # asserted on verbatim by tests/test_assumption_check.py — do not
+            # translate/remove them without updating that test too.
+            print(f"  Verdict: at α={ALPHA}, "
+                  f"{'유의함 (significant)' if sig else '유의하지 않음 (ns) (not significant)'}")
             if not sig:
-                print("  ※ '유의하지 않음'은 '차이가 없음'의 증명이 아니다. "
-                      "검정력과 n 을 함께 보고하라.")
+                print("  * '유의하지 않음' (not significant) is not proof of 'no difference'. "
+                      "Report statistical power alongside n.")
             if n_groups > 2 and sig:
-                print("  ※ 3군 이상에서 유의하면 사후검정(Tukey HSD 등)이 필요하다.")
+                # NOTE: "사후검정" ("post-hoc test") below is asserted on verbatim by
+                # tests/test_assumption_check.py — do not translate/remove it without
+                # updating that test too.
+                print("  * With 3+ groups and a significant result, a 사후검정 (post-hoc test, e.g. Tukey HSD) is needed.")
         if res.get("warning"):
             print(f"  ⚠ {res['warning']}")
         if res.get("note"):
             print(f"  {res['note']}")
     else:
-        print("\n  (--run 을 붙이면 이 검정을 실제로 수행하고 APA 형식으로 출력한다)")
+        print("\n  (add --run to actually run this test and print APA-formatted output)")
 
     if args.json:
         Path(args.json).write_text(json.dumps(report, ensure_ascii=False, indent=2),
                                    encoding="utf-8")
-        print(f"\n리포트 저장: {args.json}")
+        print(f"\nReport saved: {args.json}")
 
     return 0
 

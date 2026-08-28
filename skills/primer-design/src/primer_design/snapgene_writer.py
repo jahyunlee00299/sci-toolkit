@@ -1,7 +1,7 @@
 """SnapGene .dna binary file writer — in-silico RE cloning.
 
-Base vector .dna 파일에 insert CDS를 RE cloning 시뮬레이션으로 삽입하여
-재조합 플라스미드 .dna 파일을 생성.
+Inserts an insert CDS into a base vector .dna file via RE cloning
+simulation, producing a recombinant plasmid .dna file.
 
 Binary format:
   Block = [type: 1 byte][length: 4 bytes big-endian][data: N bytes]

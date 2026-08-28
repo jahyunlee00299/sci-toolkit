@@ -1,60 +1,60 @@
 # Manuscript SSOT Manifesto — read this BEFORE touching a manuscript
 
-원고 작업(작성·교정·figure·수치·인용)을 시작하기 전에 **이 선언을 먼저 읽고, 지킨다.**
-논문에서 신뢰를 무너뜨리는 가장 흔한 사고는 "코드가 틀려서"가 아니라
-**"어딘가에서 숫자를 손으로 옮겨 적어서"** 생긴다. 이 매니페스토는 그것을 막는다.
+Before starting manuscript work (drafting, proofing, figures, numbers, citations), **read this declaration first, and follow it.**
+The most common way trust in a paper breaks down isn't "the code was wrong" —
+it's **"a number got copied by hand from somewhere"**. This manifesto exists to stop that.
 
-핵심 한 줄: **모든 숫자·인용·표기는 하나의 진실원천(SSOT)에서만 나오고, 절대 손으로 베끼지 않는다.**
-
----
-
-## The Five Declarations (원고 작업 시 준수)
-
-### 1. 숫자는 rawdata SSOT에서만 온다
-- 본문·표·figure·캡션·초록에 쓰이는 **모든 숫자는 하나의 canonical rawdata 파일**(또는
-  그 rawdata에서 직접 계산하는 스크립트)로 추적되어야 한다.
-- 기억·이전 보고서·채팅 로그·다른 표에서 **숫자를 손으로 옮겨 적지 않는다.**
-- 같은 값이 여러 곳(본문·표·figure CSV)에 나오면, **전부 같은 rawdata로 수렴**해야 한다.
-  불일치가 보이면 한 곳만 고치지 말고 rawdata로 통일한다.
-
-### 2. figure/table 캡션의 숫자도 rawdata에서
-- 캡션의 n수·평균·오차·조건은 **플롯과 같은 rawdata 소스**에서 나온다 — 손으로 타이핑 금지.
-- figure를 다시 그리면 캡션 숫자도 같은 소스에서 다시 나와야 한다(따로 관리하지 않는다).
-
-### 3. 컬럼·단위·정의는 추측하지 않는다
-- yield·conversion·rate·titer 같은 계산량의 **컬럼명·단위·정의를 추측하지 않는다.**
-  rawdata와 method 설명을 열어 확인한 뒤 쓴다.
-- 모델 값 ↔ 실험 값을 비교하기 전, **같은 조건·같은 method·같은 지표 정의**인지 확인한다
-  (apples-to-apples). 여기서 어긋나면 조용히 틀린 결과가 나온다.
-
-### 4. 위임/원격에서 온 숫자는 "잠정"이다
-- 다른 세션·백그라운드·원격 계산에서 받은 숫자는 **provisional**로 취급한다.
-- 같은 rawdata에서 **한 줄로 독립 재현**되어 일치하기 전까지는 원고에 넣지 않는다.
-
-### 5. 표기·인용도 각자의 SSOT를 따른다
-- **표기 규칙**(종명 이탤릭·단위·kinetics 기호·dash·대소문자)의 SSOT는 별도 nomenclature
-  스킬/문서 — 일반 지식으로 즉흥 판단하지 않는다.
-- **DOCX 편집**의 SSOT는 안전편집 프로토콜(구조 무결성 보존) — 임의 저장으로 파일을 깨지 않는다.
-- **DOI/인용**은 1차 소스(CrossRef 등)에서 교차검증 — 추측하거나 미검증 도구 출력을 그대로 믿지 않는다.
+Core line: **every number, citation, and notation comes from exactly one source of truth (SSOT), and is never copied by hand.**
 
 ---
 
-## Before you finalize (게이트)
+## The Five Declarations (follow these during manuscript work)
 
-원고를 "완료"로 넘기기 전, 다음을 **실제로 실행**한다 (AGENTS.md §8 참조):
-- **수치 일관성**: 같은 양이 본문/표/figure에서 충돌하지 않는지 자동 점검
-  (`numeric_consistency_check.py` — PASS 나올 때까지 반복).
-- **표기 점검**: nomenclature lint (advisory) 확인.
-- 위 5선언 중 하나라도 어겼다면(손으로 베낀 숫자, 추측한 단위, 미검증 위임값),
-  **그 숫자는 아직 검증되지 않은 것** — rawdata로 되돌아가 재확인한다.
+### 1. Numbers come from the rawdata SSOT only
+- **Every number** used in the body text, tables, figures, captions, and abstract must trace back to
+  one canonical rawdata file (or a script that computes directly from that rawdata).
+- **Never copy a number by hand** from memory, a prior report, a chat log, or another table.
+- When the same value appears in multiple places (body text, table, figure CSV), **all of them must converge on the same rawdata**.
+  If you see a discrepancy, don't fix just one spot — unify them against the rawdata.
+
+### 2. Figure/table caption numbers also come from rawdata
+- The n, mean, error, and conditions stated in a caption come from **the same rawdata source as the plot** — never typed by hand.
+- If a figure is regenerated, its caption numbers must also be regenerated from that same source (never maintained separately).
+
+### 3. Never guess a column name, unit, or definition
+- **Never guess the column name, unit, or definition** of a computed quantity like yield, conversion, rate, or titer.
+  Open the rawdata and the methods description and confirm before using it.
+- Before comparing a model value against an experimental value, confirm they use **the same conditions, the same method, and the same metric definition**
+  (apples-to-apples). A mismatch here produces a silently wrong result.
+
+### 4. A number from delegation/remote work is "provisional"
+- Treat a number received from another session, a background process, or a remote computation as **provisional**.
+- Do not put it in the manuscript until it has been **independently reproduced in one line** from the same rawdata and matches.
+
+### 5. Notation and citations each follow their own SSOT
+- The SSOT for **notation rules** (species-name italics, units, kinetics symbols, dashes, capitalization) is a separate
+  nomenclature skill/document — don't improvise from general knowledge.
+- The SSOT for **DOCX editing** is the safe-editing protocol (preserves structural integrity) — never break the file with an ad hoc save.
+- **DOIs/citations** are cross-verified against a primary source (CrossRef, etc.) — never guessed, and never taken on faith from an unverified tool's output.
 
 ---
 
-## 왜 이렇게까지 하나
+## Before you finalize (the gate)
 
-- 논문의 숫자 하나가 틀리면, 리뷰어가 그 하나로 **전체 데이터의 신뢰를 의심**한다.
-- 손으로 옮긴 숫자는 나중에 "어디서 왔는지" 추적이 안 되고, 공저자·재현자가 못 찾는다.
-- rawdata SSOT를 지키면, 값이 바뀌어도 **소스만 고치고 다시 생성**하면 되므로 오히려 빠르다.
+Before handing a manuscript off as "done", **actually run** the following (see AGENTS.md §8):
+- **Numeric consistency**: an automated check that the same quantity doesn't conflict across body text/table/figure
+  (`numeric_consistency_check.py` — iterate until it PASSes).
+- **Notation check**: confirm the nomenclature lint (advisory).
+- If any of the five declarations above was violated (a hand-copied number, a guessed unit, an unverified delegated value),
+  **that number is not yet verified** — go back to the rawdata and re-confirm it.
 
-> 이 매니페스토는 원칙이고, 실행 도구·검증 명령은 각 스킬과 AGENTS.md §3·§8에 있다.
-> 원고 작업을 시작할 때마다 이 다섯 선언을 먼저 떠올린다.
+---
+
+## Why go this far
+
+- One wrong number in a paper is enough for a reviewer to **question the trustworthiness of the entire dataset**.
+- A hand-copied number can't later be traced back to "where did this come from", and a co-author or reproducer can't find it either.
+- Sticking to the rawdata SSOT is actually faster when a value changes — **fix the source and regenerate**, nothing more.
+
+> This manifesto is the principle; the tools and verification commands that execute it live in each skill and in AGENTS.md §3/§8.
+> Recall these five declarations at the start of every manuscript task.

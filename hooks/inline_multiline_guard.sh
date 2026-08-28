@@ -20,11 +20,14 @@
 input=$(cat 2>/dev/null)
 [ -z "$input" ] && exit 0
 
-# [260626] WSL(집컴) 오발동 완화: 이 BLOCK의 근거는 "git-bash(노트북)에서 멀티라인
-#   python -c / 따옴표 페이로드가 줄바꿈·인코딩으로 깨진다"는 것. WSL bash는 이 깨짐이
-#   없으므로(POSIX 정상) WSL에서는 BLOCK이 순수 오발동 → 헤드리스 goal loop를 자주 멈춤.
-#   WSL 감지 시 advisory(exit 0 + stderr)로 강등. 노트북 git-bash는 기존 BLOCK 유지.
-#   킬스위치/통합: HEADLESS_DELEGATION=1이면 무조건 advisory(위임 게이트 통합, Task #2).
+# [260626] Mitigate false triggers on WSL (home PC): this BLOCK's premise is
+#   "on git-bash (laptop), a multiline python -c / quoted payload breaks on
+#   newlines/encoding." WSL bash doesn't have that breakage (POSIX behaves
+#   normally), so on WSL this BLOCK is a pure false trigger that frequently
+#   halts the headless goal loop. Downgrade to advisory (exit 0 + stderr) when
+#   WSL is detected. The laptop's git-bash keeps the existing BLOCK.
+#   Kill-switch / integration: if HEADLESS_DELEGATION=1, always advisory
+#   (integrated with the delegation gate, Task #2).
 _IS_WSL=0
 [ -f /proc/version ] && grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null && _IS_WSL=1
 if [ "$_IS_WSL" = "1" ] || [ "${HEADLESS_DELEGATION:-0}" = "1" ]; then
@@ -64,23 +67,26 @@ if "\n" not in scan:
     print("ALLOW"); sys.exit(0)
 
 # A) multiline  python -c "...."  /  python3 -c ....  (true inline, not heredoc)
-# FIX 260613: 여는 따옴표~닫는 따옴표 구간 안에 \n 이 있을 때만 차단.
-#   (구버전은 m.end() 이후 명령 전체에서 \n 을 찾아, 뒤에 다른 줄이 더 있는
-#    멀티스텝 bash 안의 단일라인 python -c 를 오탐 차단했음 — 실측 재발.)
+# FIX 260613: only block when there is a \n between the opening and closing quote.
+#   (the old version searched for \n across the whole command after m.end(), so a
+#    single-line python -c inside a larger multi-step bash script with more lines
+#    after it was falsely blocked — measured recurrence.)
 m = re.search(r"python3?\s+-c\s*([\x22\x27])", scan)
 if m:
-    q = m.group(1)               # 여는 따옴표
-    rest = scan[m.end():]        # 따옴표 바로 다음부터
-    close = rest.find(q)         # 같은 종류 닫는 따옴표 위치
-    span = rest if close == -1 else rest[:close]  # 미종료면 끝까지(안전측)
+    q = m.group(1)               # opening quote character
+    rest = scan[m.end():]        # everything right after the quote
+    close = rest.find(q)         # position of the matching closing quote
+    span = rest if close == -1 else rest[:close]  # if unterminated, go to the end (safe side)
     if "\n" in span:
-        # [260801] 조건 축소 — 측정으로 근거를 나눔.
-        #   git-bash에서 멀티라인 `python -c` 를 실제로 실행해 보면
-        #     · 줄바꿈/따옴표 → 정상 동작 (rc=0, 여러 줄 그대로 실행됨)
-        #     · 한글 등 비ASCII → cp949 로 깨짐 ({"한글":1} → {"��":1})
-        #   즉 깨지는 원인은 "멀티라인"이 아니라 "비ASCII 페이로드"다. 종전에는 둘을
-        #   묶어 차단해, 순수 ASCII 멀티라인까지 매번 파일로 우회하게 만들었다(순수 마찰:
-        #   결과물은 동일하고 왕복만 늘어난다). 비ASCII가 실제로 들어있을 때만 차단한다.
+        # [260801] Narrowed the condition — measurement split the rationale in two.
+        #   Actually running a multiline `python -c` on git-bash shows:
+        #     · newlines/quotes → work fine (rc=0, all lines execute as written)
+        #     · non-ASCII (e.g. Korean) → mangled by cp949 ({"한글":1} -> {"??":1})
+        #   In other words the real cause of breakage is not "multiline" but "a
+        #   non-ASCII payload." The old rule lumped the two together and forced
+        #   even pure-ASCII multiline commands through a file every time (pure
+        #   friction: same result, more round trips). Now it only blocks when
+        #   non-ASCII is actually present.
         if any(ord(ch) > 127 for ch in span):
             print("PYC"); sys.exit(0)
         print("ALLOW"); sys.exit(0)
@@ -93,33 +99,35 @@ if am and "\n" in scan[am.end():]:
 print("ALLOW")
 ' 2>/dev/null)
 
-# [260626] WSL/헤드리스 위임: 멀티라인 깨짐이 없는 환경이므로 BLOCK→advisory 강등.
+# [260626] WSL/headless delegation: no multiline-breakage risk in this environment, so downgrade BLOCK -> advisory.
 if [ "${_ADVISORY:-0}" = "1" ] && { [ "$verdict" = "PYC" ] || [ "$verdict" = "VARHEREDOC" ]; }; then
-    echo "[inline_multiline_guard] (WSL/headless advisory) 멀티라인 인라인 감지 — WSL에선 보통 정상이나 가급적 스크립트 파일 경유 권장. 통과." >&2
+    echo "[inline_multiline_guard] (WSL/headless advisory) Multiline inline script detected — usually fine on WSL, but routing through a script file is still recommended. Allowing." >&2
     exit 0
 fi
 
 case "$verdict" in
   PYC)
     cat >&2 <<'MSG'
-[inline_multiline_guard] 차단: 멀티라인 `python -c "..."` 안에 비ASCII(한글 등)가
-있습니다. git-bash 콘솔이 cp949 라서 인코딩이 깨집니다 — {"한글":1} 이 {"??":1} 이 됩니다.
-(순수 ASCII 멀티라인은 정상 동작하므로 차단하지 않습니다.)
+[inline_multiline_guard] Blocked: a multiline `python -c "..."` contains
+non-ASCII text (e.g. Korean). The git-bash console is cp949, so the encoding
+breaks — {"한글":1} becomes {"??":1}.
+(Pure-ASCII multiline works fine and is not blocked.)
 
-→ Write 도구로 ~/scratch/ 에 .py 파일을 만든 뒤 실행하세요:
-    Write  ~/scratch/_run.py   (UTF-8 stdout 가드 포함)
+-> Use the Write tool to create a .py file under ~/scratch/, then run it:
+    Write  ~/scratch/_run.py   (with the UTF-8 stdout guard)
     Bash   python ~/scratch/_run.py
-   단일 라인 `python -c "..."` 는 허용됩니다.
+   A single-line `python -c "..."` is allowed.
 MSG
     exit 2 ;;
   VARHEREDOC)
     cat >&2 <<'MSG'
-[inline_multiline_guard] 차단: 셸 변수에 멀티라인 스크립트를 인라인(content='''...''')
-으로 넣으면 따옴표/한글 인코딩이 깨집니다.
+[inline_multiline_guard] Blocked: inlining a multiline script into a shell
+variable (content='''...''') breaks quoting/non-ASCII encoding.
 
-→ Write 도구로 스크립트 파일을 직접 생성하세요 (.py / .ps1 / .sh).
-   PS1 은 UTF-8 BOM, BAT 은 CP949.
-   도구호출 토큰이 평문으로 누출돼 미실행되는 사고도 이 방식으로 예방됩니다.
+-> Use the Write tool to create the script file directly (.py / .ps1 / .sh).
+   PS1 needs a UTF-8 BOM, BAT needs CP949.
+   This also prevents the failure mode where a tool-call token leaks in
+   plaintext and never gets executed.
 MSG
     exit 2 ;;
 esac

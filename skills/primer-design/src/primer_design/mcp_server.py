@@ -2,12 +2,12 @@
 """
 Primer Design MCP Server
 =========================
-FastMCP 기반 로컬 MCP 서버.
-RE cloning, colony PCR, expression analysis, order sheet 등
-primer design 기능을 Claude Code에서 tool로 직접 호출.
+A local MCP server built on FastMCP.
+Exposes primer design functionality — RE cloning, colony PCR, expression
+analysis, order sheets, etc. — as tools callable directly from Claude Code.
 
-IMPORTANT: stdio transport 사용 -stdout으로의 print() 절대 금지.
-           모든 로깅은 stderr로만 출력.
+IMPORTANT: uses stdio transport — print() to stdout is absolutely forbidden.
+           All logging must go to stderr only.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
-# stderr-only logging (stdout은 JSON-RPC 메시지 전용)
+# stderr-only logging (stdout is reserved for JSON-RPC messages)
 logging.basicConfig(
     stream=sys.stderr,
     level=logging.INFO,
@@ -875,7 +875,7 @@ def _fetch_cds_from_gene_id(gene_id: int, gene_name_hint: str = "") -> dict | No
         return (feat_gene.lower() in target_names
                 or feat_locus.lower() in target_names)
 
-    fallback_cds = None  # gene name 매칭 실패 시 첫 CDS를 fallback으로 보관
+    fallback_cds = None  # keep the first CDS as a fallback in case gene-name matching fails
 
     for nuc_id in nuc_ids[:10]:
         time.sleep(0.4)
@@ -917,7 +917,7 @@ def _fetch_cds_from_gene_id(gene_id: int, gene_name_hint: str = "") -> dict | No
                 "locus_tag": feat_locus,
             }
 
-            # Gene name 매칭: gene qualifier 또는 locus_tag 비교
+            # Gene name matching: compare against the gene qualifier or locus_tag
             if _matches_gene(feat_gene, feat_locus):
                 logger.info(
                     "Matched CDS by gene/locus '%s'/'%s': %d bp, %d aa",
@@ -925,7 +925,7 @@ def _fetch_cds_from_gene_id(gene_id: int, gene_name_hint: str = "") -> dict | No
                 )
                 return cds_info
 
-            # Single-CDS record (mRNA/RefSeq) → gene name 무관하게 사용
+            # Single-CDS record (mRNA/RefSeq) -> use it regardless of gene name
             cds_count = sum(1 for f in record.features if f.type == "CDS")
             if cds_count == 1:
                 logger.info(
@@ -934,11 +934,11 @@ def _fetch_cds_from_gene_id(gene_id: int, gene_name_hint: str = "") -> dict | No
                 )
                 return cds_info
 
-            # Fallback: 첫 유효 CDS 저장 (gene name 매칭이 안 될 경우 대비)
+            # Fallback: keep the first valid CDS (in case gene-name matching never succeeds)
             if fallback_cds is None:
                 fallback_cds = cds_info
 
-    # Gene name 매칭 실패 시 fallback 사용하지 않음 (잘못된 gene 반환 방지)
+    # Do not fall back to it when gene-name matching fails (prevents returning the wrong gene)
     if fallback_cds:
         logger.warning(
             "No CDS matched gene name(s) %s; discarding fallback '%s'",
@@ -961,8 +961,8 @@ def fetch_gene_sequence(
     Searches the NCBI Gene database, retrieves the CDS (ATG to stop),
     and returns DNA/protein sequences ready for design_re_cloning_primers.
 
-    Default: returns native genomic sequence (gDNA PCR용).
-    codon_optimize=True일 때만 E. coli K12 최적 코돈으로 back-translate.
+    Default: returns the native genomic sequence (for gDNA PCR).
+    Only back-translates using E. coli K12-optimal codons when codon_optimize=True.
 
     Args:
         gene_name: Gene name or symbol (e.g. "gudD", "lacZ", "malE").

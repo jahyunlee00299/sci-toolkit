@@ -1,34 +1,37 @@
-# 줄바꿈 정책
+# Line-ending policy
 #
-# 이 저장소는 Windows·macOS·Linux(WSL 포함)에서 함께 쓰인다. git 의 기본
-# autocrlf 동작에 맡기면 체크아웃할 때 셸 스크립트가 CRLF 로 바뀌고, 그러면
-# `#!/usr/bin/env sh` 뒤의 \r 때문에 훅이 통째로 죽는다 — 실패가 조용해서
-# "훅이 설치됐는데 아무것도 막지 않는" 상태가 된다.
+# This repository is shared across Windows, macOS, and Linux (including WSL).
+# Leaving it to git's default autocrlf behavior turns shell scripts into CRLF
+# on checkout, and the stray \r right after `#!/usr/bin/env sh` kills the hook
+# outright — silently, so it looks like "the hook is installed but blocks
+# nothing."
 #
-# 그래서 실행되는 것은 전부 LF 로 못박는다.
+# So everything that gets executed is pinned to LF.
 #
-# 그리고 기본값도 LF 다. `text=auto` 로 두면 Windows 체크아웃은 CRLF, Linux 는 LF 가
-# 되어 **같은 커밋인데 파일 해시가 플랫폼마다 다르다**. SHA256SUMS 는 그 해시로
-# 무결성을 검증하므로, 그 상태에서는 검증이 "이 파일이 온전한가"가 아니라
-# "네가 어느 OS 를 쓰는가"를 재게 된다. CI 첫 실행이 정확히 이걸 잡았다
-# (85건 불일치, 260807) — 실행 파일만 LF 로 고정하는 것으로는 부족했다.
+# The default is LF too. Leaving it at `text=auto` gives Windows checkouts
+# CRLF and Linux checkouts LF, so **the same commit produces a different file
+# hash per platform**. SHA256SUMS verifies integrity by that hash, so under
+# that condition the check stops measuring "is this file intact" and starts
+# measuring "which OS are you on." The first CI run caught exactly this
+# (85 mismatches, 260807) — pinning only the executable files to LF wasn't
+# enough.
 
 * text=auto eol=lf
 
-# 실행 파일 — 반드시 LF (플랫폼 무관)
+# Executables — must be LF, regardless of platform
 *.sh    text eol=lf
 *.py    text eol=lf
 *.bash  text eol=lf
 
-# Windows 전용 스크립트는 CRLF 여야 한다
+# Windows-only scripts must stay CRLF
 *.ps1   text eol=crlf
 *.bat   text eol=crlf
 *.cmd   text eol=crlf
 
-# 해시 매니페스트 — 줄바꿈이 바뀌면 체크섬 검증이 통째로 실패한다
+# Hash manifest — a line-ending change makes checksum verification fail outright
 SHA256SUMS text eol=lf
 
-# 바이너리 (diff/변환 금지)
+# Binaries (no diff/conversion)
 *.png   binary
 *.jpg   binary
 *.jpeg  binary
@@ -40,10 +43,12 @@ SHA256SUMS text eol=lf
 *.zip   binary
 *.ico   binary
 
-# SnapGene 벡터 — 바이너리인데 선언이 없어 `* text=auto eol=lf` 에 걸렸다.
-# 260807: LF 정규화가 파일 안쪽 CRLF 두 바이트를 접어 4개 벡터의 feature 주석이
-# 전부 사라졌다(19/15/16/18개 → 0개). 서열은 그대로 남고 파서는 예외도 던지지
-# 않아서, 프라이머 설계가 CDS 를 못 찾는 형태로 조용히 틀린다.
+# SnapGene vectors — binary, but without a declaration they were falling under
+# `* text=auto eol=lf`.
+# 260807: LF normalization folded a two-byte internal CRLF, and the feature
+# annotations on four vectors vanished entirely (19/15/16/18 -> 0). The
+# sequence itself stayed intact and the parser threw no exception, so primer
+# design silently failed to find the CDS.
 *.dna   binary
 *.xls   binary
 

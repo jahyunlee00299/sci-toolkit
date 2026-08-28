@@ -7,10 +7,12 @@ description: End-to-end academic manuscript pipeline — structure → write →
 
 Integrates manuscript drafting + scientific writing + peer review + revision response + safe DOCX edit + remote delegation. This SKILL.md is a **router**; detailed protocols live in `references/` (progressive disclosure).
 
-> 🔴 **먼저 읽어라**: 원고 작업(작성·수치·figure·인용)을 시작하기 전에
-> **[`references/manuscript_ssot_manifesto.md`](references/manuscript_ssot_manifesto.md)** 의
-> 다섯 선언을 먼저 확인한다 — 모든 숫자·인용·표기는 하나의 SSOT에서만 나오고 손으로
-> 베끼지 않는다는 원칙. 논문 신뢰를 지키는 핵심이다.
+> 🔴 **Read this first**: before starting manuscript work (drafting, numbers,
+> figures, citations), check the five declarations in
+> **[`references/manuscript_ssot_manifesto.md`](references/manuscript_ssot_manifesto.md)**
+> first — the principle that every number, citation, and notation comes from
+> exactly one SSOT and is never hand-copied. This is central to keeping the
+> manuscript trustworthy.
 
 
 > **Life-science content in a delegated call.** When a MAP-stage or verification
@@ -35,20 +37,20 @@ Eight modes. Pick one based on the request:
 
 | Mode | Trigger keywords | Output | Detail |
 |---|---|---|---|
-| `outline` | "구조 잡아줘", "outline", target journal | Section-by-section bullet outline | Phase 1 |
-| `write` | "Introduction 써줘", "Methods 작성" | IMRAD prose, full paragraphs | Phase 2 |
-| `review` / `peer-review` | "검토해줘", "self-review", "피어리뷰", "외부 리뷰어 시뮬레이션", "EIC 관점" | Numbered findings + severity (요청 시 편집장/동료심사자/devil's advocate 등 여러 관점을 번갈아 적용해 심사) | Phase 3 |
-| `discuss` | "결과 해석", "Discussion 보강", "이 결과 어떻게 봐야" | 7-step Discussion + alt interpretations | `references/templates.md` |
-| `revise-response` | "리비전 대응", "reviewer comment 답변" | Point-by-point JSON + Word table + letter | `references/templates.md` |
-| `docx-edit` | existing file path passed, "이 docx 수정", "본문 교정", "tracked change 삽입" | Edited DOCX + changelog | docx skill + Phase 4 |
-| `academic-qc` | "학술 표기 규칙 전수 교정", "표기 통일 전수", "명명법 일괄 적용" | step별 교정본 + 최종 통합 DOCX | `references/academic_qc_rules.md` |
-| `proof-audit` | "proof", "galley", "교정지", "proof 확인", "page proof", 출판사 교정 요청 · 24~48h 회신 기한 | 수정필요/권장/관찰 3분류 + 각 항목의 교체문자열 | `references/proof_stage_audit.md` |
+| `outline` | "구조 잡아줘" (structure this), "outline", target journal | Section-by-section bullet outline | Phase 1 |
+| `write` | "Introduction 써줘" (write the Introduction), "Methods 작성" (draft the Methods) | IMRAD prose, full paragraphs | Phase 2 |
+| `review` / `peer-review` | "검토해줘" (review this), "self-review", "피어리뷰" (peer review), "외부 리뷰어 시뮬레이션" (simulate an outside reviewer), "EIC 관점" (from the EIC's perspective) | Numbered findings + severity (on request, review by rotating through multiple perspectives — editor-in-chief, peer reviewer, devil's advocate, etc.) | Phase 3 |
+| `discuss` | "결과 해석" (interpret the results), "Discussion 보강" (strengthen the Discussion), "이 결과 어떻게 봐야" (how should I read this result) | 7-step Discussion + alt interpretations | `references/templates.md` |
+| `revise-response` | "리비전 대응" (handle the revision), "reviewer comment 답변" (respond to reviewer comments) | Point-by-point JSON + Word table + letter | `references/templates.md` |
+| `docx-edit` | existing file path passed, "이 docx 수정" (edit this docx), "본문 교정" (proofread the body text), "tracked change 삽입" (insert a tracked change) | Edited DOCX + changelog | docx skill + Phase 4 |
+| `academic-qc` | "학술 표기 규칙 전수 교정" (full sweep of academic-notation rules), "표기 통일 전수" (unify notation throughout), "명명법 일괄 적용" (apply nomenclature rules in bulk) | Per-step corrected draft + final merged DOCX | `references/academic_qc_rules.md` |
+| `proof-audit` | "proof", "galley", "교정지" (proof/galley), "proof 확인" (check the proof), "page proof", a publisher correction request with a 24-48h reply deadline | 3-way classification (must-fix / recommended / observation) + the replacement string for each item | `references/proof_stage_audit.md` |
 
-**Router disambiguation** (was a bug — both matched "학술 규칙 수정"):
-- `academic-qc` = **전수/일괄** 표기 규칙 교정 (종명·효소·약어·단위 systematic sweep, step0~6 산출).
-- `docx-edit` = **특정 위치** 텍스트/구조 편집 (지정한 문장·표·인용 수정). 학술 규칙을 일부만 손볼 때도 docx-edit.
-- 표기 규칙 정의 자체는 항상 `academic-term-rules` 스킬(SSOT).
-- `proof-audit` = **게재 확정 후 인쇄 직전** 단계. `academic-qc`/`review`와 갈리는 축은 "원고를 고칠 수 있는가"다 — proof는 SSOT 접근이 없고 되돌릴 수도 없어서, 원고↔rawdata 대조가 아니라 **인쇄된 값끼리** 재현되는지를 본다. 투고 전이면 `academic-qc`, 승인 대기 중이면 `proof-audit`.
+**Router disambiguation** (was a bug — both used to match "학술 규칙 수정" [fix academic-notation rules]):
+- `academic-qc` = **full/bulk** notation-rule correction (systematic sweep of species names, enzymes, abbreviations, units — produces step0~6 output).
+- `docx-edit` = editing text/structure at a **specific location** (revising a given sentence, table, or citation). Also use docx-edit when touching only part of the academic-notation rules.
+- The notation rules themselves are always defined by the `academic-term-rules` skill (SSOT).
+- `proof-audit` = the stage **after publication is confirmed, right before printing**. What separates it from `academic-qc`/`review` is "can the manuscript still be changed?" — a proof has no SSOT access and can't be undone, so instead of cross-checking the manuscript against raw data, it checks whether **the printed values reproduce each other**. Before submission, use `academic-qc`; while awaiting print approval, use `proof-audit`.
 
 ## Pipeline Phases
 
@@ -98,7 +100,7 @@ python scripts/numeric_consistency_check.py \
 Designate one canonical rawdata file and reconcile every flagged conflict to it — never silently "fix" by editing one site. Tune `--tol` (default 0.02).
 
 ## Phase 4 — Polish & Submit Prep
-Cover letter + reviewer-response templates → `references/templates.md`. **Before declaring "최종본": run the 30-item QC checklist** (`references/manuscript_qc_checklist.md`) and **figure provenance** (below). Citations/EndNote → see EndNote Integration.
+Cover letter + reviewer-response templates → `references/templates.md`. **Before declaring the draft "final": run the 30-item QC checklist** (`references/manuscript_qc_checklist.md`) and **figure provenance** (below). Citations/EndNote → see EndNote Integration.
 
 ## Phase 5 — Revision Response (`revise-response`)
 Parse → classify → point-by-point draft → tone policy → JSON/table/letter. Full protocol + IJBM/Elsevier letter format → `references/templates.md`.
@@ -107,25 +109,25 @@ Parse → classify → point-by-point draft → tone policy → JSON/table/lette
 
 ## EndNote Citation Integration
 
-DOI 기준 DB 검색 → 정합성 확인 → 없으면 RIS 생성 → 인용 삽입. **단일/소수 DOI**는 EndNote helper CLI의 `doi-resolve` (provided separately); 상세 워크플로우·출력 해석·댓글 포맷·규칙 → `references/endnote_integration.md`. **대량 batch 변환(10+ , hallucination 검증)** → `endnote-citation-injection` 스킬. **Track Changes XML 삽입 패턴** → docx 스킬(이 저장소에 없음 — docs/12 참조). INSERT 전 CrossRef DOI 검증 필수.
+DOI-based DB search → consistency check → generate a RIS entry if absent → insert the citation. For a **single DOI or a handful**, use the EndNote helper CLI's `doi-resolve` (provided separately); for the detailed workflow, output interpretation, comment format, and rules, see `references/endnote_integration.md`. For **bulk batch conversion (10+, needs hallucination verification)**, use the `endnote-citation-injection` skill. For the **Track Changes XML insertion pattern**, see the docx skill (not in this repo — see docs/12). Verifying the DOI against CrossRef before INSERT is mandatory.
 
 ## DOCX Safe Editing
-DOCX 편집(ZIP 무결성 보존, incremental_edit 세션, 4단계 preflight + Word COM ground-truth, tracked changes, comment anchor)은 **docx 스킬이 단일 진실원천(SSOT)**. python-docx `Document().save()` 금지. manuscript 작업 시 docx 스킬 프로토콜을 그대로 따른다.
+For DOCX editing (preserving ZIP integrity, incremental_edit sessions, 4-stage preflight + Word COM ground-truth, tracked changes, comment anchors), **the docx skill is the single source of truth (SSOT)**. Never use python-docx's `Document().save()`. Follow the docx skill's protocol as-is for manuscript work.
 
-## Academic Notation (표기 규칙)
-종명/효소/coenzyme/단위/kinetics/캡션/dash/superscript 등 모든 표기 규칙의 SSOT는 **`academic-term-rules` 스킬** (§1~14). `academic-qc` 모드는 그 규칙을 docx 전수 교정에 매핑 → `references/academic_qc_rules.md`. 도메인 약어 → `references/domain_abbrev_registry.md`.
+## Academic Notation
+The SSOT for every notation rule — species names, enzymes, coenzymes, units, kinetics, captions, dashes, superscripts, and so on — is the **`academic-term-rules` skill** (§1~14). `academic-qc` mode maps those rules onto a full docx sweep → `references/academic_qc_rules.md`. Domain abbreviations → `references/domain_abbrev_registry.md`.
 
 ## Comment Mode
-Word 코멘트 prefix 태그 체계([STRUCTURE]/[FLOW]/[NOVELTY]/[ABBREV]/[NUMBERING]… + [Critical]) → `references/comment_tags.md`. 작성자명 명시(예: Claude). comment anchor는 id = 기존 max + 1, commentRangeStart는 `w:p` 직속 run 경계에 삽입.
+Word-comment prefix tag scheme ([STRUCTURE]/[FLOW]/[NOVELTY]/[ABBREV]/[NUMBERING]… + [Critical]) → `references/comment_tags.md`. State the author name explicitly (e.g. Claude). Comment anchor id = existing max + 1; insert commentRangeStart at a run boundary directly under `w:p`.
 
-## Track Changes & Comments (적극 사용)
-사용자 검토가 필요한 편집은 **변경 추적(`<w:ins>`/`<w:del>`, author="Claude") + 메모로 근거 기재**가 기본. 기계적·확정 수정만 직접 편집. 동시 편집 금지(OOXML 손상). 상세 → `references/docx_multiagent_workflow.md`.
+## Track Changes & Comments (use actively)
+Edits that need user review default to **tracked changes (`<w:ins>`/`<w:del>`, author="Claude") + a note recording the rationale**. Edit directly only for mechanical, settled corrections. No concurrent editing (corrupts OOXML). Details → `references/docx_multiagent_workflow.md`.
 
 ---
 
 ## Working-Copy Editing (large / long edits)
 
-장시간 DOCX 편집·전면 review·여러 섹션 동시 수정 시, 원본을 직접 건드리지 말고 **working copy**에서 작업한 뒤 승인 후에만 원본 교체.
+For a long DOCX edit, a full review, or editing multiple sections at once, never touch the original directly — work in a **working copy** and replace the original only after approval.
 
 ```
 original.docx (read-only)  ──copy──►  working.docx (edit here)
@@ -146,21 +148,33 @@ original.docx (read-only)  ──copy──►  working.docx (edit here)
 - **changelog**: every edit records a backup filename (`references/backup_naming.md`) + change summary.
 - **Figure provenance** (before submission): run `python scripts/figure_provenance.py <figures_root>` (path relative to this skill) → record each figure's raw data + producing-script path. Confirm output by file existence, not mtime (cloud-synced folders report stale mtimes).
 - **rawdata single source of truth**: numbers in text / tables / figures must trace back to a single rawdata file.
+- 🔴 **Figure files map to manuscript slots by CAPTION, never by filename** — read the
+  sidecar (`<stem>.caption.txt`) or open the picture. A gallery `Fig6.png` whose own
+  sidecar caption said "Fig. 7" once overwrote the manuscript's correct Fig. 6. Byte-identity
+  and aspect-ratio checks both passed on it, because they answer "is this image
+  well-formed", not "is this the right image". Detail: `publication-figures`
+  §Identifying a figure file.
+- 🔴 **After any figure replacement or resize, re-measure figure/caption pagination**
+  (`scripts/figure_caption_pagination.py --before <original>`). Equal page counts are
+  not evidence of safety — one measured case split a caption off its figure while the
+  document stayed the same length. Fix a split by shrinking the figure's WIDTH, never
+  by dropping lettering below the journal's minimum (typically 7 pt).
 
 ## External tooling integration
 
 | Tool | Purpose | When |
 |---|---|---|
-| `scripts/reference_validator.py` | EndNote 필드 + DOI hallucination 검증 (404=지어낸DOI, 망단절=검증불가, 실재DOI 오인용 탐지). `--crossref` 기본 ON, `--no-crossref`로 끔 | reference QC / 최종본 게이트 |
-| `scripts/nomenclature_lint.py` | 명명법/표기 read-only 린트 (R1~R15 안전부분집합: R2약어·R5단위·en-dash·종명). 자동수정 안 함 | 표기 QC, academic-qc 수정 전 위치 파악 |
-| `scripts/ai_tells_lint.py` | AI 작문 안티패턴(A1~A10) 진단. advisory(exit 0), 자동수정 안 함 | self-review / voice 점검 |
-| `scripts/renumber_figures.py` | Figure/Table 인용순 재번호(2단계 토큰, Main↔SI 동일맵, `--dry-run` 기본·`--apply`·`--tracked`) | figure 순서 재편 시 |
-| `scripts/figure_provenance.py` | figure 폴더 순회 → PROVENANCE.md + MANIFEST.md | figure 제출 직전 |
-| `scripts/numeric_consistency_check.py` | 수치/인용 정합성 게이트 | Phase 3 종료 전 |
+| `scripts/reference_validator.py` | Verifies EndNote fields + DOI hallucination (404=fabricated DOI, network unreachable=cannot verify, detects real-DOI-but-wrong-citation). `--crossref` is ON by default; turn it off with `--no-crossref` | reference QC / final-draft gate |
+| `scripts/nomenclature_lint.py` | Read-only nomenclature/notation lint (safe subset of R1~R15: R2 abbreviations, R5 units, en-dash, species names). Never auto-fixes | notation QC, locating issues before an academic-qc correction pass |
+| `scripts/ai_tells_lint.py` | Diagnoses AI-writing anti-patterns (A1~A10). Advisory (exit 0), never auto-fixes | self-review / voice check |
+| `scripts/renumber_figures.py` | Renumbers Figure/Table citation order (2-stage token scheme, same Main↔SI map, `--dry-run` by default · `--apply` · `--tracked`) | when reordering figures |
+| `scripts/figure_provenance.py` | Walks the figure folder → PROVENANCE.md + MANIFEST.md | right before submitting figures |
+| `scripts/figure_caption_pagination.py` | Measures via Word re-typesetting **whether a figure and its caption land on the same page**. `--before <original>` distinguishes a pre-existing split from a newly introduced one. Read-only (never saves). exit 1 = new split. 🔴 A different axis from `figure_caption_check.py`'s C7 — C7 reads an explicit page break in the XML, while this catches the case where a figure simply grew large enough to force a split (which leaves no trace in the XML) | **after replacing or resizing a figure** |
+| `scripts/numeric_consistency_check.py` | Numeric/citation consistency gate | before closing out Phase 3 |
 
-> 코멘트/Track Changes를 docx에 삽입하려면 docx 스킬(이 저장소에 없음 — docs/12 참조)의 `inject_comments_from_csv.py`·`comment.py`(rStyle 동적정합)를 쓴다 — 이 스킬엔 별도 코멘트 삽입 스크립트가 없다. Markdown→Word 변환은 docx 스킬(이 저장소에 없음 — docs/12 참조)을 경유.
+> To insert comments/Track Changes into a docx, use the docx skill's (not in this repo — see docs/12) `inject_comments_from_csv.py`/`comment.py` (dynamic rStyle matching) — this skill has no separate comment-insertion script of its own. Markdown→Word conversion also routes through the docx skill (not in this repo — see docs/12).
 
-출력 JSON을 `manuscript_workdir.py record`로 changelog에 반영.
+Feed the output JSON into the changelog via `manuscript_workdir.py record`.
 
 ## Journal Style Reference
 
@@ -172,18 +186,18 @@ original.docx (read-only)  ──copy──►  working.docx (edit here)
 | Elsevier | Numbered | Varies | Unlimited |
 
 ## references/ index
-- `endnote_integration.md` — 단일 DOI 인용 워크플로우
-- `academic_qc_rules.md` — academic-qc 모드 규칙 R1~R15 (R14 US spelling, R15 *E*-factor) + 순회 코드
-- `comment_tags.md` — Word 코멘트 prefix 분류
-- `domain_abbrev_registry.md` — 도메인 약어 표준 (예시 테이블)
-- `backup_naming.md` — working.docx backup 파일명 카탈로그
+- `endnote_integration.md` — single-DOI citation workflow
+- `academic_qc_rules.md` — academic-qc mode rules R1~R15 (R14 US spelling, R15 *E*-factor) + the sweep code
+- `comment_tags.md` — Word comment prefix taxonomy
+- `domain_abbrev_registry.md` — domain abbreviation standards (example table)
+- `backup_naming.md` — working.docx backup filename catalog
 - `templates.md` — cover letter / reviewer response / revise-response / discuss
-- `writing_style.md` — 문장·헤딩·인용 스타일 규칙
-- `docx_multiagent_workflow.md` — 단일 docx map-reduce (분석 병렬 + 편집 직렬)
-- `manuscript_qc_checklist.md` — "최종본" 30항목 전수 QC
+- `writing_style.md` — sentence/heading/citation style rules
+- `docx_multiagent_workflow.md` — map-reduce for a single docx (parallel analysis + serial edit)
+- `manuscript_qc_checklist.md` — the 30-item full QC for a "final" draft
 
 ## Related Skills
-`academic-term-rules` (표기 SSOT) · `docx` (안전편집 SSOT) · `endnote-citation-injection` (대량 인용) · `literature-review` (선행문헌) · `publication-figures` (그림) · `research-ideation` (해석·토론).
+`academic-term-rules` (notation SSOT) · `docx` (safe-editing SSOT) · `endnote-citation-injection` (bulk citations) · `literature-review` (prior literature) · `publication-figures` (figures) · `research-ideation` (interpretation/discussion).
 
 ## Replaces
 - `deprecated/manuscript-writer` — full manuscript writing with research integration

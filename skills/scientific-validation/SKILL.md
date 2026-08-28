@@ -178,7 +178,7 @@ reject unless a majority fail to refute . One verifier ≠ verification.
 
 - "Optimizer said SUCCESS" → SUCCESS means it stopped, not that the answer is physical.
 - "R² = 0.99" → say nothing about residual structure or units; can be a unit-error fit.
-- "전 항목 PASS" self-report when a number contradicts physics → that PASS is void; reproduce and break it.
+- An "all checks PASS" self-report when a number contradicts physics → that PASS is void; reproduce and break it.
 - Trusting a delegated/remote number before an independent reproduction.
 - Building a canonical value from a hand-assembled one-off call instead of the SSOT script.
 - Reading rawdata columns / units by assumption instead of confirming in code.

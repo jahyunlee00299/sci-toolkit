@@ -20,16 +20,16 @@
 - Attach references at the sentence level wherever possible. Every factual claim should have its own citation.
 - When drafting, mark unsupported claims with [REF NEEDED] for later verification.
 - Include a comment or note with the cited paper's key finding and DOI/link for traceability.
-- Body citation cluster ≤ 3; "Table N" 참조 paragraph는 cluster 금지.
+- Body citation cluster ≤ 3; a paragraph that references "Table N" may not use a cluster.
 
 ## Reaction arrows in body text
-- 본문 `X → Y step` 화살표 기호 금지 → `-to-` 또는 자연어 변환.
-- Scheme/식/표 안의 화살표는 허용.
+- No `X → Y step` arrow symbol in body text → convert to `-to-` or natural language.
+- Arrows inside a Scheme/equation/table figure are allowed.
 
 ## Spelling & Units (per academic-term-rules)
 - American spelling throughout (titer not titre, optimize not optimise, …).
-- Units: slash form (g/L, g/g, U/mL); superscript ⁻¹ 금지.
+- Units: slash form (g/L, g/g, U/mL); no superscript ⁻¹ form.
 - E-factor: italic *E* only, sEF/cEF roman.
 
 ## Tone
-- "기존이 못한 것" 프레임 배제 → "새롭고 다뤄지지 않은 것 / 보완" 프레임.
+- Avoid the "what prior work failed to do" frame → use a "new and previously unaddressed / complementary" frame instead.

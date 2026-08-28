@@ -3,7 +3,7 @@
 
 Documented in docx/SKILL.md:
     visual_check.py <file> <outdir>
-        PDF export 후 페이지별 PNG 렌더 (Claude 직접 시각 확인용).
+        Renders each page to PNG after PDF export (for Claude's direct visual inspection).
 
 Why this exists
 ---------------
@@ -53,9 +53,11 @@ Exit codes: 0 ok, 2 render failed, 3 bad args.
 """
 from __future__ import annotations
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# The default Windows console is cp949, which crashes on Korean/symbol
+# output. Force UTF-8. Use reconfigure: wrapping with TextIOWrapper makes it
+# own the underlying stream, so once this module is imported and the
+# wrapper is later garbage collected, it closes the caller's stdout too
+# (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):

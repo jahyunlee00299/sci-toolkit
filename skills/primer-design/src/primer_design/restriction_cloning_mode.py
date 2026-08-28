@@ -2,18 +2,18 @@
 """
 Restriction Cloning Primer Designer
 =====================================
-iPCRDesignerBase를 상속하여 RE(restriction enzyme) 클로닝용 프라이머 설계.
+Designs primers for RE (restriction enzyme) cloning by subclassing iPCRDesignerBase.
 
-설계 원리 (RE cloning):
+Design principle (RE cloning):
   Forward: 5'-[protection 4-6bp]-[RE5 recognition]-[spacer_5prime]-[insert 5' annealing ~20bp]-3'
   Reverse: 5'-[protection 4-6bp]-[RE3 recognition]-[spacer_3prime]-[RC(stop codon)?]-[insert 3' RC annealing ~20bp]-3'
 
-  Tm 계산: annealing 부분만 (RE tail은 template과 결합하지 않으므로 Tm에 기여하지 않음).
+  Tm calculation: annealing portion only (the RE tail does not bind the template, so it does not contribute to Tm).
 
-특수 사례:
-  NdeI/NcoI: recognition site에 ATG 포함 → include_start_codon 시 RE site 자체가 ATG 제공
-  Compatible overhang: BamHI+BglII 등 → 비방향성 삽입 경고
-  Blunt-end: EcoRV → 방향성 없음 경고
+Special cases:
+  NdeI/NcoI: recognition site contains ATG -> with include_start_codon, the RE site itself supplies the ATG
+  Compatible overhang: e.g. BamHI+BglII -> warns of non-directional insertion
+  Blunt-end: EcoRV -> warns of no directionality
 
 Data sources:
   NEB (New England Biolabs) enzyme buffer compatibility
@@ -78,12 +78,12 @@ COMPATIBLE_OVERHANGS: list[tuple[str, str]] = [
 
 
 def _get_base_enzyme(name: str) -> str:
-    """HF variant 등에서 base enzyme 이름 추출. 'BamHI-HF' -> 'BamHI'."""
+    """Extract the base enzyme name from an HF variant, etc. 'BamHI-HF' -> 'BamHI'."""
     return name.replace("-HF", "")
 
 
 def _find_all_occurrences(seq: str, pattern: str) -> list[int]:
-    """seq 내에서 pattern의 모든 시작 위치 반환."""
+    """Return every starting position of pattern within seq."""
     positions = []
     start = 0
     while True:
@@ -96,7 +96,7 @@ def _find_all_occurrences(seq: str, pattern: str) -> list[int]:
 
 
 class RestrictionCloningDesigner(iPCRDesignerBase):
-    """RE 클로닝용 프라이머 설계 (NEB buffer 호환성 + reading frame 검증 포함)."""
+    """Designs primers for RE cloning (includes NEB buffer compatibility + reading frame validation)."""
 
     def design(
         self,
@@ -116,38 +116,38 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         spacer_3prime: str = "",
         auto_frame_check: bool = True,
     ) -> dict:
-        """RE 클로닝 프라이머 설계 메인 메서드.
+        """Main method for RE cloning primer design.
 
         Parameters
         ----------
         insert_seq : str
-            삽입할 CDS 서열 (ATG부터, stop codon 포함/미포함 모두 가능)
+            the CDS sequence to insert (starting from ATG; with or without a stop codon)
         re_5prime, re_3prime : str
-            5'/3' restriction enzyme 이름
+            5'/3' restriction enzyme names
         vector_name : str or None
-            벡터 이름 (reading frame 검증용)
+            vector name (for reading frame validation)
         target_tm : float
-            annealing 목표 Tm (degC)
+            target annealing Tm (degC)
         min_ann_len, max_ann_len : int
-            annealing 최소/최대 길이
+            minimum/maximum annealing length
         include_start_codon : bool
-            프라이머에 start codon(ATG) 포함 여부
+            whether to include the start codon (ATG) in the primer
         include_stop_codon : bool
-            reverse primer에 stop codon 포함 여부
+            whether to include a stop codon in the reverse primer
         stop_codon : str
-            stop codon 서열 (default: TAA)
+            stop codon sequence (default: TAA)
         protection_bases_5 : int, str, or None
-            5' protection bases (None=자동, int=길이, str=리터럴 서열)
+            5' protection bases (None=auto, int=length, str=literal sequence)
         protection_bases_3 : int, str, or None
-            3' protection bases (None=자동, int=길이, str=리터럴 서열)
+            3' protection bases (None=auto, int=length, str=literal sequence)
         spacer_5prime, spacer_3prime : str
-            RE site 뒤에 추가할 spacer 서열
+            spacer sequence to add after the RE site
         auto_frame_check : bool
-            vector_name 제공 시 자동 frame check 수행 여부
+            whether to run an automatic frame check when vector_name is given
 
         Returns
         -------
-        dict : f_full, r_full, f_ann, r_ann, f_tail, r_tail, QC 결과 등
+        dict : f_full, r_full, f_ann, r_ann, f_tail, r_tail, QC results, etc.
         """
         insert_seq = insert_seq.upper().replace(" ", "")
         warnings = []
@@ -425,26 +425,26 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         vector_name: str,
         prefer_hf: bool = True,
     ) -> list[dict]:
-        """Insert와 벡터에 최적인 RE 쌍을 추천.
+        """Recommend the best RE pair for the given insert and vector.
 
         Parameters
         ----------
         insert_seq : str
-            삽입할 CDS 서열
+            the CDS sequence to insert
         vector_name : str
-            벡터 이름
+            vector name
         prefer_hf : bool
-            HF variant 선호 여부
+            whether to prefer HF variants
 
         Returns
         -------
-        list[dict] : score 높은 순으로 정렬된 RE 쌍 추천 목록
+        list[dict] : a list of recommended RE pairs, sorted by descending score
         """
         insert_seq = insert_seq.upper().replace(" ", "")
         vec = get_vector(vector_name)
         re_sites = vec["re_sites"]
 
-        # 벡터 MCS에 있는 RE 목록 (위치 순)
+        # RE list present in the vector's MCS (in positional order)
         re_list = sorted(re_sites.items(), key=lambda x: x[1])
 
         recommendations = []
@@ -455,7 +455,7 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
                 if re5_pos >= re3_pos:
                     continue
 
-                # RE info 가져오기
+                # fetch RE info
                 if re5_name not in RESTRICTION_ENZYMES:
                     continue
                 if re3_name not in RESTRICTION_ENZYMES:
@@ -464,7 +464,7 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
                 re5_rec = RESTRICTION_ENZYMES[re5_name]["recognition"]
                 re3_rec = RESTRICTION_ENZYMES[re3_name]["recognition"]
 
-                # Insert 내부에 RE site이 있으면 skip
+                # skip if the RE site occurs inside the insert
                 if _find_all_occurrences(insert_seq, re5_rec):
                     continue
                 if _find_all_occurrences(insert_seq, re3_rec):
@@ -557,21 +557,21 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         protection: int | str | None,
         recognition: str,
     ) -> str:
-        """Protection bases 결정.
+        """Determine the protection bases.
 
-        None -> RE_MIN_PROTECTION 기반 자동 생성 (GCGC... 패턴)
-        int  -> 해당 길이만큼 자동 생성
-        str  -> 리터럴 서열 사용
+        None -> auto-generated from RE_MIN_PROTECTION (GCGC... pattern)
+        int  -> auto-generated at that length
+        str  -> use the literal sequence as-is
         """
         if isinstance(protection, str):
             return protection.upper()
 
         rec_len = len(recognition)
         if protection is None:
-            # 가장 가까운 cutoff 이하 key 선택
+            # pick the nearest key at or below the cutoff
             n_bases = RE_MIN_PROTECTION.get(rec_len)
             if n_bases is None:
-                # fallback: recognition length 이하의 가장 큰 key
+                # fallback: the largest key at or below the recognition length
                 applicable = [k for k in RE_MIN_PROTECTION if k <= rec_len]
                 if applicable:
                     n_bases = RE_MIN_PROTECTION[max(applicable)]
@@ -586,7 +586,7 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
 
     @staticmethod
     def _get_buffer_info(enzyme_name: str) -> dict | None:
-        """RE_BUFFER_INFO에서 효소 정보 조회 (HF variant 우선)."""
+        """Look up enzyme info in RE_BUFFER_INFO (HF variant preferred)."""
         hf_name = f"{enzyme_name}-HF"
         if hf_name in RE_BUFFER_INFO:
             return RE_BUFFER_INFO[hf_name]
@@ -595,10 +595,10 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         return None
 
 
-# ── 테스트 ─────────────────────────────────────────────────────────────────────
+# ── Tests ─────────────────────────────────────────────────────────────────────
 
 def _run_tests():
-    """RestrictionCloningDesigner 테스트."""
+    """Tests for RestrictionCloningDesigner."""
     sep = "=" * 70
     line = "-" * 70
     designer = RestrictionCloningDesigner()

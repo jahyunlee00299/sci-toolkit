@@ -1,26 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-축소판 탐지기(capability_diff) 회귀 테스트.
+Regression tests for the shrunken-version detector (capability_diff).
 
-왜 이 도구가 필요한가 (실측 사례):
-  2026-06-27 PII 정화 작업이 런타임 스킬을 sanitize 하면서 `update_notion.py` 를
-  15.9KB → 7.4KB 로 만들었다. 플레이스홀더로 치환된 게 아니라 **기능의 절반이
-  사라진 축소판**이었다(briefing-log upsert, overview 갱신, 중복 정리 로직 소실).
-  그런데 파일은 존재했고 exit code 는 0이었다. 그래서 weekly-briefing 자동화가
-  4주 연속 무산출인 채로 아무도 몰랐다.
+Why this tool exists (a measured case):
+  On 2026-06-27, a PII-sanitization pass on the runtime skills turned
+  `update_notion.py` from 15.9KB down to 7.4KB. It wasn't replaced with
+  placeholders — it was a **shrunken version that lost half its
+  functionality** (the briefing-log upsert, overview refresh, and
+  dedup-cleanup logic were gone). But the file still existed and the exit
+  code was 0. So the weekly-briefing automation produced nothing for 4
+  straight weeks and nobody noticed.
 
-  일반 품질 비교(LLM judge)는 이걸 못 잡는다. 축소판도 "잘 쓰인 문서"로 보이기
-  때문이다. 잡히는 유일한 방법은 **원본에 있던 능력이 새 버전에 있는가**를
-  구조적으로 대조하는 것이다 — 그게 이 도구다.
+  A generic quality comparison (an LLM judge) cannot catch this. A shrunken
+  version still reads as "well-written text." The only way to catch it is
+  to structurally diff **whether a capability the original had still exists
+  in the new version** — that's what this tool does.
 
-계약:
-  1. 원본에 있던 섹션(##/###)이 새 버전에서 사라지면 잡는다.
-  2. 원본이 참조하던 스크립트/파일 경로가 사라지면 잡는다.
-  3. 원본에 있던 코드펜스 명령(python x.py …)이 사라지면 잡는다.
-  4. 크기가 임계 이상 줄면 경고한다(기본 30%).
-  5. 이름만 바뀐 것(도메인 일반화)은 소실이 아니다 — 개수가 유지되면 통과.
-     정화의 목적이 바로 이름 치환이므로, 여기서 오탐이 나면 도구가 쓸모없다.
+Contract:
+  1. Catches it when a section (##/###) present in the original disappears
+     in the new version.
+  2. Catches it when a script/file path the original referenced disappears.
+  3. Catches it when a code-fenced command (python x.py ...) present in the
+     original disappears.
+  4. Warns when size shrinks past a threshold (30% by default).
+  5. A rename alone (domain generalization) is not a loss — if the count
+     stays the same, it passes. Sanitization's whole point IS renaming, so a
+     false positive here would make the tool useless.
 """
 from __future__ import annotations
 
@@ -84,60 +90,60 @@ Produces `out/report.html`.
 
 
 def main() -> int:
-    print("축소판 탐지기 검증")
+    print("Shrunken-version detector verification")
     print("=" * 60)
 
-    # ── 1. 정상 정화: 이름만 바뀌고 능력은 그대로 ────────────────────────
-    print("\n[정상 정화] 도메인 이름만 치환 — 소실 아님")
+    # ── 1. Normal sanitization: only names change, capability stays ─────
+    print("\n[normal sanitization] domain names only renamed — not a loss")
     sanitized = (ORIGINAL
                  .replace("data.csv", "input.csv")
                  .replace("Handle empty input.", "Handle an empty input file."))
     rep = diff_capabilities(ORIGINAL, sanitized)
-    check("소실 0건으로 판정", not rep.lost_sections and not rep.lost_refs
+    check("judged as 0 losses", not rep.lost_sections and not rep.lost_refs
           and not rep.lost_commands,
-          f"오탐: sections={rep.lost_sections} refs={rep.lost_refs} cmds={rep.lost_commands}")
-    check("축소 경고 없음", not rep.shrank, f"shrink_ratio={rep.shrink_ratio:.2f}")
+          f"false positive: sections={rep.lost_sections} refs={rep.lost_refs} cmds={rep.lost_commands}")
+    check("no shrink warning", not rep.shrank, f"shrink_ratio={rep.shrink_ratio:.2f}")
 
-    # ── 2. 섹션 소실 ────────────────────────────────────────────────────
-    print("\n[섹션 소실] ## Reporting 통째 삭제")
+    # ── 2. Section loss ───────────────────────────────────────────────
+    print("\n[section loss] ## Reporting deleted wholesale")
     cut = ORIGINAL.split("## Reporting")[0]
     rep = diff_capabilities(ORIGINAL, cut)
-    check("사라진 섹션을 잡음", "Reporting" in " ".join(rep.lost_sections),
+    check("catches the missing section", "Reporting" in " ".join(rep.lost_sections),
           f"lost_sections={rep.lost_sections}")
 
-    # ── 3. 참조 경로 소실 ───────────────────────────────────────────────
-    print("\n[참조 소실] references/analysis_rules.md 참조 제거")
+    # ── 3. Reference-path loss ────────────────────────────────────────
+    print("\n[reference loss] references/analysis_rules.md reference removed")
     noref = ORIGINAL.replace("See `references/analysis_rules.md` for the decision tree.",
                              "See the decision tree.")
     rep = diff_capabilities(ORIGINAL, noref)
-    check("사라진 파일 참조를 잡음",
+    check("catches the missing file reference",
           any("analysis_rules" in r for r in rep.lost_refs),
           f"lost_refs={rep.lost_refs}")
 
-    # ── 4. 실행 명령 소실 ───────────────────────────────────────────────
-    print("\n[명령 소실] analyze.py 실행 블록 제거")
-    nocmd = ORIGINAL.replace("python scripts/analyze.py --input data.csv", "(생략)")
+    # ── 4. Command loss ───────────────────────────────────────────────
+    print("\n[command loss] analyze.py execution block removed")
+    nocmd = ORIGINAL.replace("python scripts/analyze.py --input data.csv", "(omitted)")
     rep = diff_capabilities(ORIGINAL, nocmd)
-    check("사라진 실행 명령을 잡음",
+    check("catches the missing command",
           any("analyze.py" in c for c in rep.lost_commands),
           f"lost_commands={rep.lost_commands}")
 
-    # ── 5. 260727 유형: 크기 반토막 ─────────────────────────────────────
-    print("\n[축소판] 내용 절반 소실 (260727 update_notion.py 유형)")
+    # ── 5. The 260727 pattern: size cut in half ───────────────────────
+    print("\n[shrunken version] half the content lost (the 260727 update_notion.py pattern)")
     half = "\n".join(ORIGINAL.splitlines()[: len(ORIGINAL.splitlines()) // 2])
     rep = diff_capabilities(ORIGINAL, half)
-    check("축소를 경고함", rep.shrank, f"shrink_ratio={rep.shrink_ratio:.2f}")
-    check("판정이 FAIL", not rep.ok, "축소판인데 ok=True")
+    check("warns about the shrink", rep.shrank, f"shrink_ratio={rep.shrink_ratio:.2f}")
+    check("verdict is FAIL", not rep.ok, "it's a shrunken version but ok=True")
 
-    # ── 6. 확장은 문제 아님 ─────────────────────────────────────────────
-    print("\n[확장] 내용이 늘어난 경우 — 통과해야 함")
+    # ── 6. Growth is not a problem ────────────────────────────────────
+    print("\n[growth] content grew — should pass")
     more = ORIGINAL + "\n## Troubleshooting\nCheck the log first.\n"
     rep = diff_capabilities(ORIGINAL, more)
-    check("확장은 소실로 보지 않음", rep.ok,
+    check("growth is not treated as loss", rep.ok,
           f"sections={rep.lost_sections} shrink={rep.shrink_ratio:.2f}")
 
     print("=" * 60)
-    print(f"통과 {_pass} / 실패 {_fail}")
+    print(f"PASS {_pass} / FAIL {_fail}")
     return 1 if _fail else 0
 
 
