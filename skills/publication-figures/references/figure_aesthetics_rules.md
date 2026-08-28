@@ -96,7 +96,7 @@ When trade-offs collide, resolve in this order:
    D-glucose*, never one of each. Define the abbreviations at first mention in the caption
    ("D-Gal, D-galactose; D-Glc, D-glucose"). Run `check_abbrev_consistency(labels)` from
    `aesthetic_helpers.py` on the legend label list before saving. (academic-term-rules §2.)
-4. **Legend placement** — prefer the **corners (가생이), never center**. Preference order:
+4. **Legend placement** — prefer the **corners, never center**. Preference order:
    **upper-right → lower-right → lower-left → upper-left**. Pick the first corner that
    clears the data. `frameon=False`.
 5. **No overlaps** — significance markers (`*`/`**`/`***` + brackets) spaced so they don't
@@ -343,7 +343,7 @@ descriptive `set_title`, missing layout manager, savefig flags) is now **built a
 mandatory** — `scripts/figure_lint.py`. It is no longer an optional follow-up: a figure is
 not done until `python figure_lint.py render_figN.py` reports **0 high-severity findings**.
 See "## R0 — Enforcement" at the top of this file. (Originally deferred under the
-"규칙 SSOT 신설 (A)" scope; that deferral was the measured root cause of rules being
+"establish rules SSOT (A)" scope; that deferral was the measured root cause of rules being
 ignored — 260626 audit — so it was promoted to mandatory.)
 
 ---

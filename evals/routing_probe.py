@@ -1,37 +1,43 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AGENTS.md §0 라우팅이 **실제로 발동하는지** 측정한다.
+Measures whether AGENTS.md §0 routing **actually fires**.
 
-문서에 규칙을 적어두는 것과 모델이 그 규칙을 따르는 것은 다른 사실이다.
-라우팅 표에 행을 추가하고 발동을 재지 않으면, 그 규칙은 존재하지 않는 것과
-같다. 이 스크립트는 실제 발화를 headless 로 던져 어느 경로를 타는지 잰다.
+Writing a rule down in a document and the model actually following that rule
+are two different facts. Add a row to the routing table without measuring
+whether it fires, and that rule is effectively nonexistent. This script fires
+real utterances headless and measures which path gets taken.
 
-왜 별도 트랙인가 (doctor.py 에 넣지 않는 이유)
------------------------------------------------
-tests/ 의 회귀 테스트는 결정적 로직을 검사하고 몇 초면 끝난다. 이 측정은
-LLM 을 여러 번 호출하므로 느리고, 비결정적이고, 돈이 든다(1회 스윕 ≈ $1~2).
-성격이 달라서 `doctor.py` 의 빠른 진단에 섞으면 doctor 를 아무도 안 돌리게 된다.
-필요할 때 수동으로 돌린다 — 라우팅 표를 고쳤을 때가 그 때다.
+Why a separate track (why not fold this into doctor.py)
+---------------------------------------------------------
+The regression tests under tests/ check deterministic logic and finish in
+seconds. This measurement calls the LLM multiple times, so it's slow,
+non-deterministic, and costs money (one sweep ≈ $1-2). The character is
+different enough that mixing it into doctor.py's fast diagnostics would mean
+nobody runs doctor anymore. Run it by hand when needed — that's whenever the
+routing table changes.
 
-격리
-----
-개인 CLAUDE.md·스킬·메모리가 실리면 "이 툴킷만으로 되는가"를 재는 실험이
-오염된다(툴킷을 받은 사람에게는 그 맥락이 없다). 그래서
-`--system-prompt-file` 로 기본 프롬프트를 통째로 갈아끼우고,
-`--exclude-dynamic-system-prompt-sections` 와 `--disable-slash-commands` 로
-동적 주입과 개인 스킬을 끈다.
+Isolation
+---------
+If a personal CLAUDE.md, skills, or memory get loaded, it contaminates the
+experiment measuring "does this work on the toolkit alone" (someone who just
+received the toolkit has none of that context). So `--system-prompt-file`
+completely replaces the default prompt, and
+`--exclude-dynamic-system-prompt-sections` and `--disable-slash-commands`
+turn off dynamic injection and personal skills.
 
-모델
-----
-기본 `sonnet`. haiku 로도 라우팅 자체는 되지만 출력 계약(JSON only)을 자주
-어겨서 측정 도구가 측정 대상보다 시끄러워진다(실측: haiku 7건 중 3건 파싱 실패,
-sonnet 7/7 성공). 측정에서는 순응도가 곧 신호 품질이다.
+Model
+-----
+Default is `sonnet`. Routing itself still works with haiku, but it frequently
+breaks the output contract (JSON only), so the measurement tool ends up
+noisier than the thing being measured (measured: haiku failed to parse 3 of 7
+cases, sonnet succeeded 7/7). For this measurement, compliance IS signal
+quality.
 
-사용
-----
+Usage
+-----
     python evals/routing_probe.py
-    python evals/routing_probe.py --model haiku      # 싸게, 대신 파싱 실패 감수
+    python evals/routing_probe.py --model haiku      # cheaper, at the cost of parse failures
 """
 from __future__ import annotations
 
@@ -63,13 +69,17 @@ no prose before it, no prose after it, no markdown fence:
 Any character outside that object is a failed response.
 """
 
-# (설명, 사용자 발화, §10 에 따라 기록해야 하는가)
+# (label, user utterance, should §10 record this)
+# NOTE: the label and utterance strings are the probe's actual test input —
+# they exercise Korean-language routing per AGENTS.md §0/§10, so they stay in
+# Korean on purpose. Translating them would test a different (English) input
+# than the one this eval is designed to probe.
 CASES = [
     ("불편 호소",      "docx 표 편집이 자꾸 실패해서 너무 불편해요", True),
     ("기능 부재",      "이런 기능이 있으면 좋겠는데 없네요", True),
     ("작동 안 함",     "이거 왜 안 되는지 모르겠어요", True),
     ("영어 불편",      "this keeps failing and it is really confusing", True),
-    # 대조군 — 평범한 작업 요청. 여기서 true 가 나오면 과발동이다.
+    # control group — an ordinary work request. If this comes back true, that's over-firing.
     ("일반 논문검색",  "이 주제로 논문 좀 찾아줘", False),
     ("일반 그림",      "이 데이터로 figure 만들어줘", False),
     ("일반 통계",      "이 데이터 통계 검정 뭐 써야 해?", False),
@@ -77,7 +87,7 @@ CASES = [
 
 
 def build_system_prompt() -> str:
-    """AGENTS.md 에서 §0 과 §10 만 잘라 온다. 전문을 매번 실을 필요는 없다."""
+    """Cut just §0 and §10 out of AGENTS.md. No need to load the whole document each time."""
     text = AGENTS.read_text(encoding="utf-8", errors="replace")
 
     def section(start_marker: str, end_marker: str) -> str:
@@ -90,18 +100,19 @@ def build_system_prompt() -> str:
     routing = section("## 0. Routing", "## 1. Code Quality")
     friction = section("## 10. Recording Friction", "## Adapting This File")
     if not routing:
-        sys.exit("[오류] AGENTS.md 에서 §0 라우팅 표를 찾지 못했습니다.")
+        sys.exit("[error] Could not find the §0 routing table in AGENTS.md.")
     head = ("You are an assistant inside a research toolkit. "
             "Follow its routing rules exactly.\n\n")
     return head + routing + "\n\n" + friction + OUTPUT_CONTRACT
 
 
 def extract_json(raw: str) -> dict | None:
-    """응답에서 첫 균형 잡힌 JSON 객체만 잘라낸다.
+    """Cut out just the first balanced JSON object from the response.
 
-    모델은 JSON 앞뒤에 산문을 붙이는 일이 잦다. `rfind('}')` 로 끝을 잡으면
-    뒤따르는 산문 속 중괄호를 물어 파싱이 깨지므로, 깊이를 세어 첫 객체에서
-    멈춘다.
+    The model often wraps the JSON in prose before and after it. Grabbing the
+    end with `rfind('}')` can catch a brace inside the trailing prose and
+    break parsing, so this counts depth and stops at the first complete
+    object instead.
     """
     raw = raw.strip()
     for fence in ("```json", "```"):
@@ -135,7 +146,7 @@ def ask(prompt: str, sysprompt_path: Path, model: str) -> dict:
         proc = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
                               encoding="utf-8", errors="replace", timeout=300)
     except FileNotFoundError:
-        sys.exit("[오류] `claude` CLI 를 찾을 수 없습니다. PATH 를 확인하세요.")
+        sys.exit("[error] Could not find the `claude` CLI. Check your PATH.")
     except subprocess.TimeoutExpired:
         return {"_error": "timeout"}
     if proc.returncode != 0:
@@ -152,12 +163,12 @@ def ask(prompt: str, sysprompt_path: Path, model: str) -> dict:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="§0 라우팅 발동 측정")
+    ap = argparse.ArgumentParser(description="Measure §0 routing firing")
     ap.add_argument("--model", default="sonnet",
-                    help="측정에 쓸 모델 (기본 sonnet — haiku 는 출력 계약을 자주 어긴다)")
+                    help="model to use for the measurement (default sonnet — haiku often breaks the output contract)")
     args = ap.parse_args()
 
-    print(f"§0 라우팅 발동 측정  (model={args.model})")
+    print(f"§0 routing firing measurement  (model={args.model})")
     print("=" * 72)
 
     with tempfile.TemporaryDirectory() as td:
@@ -179,14 +190,14 @@ def main() -> int:
                 ok += 1
             else:
                 bad += 1
-            print(f"  {mark}  {label:12s} record={str(got):5s}(기대 {str(want):5s}) "
+            print(f"  {mark}  {label:12s} record={str(got):5s}(expected {str(want):5s}) "
                   f"q={r.get('questions_asked')}  route={str(r.get('route', ''))[:32]}")
 
     print("=" * 72)
-    print(f"통과 {ok} / 실패 {bad}   비용 ${cost:.3f}")
+    print(f"PASS {ok} / FAIL {bad}   cost ${cost:.3f}")
     if bad:
-        print("\n라우팅이 의도대로 발동하지 않는다. AGENTS.md §0 의 해당 행 문구를 고칠 것 —")
-        print("모델이 못 따라간 규칙은 규칙이 아니라 희망사항이다.")
+        print("\nRouting is not firing as intended. Fix the wording of that row in AGENTS.md §0 —")
+        print("a rule the model can't follow isn't a rule, it's a wish.")
     return 1 if bad else 0
 
 

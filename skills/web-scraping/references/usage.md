@@ -1,54 +1,55 @@
-# web-scraping skill — 상세 사용 가이드
+# web-scraping skill — detailed usage guide
 
-`SKILL.md`의 빠른 참조를 보완하는 상세 예시·트러블슈팅 문서.
+Detailed examples and troubleshooting that supplement `SKILL.md`'s quick reference.
 
-## 목차
+## Table of contents
 
-1. 설치와 환경
-2. 모드별 상세 사용
-3. Python import 패턴
-4. 공통 옵션 (polite crawling)
-5. 출력 형식과 provenance
-6. 트러블슈팅
-7. 윤리·법적 가이드라인
+1. Installation and environment
+2. Detailed usage per mode
+3. Python import patterns
+4. Common options (polite crawling)
+5. Output format and provenance
+6. Troubleshooting
+7. Ethical/legal guidelines
 
 ---
 
-## 1. 설치와 환경
+## 1. Installation and environment
 
-### 핵심 의존성 (필수)
+### Core dependencies (required)
 
 ```bash
-# base 또는 research-agent conda env에서
+# from the base or research-agent conda env
 cd <skill-root>
 pip install -r requirements.txt
 ```
 
-설치 무게는 약 20~30 MB (Playwright 브라우저 제외). 모두 MIT/BSD/Apache-2.0.
+Install footprint is about 20-30 MB (excluding the Playwright browser). All MIT/BSD/Apache-2.0.
 
-Windows에서 `selectolax`, `lxml`은 pip wheel이 제공되므로 컴파일러 불필요.
-conda 혼용 시 `lxml`은 conda-forge를 우선해도 된다:
+On Windows, `selectolax` and `lxml` ship as pip wheels, so no compiler is needed.
+If you're mixing in conda, `lxml` from conda-forge is fine to prefer:
 
 ```bash
 conda install -c conda-forge lxml
 pip install httpx selectolax trafilatura beautifulsoup4 habanero arxiv markitdown
 ```
 
-### 동적 모드 (선택)
+### Dynamic mode (optional)
 
-`fetch_dynamic.py`를 쓸 때만 설치한다. 정적·학술·파일수집 모드는 불필요.
+Install this only if you'll use `fetch_dynamic.py`. Not needed for the static,
+academic, or file-harvest modes.
 
 ```bash
 pip install playwright
-playwright install chromium      # 브라우저 바이너리 (~150 MB)
+playwright install chromium      # browser binary (~150 MB)
 ```
 
-미설치 상태로 `fetch_dynamic.py`를 실행하면 친절한 설치 안내 후 종료한다.
+Running `fetch_dynamic.py` without it installed prints a friendly install guide and exits.
 
-### 실행 위치
+### Where to run it from
 
-스크립트는 `_common.py`를 같은 디렉터리에서 import 하므로
-**`scripts/` 디렉터리 안에서 실행**한다:
+The scripts import `_common.py` from the same directory, so
+**run them from inside the `scripts/` directory**:
 
 ```bash
 cd <skill-root>/scripts
@@ -57,111 +58,113 @@ python fetch_static.py "https://..." --mode text
 
 ---
 
-## 2. 모드별 상세 사용
+## 2. Detailed usage per mode
 
-### 2.1 fetch_static.py — 정적 HTML
+### 2.1 fetch_static.py — static HTML
 
-| 모드 | 반환 내용 |
+| Mode | What it returns |
 |---|---|
-| `text` | trafilatura 본문 추출 (Markdown) + 메타데이터(title/author/date) |
-| `tables` | 모든 HTML `<table>` → `{columns, rows, n_rows, n_cols}` |
-| `links` | 모든 `<a href>` → 절대 URL + 앵커 텍스트 (중복 제거) |
-| `html` | 원본 HTML 그대로 |
+| `text` | trafilatura body extraction (Markdown) + metadata (title/author/date) |
+| `tables` | every HTML `<table>` -> `{columns, rows, n_rows, n_cols}` |
+| `links` | every `<a href>` -> absolute URL + anchor text (deduplicated) |
+| `html` | the raw HTML as-is |
 
 ```bash
-# 논문 페이지 본문 + 표를 함께 추출
+# extract a paper page's body text + tables together
 python fetch_static.py \
     "https://pubs.rsc.org/en/content/articlehtml/2024/gc/d4gc00000a" \
     --mode text tables -o article.json
 
-# DB 페이지의 표만 DataFrame 형태로
+# only the tables from a DB page, in DataFrame form
 python fetch_static.py "https://www.uniprot.org/uniprotkb/P12345" \
     --mode tables -o uniprot_tables.json
 
-# rate-limit을 늘려 보수적으로 (도메인당 3초)
+# be more conservative by raising the rate limit (3s per domain)
 python fetch_static.py "https://slow-server.org/page" \
     --mode text --delay 3.0 --timeout 60
 ```
 
-`text` 모드는 trafilatura가 없거나 본문을 못 찾으면 selectolax 기반
-fallback으로 태그를 제거한 텍스트를 반환한다 (`extractor` 필드로 구분).
+If `trafilatura` isn't available or can't find the body, `text` mode falls back to a
+selectolax-based extractor that returns tag-stripped text (distinguished by the
+`extractor` field).
 
-### 2.2 fetch_academic.py — 학술 메타데이터
+### 2.2 fetch_academic.py — academic metadata
 
-세 소스 모두 공식 API만 사용한다. 페이지 스크래핑 없음.
+All three sources use only official APIs. No page scraping.
 
 ```bash
-# Crossref 키워드 검색 (relevance 정렬)
+# Crossref keyword search (sorted by relevance)
 python fetch_academic.py --source crossref \
     --query "enzyme cascade biocatalysis" -n 20 -o crossref_results.json
 
-# Crossref DOI 단건 — EndNote DOI 검증 워크플로우에 직결
+# a single Crossref DOI — feeds directly into the EndNote DOI verification workflow
 python fetch_academic.py --source crossref --doi 10.1021/acscatal.3c00000
 
-# arXiv 검색 (제출일 최신순)
+# arXiv search (newest submission date first)
 python fetch_academic.py --source arxiv \
     --query "Bayesian optimization enzyme" -n 10
 
-# bioRxiv 최근 프리프린트 (최근 30일)
+# recent bioRxiv preprints (last 30 days)
 python fetch_academic.py --source biorxiv --recent 30 --server biorxiv
 
-# medRxiv DOI 조회
+# medRxiv DOI lookup
 python fetch_academic.py --source biorxiv --server medrxiv \
     --doi 10.1101/2024.01.01.24300000
 ```
 
-반환 레코드의 통일 필드: `title, authors, year, doi, journal/url, pdf_links`.
-`pdf_links`에 전문 PDF URL이 있으면 `harvest_files.py`로 바로 내려받을 수 있다.
+Unified fields across returned records: `title, authors, year, doi, journal/url, pdf_links`.
+If `pdf_links` has a full-text PDF URL, it can be downloaded directly with `harvest_files.py`.
 
-PubMed/OpenAlex 검색이 필요하면 이 스킬 대신 `pubmed-database`,
-`openalex-database` 스킬이나 Biopython(Bio.Entrez) 패키지를 쓴다 (역할 분담, 중복 회피).
+For PubMed/OpenAlex search, use the `pubmed-database`/`openalex-database` skills or the
+Biopython (Bio.Entrez) package instead of this skill (division of responsibility, avoid duplication).
 
-### 2.3 fetch_dynamic.py — 동적 JS 페이지
+### 2.3 fetch_dynamic.py — dynamic JS pages
 
-정적 추출이 빈 결과를 주거나 콘텐츠가 JS로 그려질 때만.
+Only when static extraction returns nothing, or the content is rendered by JS.
 
 ```bash
-# 기본: networkidle까지 대기 후 본문 추출
+# default: wait for networkidle, then extract the body text
 python fetch_dynamic.py "https://spa-dashboard.org/data" --mode text
 
-# 특정 요소 등장까지 대기 (검색 결과 테이블 등)
+# wait for a specific element to appear (a search-results table, etc.)
 python fetch_dynamic.py "https://search-site.org/results?q=target+compound" \
     --mode tables --wait-selector "div.result-table" --timeout 45
 
-# 디버깅: 브라우저 창 표시
+# debugging: show the browser window
 python fetch_dynamic.py "https://site.org" --mode html --no-headless
 ```
 
-`--wait-until` 옵션: `load` / `domcontentloaded` / `networkidle`(기본).
-렌더링 후 HTML은 `StaticScraper`로 넘겨지므로 추출 모드는 정적과 동일하다.
+`--wait-until` options: `load` / `domcontentloaded` / `networkidle` (default).
+After rendering, the HTML is handed to `StaticScraper`, so the extraction modes are the same as static.
 
-### 2.4 harvest_files.py — 문서 파일 수집
+### 2.4 harvest_files.py — document file collection
 
 ```bash
-# 1단계: 어떤 파일이 링크돼 있는지 먼저 확인 (다운로드 안 함)
+# step 1: check which files are linked first (no download)
 python harvest_files.py "https://journal.org/article/si" \
     --discover-only --ext pdf xlsx docx
 
-# 2단계: PDF만 다운로드
+# step 2: download only the PDFs
 python harvest_files.py "https://journal.org/article/si" \
     -o ./si_files --ext pdf -n 5 --report harvest.json
 
-# 다운로드 + markitdown 변환 동시
+# download + markitdown conversion together
 python harvest_files.py "https://journal.org/article/si" \
     -o ./si_files --ext pdf docx xlsx --convert --report harvest.json
 ```
 
-- 다운로드는 스트리밍(청크 64KB)이라 수백 MB PDF도 메모리 안전.
-- 파일명 충돌 시 `_1`, `_2` suffix 자동 부여.
-- 개별 다운로드 실패는 raise하지 않고 report의 `status` 필드에 기록 → 배치 계속.
-- `--convert`는 `markitdown` 패키지를 사용. 미설치 시 markitdown 스킬
-  명령을 안내 메시지로 출력.
+- Downloads stream (64KB chunks), so even a several-hundred-MB PDF is memory-safe.
+- On a filename collision, a `_1`, `_2` suffix is added automatically.
+- An individual download failure is not raised — it's recorded in the report's `status`
+  field and the batch continues.
+- `--convert` uses the `markitdown` package. If it's not installed, this prints the
+  markitdown skill command as guidance.
 
 ---
 
-## 3. Python import 패턴
+## 3. Python import patterns
 
-모든 스크립트는 import 가능하다. `scripts/`를 sys.path에 추가한다.
+Every script is importable. Add `scripts/` to sys.path.
 
 ```python
 import sys
@@ -172,7 +175,7 @@ from fetch_static import StaticScraper
 from fetch_academic import CrossrefProvider, ArxivProvider, BiorxivProvider
 from harvest_files import FileHarvester, convert_with_markitdown
 
-# 클라이언트 1개를 여러 페이지에 재사용 (rate-limit 상태 공유)
+# reuse one client across multiple pages (shares rate-limit state)
 config = HttpClientConfig(min_delay=1.5, max_retries=5, use_cache=True)
 with PoliteHttpClient(config) as client:
     for url in page_urls:
@@ -182,13 +185,13 @@ with PoliteHttpClient(config) as client:
     harvester = FileHarvester(client, extensions=("pdf",))
     results = harvester.harvest("https://journal.org/si", "./out")
 
-# 학술 메타데이터
+# academic metadata
 papers = CrossrefProvider().search("target product biosynthesis", limit=10)
 for p in papers:
     print(p["title"], p["doi"], p["pdf_links"])
 ```
 
-### 동적 스크래퍼
+### The dynamic scraper
 
 ```python
 from fetch_dynamic import DynamicScraper, DynamicConfig
@@ -200,32 +203,32 @@ text = scraper.extract_text()
 
 ---
 
-## 4. 공통 옵션 (polite crawling)
+## 4. Common options (polite crawling)
 
-`fetch_static.py`, `fetch_academic.py`(biorxiv), `harvest_files.py`가 공유:
+Shared by `fetch_static.py`, `fetch_academic.py` (biorxiv), and `harvest_files.py`:
 
-| 옵션 | 기본값 | 의미 |
+| Option | Default | Meaning |
 |---|---|---|
-| `--delay` | 1.0 | 도메인당 요청 간 최소 초 |
-| `--timeout` | 30.0 | 요청 타임아웃 (초) |
-| `--retries` | 3 | 429/5xx/전송오류 최대 재시도 |
-| `--ignore-robots` | off | robots.txt 무시 (권한 있을 때만) |
-| `--no-cache` | off | 응답 캐시 비활성화 |
+| `--delay` | 1.0 | minimum seconds between requests to the same domain |
+| `--timeout` | 30.0 | request timeout (seconds) |
+| `--retries` | 3 | max retries on 429/5xx/transport error |
+| `--ignore-robots` | off | ignore robots.txt (only with authorization) |
+| `--no-cache` | off | disable the response cache |
 
-`fetch_dynamic.py`는 `--timeout`, `--ignore-robots`, `--no-headless`,
-`--wait-selector`, `--wait-until`을 사용한다.
+`fetch_dynamic.py` uses `--timeout`, `--ignore-robots`, `--no-headless`,
+`--wait-selector`, and `--wait-until`.
 
-### 캐시
+### Cache
 
-- 위치: `web-scraping/.cache/` (URL의 SHA-256 해시로 키)
-- 기본 TTL: 24시간
-- 캐시 비우기: `.cache/` 디렉터리 내용 삭제 (휴지통 경유 권장)
+- Location: `web-scraping/.cache/` (keyed by the SHA-256 hash of the URL)
+- Default TTL: 24 hours
+- To clear the cache: delete the contents of the `.cache/` directory (going through the recycle bin is recommended)
 
 ---
 
-## 5. 출력 형식과 provenance
+## 5. Output format and provenance
 
-모든 출력 JSON은 동일 구조:
+Every output JSON has the same structure:
 
 ```json
 {
@@ -235,53 +238,52 @@ text = scraper.extract_text()
     "retrieved_at": "2026-05-23T04:12:00+00:00",
     "tool": "web-scraping-skill/1.0"
   },
-  "data": { "...": "모드별 추출 결과" }
+  "data": { "...": "per-mode extraction result" }
 }
 ```
 
-`provenance`는 데이터 출처 기록 정책에 따라 항상 포함된다. 수집 데이터를
-연구 노트·runs/ 디렉터리에 저장할 때 이 메타데이터를 함께 보관한다.
+`provenance` is always included, per the data-provenance recording policy. When saving
+collected data to a research notebook or a `runs/` directory, keep this metadata alongside it.
 
 ---
 
-## 6. 트러블슈팅
+## 6. Troubleshooting
 
-| 증상 | 원인 / 해결 |
+| Symptom | Cause / fix |
 |---|---|
 | `ImportError: httpx is required` | `pip install -r requirements.txt` |
-| `robots.txt disallows fetching` | 대상이 크롤링을 금지함. 공식 API 사용 검토. 권한이 있으면 `--ignore-robots` (책임은 사용자) |
-| `text` 모드가 빈 결과 | JS 렌더링 페이지일 가능성 → `fetch_dynamic.py` 사용 |
-| `tables` 모드가 빈 리스트 | 페이지에 HTML `<table>`이 없음 (div 기반 격자) → selectolax CSS 선택자로 직접 파싱하거나 동적 모드 |
+| `robots.txt disallows fetching` | the target disallows crawling. Consider using its official API. If you have authorization, `--ignore-robots` (at your own responsibility) |
+| `text` mode returns empty | likely a JS-rendered page -> use `fetch_dynamic.py` |
+| `tables` mode returns an empty list | the page has no HTML `<table>` (a div-based grid) -> parse it directly with a selectolax CSS selector, or use dynamic mode |
 | `Playwright is not installed` | `pip install playwright && playwright install chromium` |
 | `Chromium browser binary missing` | `playwright install chromium` |
-| HTTP 429 반복 | `--delay`를 늘리고 `--retries` 확인. 서버가 강하게 제한 중 |
+| repeated HTTP 429 | increase `--delay` and check `--retries`. The server is rate-limiting heavily |
 | `habanero is required` | `pip install habanero` |
-| 한글 깨짐 | 출력 JSON은 UTF-8. 터미널 인코딩 확인 (`chcp 65001`) |
-| OneDrive 경로 저장 시 느림 | cloud-only 파일 강제 다운로드. 로컬 경로에 저장 후 이동 권장 |
+| Korean text garbled | the output JSON is UTF-8. Check the terminal encoding (`chcp 65001`) |
+| slow when saving to a OneDrive path | forces a cloud-only file download. Recommended: save to a local path, then move it |
 
-### 동적 모드가 느릴 때
+### When dynamic mode is slow
 
-`--wait-until domcontentloaded`로 바꾸면 networkidle보다 빠르다 (단,
-지연 로딩 콘텐츠를 놓칠 수 있음). 또는 `--wait-selector`로 필요한 요소만
-기다린다.
+Switching to `--wait-until domcontentloaded` is faster than networkidle (though it may
+miss lazily-loaded content). Or use `--wait-selector` to wait only for the element you need.
 
 ---
 
-## 7. 윤리·법적 가이드라인
+## 7. Ethical/legal guidelines
 
-이 스킬은 윤리적 크롤링을 코드 레벨에서 강제한다. 사용자도 다음을 지킨다:
+This skill enforces ethical crawling at the code level. The user must also follow these:
 
-1. **공식 API 우선** — 스크래핑 전에 Crossref/arXiv/PubMed/OpenAlex API를 먼저 검토.
-2. **robots.txt** — 기본 준수. `--ignore-robots`는 본인이 소유하거나 명시적
-   허가를 받은 사이트에만.
-3. **rate limit** — 기본 1초 간격을 함부로 0으로 낮추지 않는다. 대상 서버
-   부하를 고려.
-4. **페이월 우회 금지** — 로그인·구독 콘텐츠를 우회하지 않는다. Sci-Hub 등
-   비합법 경로는 스킬에서 배제됨. 소속 기관 도서관의 EZproxy 등 합법적 기관
-   접근을 사용한다.
-5. **개인정보** — 수집 데이터에 개인정보가 섞이지 않도록 주의. raw 크롤링
-   데이터를 public repo에 커밋하지 않는다.
-6. **저작권** — 수집한 텍스트·PDF의 재배포는 원저작권·라이선스를 따른다.
+1. **Prefer official APIs** — check the Crossref/arXiv/PubMed/OpenAlex API before scraping.
+2. **robots.txt** — respected by default. `--ignore-robots` is only for a site you own
+   or have explicit permission for.
+3. **Rate limit** — don't casually drop the default 1-second interval to 0. Consider the
+   target server's load.
+4. **No paywall bypass** — do not bypass login/subscription content. Illegitimate routes
+   like Sci-Hub are excluded from this skill. Use legitimate institutional access, such
+   as your institution's library EZproxy.
+5. **Personal data** — be careful that collected data doesn't mix in personal
+   information. Do not commit raw crawl data to a public repo.
+6. **Copyright** — redistribution of collected text/PDFs follows the original copyright and license.
 
-문제가 되는 요청(대량 페이월 우회, 안티봇 회피 목적의 위장 등)은 이 스킬의
-설계 범위 밖이다.
+A problematic request (bulk paywall bypass, anti-bot evasion disguises, etc.) is outside
+this skill's design scope.

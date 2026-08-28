@@ -1,16 +1,16 @@
 # Publication Figures — recurring patterns
 
 A multi-panel manuscript figure rebuild (5 main + 12 SI) surfaced the patterns below repeatedly.
-참조 스크립트 위치(예시): `<your library path>/<paper>/submissions/<Journal>/figures/`
+Reference script location (example): `<your library path>/<paper>/submissions/<Journal>/figures/`
 
 ---
 
-## Pattern 1: Errorbar cap을 marker 위에 올리기
+## Pattern 1: Put the errorbar cap on top of the marker
 
-**When to use:** datapoint가 dense하거나 marker가 커서 cap이 가려질 때.
+**When to use:** when datapoints are dense or the marker is large enough that the cap gets hidden.
 
-`plot()`과 `errorbar(fmt="none")`을 분리하고 errorbar를 높은 zorder로 올린다.
-ecolor는 species color 대신 `"#222222"` 권장 (dense 배경에서 더 명확).
+Separate `plot()` and `errorbar(fmt="none")`, and raise the errorbar to a higher zorder.
+Prefer `"#222222"` for ecolor instead of the species color (reads more clearly against a dense background).
 
 ```python
 ax.plot(x, y, marker="o", color=color, zorder=3)
@@ -19,42 +19,42 @@ ax.errorbar(x, y, yerr=yerr, fmt="none",
             elinewidth=1.1, zorder=5)
 ```
 
-참조 예시: `fig_S1_enzyme_activity/script.py`
+Reference example: `fig_S1_enzyme_activity/script.py`
 
 ---
 
-## Pattern 2: 3D surface RSM colorbar 위치
+## Pattern 2: 3D surface RSM colorbar position
 
-**When to use:** 3D surface subplot 2-panel에서 colorbar가 z축에 바짝 붙어야 할 때.
+**When to use:** when a 2-panel 3D surface subplot needs the colorbar sitting right against the z-axis.
 
 ```python
 cb = fig.colorbar(surf, ax=ax, pad=0.10, shrink=0.55, aspect=18)
 fig.subplots_adjust(wspace=-0.05)
 ```
 
-참조 예시: `fig_1_response_surface/script.py`
+Reference example: `fig_1_response_surface/script.py`
 
 ---
 
-## Pattern 3: Sobol/bar 차트 errorbar cap 스타일
+## Pattern 3: Sobol/bar chart errorbar cap style
 
-**When to use:** 민감도 분석(Sobol) 또는 bar chart에서 명확한 errorbar cap이 필요할 때.
+**When to use:** when a sensitivity analysis (Sobol) or bar chart needs a clearly visible errorbar cap.
 
 ```python
 ax.bar(x, height, yerr=err,
        capsize=4, error_kw=dict(capthick=1.1, elinewidth=1.1, ecolor="#222222"))
 ```
 
-참조 예시: `fig_2_sensitivity/script.py`
+Reference example: `fig_2_sensitivity/script.py`
 
 ---
 
-## Pattern 4: Scatter + text label 충돌 회피
+## Pattern 4: Avoiding scatter + text label collisions
 
-**When to use:** scatter plot에 항목별 텍스트 라벨을 붙일 때 겹침 방지.
+**When to use:** to prevent overlap when attaching per-item text labels to a scatter plot.
 
-`LABEL_OFFSET` dict에 `(dx, dy_factor, ha)` 튜플 부여. 4방향(좌상/좌하/우상/우하) 분산.
-fontsize 7.5–8.5 pt.
+Assign a `(dx, dy_factor, ha)` tuple in a `LABEL_OFFSET` dict. Spread across 4 directions
+(upper-left/lower-left/upper-right/lower-right). fontsize 7.5–8.5 pt.
 
 ```python
 LABEL_OFFSET = {
@@ -67,15 +67,16 @@ for name, (x, y) in data.items():
     ax.text(x + dx, y + dy_f * y_range, name, ha=ha, fontsize=8)
 ```
 
-참조 예시: `fig_S2_green_metrics/script.py`
+Reference example: `fig_S2_green_metrics/script.py`
 
 ---
 
-## Pattern 5: Fit line 외삽 (extrapolation) 표시
+## Pattern 5: Showing fit-line extrapolation
 
-**When to use:** thermal inactivation 등 trend를 xlim 전체 범위로 보여야 할 때.
+**When to use:** when a trend (e.g. thermal inactivation) needs to be shown across the entire xlim range.
 
-per-enzyme 데이터 범위로 clip하지 말고 xlim 전체로 그린다. y범위는 `set_ylim`으로 reference에 맞춤.
+Don't clip to each enzyme's own data range — draw across the full xlim instead. Match the y-range to
+the reference via `set_ylim`.
 
 ```python
 x_fit = np.linspace(*ax.get_xlim(), 200)
@@ -83,34 +84,34 @@ ax.plot(x_fit, model(x_fit, *popt), "-", color=color, lw=1.2, zorder=2)
 ax.set_ylim(y_lo, y_hi)
 ```
 
-참조 예시: `fig_S3_stability/script.py`
+Reference example: `fig_S3_stability/script.py`
 
 ---
 
-## Pattern 6: EF metric 단위 표기
+## Pattern 6: EF metric unit notation
 
-**When to use:** E-factor, mass-based green metric 표기 시.
+**When to use:** when writing E-factor or another mass-based green-metric unit.
 
-`g g⁻¹` (superscript) 대신 `g/g` slash 형식 사용.
-축 라벨/colorbar 라벨/범례 모두 동일 적용.
+Use the `g/g` slash form instead of `g g⁻¹` (superscript).
+Apply the same form consistently across axis labels, colorbar labels, and legends.
 
 ```python
 ax.set_ylabel("E-factor (g/g)")
 cb.set_label("sEF (g/g)")
 ```
 
-참조: slash 단위 규칙 (academic-term-rules §8).
+Reference: slash-unit convention (academic-term-rules §8).
 
 ---
 
-## Pattern 7: Subplot title 단순화
+## Pattern 7: Simplifying subplot titles
 
-**When to use:** 다패널 figure에서 panel title이 캡션과 중복될 때.
+**When to use:** when a panel title duplicates what the caption already says, in a multi-panel figure.
 
-enzyme명/substrate명 등 텍스트 제거, panel letter(a/b/c…)만 남긴다.
+Remove text like the enzyme/substrate name, leaving only the panel letter (a/b/c…).
 
 ```python
 ax.set_title("a", fontsize=11, fontweight="bold", loc="left")
 ```
 
-캡션에서 상세 설명 제공. 참조 예시: `fig_S4_residuals/script.py`, `fig_S5_obs_pred/script.py`
+Put the detailed description in the caption instead. Reference examples: `fig_S4_residuals/script.py`, `fig_S5_obs_pred/script.py`

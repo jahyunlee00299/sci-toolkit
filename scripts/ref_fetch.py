@@ -1,46 +1,48 @@
 #!/usr/bin/env python3
-"""참고문헌(논문) 자동 수집 도구 — DOI 목록을 받아 공개(OA) 경로로만 서지정보/PDF를 모은다.
+"""Automated reference (paper) collection tool — takes a list of DOIs and gathers bibliographic
+metadata/PDFs through open-access (OA) channels only.
 
-데이터 소스 (전부 API 키 불필요):
+Data sources (none require an API key):
     - CrossRef  https://api.crossref.org/works/{doi}
     - OpenAlex  https://api.openalex.org/works/doi:{doi}
-    - Unpaywall https://api.unpaywall.org/v2/{doi}?email=...  (이메일 있을 때만)
+    - Unpaywall https://api.unpaywall.org/v2/{doi}?email=...  (only when an email is given)
 
-캐시는 `ref_cache_manager.py`의 `RefCacheManager`를 그대로 재사용한다
-(~/.claude/ref_cache/, DOI SHA256 해시 파일명). 이 스크립트가 캐시에 저장하는
-레코드 스키마는 아래 `fetch_one()`이 만드는 dict 그대로다.
+The cache reuses `ref_cache_manager.py`'s `RefCacheManager` as-is
+(~/.claude/ref_cache/, filename is the DOI's SHA256 hash). The record schema
+this script stores in the cache is exactly the dict that `fetch_one()` below
+builds.
 
-페이월 우회·스크래핑은 하지 않는다 — OA 링크가 없으면 그냥 `oa_status: closed`로
-기록하고 넘어간다.
+No paywall bypass or scraping — if there's no OA link, it's simply recorded
+as `oa_status: closed` and moved past.
 
-사용법:
-    # 단일/복수 DOI (쉼표 구분)
+Usage:
+    # single/multiple DOIs (comma-separated)
     python ref_fetch.py --doi 10.1038/nature12373,10.1021/acs.jchemed.7b00361
 
-    # 파일에서 DOI 읽기 (줄바꿈 구분)
+    # read DOIs from a file (newline-separated)
     python ref_fetch.py --doi-file dois.txt
 
-    # stdin에서 DOI 읽기
+    # read DOIs from stdin
     cat dois.txt | python ref_fetch.py
 
-    # 제목으로 검색해 DOI 해석 후 진행
+    # search by title to resolve a DOI, then proceed
     python ref_fetch.py --title "CRISPR gene editing efficiency"
 
-    # PDF까지 다운로드 (OA인 것만)
+    # also download the PDF (OA only)
     python ref_fetch.py --doi 10.1186/s13321-015-0069-3 --download
 
-    # BibTeX 내보내기
+    # export BibTeX
     python ref_fetch.py --doi 10.1038/nature12373 --bibtex out.bib
 
-    # 캐시 무시하고 강제 재조회
+    # ignore the cache and force a re-fetch
     python ref_fetch.py --doi 10.1038/nature12373 --refresh
 
-    # Unpaywall 폴라이트 풀 이메일 (실제 이메일을 코드에 넣지 말 것)
+    # Unpaywall polite-pool email (never hardcode a real email into the code)
     python ref_fetch.py --doi 10.1038/nature12373 --email you@example.com
-    # 또는: export SCITK_CONTACT_EMAIL=you@example.com
+    # or: export SCITK_CONTACT_EMAIL=you@example.com
 
-출력:
-    refs_report.json (DOI별 메타데이터·OA상태·교차검증·다운로드 경로) + stdout 요약.
+Output:
+    refs_report.json (per-DOI metadata / OA status / cross-verification / download path) + a stdout summary.
 """
 from __future__ import annotations
 
@@ -59,9 +61,11 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Optional
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서,
-# import 후 GC 되면 호출자의 stdout 까지 닫아버린다(실측).
+# The default Windows console is cp949, which crashes on Korean/symbol
+# output. Force UTF-8. Use reconfigure rather than TextIOWrapper — a wrapper
+# owns the underlying stream, so once this module is imported and the
+# wrapper is later garbage collected, it closes the caller's stdout too
+# (measured).
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         try:
@@ -69,7 +73,7 @@ for _s in (sys.stdout, sys.stderr):
         except Exception:
             pass
 
-# ref_cache_manager.py 재사용 (같은 scripts/ 폴더)
+# Reuse ref_cache_manager.py (same scripts/ folder)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ref_cache_manager import RefCacheManager  # noqa: E402
 
@@ -79,14 +83,14 @@ UNPAYWALL_BASE = "https://api.unpaywall.org/v2"
 
 _TIMEOUT = 20
 _MAX_RETRIES = 3
-_RETRY_BACKOFF = 1.5  # 초, 시도마다 배수 증가
-_RATE_LIMIT_DELAY = 0.5  # 요청 사이 최소 대기 (폴라이트 풀 권장)
+_RETRY_BACKOFF = 1.5  # seconds, multiplied up each attempt
+_RATE_LIMIT_DELAY = 0.5  # minimum wait between requests (recommended for the polite pool)
 
 _DOI_RE = re.compile(r"^10\.\d{4,9}/\S+$")
 
 
 # --------------------------------------------------------------------------- #
-# 네트워크 헬퍼 — 타임아웃 + 재시도, User-Agent에 연락처(있을 때만)
+# Network helpers — timeout + retry, User-Agent carries a contact (when given)
 # --------------------------------------------------------------------------- #
 
 
@@ -98,10 +102,11 @@ def _build_user_agent(email: Optional[str]) -> str:
 
 
 def _http_get_json(url: str, email: Optional[str], timeout: int = _TIMEOUT) -> tuple[Optional[dict], Optional[str]]:
-    """GET 후 JSON 파싱. (data, error) 튜플 반환 — 성공 시 error=None.
+    """GET, then parse as JSON. Returns a (data, error) tuple — error=None on success.
 
-    404 등 명확한 "존재하지 않음"은 조용히 (None, "not_found")로,
-    그 외 네트워크/서버 오류는 재시도 후에도 실패하면 (None, 에러메시지)로 반환한다.
+    A clear "does not exist" like a 404 is returned quietly as
+    (None, "not_found"); any other network/server error that still fails
+    after retries is returned as (None, error_message).
     """
     headers = {"User-Agent": _build_user_agent(email), "Accept": "application/json"}
     last_err = None
@@ -119,7 +124,7 @@ def _http_get_json(url: str, email: Optional[str], timeout: int = _TIMEOUT) -> t
             last_err = f"URLError: {e.reason}"
         except json.JSONDecodeError as e:
             last_err = f"JSON parse error: {e}"
-        except Exception as e:  # noqa: BLE001 — 네트워크 실패 사유를 다 리포트에 남기기 위해 광범위 캐치
+        except Exception as e:  # noqa: BLE001 — caught broadly so every network-failure reason ends up in the report
             last_err = f"{type(e).__name__}: {e}"
 
         if attempt < _MAX_RETRIES:
@@ -150,13 +155,15 @@ def _http_get_text(url: str, email: Optional[str], timeout: int = _TIMEOUT) -> t
 
 
 def _download_pdf(url: str, dest: Path, email: Optional[str], timeout: int = 60) -> tuple[bool, Optional[str]]:
-    """OA PDF 링크를 다운로드한다.
+    """Download an OA PDF link.
 
-    OA 링크는 종종 실제 PDF가 아니라 랜딩 페이지(HTML)로 리다이렉트되거나
-    (예: 발행처가 크롤러를 막고 인간용 페이지를 반환), 접근 제한 안내 페이지를
-    돌려줄 수 있다. 파일 크기만으로는 이를 걸러낼 수 없으므로(관측된 실패
-    사례: 3KB짜리 HTML이 크기 임계값은 통과) Content-Type 헤더와 PDF magic
-    byte(`%PDF-`)를 모두 확인해야 진짜 PDF로 판정한다.
+    An OA link often redirects to a landing page (HTML) rather than the
+    actual PDF (e.g. the publisher blocks crawlers and returns a
+    human-facing page), or returns an access-restriction notice page.
+    File size alone can't filter this out (an observed failure case: a 3KB
+    HTML page passed the size threshold), so both the Content-Type header
+    and the PDF magic byte (`%PDF-`) must be checked before this counts as
+    a real PDF.
     """
     headers = {"User-Agent": _build_user_agent(email), "Accept": "application/pdf,*/*"}
     last_err = None
@@ -175,9 +182,9 @@ def _download_pdf(url: str, dest: Path, email: Optional[str], timeout: int = 60)
 
                 if looks_like_html or not (is_pdf_magic or is_pdf_content_type):
                     return False, (
-                        f"응답이 PDF가 아님 (Content-Type={content_type or 'unknown'}, "
-                        f"magic_byte_ok={is_pdf_magic}, {len(data)} bytes) — 랜딩 페이지로 "
-                        f"리다이렉트되었을 가능성"
+                        f"response is not a PDF (Content-Type={content_type or 'unknown'}, "
+                        f"magic_byte_ok={is_pdf_magic}, {len(data)} bytes) — likely "
+                        f"redirected to a landing page"
                     )
 
                 dest.parent.mkdir(parents=True, exist_ok=True)
@@ -197,12 +204,12 @@ def _download_pdf(url: str, dest: Path, email: Optional[str], timeout: int = 60)
 
 
 # --------------------------------------------------------------------------- #
-# DOI 정규화 / 파일명 안전화
+# DOI normalization / filename sanitization
 # --------------------------------------------------------------------------- #
 
 
 def normalize_doi(raw: str) -> str:
-    """DOI 문자열 정규화 (URL prefix 제거, 소문자, 공백 제거)."""
+    """Normalize a DOI string (strip URL prefix, lowercase, trim whitespace)."""
     doi = raw.strip()
     doi = re.sub(r"^https?://(dx\.)?doi\.org/", "", doi, flags=re.IGNORECASE)
     doi = re.sub(r"^doi:\s*", "", doi, flags=re.IGNORECASE)
@@ -210,13 +217,13 @@ def normalize_doi(raw: str) -> str:
 
 
 def doi_to_safe_filename(doi: str) -> str:
-    """DOI를 ASCII-safe 파일명으로 변환 (Windows cp949 문제 회피)."""
+    """Convert a DOI into an ASCII-safe filename (avoids Windows cp949 issues)."""
     safe = re.sub(r"[^A-Za-z0-9._-]+", "_", doi.strip().lower())
-    return safe.strip("_")[:180]  # 과도한 길이 방지
+    return safe.strip("_")[:180]  # prevent excessive length
 
 
 # --------------------------------------------------------------------------- #
-# CrossRef / OpenAlex / Unpaywall 조회
+# CrossRef / OpenAlex / Unpaywall queries
 # --------------------------------------------------------------------------- #
 
 
@@ -323,7 +330,7 @@ def query_unpaywall(doi: str, email: str) -> dict[str, Any]:
 
 
 def resolve_doi_from_title(title: str, email: Optional[str]) -> Optional[str]:
-    """제목으로 CrossRef bibliographic query를 날려 DOI 하나를 해석한다."""
+    """Resolve a single DOI by sending a CrossRef bibliographic query built from the title."""
     params = {"query.bibliographic": title, "rows": 1}
     if email:
         params["mailto"] = email
@@ -338,7 +345,7 @@ def resolve_doi_from_title(title: str, email: Optional[str]) -> Optional[str]:
 
 
 # --------------------------------------------------------------------------- #
-# 교차 검증
+# Cross-verification
 # --------------------------------------------------------------------------- #
 
 
@@ -349,15 +356,16 @@ def _norm_text(s: Optional[str]) -> str:
 
 
 def cross_verify(crossref: dict, openalex: dict) -> list[str]:
-    """CrossRef vs OpenAlex 필드 불일치를 찾아 사람이 읽을 수 있는 문자열 리스트로 반환.
+    """Find field mismatches between CrossRef and OpenAlex and return them as human-readable strings.
 
-    조용히 한쪽을 고르지 않는다 — 불일치가 있으면 둘 다 남긴다.
+    Doesn't silently pick one side — if there's a mismatch, both are kept.
     """
     discrepancies: list[str] = []
     if not crossref.get("found") or not openalex.get("found"):
         return discrepancies
 
-    # 제목 비교 (정규화 후 완전 일치 아니면 flag; 사소한 구두점 차이는 정규화로 흡수)
+    # Compare titles (flag if not an exact match after normalization; minor punctuation
+    # differences are absorbed by normalization)
     cr_title = _norm_text(crossref.get("title"))
     oa_title = _norm_text(openalex.get("title"))
     if cr_title and oa_title and cr_title != oa_title:
@@ -365,13 +373,13 @@ def cross_verify(crossref: dict, openalex: dict) -> list[str]:
             f"title mismatch — CrossRef: {crossref.get('title')!r} | OpenAlex: {openalex.get('title')!r}"
         )
 
-    # 연도 비교
+    # Compare years
     cr_year = crossref.get("year")
     oa_year = openalex.get("year")
     if cr_year and oa_year and cr_year != oa_year:
         discrepancies.append(f"year mismatch — CrossRef: {cr_year} | OpenAlex: {oa_year}")
 
-    # 저널명 비교
+    # Compare journal names
     cr_journal = _norm_text(crossref.get("journal"))
     oa_journal = _norm_text(openalex.get("journal"))
     if cr_journal and oa_journal and cr_journal != oa_journal:
@@ -379,20 +387,21 @@ def cross_verify(crossref: dict, openalex: dict) -> list[str]:
             f"journal mismatch — CrossRef: {crossref.get('journal')!r} | OpenAlex: {openalex.get('journal')!r}"
         )
 
-    # 저자 수 비교 (이름 표기가 소스마다 달라 개수만 대략 비교 — 큰 차이만 flag)
+    # Compare author counts (name formatting varies by source, so only compare the
+    # rough count — flag only a large difference)
     cr_authors = crossref.get("authors") or []
     oa_authors = openalex.get("authors") or []
     if cr_authors and oa_authors and abs(len(cr_authors) - len(oa_authors)) >= 2:
         discrepancies.append(
-            f"author count mismatch — CrossRef: {len(cr_authors)}명 {cr_authors} | "
-            f"OpenAlex: {len(oa_authors)}명 {oa_authors}"
+            f"author count mismatch — CrossRef: {len(cr_authors)} {cr_authors} | "
+            f"OpenAlex: {len(oa_authors)} {oa_authors}"
         )
 
     return discrepancies
 
 
 # --------------------------------------------------------------------------- #
-# 메인 fetch-one 파이프라인
+# Main fetch-one pipeline
 # --------------------------------------------------------------------------- #
 
 
@@ -461,7 +470,7 @@ def fetch_one(
         return {
             "doi": doi,
             "status": "error",
-            "error": f"DOI 형식이 아님: {doi!r}",
+            "error": f"not a valid DOI format: {doi!r}",
         }
 
     if not refresh and cache.has(doi):
@@ -491,11 +500,11 @@ def fetch_one(
             "oa_status": "unknown",
             "download": None,
         }
-        return record  # 캐시에는 저장하지 않음 — 일시적 오류일 수 있음
+        return record  # not cached — this could be a transient error
 
     discrepancies = cross_verify(crossref, openalex)
 
-    # OA 링크 해석: Unpaywall(이메일 있을 때) > OpenAlex best_oa_location
+    # Resolving the OA link: Unpaywall (when there's an email) > OpenAlex best_oa_location
     unpaywall = None
     oa_pdf_url = None
     oa_landing_url = None
@@ -548,7 +557,7 @@ def fetch_one(
 
 
 # --------------------------------------------------------------------------- #
-# BibTeX 내보내기 (CrossRef application/x-bibtex)
+# BibTeX export (CrossRef application/x-bibtex)
 # --------------------------------------------------------------------------- #
 
 
@@ -573,7 +582,7 @@ def fetch_bibtex(doi: str, email: Optional[str]) -> tuple[Optional[str], Optiona
 
 
 # --------------------------------------------------------------------------- #
-# 입력 파싱
+# Input parsing
 # --------------------------------------------------------------------------- #
 
 
@@ -586,7 +595,7 @@ def collect_dois(args: argparse.Namespace, email: Optional[str]) -> list[str]:
     if args.doi_file:
         p = Path(args.doi_file)
         if not p.exists():
-            print(f"[ERROR] DOI 파일 없음: {p}", file=sys.stderr)
+            print(f"[ERROR] DOI file not found: {p}", file=sys.stderr)
         else:
             for line in p.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
@@ -596,19 +605,19 @@ def collect_dois(args: argparse.Namespace, email: Optional[str]) -> list[str]:
     if args.title:
         resolved = resolve_doi_from_title(args.title, email)
         if resolved:
-            print(f"[INFO] 제목 검색 결과 DOI: {resolved}", file=sys.stderr)
+            print(f"[INFO] DOI resolved from title search: {resolved}", file=sys.stderr)
             dois.append(resolved)
         else:
-            print(f"[WARN] 제목으로 DOI를 찾지 못함: {args.title!r}", file=sys.stderr)
+            print(f"[WARN] Could not resolve a DOI from the title: {args.title!r}", file=sys.stderr)
 
-    # stdin (파이프로 들어온 경우만, 인자 없을 때)
+    # stdin (only when piped in, and no other arguments were given)
     if not dois and not sys.stdin.isatty():
         for line in sys.stdin.read().splitlines():
             line = line.strip()
             if line and not line.startswith("#"):
                 dois.append(line)
 
-    # 중복 제거 (순서 보존)
+    # Deduplicate (preserving order)
     seen = set()
     unique = []
     for d in dois:
@@ -620,13 +629,13 @@ def collect_dois(args: argparse.Namespace, email: Optional[str]) -> list[str]:
 
 
 # --------------------------------------------------------------------------- #
-# 사람이 읽는 요약 출력
+# Human-readable summary output
 # --------------------------------------------------------------------------- #
 
 
 def print_summary(results: list[dict[str, Any]]) -> None:
-    print("\n=== ref_fetch 결과 요약 ===")
-    print(f"  총 DOI: {len(results)}")
+    print("\n=== ref_fetch results summary ===")
+    print(f"  Total DOIs: {len(results)}")
 
     ok = [r for r in results if r.get("status") in ("fetched", "cache_hit")]
     not_found = [r for r in results if r.get("status") == "not_found"]
@@ -634,11 +643,11 @@ def print_summary(results: list[dict[str, Any]]) -> None:
     open_oa = [r for r in results if r.get("oa_status") not in (None, "closed", "unknown")]
     with_discrepancies = [r for r in results if r.get("discrepancies")]
 
-    print(f"  조회 성공:   {len(ok)}")
-    print(f"  존재하지 않음(404 등): {len(not_found)}")
-    print(f"  오류(형식/네트워크): {len(errors)}")
-    print(f"  OA(공개) 확인: {len(open_oa)}")
-    print(f"  교차검증 불일치 있는 항목: {len(with_discrepancies)}")
+    print(f"  Fetched successfully: {len(ok)}")
+    print(f"  Not found (404, etc.): {len(not_found)}")
+    print(f"  Errors (format/network): {len(errors)}")
+    print(f"  Confirmed OA (open): {len(open_oa)}")
+    print(f"  Items with cross-verification mismatches: {len(with_discrepancies)}")
 
     for r in results:
         doi = r.get("doi", "?")
@@ -652,7 +661,7 @@ def print_summary(results: list[dict[str, Any]]) -> None:
         print(f"\n  [{doi}] status={status}{title_str}")
 
         if status == "error":
-            print(f"    오류: {r.get('error')}")
+            print(f"    Error: {r.get('error')}")
             continue
         if status == "not_found":
             cr_err = r.get("crossref", {}).get("error")
@@ -662,17 +671,17 @@ def print_summary(results: list[dict[str, Any]]) -> None:
 
         print(f"    oa_status: {r.get('oa_status')}")
         if r.get("discrepancies"):
-            print("    [!] 교차검증 불일치:")
+            print("    [!] Cross-verification mismatches:")
             for d in r["discrepancies"]:
                 print(f"        - {d}")
         dl = r.get("download")
         if dl:
             if dl.get("status") == "ok":
-                print(f"    PDF 다운로드: {dl.get('path')}")
+                print(f"    PDF downloaded: {dl.get('path')}")
             elif dl.get("status") == "failed":
-                print(f"    PDF 다운로드 실패: {dl.get('error')}")
+                print(f"    PDF download failed: {dl.get('error')}")
             elif dl.get("status") == "skipped":
-                print(f"    PDF 다운로드 생략: {dl.get('reason')}")
+                print(f"    PDF download skipped: {dl.get('reason')}")
 
 
 # --------------------------------------------------------------------------- #
@@ -687,19 +696,19 @@ def _run_doi_gate(
     refresh: bool,
     cache_dir: Optional[str],
 ) -> int:
-    """수집 전 DOI 관문 — doi_verify.py 를 별도 프로세스로 돌리고 exit code 를 읽는다.
+    """Pre-collection DOI gate — runs doi_verify.py as a separate process and reads its exit code.
 
-    왜 import 가 아니라 subprocess 인가:
-      ① doi_verify.py 가 이 모듈(ref_fetch)을 import 한다. 반대로 여기서 import
-         하면 순환이 된다.
-      ② 이 저장소의 게이트 관례가 "스크립트를 돌리고 종료 코드를 읽는다"이다
-         (CLAUDE.md: 눈으로 판단하지 말고 exit code 를 볼 것).
+    Why subprocess instead of import:
+      (1) doi_verify.py imports this module (ref_fetch). Importing it back
+          here would create a cycle.
+      (2) This repository's gate convention is "run the script and read the
+          exit code" (CLAUDE.md: don't judge by eye, check the exit code).
 
-    반환: doi_verify 의 exit code (0=통과, 1=대조 실패류, 2=환각/철회).
+    Returns: doi_verify's exit code (0=passed, 1=cross-check failure type, 2=hallucination/retraction).
     """
     script = Path(__file__).resolve().parent / "doi_verify.py"
     if not script.exists():
-        print(f"[WARN] doi_verify.py 를 찾지 못해 관문을 건너뜁니다: {script}", file=sys.stderr)
+        print(f"[WARN] doi_verify.py not found — skipping the gate: {script}", file=sys.stderr)
         return 0
 
     cmd = [
@@ -715,7 +724,7 @@ def _run_doi_gate(
     if cache_dir:
         cmd += ["--cache-dir", cache_dir]
 
-    print(f"[GATE] 수집 전 DOI 대조: {doi}", file=sys.stderr)
+    print(f"[GATE] Pre-collection DOI cross-check: {doi}", file=sys.stderr)
     proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     out = (proc.stdout or "") + (proc.stderr or "")
     for line in out.splitlines():
@@ -726,68 +735,70 @@ def _run_doi_gate(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="DOI 목록으로 공개(OA) 경로 서지정보/PDF를 수집한다 (CrossRef+OpenAlex+Unpaywall, API 키 불필요).",
+        description="Collect open-access (OA) bibliographic metadata/PDFs from a DOI list (CrossRef+OpenAlex+Unpaywall, no API key required).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    parser.add_argument("--doi", help="쉼표로 구분된 DOI 목록")
-    parser.add_argument("--doi-file", help="DOI가 줄바꿈으로 나열된 파일 경로")
-    parser.add_argument("--title", help="제목으로 검색해 DOI를 해석한 뒤 진행")
+    parser.add_argument("--doi", help="comma-separated list of DOIs")
+    parser.add_argument("--doi-file", help="path to a file listing DOIs, one per line")
+    parser.add_argument("--title", help="search by title to resolve a DOI, then proceed")
     parser.add_argument(
         "--email",
         default=None,
-        help="Unpaywall/폴라이트 풀용 연락처 이메일 (없으면 SCITK_CONTACT_EMAIL 환경변수 사용, "
-        "둘 다 없으면 Unpaywall 단계만 건너뜀)",
+        help="contact email for Unpaywall/the polite pool (falls back to the "
+        "SCITK_CONTACT_EMAIL env var if omitted; if neither is set, only the "
+        "Unpaywall step is skipped)",
     )
-    parser.add_argument("--download", action="store_true", help="OA PDF를 실제로 다운로드")
+    parser.add_argument("--download", action="store_true", help="actually download the OA PDF")
     parser.add_argument(
         "--pdf-dir",
         default=None,
-        help="PDF 저장 디렉토리 (기본: ./ref_fetch_pdfs/)",
+        help="directory to save PDFs into (default: ./ref_fetch_pdfs/)",
     )
-    parser.add_argument("--refresh", action="store_true", help="캐시를 무시하고 강제로 재조회")
+    parser.add_argument("--refresh", action="store_true", help="ignore the cache and force a re-fetch")
     parser.add_argument(
         "--output",
         default="refs_report.json",
-        help="결과 JSON 저장 경로 (기본: refs_report.json)",
+        help="path to save the result JSON (default: refs_report.json)",
     )
-    parser.add_argument("--bibtex", default=None, help="CrossRef BibTeX를 이 경로로 저장")
-    parser.add_argument("--cache-dir", default=None, help="ref_cache_manager 캐시 디렉토리 (기본값 사용 권장)")
+    parser.add_argument("--bibtex", default=None, help="save CrossRef BibTeX to this path")
+    parser.add_argument("--cache-dir", default=None, help="ref_cache_manager cache directory (using the default is recommended)")
     parser.add_argument(
         "--doi-source",
         choices=["human", "model"],
         default=None,
-        help="DOI 출처. model(LLM 생성)은 --expect-title 없이 수집에 진입할 수 없다.",
+        help="Source of the DOI. model (LLM-generated) cannot enter collection without --expect-title.",
     )
     parser.add_argument(
         "--expect-title",
         default=None,
-        help="이 DOI가 가리킬 것으로 의도한 제목. 수집 전 doi_verify 로 대조한다.",
+        help="The title this DOI is intended to point to. Cross-checked via doi_verify before collection.",
     )
     parser.add_argument(
         "--with-si",
         action="store_true",
-        help="보충자료(SI)도 수집한다 (Europe PMC 공개 경로만; 그 밖은 링크 안내).",
+        help="Also collect supplementary information (SI) (Europe PMC open-access route only; otherwise a link is provided).",
     )
-    parser.add_argument("--si-dir", default=None, help="SI 저장 디렉토리 (기본: ./ref_fetch_si)")
+    parser.add_argument("--si-dir", default=None, help="directory to save SI into (default: ./ref_fetch_si)")
     parser.add_argument(
         "--institution",
         default=None,
-        help="페이월 논문에 기관 도서관 접속 링크를 붙인다 (config/institutions.json 의 키). "
-        "링크만 만들며 로그인·다운로드는 하지 않는다.",
+        help="Attach an institutional-library access link for paywalled papers "
+        "(a key in config/institutions.json). Only builds the link — no login or download.",
     )
 
     args = parser.parse_args()
 
-    # --- 0단계: DOI 관문 --------------------------------------------------- #
-    # LLM이 생성한 DOI는 형식이 완벽해도 실재하는 *무관한* 논문에 착지할 수 있다
-    # (doi_verify.py 의 122211/122213 실측). 그래서 수집(네트워크 조회·다운로드)에
-    # 들어가기 전에 막는다 — 뒤에서 등급으로 걸러내는 것보다 확실하다.
+    # --- Step 0: DOI gate ---------------------------------------------------- #
+    # An LLM-generated DOI can have a perfectly valid format and still land on
+    # a real but *unrelated* paper (measured in doi_verify.py at 122211/122213).
+    # So this is blocked before collection (network lookup/download) begins —
+    # more reliable than filtering it out downstream by grade.
     if args.doi_source == "model" and not args.expect_title:
         print(
-            "[BLOCKED] --doi-source model 은 --expect-title 없이 쓸 수 없습니다.\n"
-            "          LLM이 생성한 DOI는 존재 여부만으로 검증되지 않습니다 — "
-            "찾으려던 논문 제목을 함께 선언하세요.",
+            "[BLOCKED] --doi-source model cannot be used without --expect-title.\n"
+            "          An LLM-generated DOI is not verified merely by existing — "
+            "declare the title of the paper you meant to find as well.",
             file=sys.stderr,
         )
         return 2
@@ -795,30 +806,30 @@ def main() -> int:
     email = args.email or os.getenv("SCITK_CONTACT_EMAIL") or None
     if not email:
         print(
-            "[INFO] --email / SCITK_CONTACT_EMAIL 없음 — Unpaywall 단계는 건너뛰고 "
-            "OpenAlex의 OA 정보만 사용합니다.",
+            "[INFO] No --email / SCITK_CONTACT_EMAIL — skipping the Unpaywall step "
+            "and using only OpenAlex's OA information.",
             file=sys.stderr,
         )
 
     dois = collect_dois(args, email)
     if not dois:
-        print("[ERROR] DOI가 없습니다. --doi / --doi-file / --title / stdin 중 하나로 입력하세요.", file=sys.stderr)
+        print("[ERROR] No DOIs given. Provide one via --doi / --doi-file / --title / stdin.", file=sys.stderr)
         parser.print_help()
         return 1
 
-    # 제목이 선언됐다면 수집 전에 doi_verify 로 대조한다. 통과 못 하면 진입 차단.
+    # If a title was declared, cross-check it via doi_verify before collection. Block entry if it fails.
     if args.expect_title:
         if len(dois) != 1:
             print(
-                "[ERROR] --expect-title 은 DOI 하나에만 붙일 수 있습니다 "
-                f"(현재 {len(dois)}건).",
+                "[ERROR] --expect-title can only be attached to a single DOI "
+                f"(currently {len(dois)}).",
                 file=sys.stderr,
             )
             return 1
         gate_rc = _run_doi_gate(dois[0], args.expect_title, email, args.refresh, args.cache_dir)
         if gate_rc != 0:
             print(
-                "[BLOCKED] DOI 관문을 통과하지 못해 수집을 중단합니다 "
+                "[BLOCKED] Aborting collection — failed the DOI gate "
                 f"(doi_verify exit={gate_rc}).",
                 file=sys.stderr,
             )
@@ -830,12 +841,15 @@ def main() -> int:
 
     institutions = None
     if args.institution:
-        from institutional_access import InstitutionRegistry  # 지연 import (선택 기능)
+        from institutional_access import InstitutionRegistry  # deferred import (optional feature)
 
         institutions = InstitutionRegistry.load()
 
     results: list[dict[str, Any]] = []
     for i, doi in enumerate(dois, 1):
+        # NOTE: "처리 중:" ("processing:") is asserted verbatim by
+        # tests/test_si_institutional.py (out of scope for this translation
+        # pass) — kept as-is.
         print(f"[{i}/{len(dois)}] 처리 중: {doi}", file=sys.stderr)
         try:
             record = fetch_one(
@@ -846,11 +860,12 @@ def main() -> int:
                 download=args.download,
                 pdf_dir=pdf_dir,
             )
-        except Exception as e:  # noqa: BLE001 — 개별 DOI 실패가 전체를 죽이지 않게
+        except Exception as e:  # noqa: BLE001 — so a single DOI's failure doesn't kill the whole run
             record = {"doi": doi, "status": "error", "error": f"{type(e).__name__}: {e}"}
 
-        # 페이월이면 본문 대신 '사람이 클릭할 링크'를 붙인다. 자동 다운로드는 하지 않는다
-        # (구독 원문을 스크립트로 받는 것은 도서관 공정이용 규정 위반이다).
+        # If paywalled, attach a 'link for a human to click' instead of the full text.
+        # No automatic download (fetching subscription full text via script violates
+        # library fair-use terms).
         if institutions is not None and record.get("oa_status") == "closed":
             target = (
                 record.get("oa_landing_page_url")
@@ -865,13 +880,13 @@ def main() -> int:
                     "login_note": link.login_note,
                     "fair_use_url": link.fair_use_url,
                     "daily_limits": link.daily_limits,
-                    "_note": "사람이 브라우저에서 여는 링크. 자동 다운로드 아님.",
+                    "_note": "A link for a human to open in a browser. Not an automatic download.",
                 }
                 print(link.human_summary(), file=sys.stderr)
 
-        # SI 는 본문과 접근성이 다르다 — 본문이 페이월이어도 열려 있을 수 있다.
+        # SI has different accessibility from the main text — it can be open even when the main text is paywalled.
         if args.with_si:
-            from si_fetch import discover_si, download_si  # 지연 import
+            from si_fetch import discover_si, download_si  # deferred import
 
             try:
                 si_res = discover_si(doi, email)
@@ -880,18 +895,18 @@ def main() -> int:
                 record["supplementary"] = si_res.to_dict()
                 n_si = len(si_res.supplementary_files)
                 if si_res.status == "found":
-                    print(f"  SI: {n_si}개 발견 ({si_res.pmcid})", file=sys.stderr)
+                    print(f"  SI: {n_si} found ({si_res.pmcid})", file=sys.stderr)
                 elif si_res.manual_hint:
                     print(f"  SI: {si_res.manual_hint}", file=sys.stderr)
-            except Exception as e:  # noqa: BLE001 — SI 실패가 본문 수집을 죽이지 않게
+            except Exception as e:  # noqa: BLE001 — so an SI failure doesn't kill collection of the main text
                 record["supplementary"] = {"status": "error", "error": f"{type(e).__name__}: {e}"}
 
         results.append(record)
 
         if args.bibtex and record.get("status") in ("fetched", "cache_hit"):
-            pass  # BibTeX는 아래에서 별도 처리 (실패해도 리포트 흐름 방해 안 함)
+            pass  # BibTeX is handled separately below (a failure there doesn't disrupt the report flow)
 
-    # 출력 리포트 저장
+    # Save the output report
     output_path = Path(args.output)
     report = {
         "generated_by": "ref_fetch.py",
@@ -900,9 +915,9 @@ def main() -> int:
         "results": results,
     }
     output_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n[OK] 리포트 저장: {output_path}", file=sys.stderr)
+    print(f"\n[OK] Report saved: {output_path}", file=sys.stderr)
 
-    # BibTeX 내보내기
+    # Export BibTeX
     if args.bibtex:
         bib_entries = []
         bib_errors = []
@@ -912,13 +927,13 @@ def main() -> int:
             if bib_text:
                 bib_entries.append(bib_text.strip())
             else:
-                bib_errors.append(f"% {doi}: BibTeX 조회 실패 ({err})")
+                bib_errors.append(f"% {doi}: BibTeX fetch failed ({err})")
         bib_path = Path(args.bibtex)
         content = "\n\n".join(bib_entries)
         if bib_errors:
             content += "\n\n" + "\n".join(bib_errors)
         bib_path.write_text(content + "\n", encoding="utf-8")
-        print(f"[OK] BibTeX 저장: {bib_path} ({len(bib_entries)}건 성공, {len(bib_errors)}건 실패)", file=sys.stderr)
+        print(f"[OK] BibTeX saved: {bib_path} ({len(bib_entries)} succeeded, {len(bib_errors)} failed)", file=sys.stderr)
 
     print_summary(results)
     return 0

@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""프라이머 구조 체크 - hairpin 및 homodimer 검사 (nearest-neighbor 열역학).
+"""Primer structure check - hairpin and homodimer checks (nearest-neighbor thermodynamics).
 
-사용법:
+Usage:
     python primer_structure_check.py ATCGATCGATCG
     python primer_structure_check.py ATCG... GCTA... --threshold-hairpin -2.0
     python primer_structure_check.py --file primers.json
 
-임포트:
+Import:
     from primer_structure_check import check_primer, check_primers
     result = check_primer("ATCGATCG")
 
-결과 형식:
+Result format:
     [{"seq", "hairpin_dG", "homodimer_dG", "hairpin_pass", "homodimer_pass"}]
 
-판정 기준:
-    - hairpin: 자기보완 ≥4 bp AND ΔG < -2.0 kcal/mol → FAIL
-    - homodimer: ≥6 bp 상보 → FAIL (ΔG 기준 별도 적용)
+Pass/fail criteria:
+    - hairpin: self-complementary >=4 bp AND dG < -2.0 kcal/mol -> FAIL
+    - homodimer: >=6 bp complementary -> FAIL (dG threshold applied separately)
 """
 import argparse
 import json
@@ -24,9 +24,9 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-# Nearest-neighbor 파라미터 (SantaLucia 1998, 1M NaCl, 37°C)
-# 키: 5'→3' 이중가닥 dinucleotide (상위/하위 가닥)
-# 값: (ΔH kcal/mol, ΔS cal/mol/K)
+# Nearest-neighbor parameters (SantaLucia 1998, 1M NaCl, 37 degC)
+# Key: 5'->3' double-strand dinucleotide (top/bottom strand)
+# Value: (dH kcal/mol, dS cal/mol/K)
 _NN_PARAMS: dict[str, tuple[float, float]] = {
     "AA/TT": (-7.9, -22.2),
     "AT/TA": (-7.2, -20.4),
@@ -38,11 +38,11 @@ _NN_PARAMS: dict[str, tuple[float, float]] = {
     "CG/GC": (-10.6, -27.2),
     "GC/CG": (-9.8, -24.4),
     "GG/CC": (-8.0, -19.9),
-    # 역방향 (complement)
+    # reverse (complement)
     "TT/AA": (-7.9, -22.2),
     "TA/AT": (-7.2, -21.3),
     "AT/TA": (-7.2, -20.4),
-    "AC/TG": (-7.8, -21.0),  # CA/GT 역
+    "AC/TG": (-7.8, -21.0),  # reverse of CA/GT
     "TG/AC": (-8.5, -22.7),
     "AG/TC": (-8.4, -22.4),
     "TC/AG": (-8.2, -22.2),
@@ -51,7 +51,7 @@ _NN_PARAMS: dict[str, tuple[float, float]] = {
     "CC/GG": (-8.0, -19.9),
 }
 
-# 말단 AT 패널티 (initiation)
+# Terminal AT penalty (initiation)
 _INIT_AT = (2.3, 4.1)
 _INIT_GC = (0.1, -2.8)
 
@@ -68,9 +68,9 @@ def _reverse_complement(seq: str) -> str:
 
 
 def _nn_dg(seq: str, temp_c: float = 37.0) -> float:
-    """nearest-neighbor 모델로 이중가닥 ΔG (kcal/mol) 계산.
+    """Compute double-strand dG (kcal/mol) with the nearest-neighbor model.
 
-    seq는 5'→3' 단일가닥 서열. 자신의 역상보 서열과 결합하는 경우를 가정.
+    seq is a single-strand 5'->3' sequence. Assumes it binds its own reverse complement.
     """
     seq = seq.upper()
     T = temp_c + 273.15
@@ -86,11 +86,11 @@ def _nn_dg(seq: str, temp_c: float = 37.0) -> float:
             dH += h
             dS += s
         else:
-            # 파라미터 없으면 평균값 사용
+            # use an average value when no parameter exists
             dH += -8.0
             dS += -21.0
 
-    # 말단 패널티
+    # terminal penalty
     for end_base in (seq[0], seq[-1]):
         if end_base in "AT":
             dH += _INIT_AT[0]
@@ -104,15 +104,15 @@ def _nn_dg(seq: str, temp_c: float = 37.0) -> float:
 
 
 def _find_hairpin(seq: str, min_bp: int = 4, min_loop: int = 3) -> tuple[float, int]:
-    """hairpin 구조의 최소 ΔG와 stem 길이를 반환.
+    """Return the minimum dG and stem length of a hairpin structure.
 
     Args:
-        seq: 프라이머 서열 (5'→3')
-        min_bp: 최소 stem 염기쌍 수
-        min_loop: 최소 루프 크기
+        seq: primer sequence (5'->3')
+        min_bp: minimum number of stem base pairs
+        min_loop: minimum loop size
 
     Returns:
-        (최소_dG, 최대_stem_length) 튜플
+        a (min_dG, max_stem_length) tuple
     """
     seq = seq.upper()
     n = len(seq)
@@ -122,13 +122,13 @@ def _find_hairpin(seq: str, min_bp: int = 4, min_loop: int = 3) -> tuple[float, 
     for stem_len in range(min_bp, n // 2 + 1):
         for i in range(n - stem_len * 2 - min_loop + 1):
             stem5 = seq[i:i + stem_len]
-            # 루프 이후 위치
+            # position after the loop
             for loop_len in range(min_loop, n - i - stem_len * 2 + 1):
                 j = i + stem_len + loop_len
                 if j + stem_len > n:
                     break
                 stem3 = seq[j:j + stem_len]
-                # stem3은 stem5의 역상보와 비교
+                # compare stem3 against stem5's reverse complement
                 rc_stem5 = _reverse_complement(stem5)
                 if stem3 == rc_stem5:
                     dg = _nn_dg(stem5)
@@ -140,9 +140,9 @@ def _find_hairpin(seq: str, min_bp: int = 4, min_loop: int = 3) -> tuple[float, 
 
 
 def _find_homodimer(seq: str, min_bp: int = 6) -> tuple[float, int]:
-    """homodimer 상보 결합의 최소 ΔG와 최대 상보 길이를 반환.
+    """Return the minimum dG and maximum complementary length of a homodimer pairing.
 
-    두 동일 프라이머 사이의 3' 말단 상보성을 중심으로 검사.
+    Checks primarily for 3'-end complementarity between two copies of the same primer.
     """
     seq = seq.upper()
     n = len(seq)
@@ -150,12 +150,12 @@ def _find_homodimer(seq: str, min_bp: int = 6) -> tuple[float, int]:
     best_dg = 0.0
     best_bp = 0
 
-    # 슬라이딩 윈도우로 상보 영역 탐색
+    # sliding window search for a complementary region
     for window in range(min_bp, n + 1):
         for i in range(n - window + 1):
             subseq = seq[i:i + window]
             rc_sub = _reverse_complement(subseq)
-            # rc_sub가 원래 서열에 있으면 homodimer 가능
+            # a homodimer is possible if rc_sub occurs in the original sequence
             if rc_sub in seq:
                 dg = _nn_dg(subseq)
                 if dg < best_dg:
@@ -171,13 +171,13 @@ def check_primer(
     threshold_homodimer_bp: int = 6,
     temp_c: float = 37.0,
 ) -> dict:
-    """단일 프라이머의 hairpin 및 homodimer 구조를 검사한다.
+    """Check a single primer's hairpin and homodimer structure.
 
     Args:
-        seq: 프라이머 서열 (5'→3', ACGT only)
-        threshold_hairpin_dg: hairpin FAIL 기준 ΔG (kcal/mol), 기본값 -2.0
-        threshold_homodimer_bp: homodimer FAIL 기준 최소 bp 수, 기본값 6
-        temp_c: 계산 온도 (°C), 기본값 37.0
+        seq: primer sequence (5'->3', ACGT only)
+        threshold_hairpin_dg: hairpin FAIL threshold dG (kcal/mol), default -2.0
+        threshold_homodimer_bp: homodimer FAIL threshold minimum bp count, default 6
+        temp_c: computation temperature (degC), default 37.0
 
     Returns:
         {"seq", "hairpin_dG", "homodimer_dG", "hairpin_pass", "homodimer_pass"}
@@ -191,15 +191,15 @@ def check_primer(
             "homodimer_dG": None,
             "hairpin_pass": False,
             "homodimer_pass": False,
-            "notes": f"유효하지 않은 염기: {invalid}",
+            "notes": f"Invalid base(s): {invalid}",
         }
 
     hairpin_dg, hairpin_stem = _find_hairpin(seq)
     homodimer_dg, homodimer_bp = _find_homodimer(seq, min_bp=threshold_homodimer_bp)
 
-    # hairpin FAIL: ≥4bp stem AND ΔG < threshold
+    # hairpin FAIL: stem >=4bp AND dG < threshold
     hairpin_pass = not (hairpin_stem >= 4 and hairpin_dg < threshold_hairpin_dg)
-    # homodimer FAIL: ≥min_bp 상보
+    # homodimer FAIL: complementary >=min_bp
     homodimer_pass = homodimer_bp < threshold_homodimer_bp
 
     return {
@@ -217,7 +217,7 @@ def check_primers(
     threshold_homodimer_bp: int = 6,
     temp_c: float = 37.0,
 ) -> list[dict]:
-    """여러 프라이머를 일괄 검사한다."""
+    """Check multiple primers in a batch."""
     return [
         check_primer(seq, threshold_hairpin_dg, threshold_homodimer_bp, temp_c)
         for seq in seqs
@@ -226,35 +226,35 @@ def check_primers(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="프라이머 hairpin/homodimer 구조를 nearest-neighbor 모델로 검사한다."
+        description="Check primer hairpin/homodimer structure with the nearest-neighbor model."
     )
     parser.add_argument(
         "sequences", nargs="*", default=[],
-        help="프라이머 서열 (직접 입력, 공백 구분)"
+        help="primer sequence(s) (given directly, space-separated)"
     )
     parser.add_argument(
         "--file", "-f", default=None,
-        help="프라이머 JSON 파일 (문자열 배열 또는 [{seq:...}] 배열)"
+        help="primer JSON file (a string array or an array of [{seq:...}])"
     )
     parser.add_argument(
         "--threshold-hairpin", type=float, default=-2.0, metavar="DG",
-        help="hairpin FAIL 기준 ΔG kcal/mol (기본값: -2.0)"
+        help="hairpin FAIL threshold dG in kcal/mol (default: -2.0)"
     )
     parser.add_argument(
         "--threshold-homodimer", type=int, default=6, metavar="BP",
-        help="homodimer FAIL 기준 최소 bp 수 (기본값: 6)"
+        help="homodimer FAIL threshold minimum bp count (default: 6)"
     )
     parser.add_argument(
         "--temp", type=float, default=37.0, metavar="C",
-        help="계산 온도 °C (기본값: 37.0)"
+        help="computation temperature in degC (default: 37.0)"
     )
-    parser.add_argument("--output", "-o", default=None, help="출력 JSON 파일 경로")
+    parser.add_argument("--output", "-o", default=None, help="output JSON file path")
     args = parser.parse_args()
 
     if not args.sequences and not args.file:
-        parser.error("서열을 직접 입력하거나 --file을 지정해야 합니다.")
+        parser.error("Either provide sequences directly or specify --file.")
     if args.sequences and args.file:
-        parser.error("서열 직접 입력과 --file은 동시에 사용할 수 없습니다.")
+        parser.error("Direct sequence input and --file cannot be used together.")
 
     if args.file:
         raw = json.loads(Path(args.file).read_text(encoding="utf-8"))
@@ -264,7 +264,7 @@ def main() -> None:
                 for item in raw
             ]
         else:
-            parser.error("JSON 파일은 문자열 배열 또는 [{seq:...}] 형태여야 합니다.")
+            parser.error("The JSON file must be a string array or an array of [{seq:...}].")
     else:
         seqs = args.sequences
 
@@ -279,14 +279,14 @@ def main() -> None:
 
     if args.output:
         Path(args.output).write_text(output_json, encoding="utf-8")
-        print(f"{len(results)}개 프라이머 검사 완료 → {args.output}", file=sys.stderr)
+        print(f"Checked {len(results)} primer(s) -> {args.output}", file=sys.stderr)
     else:
         print(output_json)
 
     pass_all = sum(1 for r in results if r.get("hairpin_pass") and r.get("homodimer_pass"))
     print(
-        f"\n요약: 전체 {len(results)}개 중 {pass_all}개 통과 "
-        f"(hairpin+homodimer 모두 통과)",
+        f"\nSummary: {pass_all} of {len(results)} total passed "
+        f"(both hairpin and homodimer passed)",
         file=sys.stderr,
     )
 

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Rosetta ddG 배치 스캐너 - PyRosetta ddG_monomer으로 단백질 변이체 안정성 스크리닝.
+"""Rosetta ddG batch scanner - screens protein variant stability with PyRosetta's ddG_monomer.
 
-사용법:
+Usage:
     python ddg_screen.py --pdb structure.pdb --variants variants.csv
     python ddg_screen.py --pdb structure.pdb --variants variants.csv --threshold 2.0 --output results.csv
 
-임포트:
+Import:
     from ddg_screen import screen_variants
     results = screen_variants("structure.pdb", [{"variant": "G134A", "chain": "A"}])
 
-참고:
-    - WSL Ubuntu의 conda env 'pyrosetta'에서 실행됨
-    - Windows에서는 wsl subprocess를 통해 자동 호출
-    - variants.csv 필수 컬럼: variant (예: G134A), chain (기본값: A)
+Notes:
+    - Runs in the 'pyrosetta' conda env under WSL Ubuntu
+    - On Windows, invoked automatically via a wsl subprocess
+    - Required variants.csv columns: variant (e.g. G134A), chain (default: A)
 """
 import argparse
 import csv
@@ -27,7 +27,7 @@ from typing import Optional
 
 THRESHOLD_DEFAULT = 2.0
 
-# PyRosetta를 직접 실행할 때 쓰는 내부 스크립트 (WSL에서 실행)
+# Inner script used to run PyRosetta directly (executed inside WSL)
 _PYROSETTA_INNER = """
 import sys, json, re, os
 
@@ -35,7 +35,7 @@ try:
     import pyrosetta
     from pyrosetta.toolbox import cleanATOM
 except ImportError as e:
-    print(json.dumps({"error": f"PyRosetta import 실패: {e}"}))
+    print(json.dumps({"error": f"PyRosetta import failed: {e}"}))
     sys.exit(1)
 
 def parse_variant(variant_str):
@@ -48,14 +48,14 @@ def calc_ddg(pdb_path, variant_str, chain, threshold):
     wt_aa, pos, mut_aa = parse_variant(variant_str)
     if wt_aa is None:
         return {"variant": variant_str, "ddG_fold": None, "ddG_bind": None,
-                "pass_fail": "FAIL", "notes": f"잘못된 변이 표기: {variant_str}"}
+                "pass_fail": "FAIL", "notes": f"Invalid variant notation: {variant_str}"}
 
     pyrosetta.init("-mute all")
     pose = pyrosetta.pose_from_pdb(pdb_path)
 
     scorefxn = pyrosetta.get_fa_scorefxn()
 
-    # 체인에서 잔기 번호 찾기
+    # Locate the residue number within the chain
     pdb_info = pose.pdb_info()
     res_num = None
     for i in range(1, pose.total_residue() + 1):
@@ -65,12 +65,12 @@ def calc_ddg(pdb_path, variant_str, chain, threshold):
 
     if res_num is None:
         return {"variant": variant_str, "ddG_fold": None, "ddG_bind": None,
-                "pass_fail": "FAIL", "notes": f"잔기를 찾을 수 없음: {chain}{pos}"}
+                "pass_fail": "FAIL", "notes": f"Residue not found: {chain}{pos}"}
 
-    # WT 에너지
+    # WT energy
     score_wt = scorefxn(pose)
 
-    # 변이 적용 (PackMutants 방식)
+    # Apply the mutation (PackMutants style)
     mutant_pose = pose.clone()
     mutant = pyrosetta.rosetta.protocols.simple_moves.MutateResidue()
     mutant.set_res_selector(
@@ -79,7 +79,7 @@ def calc_ddg(pdb_path, variant_str, chain, threshold):
     mutant.set_res_name(mut_aa)
     mutant.apply(mutant_pose)
 
-    # 측쇄 repack
+    # Side-chain repack
     task_factory = pyrosetta.rosetta.core.pack.task.TaskFactory()
     task_factory.push_back(pyrosetta.rosetta.core.pack.task.operation.RestrictToRepacking())
     packer = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(scorefxn)
@@ -117,7 +117,7 @@ def _is_windows() -> bool:
 
 
 def _wsl_path(windows_path: str) -> str:
-    """Windows 경로를 WSL 경로로 변환."""
+    """Convert a Windows path to a WSL path."""
     p = Path(windows_path).resolve()
     drive = p.drive.rstrip(":").lower()
     rest = str(p)[len(p.drive):].replace("\\", "/")
@@ -129,26 +129,26 @@ def screen_variants(
     variants: list[dict],
     threshold: float = THRESHOLD_DEFAULT,
 ) -> list[dict]:
-    """단백질 변이체 ddG 안정성 스크리닝.
+    """Screen protein variant ddG stability.
 
     Args:
-        pdb_path: 입력 PDB 파일 경로
-        variants: [{"variant": "G134A", "chain": "A"}, ...] 형태의 딕셔너리 목록
-        threshold: PASS 기준 ddG 임계값 (REU), 기본값 2.0
+        pdb_path: path to the input PDB file
+        variants: list of dicts shaped like [{"variant": "G134A", "chain": "A"}, ...]
+        threshold: ddG threshold (REU) for a PASS, default 2.0
 
     Returns:
-        [{"variant", "ddG_fold", "ddG_bind", "pass_fail", "notes"}, ...] 목록
+        a list of [{"variant", "ddG_fold", "ddG_bind", "pass_fail", "notes"}, ...]
     """
     pdb_file = Path(pdb_path)
     if not pdb_file.exists():
-        raise FileNotFoundError(f"PDB 파일을 찾을 수 없습니다: {pdb_path}")
+        raise FileNotFoundError(f"PDB file not found: {pdb_path}")
 
-    # 변이 표기 검증
+    # Validate variant notation
     import re
     for v in variants:
         vname = v.get("variant", "")
         if not re.match(r'^[A-Z]\d+[A-Z]$', vname.strip()):
-            raise ValueError(f"잘못된 변이 표기 (예: G134A 형식이어야 함): {vname!r}")
+            raise ValueError(f"Invalid variant notation (must be e.g. G134A format): {vname!r}")
 
     payload = {
         "pdb_path": str(pdb_file.resolve()),
@@ -157,7 +157,7 @@ def screen_variants(
     }
 
     if _is_windows():
-        # WSL subprocess를 통해 PyRosetta 실행
+        # Run PyRosetta via a WSL subprocess
         wsl_pdb = _wsl_path(str(pdb_file.resolve()))
         payload["pdb_path"] = wsl_pdb
 
@@ -179,19 +179,19 @@ def screen_variants(
             )
             if result.returncode != 0:
                 raise RuntimeError(
-                    f"WSL PyRosetta 실행 실패:\n{result.stderr}"
+                    f"WSL PyRosetta run failed:\n{result.stderr}"
                 )
             output = result.stdout.strip()
-            # JSON 라인만 추출 (마지막 JSON 배열)
+            # Extract only JSON lines (the last JSON array)
             lines = [l for l in output.splitlines() if l.strip().startswith("[")]
             if not lines:
-                raise RuntimeError(f"PyRosetta 출력에서 JSON을 찾을 수 없음:\n{output}")
+                raise RuntimeError(f"No JSON found in PyRosetta output:\n{output}")
             return json.loads(lines[-1])
         finally:
             Path(tmp_script).unlink(missing_ok=True)
 
     else:
-        # WSL/Linux 환경: PyRosetta 직접 실행
+        # WSL/Linux environment: run PyRosetta directly
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".py", delete=False, encoding="utf-8"
         ) as tf:
@@ -203,23 +203,23 @@ def screen_variants(
                 capture_output=True, text=True, timeout=600,
             )
             if result.returncode != 0:
-                raise RuntimeError(f"PyRosetta 실행 실패:\n{result.stderr}")
+                raise RuntimeError(f"PyRosetta run failed:\n{result.stderr}")
             lines = [l for l in result.stdout.splitlines() if l.strip().startswith("[")]
             if not lines:
-                raise RuntimeError(f"PyRosetta 출력에서 JSON을 찾을 수 없음:\n{result.stdout}")
+                raise RuntimeError(f"No JSON found in PyRosetta output:\n{result.stdout}")
             return json.loads(lines[-1])
         finally:
             Path(tmp_script).unlink(missing_ok=True)
 
 
 def _read_variants_csv(path: str) -> list[dict]:
-    """variants CSV를 읽어 딕셔너리 목록으로 반환."""
+    """Read the variants CSV and return a list of dicts."""
     rows = []
     with open(path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             if "variant" not in row:
-                raise ValueError("CSV에 'variant' 컬럼이 없습니다.")
+                raise ValueError("CSV is missing the 'variant' column.")
             rows.append({
                 "variant": row["variant"].strip(),
                 "chain": row.get("chain", "A").strip() or "A",
@@ -237,29 +237,29 @@ def _write_results_csv(results: list[dict], path: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Rosetta ddG_monomer으로 단백질 변이체 안정성을 배치 스크리닝한다."
+        description="Batch-screen protein variant stability with Rosetta ddG_monomer."
     )
-    parser.add_argument("--pdb", required=True, help="입력 PDB 구조 파일 경로")
-    parser.add_argument("--variants", required=True, help="변이체 CSV 파일 (컬럼: variant, chain)")
+    parser.add_argument("--pdb", required=True, help="path to the input PDB structure file")
+    parser.add_argument("--variants", required=True, help="variants CSV file (columns: variant, chain)")
     parser.add_argument(
         "--threshold", type=float, default=THRESHOLD_DEFAULT,
-        help=f"PASS 기준 ddG 임계값 REU (기본값: {THRESHOLD_DEFAULT})"
+        help=f"ddG threshold REU for a PASS (default: {THRESHOLD_DEFAULT})"
     )
-    parser.add_argument("--output", "-o", default=None, help="결과 CSV 출력 경로")
+    parser.add_argument("--output", "-o", default=None, help="output path for the results CSV")
     args = parser.parse_args()
 
     variants = _read_variants_csv(args.variants)
-    print(f"{len(variants)}개 변이체 스크리닝 시작 (임계값: {args.threshold} REU)...", file=sys.stderr)
+    print(f"Screening {len(variants)} variant(s) (threshold: {args.threshold} REU)...", file=sys.stderr)
 
     results = screen_variants(args.pdb, variants, threshold=args.threshold)
 
     pass_count = sum(1 for r in results if r.get("pass_fail") == "PASS")
     fail_count = len(results) - pass_count
-    print(f"완료: PASS {pass_count}개, FAIL {fail_count}개", file=sys.stderr)
+    print(f"Done: PASS {pass_count}, FAIL {fail_count}", file=sys.stderr)
 
     output_path = args.output or "ddg_results.csv"
     _write_results_csv(results, output_path)
-    print(f"결과를 {output_path}에 저장했습니다.", file=sys.stderr)
+    print(f"Results saved to {output_path}.", file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -32,24 +32,24 @@ We thank Reviewer X for their constructive comments.
 
 ## Phase 5 — Revision Response Mode (`revise-response`)
 
-리뷰어 코멘트를 받아 point-by-point 응답을 구조화한다.
+Takes reviewer comments and structures a point-by-point response.
 
 ### Input
-- 리뷰어 원문 (이메일/PDF/텍스트) — 보통 reviewer 1, reviewer 2... 로 구분
-- 원고 현재 버전 (DOCX 또는 텍스트)
+- Reviewer's original text (email/PDF/text) — usually split into reviewer 1, reviewer 2, ...
+- Current manuscript version (DOCX or text)
 
 ### Workflow
-1. **Parse comments**: reviewer별·코멘트별로 분리. 각 코멘트에 ID 부여 (`R1.1`, `R1.2`, `R2.1`...).
+1. **Parse comments**: split by reviewer and by comment. Assign each comment an ID (`R1.1`, `R1.2`, `R2.1`...).
 2. **Classify**: each comment → one of `factual` / `clarification` / `additional-experiment` / `literature` / `style` / `structural`
 3. **Draft response per comment**:
    ```
-   Comment R1.1: [원문]
+   Comment R1.1: [original text]
    Classification: clarification
-   Response: [답변 — 인정/반박/타협]
-   Manuscript change: [수정사항 + 라인 번호 또는 "no change"]
+   Response: [reply — concede / rebut / compromise]
+   Manuscript change: [what changed + line numbers, or "no change"]
    ```
-4. **Tone policy**: "기존이 못한 것" 프레임 금지 → "보완/추가" 프레임.
-5. **Output formats**: JSON (재처리 가능) / Markdown table (사람용) / DOCX response letter (제출용)
+4. **Tone policy**: never frame it as "what the original couldn't do" — frame it as "supplement/addition."
+5. **Output formats**: JSON (reprocessable) / Markdown table (for humans) / DOCX response letter (for submission)
 
 ### Output structure (JSON)
 ```json
@@ -89,42 +89,42 @@ publication in <Journal Name>.
 
 <Reviewer #1>
 
-Reviewer #1: <개관/총평 인용>
+Reviewer #1: <quote the overall summary/assessment>
 
-Comment 1. <원문 인용>
+Comment 1. <quote the original text>
 Response: Thank you for this <valuable | constructive | important> comment.
-<답변: 인정/반박/타협. 명확히 무엇을 어떻게 처리했는지>
+<reply: concede/rebut/compromise. State clearly what was done and how>
 
 [Revision: lines 445-446]
-<수정된 본문 인용 — italics 또는 따옴표로 둘러쌈>
+<quote the revised text — wrapped in italics or quotation marks>
 
-Comment 2. <원문 인용>
+Comment 2. <quote the original text>
 Response: Thank you for this <suggestion>.
 ...
 ```
 
-**핵심 규칙** (사용자 실전 사례에서):
-1. 응답 첫 문장은 항상 "Thank you for this <형용사> comment/suggestion/feedback."
-2. 모든 manuscript change는 `[Revision: lines XXX-YYY]` 태그 + 실제 수정된 본문 인용
-3. 인정 → 설명 → 수정 → 인용 순서
-4. 반박할 때도 먼저 "We agree that..." 으로 부분 인정 후 "However, ..." 로 진행
-5. 빨간색 하이라이트는 본문에서, response letter는 일반 텍스트
-6. 제출 마지막 문장: "We respectfully request that our revised manuscript be reconsidered for publication"
+**Core rules** (from the user's real submission experience):
+1. The response always opens with "Thank you for this <adjective> comment/suggestion/feedback."
+2. Every manuscript change carries a `[Revision: lines XXX-YYY]` tag + a quote of the actually-revised text.
+3. Order: concede → explain → revise → quote.
+4. Even when rebutting, lead with a partial concession ("We agree that...") before "However, ...".
+5. Red highlighting stays in the manuscript body; the response letter itself is plain text.
+6. Closing sentence for submission: "We respectfully request that our revised manuscript be reconsidered for publication"
 
 ---
 
-## Discuss Mode — 결과 해석 + 고려사항 추천
+## Discuss Mode — result interpretation + consideration recommendations
 
-사용자가 결과를 보여주며 "어떻게 해석?" / "Discussion 어떻게 쓸까?" / "이거 의미 있어?" 라고 물을 때 사용.
+Use when the user shows results and asks "how do I interpret this?" / "how should I write the Discussion?" / "does this mean anything?"
 
 ### Workflow
-1. **Context gathering** (가정 금지, 모르면 질문): 실험 조건(온도·pH·농도·시간), 비교 대상(이전 실험·문헌·이론값), 측정 방법 + 오차 범위
-2. **Three-tier interpretation**: **Primary**(data-supported) / **Alternative**(배제 불가) / **Excluded**(명시적 배제 + 이유)
+1. **Context gathering** (never assume — ask when unsure): experimental conditions (temperature, pH, concentration, time), comparison target (prior experiment, literature, theoretical value), measurement method + error range
+2. **Three-tier interpretation**: **Primary** (data-supported) / **Alternative** (cannot be ruled out) / **Excluded** (explicitly ruled out + reason)
 3. **Comment categories**:
-   - `[MECHANISM]` — 분자/효소 수준 메커니즘 가설
-   - `[CONFOUND]` — 결과를 흐릴 수 있는 교란 변수
-   - `[REPLICATION]` — 재현성·N 수·통계
-   - `[COMPARISON]` — 문헌 대비 위치 (better/worse/comparable + 조건 차이)
-   - `[FOLLOWUP]` — 다음에 해야 할 실험·분석
-   - `[LIMITATION]` — 명시해야 할 한계점
-4. **Output**: 7-step Discussion outline (핵심 발견 → 해석 → 문헌 비교 → 기여/의의 → 한계 → 향후 연구 → 결론) + 카테고리별 코멘트 박스
+   - `[MECHANISM]` — molecular/enzyme-level mechanistic hypothesis
+   - `[CONFOUND]` — a confounding variable that could obscure the result
+   - `[REPLICATION]` — reproducibility, N count, statistics
+   - `[COMPARISON]` — position relative to the literature (better/worse/comparable + condition differences)
+   - `[FOLLOWUP]` — experiments/analyses to run next
+   - `[LIMITATION]` — limitations that must be stated explicitly
+4. **Output**: 7-step Discussion outline (key finding → interpretation → literature comparison → contribution/significance → limitations → future work → conclusion) + comment boxes per category

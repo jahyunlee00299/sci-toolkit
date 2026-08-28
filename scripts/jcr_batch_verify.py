@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
-"""JCR 배치 검증 — journal_if_cache.json을 OpenAlex source/venue 데이터로 보강한다.
+"""JCR batch verification — enriches journal_if_cache.json with OpenAlex source/venue data.
 
-사용법:
+Usage:
     python jcr_batch_verify.py
     python jcr_batch_verify.py --cache path/to/journal_if_cache.json
     python jcr_batch_verify.py --cache cache.json --output enriched.json
     python jcr_batch_verify.py --add-journal "Nature Catalysis"
     python jcr_batch_verify.py --add-journal "Nature Catalysis" --cache cache.json
 
-기능:
-    - verified=false 저널만 처리 (이미 검증된 항목 스킵, 재개 가능)
-    - OpenAlex sources API로 display_name, issn, 2yr_mean_citedness, h_index,
-      works_count, type, homepage_url 추출
-    - openalex_verified=true, verified_date 필드 추가
-    - Rate limit: 10 req/s (OpenAlex 권장)
+Behavior:
+    - processes only verified=false journals (skips already-verified entries, resumable)
+    - pulls display_name, issn, 2yr_mean_citedness, h_index, works_count,
+      type, homepage_url from the OpenAlex sources API
+    - adds openalex_verified=true and a verified_date field
+    - rate limit: 10 req/s (OpenAlex's recommendation)
 """
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# Windows' default console is cp949, which dies on Korean/symbol output. Force
+# UTF-8. Use reconfigure: wrapping in a TextIOWrapper would make it own the
+# underlying stream, so once this module is imported, the caller's stdout
+# gets closed when the wrapper is later garbage-collected (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -36,7 +37,7 @@ import urllib.request
 from pathlib import Path
 from typing import Optional
 
-# 기본 캐시 경로 우선순위
+# Default cache path priority order
 _DEFAULT_CACHE_PATHS = [
     Path("~/tmp/review_qc/ref_fulltext_cache/journal_if_cache.json").expanduser(),
     Path("~/.claude/ref_cache/journal_if_cache.json").expanduser(),
@@ -57,8 +58,8 @@ def _find_default_cache() -> Optional[Path]:
 def _load_cache(cache_path: Path) -> dict:
     if cache_path.exists():
         return json.loads(cache_path.read_text(encoding="utf-8"))
-    # 새 캐시 구조 생성
-    print(f"[INFO] 캐시 파일 없음. 새로 생성: {cache_path}", file=sys.stderr)
+    # Build a new cache structure
+    print(f"[INFO] no cache file. Creating new: {cache_path}", file=sys.stderr)
     return {
         "metadata": {
             "created": VERIFIED_DATE,
@@ -87,7 +88,7 @@ def _get(url: str, timeout: int = 15) -> dict:
 
 
 def _query_openalex_source(journal_name: str) -> Optional[dict]:
-    """OpenAlex sources API에서 저널 정보를 조회한다."""
+    """Look up journal information from the OpenAlex sources API."""
     encoded = urllib.parse.quote(journal_name)
     url = f"{OPENALEX_SOURCES_BASE}?search={encoded}&per_page=1"
     try:
@@ -111,10 +112,10 @@ def _query_openalex_source(journal_name: str) -> Optional[dict]:
             "verified_date": VERIFIED_DATE,
         }
     except urllib.error.HTTPError as e:
-        print(f"  HTTP 오류 {e.code}: {journal_name}", file=sys.stderr)
+        print(f"  HTTP error {e.code}: {journal_name}", file=sys.stderr)
         return None
     except Exception as e:
-        print(f"  조회 실패: {journal_name} — {e}", file=sys.stderr)
+        print(f"  lookup failed: {journal_name} — {e}", file=sys.stderr)
         return None
 
 
@@ -133,10 +134,10 @@ def _assign_tier(citedness: Optional[float]) -> int:
 def verify_batch(
     data: dict, verbose: bool = True
 ) -> tuple[int, int, int]:
-    """캐시 내 미검증 저널을 OpenAlex로 검증한다.
+    """Verify unverified journals in the cache against OpenAlex.
 
     Returns:
-        (verified, skipped, failed) 카운트 튜플
+        (verified, skipped, failed) count tuple
     """
     journals = data["journals"]
     verified_count = 0
@@ -150,16 +151,16 @@ def verify_batch(
         if already:
             skipped_count += 1
             if verbose:
-                print(f"[{i}/{len(journals)}] 스킵 (검증됨): {name}", file=sys.stderr)
+                print(f"[{i}/{len(journals)}] skipped (already verified): {name}", file=sys.stderr)
             continue
 
         if verbose:
-            print(f"[{i}/{len(journals)}] 조회 중: {name} ...", end=" ", file=sys.stderr, flush=True)
+            print(f"[{i}/{len(journals)}] looking up: {name} ...", end=" ", file=sys.stderr, flush=True)
 
         result = _query_openalex_source(name)
         if result:
             entry.update(result)
-            # citedness 기반 tier 업데이트 (기존 tier가 없거나 citedness 변경 시)
+            # update the citedness-based tier (when there is no existing tier or citedness changed)
             citedness = result.get("openalex_2yr_citedness")
             if citedness is not None and entry.get("tier") is None:
                 entry["tier"] = _assign_tier(citedness)
@@ -173,7 +174,7 @@ def verify_batch(
             entry["verified_date"] = VERIFIED_DATE
             failed_count += 1
             if verbose:
-                print("실패", file=sys.stderr)
+                print("failed", file=sys.stderr)
 
         time.sleep(_RATE_LIMIT_DELAY)
 
@@ -181,11 +182,11 @@ def verify_batch(
 
 
 def add_journal(data: dict, journal_name: str, verbose: bool = True) -> bool:
-    """새 저널을 캐시에 추가하고 OpenAlex로 검증한다."""
-    # 중복 확인
+    """Add a new journal to the cache and verify it against OpenAlex."""
+    # check for a duplicate
     existing = [j for j in data["journals"] if j.get("name", "").lower() == journal_name.lower()]
     if existing:
-        print(f"[INFO] 이미 존재: {journal_name}", file=sys.stderr)
+        print(f"[INFO] already exists: {journal_name}", file=sys.stderr)
         return False
 
     if verbose:
@@ -199,13 +200,13 @@ def add_journal(data: dict, journal_name: str, verbose: bool = True) -> bool:
         if verbose:
             cf = result.get("openalex_2yr_citedness")
             cf_str = f"IF≈{cf:.2f}" if cf is not None else "IF=N/A"
-            print(f"추가됨 ({cf_str})", file=sys.stderr)
+            print(f"added ({cf_str})", file=sys.stderr)
     else:
         entry["openalex_verified"] = False
         entry["verified_date"] = VERIFIED_DATE
         entry["tier"] = 4
         if verbose:
-            print("추가됨 (조회 실패)", file=sys.stderr)
+            print("added (lookup failed)", file=sys.stderr)
 
     data["journals"].append(entry)
     return True
@@ -213,34 +214,34 @@ def add_journal(data: dict, journal_name: str, verbose: bool = True) -> bool:
 
 def print_summary(verified: int, skipped: int, failed: int) -> None:
     total = verified + skipped + failed
-    print("\n=== 결과 요약 ===")
-    print(f"  총 저널:     {total}")
-    print(f"  검증 완료:   {verified}")
-    print(f"  스킵 (기존): {skipped}")
-    print(f"  실패:        {failed}")
+    print("\n=== results summary ===")
+    print(f"  total journals: {total}")
+    print(f"  verified:       {verified}")
+    print(f"  skipped (existing): {skipped}")
+    print(f"  failed:         {failed}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="journal_if_cache.json을 OpenAlex source 데이터로 배치 보강한다."
+        description="Batch-enrich journal_if_cache.json with OpenAlex source data."
     )
-    parser.add_argument("--cache", "-c", default=None, help="입력 캐시 JSON 경로")
-    parser.add_argument("--output", "-o", default=None, help="출력 JSON 경로 (기본: 입력 파일 덮어쓰기)")
-    parser.add_argument("--add-journal", metavar="NAME", default=None, help="새 저널 추가")
-    parser.add_argument("--quiet", "-q", action="store_true", help="진행 출력 억제")
+    parser.add_argument("--cache", "-c", default=None, help="input cache JSON path")
+    parser.add_argument("--output", "-o", default=None, help="output JSON path (default: overwrite the input file)")
+    parser.add_argument("--add-journal", metavar="NAME", default=None, help="add a new journal")
+    parser.add_argument("--quiet", "-q", action="store_true", help="suppress progress output")
     args = parser.parse_args()
 
-    # 캐시 경로 결정
+    # decide the cache path
     if args.cache:
         cache_path = Path(args.cache)
     else:
         found = _find_default_cache()
         if found:
             cache_path = found
-            print(f"[INFO] 캐시 파일: {cache_path}", file=sys.stderr)
+            print(f"[INFO] cache file: {cache_path}", file=sys.stderr)
         else:
             cache_path = Path("~/.claude/ref_cache/journal_if_cache.json").expanduser()
-            print(f"[INFO] 기본 캐시 생성: {cache_path}", file=sys.stderr)
+            print(f"[INFO] creating default cache: {cache_path}", file=sys.stderr)
 
     output_path = Path(args.output) if args.output else cache_path
 
@@ -251,14 +252,14 @@ def main() -> None:
         added = add_journal(data, args.add_journal, verbose=verbose)
         if added:
             _save_cache(data, output_path)
-            print(f"[OK] 저장: {output_path}", file=sys.stderr)
+            print(f"[OK] saved: {output_path}", file=sys.stderr)
         return
 
-    # 배치 검증
+    # batch verification
     verified, skipped, failed = verify_batch(data, verbose=verbose)
     _save_cache(data, output_path)
     if verbose:
-        print(f"\n[OK] 저장: {output_path}", file=sys.stderr)
+        print(f"\n[OK] saved: {output_path}", file=sys.stderr)
     print_summary(verified, skipped, failed)
 
 

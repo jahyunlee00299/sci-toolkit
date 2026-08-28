@@ -2,26 +2,37 @@
 """
 endnote_biblio_check.py — EndNote bibliography integrity checker for Word docx.
 
-재발 방지 검증 장치 (a real incident). Non-destructive: zipfile로
-word/document.xml만 읽음 (docx를 Word로 열지 않음, EndNote 필드 미접촉).
+A recurrence-prevention check, built after a real incident. Non-destructive:
+only reads word/document.xml via zipfile (never opens the docx in Word,
+never touches the EndNote fields).
 
-잡아내는 오류 7종:
-  1. reference_type 오류  — EndNote record가 Journal Article(17) 아닌 Bill/Generic
-                            (INSERT 시 reference_type 미지정 → Bill 기본값 → 이탤릭/볼드 소실)
-  2. INVALID CITATION     — 본문 렌더(w:t, 복구불가) vs 필드(instrText, Update로 해소) 구분
-  3. 저널명 이탤릭 누락    — 참고문헌 문단에 이탤릭 run 없음 (RSC는 저널명 전부 이탤릭)
-  4. 저자 누락 의심        — 참고문헌이 "성1개, 저널"처럼 이니셜/공저자 없이 시작
-  5. &amp; 엔티티 깨짐     — 이중/미해제 HTML 엔티티
-  6. 저널명 비CASSI 축약   — 마침표 없는 PubMed식 축약 or 미축약 풀네임 잔재 (경고)
-  7. 참고문헌 목록 결측    — 본문 위첨자 인용번호 최댓값이 참고문헌 목록 항목수보다 큼
-                            (실측 사례: 본문 인용 번호가 목록 최대 번호를 초과)
+Catches 7 categories of error:
+  1. reference_type error — the EndNote record is Bill/Generic instead of
+                             Journal Article(17) (reference_type left
+                             unspecified at INSERT time -> defaults to Bill
+                             -> italics/bold get lost)
+  2. INVALID CITATION      — distinguishes body-rendered (w:t, unrecoverable)
+                             from field (instrText, resolved by Update)
+  3. missing journal-name italics — no italic run in the reference paragraph
+                             (RSC style italicizes the entire journal name)
+  4. suspected missing author — a reference starts with "1 surname, journal"
+                             with no initials/co-authors
+  5. broken &amp; entity    — a double-escaped or unresolved HTML entity
+  6. non-CASSI journal abbreviation — a period-less PubMed-style
+                             abbreviation, or a leftover unabbreviated full
+                             name (warning)
+  7. missing reference-list entry — the highest superscript citation number
+                             in the body exceeds the reference list's entry
+                             count (measured case: a body citation number
+                             exceeded the list's highest number)
 
-사용:
-  python endnote_biblio_check.py <docx>              # 요약 + 오류목록
-  python endnote_biblio_check.py <docx> --json       # JSON 출력
-  python endnote_biblio_check.py <docx> --strict      # 오류 있으면 exit 1 (CI/gate용)
+Usage:
+  python endnote_biblio_check.py <docx>              # summary + error list
+  python endnote_biblio_check.py <docx> --json       # JSON output
+  python endnote_biblio_check.py <docx> --strict      # exit 1 if any errors (for CI/gates)
 
-reference_type 코드 판정은 fldData/instrText blob 안의 <ref-type name="..."> 로.
+reference_type codes are read from <ref-type name="..."> inside the
+fldData/instrText blob.
 """
 import sys, zipfile, re, base64, zlib, io, json, argparse
 
@@ -35,7 +46,7 @@ def _read_document_xml(path):
 
 
 def _decode_blobs(xml):
-    """fldData(base64) + instrText(escaped) 를 모두 디코딩해 EndNote record XML 텍스트로."""
+    """Decode both fldData(base64) and instrText(escaped) into EndNote record XML text."""
     texts = []
     for m in re.finditer(r"<w:fldData[^>]*>(.*?)</w:fldData>", xml, re.S):
         b = re.sub(r"\s+", "", m.group(1))
@@ -54,29 +65,30 @@ def _decode_blobs(xml):
                 texts.append(zlib.decompress(raw, wbits).decode("utf-8", "replace"))
             except Exception:
                 pass
-    # instrText 인라인 (unescape). &quot;/&apos; 도 반드시 (일부 EndNote 필드는
-    # ref-type name 속성이 &quot;로 이스케이프돼 있어, 누락 시 정규식 미매치→오류 은폐).
-    # &amp; 는 항상 마지막에 (이중 unescape 방지).
+    # instrText inline (unescape). &quot;/&apos; must be handled too (some
+    # EndNote fields have their ref-type name attribute escaped as &quot;,
+    # so skipping it means the regex misses it and hides the error).
+    # &amp; always goes last (prevents double-unescaping).
     texts.append(xml.replace("&lt;", "<").replace("&gt;", ">")
                     .replace("&quot;", '"').replace("&apos;", "'").replace("&amp;", "&"))
     return "\n".join(texts)
 
 
 def check_reference_types(xml):
-    """EndNote record 의 ref-type 분포. Journal Article(17) 아닌 것 = 잠재 오류."""
+    """Distribution of ref-type across EndNote records. Anything other than Journal Article(17) is a potential error."""
     blob = _decode_blobs(xml)
     types = re.findall(r'<ref-type name="([^"]+)"', blob)
     from collections import Counter
     dist = Counter(types)
-    # Journal Article / Book Section / Report / Web Page / Conference Paper = 정상 타입군
+    # Journal Article / Book Section / Report / Web Page / Conference Paper = normal type group
     ok = {"Journal Article", "Book Section", "Report", "Web Page", "Conference Paper"}
-    # Bill / Generic 등은 대개 INSERT 시 미지정으로 새어나온 오류
+    # Bill / Generic, etc. are usually an error that leaked in from being unspecified at INSERT
     suspicious = {t: n for t, n in dist.items() if t not in ok}
     return dict(distribution=dict(dist), suspicious=suspicious)
 
 
 def check_invalid_citations(xml):
-    """INVALID CITATION 을 렌더(w:t, 복구불가) vs 필드(instrText, Update로 해소) 구분."""
+    """Distinguish INVALID CITATION rendered in the body (w:t, unrecoverable) from the field form (instrText, resolved by Update)."""
     rendered = [t for t in re.findall(r"<w:t[^>]*>(.*?)</w:t>", xml, re.S)
                 if "INVALID CITATION" in t]
     field = [t for t in re.findall(r"<w:instrText[^>]*>(.*?)</w:instrText>", xml, re.S)
@@ -86,7 +98,7 @@ def check_invalid_citations(xml):
 
 
 def _reflist_paragraphs(xml):
-    """번호로 시작하고 연도(19xx/20xx) 포함하는 문단 = 참고문헌 항목."""
+    """A paragraph starting with a number and containing a year (19xx/20xx) = a reference-list entry."""
     out = []
     for p in re.findall(r"<w:p\b.*?</w:p>", xml, re.S):
         txt = "".join(re.findall(r"<w:t[^>]*>([^<]*)</w:t>", p))
@@ -103,7 +115,7 @@ def _reflist_paragraphs(xml):
 
 
 def check_italic_missing(xml):
-    """참고문헌 문단에 이탤릭 run 없음 = 저널명 이탤릭 누락."""
+    """No italic run in a reference paragraph = missing journal-name italics."""
     missing = []
     for num, txt, p in _reflist_paragraphs(xml):
         if not re.search(r"<w:i\b", p):
@@ -112,50 +124,59 @@ def check_italic_missing(xml):
 
 
 def check_author_omission(xml):
-    """참고문헌이 '성1개, 저널명'처럼 이니셜/공저자 없이 시작 = 저자 누락 의심.
-    정상: 'A. B. Surname, ...' 또는 'A. B. Surname and C. D. Surname, ...'
-    의심: 숫자.공백 뒤 바로 '대문자단어, 대문자시작저널' (이니셜 'X.' 없음)."""
+    """A reference starting with '1 surname, journal name' with no initials/co-authors = suspected missing author.
+    Normal: 'A. B. Surname, ...' or 'A. B. Surname and C. D. Surname, ...'
+    Suspect: right after 'number.<space>', a 'Capitalized word, Capitalized journal' with no initial 'X.'."""
     suspects = []
     for num, txt, p in _reflist_paragraphs(xml):
         body = re.sub(r"^\s*\d+\.\s*", "", txt)
-        # 첫 토큰이 이니셜(예 'A.')로 시작하지 않고, 바로 'Surname,' 형태면 의심
-        # 정상 저자블록은 'X. ' (이니셜+점+공백) 패턴을 포함
+        # Suspect if the first token doesn't start with an initial (e.g. 'A.')
+        # and goes straight to 'Surname,'. A normal author block contains an
+        # 'X. ' pattern (initial + period + space).
         first_chunk = body.split(",")[0]
         has_initial = bool(re.search(r"\b[A-Z]\.\s", body[:40]))
-        # 'Surname, Journal' — 콤마 앞이 한 단어(이니셜 없음)
+        # 'Surname, Journal' — a single word before the comma (no initial)
         if not has_initial and re.match(r"^[A-Z][a-zA-Z\-]+,", body):
             suspects.append((num, txt[:80]))
     return suspects
 
 
 def check_entity_breakage(xml):
-    """이중 이스케이프된 & 가 렌더 텍스트에 노출되는 것만 잡는다 (260715 fix).
+    """Catches only a double-escaped & that surfaces in rendered text (260715 fix).
 
-    document.xml 의 <w:t> 안에서 `&amp;` 는 화면에 `&` 로 정상 렌더되는 올바른 단일
-    이스케이프다 (오탐 금지 — 260714 스킬 버전이 이걸 오탐해 정상 CRediT/펀딩 문구를
-    깨진 것으로 표시했다). 화면에 문자 그대로 `&amp;` 가 보이려면 소스에 `&amp;amp;`
-    (이중) 가 있어야 한다. 즉 <w:t> 안에서 `&amp;amp;` (raw 로는 `&amp;amp;amp;`) 만 진짜 버그.
+    Inside a <w:t> in document.xml, `&amp;` is a correct single escape that
+    renders on screen as `&` (do not false-positive on this — the 260714
+    skill version did, flagging normal CRediT/funding text as broken). For
+    a literal `&amp;` to actually appear on screen, the source needs
+    `&amp;amp;` (doubled). In other words, only `&amp;amp;` inside a <w:t>
+    (raw form `&amp;amp;amp;`) is a real bug.
     """
     hits = []
     for t in re.findall(r"<w:t[^>]*>([^<]*)</w:t>", xml):
-        # raw XML 조각 t 에서 `&amp;amp;` = 디코드 1단계 후 `&amp;` = 화면에 `&amp;` 노출
+        # `&amp;amp;` in the raw XML fragment t = `&amp;` after one decode pass = `&amp;` exposed on screen
         if "&amp;amp;" in t:
             hits.append(t.strip()[:80])
     return hits
 
 
 def check_missing_reflist_entries(xml):
-    """본문/표 위첨자 인용번호 최댓값 vs 참고문헌 목록 항목수 비교 (260715 추가).
+    """Compares the highest superscript citation number in body/tables against the reference-list entry count (added 260715).
 
-    RSC/ACS 등 numeric-superscript 스타일은 포맷된 인용이 <w:vertAlign
-    w:val="superscript"/> 런의 <w:t> 안에 숫자(콤마/en-dash 범위 포함, 예 "15,16" "18-20")로
-    렌더된다. 본문에서 인용된 최댓값이 참고문헌 목록의 실제 항목수보다 크면 =
-    참고문헌이 결측(목록에 없는 번호가 인용됨). 실측 사례에서 본문 인용 번호가
-    있는데 목록이 1~14뿐이던 사례로 추가 — reflist 항목수만 세는 기존 체크(#1 reference_type
-    등)로는 이 결측을 못 잡는다(목록 자체는 내부적으로 일관돼 보이므로).
+    In numeric-superscript styles like RSC/ACS, a formatted citation renders
+    as a number (including comma/en-dash ranges, e.g. "15,16" "18-20")
+    inside the <w:t> of a <w:vertAlign w:val="superscript"/> run. If the
+    highest number cited in the body exceeds the reference list's actual
+    entry count, that means a reference is missing (a number is cited that
+    isn't in the list). Added after a measured case where a body citation
+    number existed while the list only went up to 1-14 — the existing
+    checks that just count reflist entries (#1 reference_type, etc.) can't
+    catch this kind of gap, since the list itself looks internally
+    consistent.
 
-    보수적 파싱: 위첨자 run 텍스트가 숫자/쉼표/공백/하이픈/en-dash로만 구성된 것만 인용번호로
-    취급(각주 기호 a/b/c, 오타 등은 제외). 범위(18-20, 18–20)는 양끝 다 포함.
+    Conservative parsing: only treats a superscript run's text as a
+    citation number if it consists solely of digits/commas/spaces/hyphens/
+    en-dashes (excludes footnote markers like a/b/c, typos, etc.). A range
+    (18-20, 18-20) includes both endpoints.
     """
     max_cited = 0
     cited_numbers = set()
@@ -191,8 +212,8 @@ def check_missing_reflist_entries(xml):
 
 
 def check_non_cassi_journal(xml):
-    """참고문헌 이탤릭 run(저널명)이 마침표 없는 축약 or 풀네임 잔재 = 비CASSI 경고.
-    휴리스틱: 이탤릭 저널명이 여러 단어인데 마침표가 하나도 없으면 PubMed식 무마침표 의심."""
+    """A reference's italic run (the journal name) is a period-less abbreviation or leftover full name = non-CASSI warning.
+    Heuristic: an italic journal name of two or more words with zero periods is suspected of being a period-less PubMed-style abbreviation."""
     warns = []
     for num, txt, p in _reflist_paragraphs(xml):
         jnames = []
@@ -205,8 +226,8 @@ def check_non_cassi_journal(xml):
         if not j:
             continue
         words = j.split()
-        # 2단어 이상인데 마침표 0개 = 무마침표 축약(PubMed) 의심
-        # 단, 단일 고유명(Nature/Science/Tetrahedron/ChemCatChem)은 제외
+        # 2+ words but zero periods = suspected period-less (PubMed-style) abbreviation.
+        # Excludes a single proper noun though (Nature/Science/Tetrahedron/ChemCatChem).
         if len(words) >= 2 and "." not in j and ":" not in j:
             warns.append((num, j[:60]))
     return warns
@@ -240,42 +261,42 @@ def _fmt(r):
     L = []
     L.append(f"# EndNote Bibliography Check — {r['file'].split(chr(92))[-1]}")
     rt = r["reference_types"]
-    L.append(f"\n## 1. Reference Type 분포")
+    L.append(f"\n## 1. Reference Type distribution")
     for t, n in sorted(rt["distribution"].items(), key=lambda x: -x[1]):
-        flag = "  ⚠️ 오류(Journal Article로 변경 필요)" if t in rt["suspicious"] else ""
+        flag = "  ⚠️ error (needs to be changed to Journal Article)" if t in rt["suspicious"] else ""
         L.append(f"   {t}: {n}{flag}")
     if rt["suspicious"]:
-        L.append(f"   🔴 의심 타입 {sum(rt['suspicious'].values())}건 — EndNote Find&Replace로 Journal Article 일괄변경")
+        L.append(f"   \U0001f534 {sum(rt['suspicious'].values())} suspicious type(s) — bulk-change to Journal Article via EndNote Find&Replace")
 
     inv = r["invalid_citations"]
     L.append(f"\n## 2. INVALID CITATION")
-    L.append(f"   렌더(w:t, 복구불가): {inv['rendered']}  |  필드(Update로 해소): {inv['field']}")
+    L.append(f"   rendered (w:t, unrecoverable): {inv['rendered']}  |  field (resolved by Update): {inv['field']}")
     for s in inv["rendered_samples"]:
         L.append(f"     - {s}")
 
-    L.append(f"\n## 3. 저널명 이탤릭 누락: {len(r['italic_missing'])}건")
+    L.append(f"\n## 3. Missing journal-name italics: {len(r['italic_missing'])}")
     for num, t in r["italic_missing"][:40]:
         L.append(f"   [{num}] {t}")
 
-    L.append(f"\n## 4. 저자 누락 의심: {len(r['author_omission_suspects'])}건")
+    L.append(f"\n## 4. Suspected missing author: {len(r['author_omission_suspects'])}")
     for num, t in r["author_omission_suspects"]:
         L.append(f"   [{num}] {t}")
 
-    L.append(f"\n## 5. &amp; 엔티티 깨짐: {len(r['entity_breakage'])}건")
+    L.append(f"\n## 5. Broken &amp; entity: {len(r['entity_breakage'])}")
     for t in r["entity_breakage"][:10]:
         L.append(f"   - {t}")
 
-    L.append(f"\n## 6. 비CASSI 저널명 경고(무마침표 축약 의심): {len(r['non_cassi_journal_warnings'])}건")
+    L.append(f"\n## 6. Non-CASSI journal-name warnings (suspected period-less abbreviation): {len(r['non_cassi_journal_warnings'])}")
     for num, j in r["non_cassi_journal_warnings"][:40]:
         L.append(f"   [{num}] {j}")
 
     mr = r["missing_reflist_entries"]
-    L.append(f"\n## 7. 참고문헌 목록 결측 (본문 인용번호 최댓값 vs 목록 항목수)")
-    L.append(f"   본문 최대 인용번호: {mr['max_cited']}  |  목록 최대 번호: {mr['max_reflist']}  |  목록 항목수: {mr['n_reflist_entries']}")
+    L.append(f"\n## 7. Missing reference-list entries (highest body citation number vs. list entry count)")
+    L.append(f"   highest body citation number: {mr['max_cited']}  |  highest list number: {mr['max_reflist']}  |  list entry count: {mr['n_reflist_entries']}")
     if mr["missing_numbers"]:
-        L.append(f"   🔴 목록에 없는 인용번호 {len(mr['missing_numbers'])}건: {mr['missing_numbers'][:30]}")
+        L.append(f"   \U0001f534 {len(mr['missing_numbers'])} citation number(s) not in the list: {mr['missing_numbers'][:30]}")
 
-    L.append(f"\n=== 오류 카테고리 {r['error_categories']}/6 (0=clean) ===")
+    L.append(f"\n=== Error categories {r['error_categories']}/6 (0=clean) ===")
     return "\n".join(L)
 
 
@@ -283,7 +304,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("docx")
     ap.add_argument("--json", action="store_true")
-    ap.add_argument("--strict", action="store_true", help="오류 있으면 exit 1")
+    ap.add_argument("--strict", action="store_true", help="exit 1 if any errors are found")
     a = ap.parse_args()
     r = run_all(a.docx)
     if a.json:

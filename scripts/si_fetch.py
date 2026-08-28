@@ -1,38 +1,44 @@
 #!/usr/bin/env python3
-"""논문의 보충자료(SI / Supporting Information)를 공개 경로로만 수집한다.
+"""Fetches a paper's supplementary information (SI) using open routes only.
 
-본문(ref_fetch.py)과 분리한 이유: 본문과 SI는 **접근 가능성이 다르다.**
-구독 저널이라도 SI는 페이월 밖에 열려 있는 경우가 있다. 실측(260807),
-같은 논문 10.1007/s12010-021-03624-7 (구독 저널)에서:
+Why this is separate from the body-text fetcher (ref_fetch.py): body text and
+SI have **different access levels.** Even in a subscription journal, the SI
+can sit outside the paywall. Measured (260807), the same paper
+10.1007/s12010-021-03624-7 (a subscription journal):
 
-    SI  media.springernature.com/.../MOESM1_ESM.docx  -> HTTP 200 (인증 불필요)
-    본문 link.springer.com/content/pdf/....pdf         -> 303 -> 302 -> 302 (로그인)
+    SI    media.springernature.com/.../MOESM1_ESM.docx  -> HTTP 200 (no auth needed)
+    body  link.springer.com/content/pdf/....pdf          -> 303 -> 302 -> 302 (login)
 
-그래서 "본문은 못 받아도 SI는 받을 수 있다"가 성립한다.
+So "the body is unreachable but the SI isn't" is a real case.
 
-경로 선택도 실측으로 정했다. 처음에는 출판사 landing page 를 긁으려 했지만
-표준 라이브러리로는 되지 않는다:
+The route itself was also chosen by measurement. The first attempt was to
+scrape the publisher's landing page, but the standard library can't do it:
 
-    출판사 landing page 를 urllib 로 요청     -> Springer 3,036 B 축소 페이지
-      (같은 URL 을 curl 로 받으면 372,615 B. UA 3종을 바꿔도 urllib 은 동일 —
-       HTTP/2·TLS 지문 수준의 차이라 헤더로는 넘을 수 없다)
-    PMC 파일 직링크 (/articles/instance/.../bin/...)  -> 1,817 B
-      "Preparing to download ..." JS 인터스티셜. URL 은 맞지만 JS 가 필요하다.
+    requesting the publisher landing page via urllib   -> Springer returns a 3,036 B stripped page
+      (the same URL via curl returns 372,615 B. Swapping in 3 different UAs
+       makes no difference to urllib — the gap is at the HTTP/2/TLS
+       fingerprint level, which headers can't get past)
+    a direct PMC file link (/articles/instance/.../bin/...)  -> 1,817 B
+      a "Preparing to download ..." JS interstitial. The URL is correct but
+      it needs JS.
 
-두 경로 모두 브라우저가 있어야 하므로 버렸다. 실제로 되는 것은 **Europe PMC
-REST API** 하나다 — urllib 만으로 4.28 MB 아카이브를 그대로 돌려준다:
+Both routes need a real browser, so they were dropped. The one thing that
+actually works is the **Europe PMC REST API** — urllib alone gets back a
+4.28 MB archive whole:
 
     GET /europepmc/webservices/rest/{PMCID}/supplementaryFiles  -> application/zip
 
-따라서 이 모듈의 자동 수집 범위는 **PMC 에 있는 논문**이다. 그 밖은 링크만
-안내하고 끝낸다 — 우회하지 않는다. 사람이 브라우저로 열면 대개 그냥 받아진다.
+So this module's automated coverage is **papers on PMC**. Anything else gets
+only a link — no workaround is attempted. A human opening it in a browser
+usually just gets it.
 
-규정: 개방된 SI 수집은 대학 도서관 공정이용 규정의 대상이 아니다. 그 규정은
-구독 전자자원의 '원문'을 기계적 수단으로 받는 행위를 금지하며, 개방 SI 는
-구독 자원이 아니고 프록시를 경유하지도 않는다. 본문 쪽 처리는
-institutional_access.py 를 볼 것.
+Policy: fetching open SI is not covered by a university library's fair-use
+policy. That policy forbids fetching the 'full text' of a subscription
+e-resource by mechanical means; open SI is not a subscription resource and
+does not go through a proxy either. See institutional_access.py for the
+body-text handling.
 
-사용:
+Usage:
     from si_fetch import discover_si, download_si
     res = discover_si("10.1186/s13321-015-0069-3")
     print(res.status, res.archive_url)
@@ -75,21 +81,23 @@ for _s in (sys.stdout, sys.stderr):
 _NCBI_IDCONV = "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/"
 _EPMC_SUPPL = "https://www.ebi.ac.uk/europepmc/webservices/rest/{pmcid}/supplementaryFiles"
 _ARCHIVE_MAX_RETRIES = 3
-_ARCHIVE_RETRY_BACKOFF = 1.5  # 초, 시도마다 배수 증가 (ref_fetch._http_get_json 과 동일 패턴)
+_ARCHIVE_RETRY_BACKOFF = 1.5  # seconds, multiplied per attempt (same pattern as ref_fetch._http_get_json)
 
-# Europe PMC 아카이브에는 본문 그림(Fig1_HTML.jpg 등)도 함께 들어온다.
-# 저자가 올린 보충자료는 관례적으로 파일명에 MOESM / ESM / suppl 이 붙는다.
+# The Europe PMC archive also bundles in body figures (Fig1_HTML.jpg, etc.).
+# Author-uploaded supplementary files conventionally carry MOESM / ESM /
+# suppl in the filename.
 _SI_NAME_HINTS = ("moesm", "_esm", "suppl", "supplementary", "media")
 
-# landing page 자동 조회가 막힌 출판사. 우회하지 않고 사람에게 넘긴다.
-# (SI 가 유료라서가 아니라 봇 차단·JS 때문이다 — 브라우저로는 그냥 받아진다.)
+# Publishers whose landing page blocks automated lookup. Handed to a human
+# rather than worked around. (Not because the SI is paid — it's bot
+# blocking/JS. A browser just gets it.)
 BLOCKED_PREFIXES = {
-    "10.1016": ("Elsevier", "linkinghub 가 JS 셸만 반환"),
+    "10.1016": ("Elsevier", "linkinghub returns only a JS shell"),
     "10.1021": ("ACS", "landing page 403"),
     "10.1039": ("RSC", "landing page 403"),
-    "10.1002": ("Wiley", "cookieAbsent 리다이렉트"),
-    "10.1007": ("Springer", "urllib 로는 축소 페이지만 수신 (curl/브라우저는 정상)"),
-    "10.1038": ("Springer Nature", "urllib 로는 축소 페이지만 수신 (curl/브라우저는 정상)"),
+    "10.1002": ("Wiley", "cookieAbsent redirect"),
+    "10.1007": ("Springer", "urllib receives only a stripped page (curl/browser work fine)"),
+    "10.1038": ("Springer Nature", "urllib receives only a stripped page (curl/browser work fine)"),
 }
 
 
@@ -149,12 +157,13 @@ def _looks_supplementary(name: str) -> bool:
 
 
 def doi_to_pmcid(doi: str, email: Optional[str] = None) -> tuple[Optional[str], Optional[str]]:
-    """NCBI ID converter 로 DOI -> PMCID.
+    """DOI -> PMCID via the NCBI ID converter.
 
-    반환은 (pmcid, err) — _http_get_json 이 이미 재시도까지 마친 뒤의 결과다.
-    err=None 이면 "PMC 에 진짜로 없음"(정상 not-found), err 가 있으면
-    "조회 자체가 실패함"(네트워크/서버 오류) — 이 둘을 섞으면 안 된다.
-    섞으면 CI 의 일시적 네트워크 실패가 "논문이 PMC 에 없다"는 오탐으로 둔갑한다.
+    Returns (pmcid, err) — the result after _http_get_json has already
+    exhausted its retries. err=None means "genuinely not on PMC" (a normal
+    not-found); a non-None err means "the lookup itself failed" (network/
+    server error) — these two must not be conflated. Conflating them turns a
+    transient CI network failure into a false "the paper isn't on PMC."
     """
     url = f"{_NCBI_IDCONV}?ids={urllib.parse.quote(doi)}&format=json"
     data, err = _http_get_json(url, email)
@@ -169,10 +178,11 @@ def doi_to_pmcid(doi: str, email: Optional[str] = None) -> tuple[Optional[str], 
 
 
 def _fetch_archive(pmcid: str, email: Optional[str], timeout: int = 120) -> tuple[Optional[bytes], Optional[str]]:
-    """Europe PMC supplementaryFiles 아카이브를 통째로 받는다.
+    """Fetch the Europe PMC supplementaryFiles archive whole.
 
-    404(보충자료 없음)는 재시도하지 않고 즉시 "not_found"로 끝낸다 — 그 밖의
-    네트워크/서버 오류만 ref_fetch._http_get_json 과 같은 패턴으로 재시도한다.
+    A 404 (no supplementary material) is not retried — it ends immediately
+    as "not_found." Only other network/server errors are retried, using the
+    same pattern as ref_fetch._http_get_json.
     """
     url = _EPMC_SUPPL.format(pmcid=pmcid)
     req = urllib.request.Request(url, headers={"User-Agent": _build_user_agent(email)})
@@ -195,20 +205,21 @@ def _fetch_archive(pmcid: str, email: Optional[str], timeout: int = 120) -> tupl
 
 
 def discover_si(doi: str, email: Optional[str] = None) -> SIResult:
-    """DOI 하나의 SI 를 찾는다. PMC 에 있으면 목록까지, 없으면 안내로 끝낸다.
+    """Find the SI for one DOI. Returns the file list if it's on PMC, otherwise a hint.
 
-    아카이브를 받아야 내용 목록을 알 수 있으므로 discover 단계에서 이미
-    내려받는다. 저장 여부는 download_si() 가 정한다.
+    The archive has to be fetched to know its contents, so it is already
+    downloaded during the discover step. Whether to save it is decided by
+    download_si().
     """
     doi = normalize_doi(doi)
     pmcid, lookup_err = doi_to_pmcid(doi, email)
 
     if lookup_err:
-        # 재시도까지 다 실패한 것 — "PMC 에 없음"이 아니라 "조회 자체가 안 됨".
+        # All retries failed too — this is "the lookup itself didn't work," not "not on PMC."
         return SIResult(
             doi=doi,
             status="error",
-            note=f"PMC ID 조회 실패(재시도 후에도): {lookup_err}",
+            note=f"PMC ID lookup failed (even after retries): {lookup_err}",
         )
 
     if not pmcid:
@@ -218,33 +229,36 @@ def discover_si(doi: str, email: Optional[str] = None) -> SIResult:
             return SIResult(
                 doi=doi,
                 status="blocked",
-                note=f"PMC 에 없음. {name}: {why}",
+                note=f"Not on PMC. {name}: {why}",
                 manual_hint=(
-                    f"{name} 는 스크립트 조회를 막습니다(SI 가 유료라서가 아닙니다). "
-                    f"브라우저에서 https://doi.org/{doi} 를 열면 보충자료를 그대로 받을 수 있습니다."
+                    # NOTE: the Korean clause below ("유료라서가 아닙니다" = "not because it's
+                    # paywalled") is asserted on verbatim by tests/test_si_institutional.py —
+                    # do not translate/remove it without updating that test too.
+                    f"{name} blocks scripted lookup (SI 가 유료라서가 아닙니다 — not because the SI is paywalled). "
+                    f"Opening https://doi.org/{doi} in a browser fetches the supplementary material directly."
                 ),
             )
         return SIResult(
             doi=doi,
             status="none",
-            note="PMC 에 해당 논문이 없어 자동 수집 경로가 없음",
-            manual_hint=f"브라우저에서 https://doi.org/{doi} 를 열어 확인하세요.",
+            note="Paper not found on PMC, so there is no automated fetch route",
+            manual_hint=f"Open https://doi.org/{doi} in a browser to check.",
         )
 
     url = _EPMC_SUPPL.format(pmcid=pmcid)
     blob, err = _fetch_archive(pmcid, email)
     if err == "not_found":
         return SIResult(doi=doi, status="none", pmcid=pmcid, archive_url=url,
-                        note=f"{pmcid} 에 보충자료 없음")
+                        note=f"No supplementary material for {pmcid}")
     if err or not blob:
         return SIResult(doi=doi, status="error", pmcid=pmcid, archive_url=url,
-                        note=f"Europe PMC 조회 실패: {err}")
+                        note=f"Europe PMC lookup failed: {err}")
 
     buf = io.BytesIO(blob)
     if not zipfile.is_zipfile(buf):
         return SIResult(doi=doi, status="error", pmcid=pmcid, archive_url=url,
                         archive_bytes=len(blob),
-                        note="응답이 유효한 아카이브가 아님 (형식 변경 의심)")
+                        note="Response is not a valid archive (format may have changed)")
 
     zf = zipfile.ZipFile(buf)
     files = [
@@ -253,7 +267,7 @@ def discover_si(doi: str, email: Optional[str] = None) -> SIResult:
     ]
     res = SIResult(doi=doi, status="found", pmcid=pmcid, archive_url=url,
                    archive_bytes=len(blob), files=files)
-    res._blob = blob  # type: ignore[attr-defined]  # download 단계에서 재사용 (재요청 방지)
+    res._blob = blob  # type: ignore[attr-defined]  # reused at the download step (avoids a re-request)
     return res
 
 
@@ -263,7 +277,7 @@ def download_si(
     extract: bool = False,
     si_only: bool = True,
 ) -> SIResult:
-    """찾은 SI 를 저장한다. 기본은 아카이브 그대로, --extract 시 파일별로 푼다."""
+    """Save the SI that was found. By default keeps the archive as-is; unpacks per-file if --extract."""
     if result.status != "found":
         return result
     blob = getattr(result, "_blob", None)
@@ -286,7 +300,7 @@ def download_si(
     for f in result.files:
         if si_only and not f.is_supplementary:
             continue
-        # 아카이브 내부 경로를 그대로 믿지 않는다 (zip-slip 방지) — 파일명만 쓴다.
+        # Don't trust the archive's internal path as-is (zip-slip prevention) — use only the filename.
         safe_name = Path(f.name).name
         if not safe_name:
             continue
@@ -298,20 +312,20 @@ def download_si(
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="논문 보충자료(SI)를 공개 경로(Europe PMC)로만 수집한다. 페이월 우회 없음.",
+        description="Fetch a paper's supplementary information (SI) using open routes (Europe PMC) only. No paywall bypass.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    ap.add_argument("--doi", required=True, help="DOI (쉼표로 여러 개)")
-    ap.add_argument("--download", action="store_true", help="아카이브를 저장")
-    ap.add_argument("--extract", action="store_true", help="아카이브를 파일별로 풀기")
+    ap.add_argument("--doi", required=True, help="DOI (comma-separated for multiple)")
+    ap.add_argument("--download", action="store_true", help="Save the archive")
+    ap.add_argument("--extract", action="store_true", help="Unpack the archive per-file")
     ap.add_argument("--si-only", action="store_true", default=True,
-                    help="추출 시 보충자료만 (기본). --all-files 로 해제")
+                    help="Extract only supplementary material (default). Disable with --all-files")
     ap.add_argument("--all-files", action="store_true",
-                    help="본문 그림까지 전부 추출")
-    ap.add_argument("-o", "--out-dir", default="./si", help="저장 디렉토리 (기본 ./si)")
-    ap.add_argument("--email", default=None, help="폴라이트 풀용 연락처 이메일")
-    ap.add_argument("--json", default=None, help="결과를 이 경로에 JSON 으로 저장")
+                    help="Extract everything, including body figures")
+    ap.add_argument("-o", "--out-dir", default="./si", help="Output directory (default ./si)")
+    ap.add_argument("--email", default=None, help="Contact email for the polite pool")
+    ap.add_argument("--json", default=None, help="Save the result as JSON at this path")
     args = ap.parse_args()
 
     results: list[SIResult] = []
@@ -330,15 +344,15 @@ def main() -> int:
             print(f"  note: {res.note}")
         if res.status == "found":
             si = res.supplementary_files
-            print(f"  아카이브 {res.archive_bytes:,} bytes / 파일 {len(res.files)}개 "
-                  f"(보충자료로 판별 {len(si)}개)")
+            print(f"  archive {res.archive_bytes:,} bytes / {len(res.files)} file(s) "
+                  f"({len(si)} identified as supplementary)")
             for f in si[:10]:
                 line = f"    - {f.name}  ({f.size:,} bytes)"
                 if f.extracted_path:
                     line += f"  -> {f.extracted_path}"
                 print(line)
             if res.archive_path:
-                print(f"  저장: {res.archive_path}")
+                print(f"  saved: {res.archive_path}")
         if res.manual_hint:
             print(f"  → {res.manual_hint}")
 
@@ -347,9 +361,9 @@ def main() -> int:
             json.dumps([r.to_dict() for r in results], ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
-        print(f"\n[OK] JSON 저장: {args.json}")
+        print(f"\n[OK] JSON saved: {args.json}")
 
-    # blocked 는 실패가 아니라 '사람이 할 일'이므로 0 을 준다. 진짜 오류만 1.
+    # blocked is not a failure but "something for a human to do," so it returns 0. Only a real error returns 1.
     if any(r.status == "error" for r in results):
         return 1
     return 0

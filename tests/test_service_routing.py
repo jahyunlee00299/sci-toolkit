@@ -1,33 +1,38 @@
 #!/usr/bin/env python3
-"""문서가 외부 서비스·스킬을 가리킬 때 갈 곳이 실제로 있는지 검사한다.
+"""Checks that when a document points at an external service or skill, the target actually exists.
 
-실행: python tests/test_service_routing.py   (exit 0 = 통과)
+Run: python tests/test_service_routing.py   (exit 0 = pass)
 
-왜 이 파일이 필요한가 — 260816 적대검증에서 드러난 두 개의 사각지대
---------------------------------------------------------------------
-이 저장소는 "MCP 대신 REST 커넥터" 정책을 문서 여러 곳에 두고 있다. 그런데
-그 정책이 지켜지는지 기계적으로 확인하는 장치는 없었다. 실제로 뚫렸다:
+Why this file exists — two blind spots surfaced in the 260816 adversarial verification
+--------------------------------------------------------------------------------------
+This repository states a "REST connector instead of MCP" policy in several
+places. But there was no mechanical check that the policy is actually
+followed. It was actually broken in practice:
 
-`skills/academic-term-rules/.prompt.md` 는 "Notion 페이지를 이렇게 써라"라고
-지시하면서 `notion_connector.py` 를 한 번도 언급하지 않았다. MCP 라는 단어가
-없어서 문자열 검색에 안 걸렸고, 점으로 시작하는 파일이라 `SKILL.md` 글롭에도
-안 걸렸다. 커넥터를 안 알려주는 침묵 자체가 유도다 — 에이전트는 자기가 가진
-아무 도구나 쓰게 되고, 그게 MCP다.
+`skills/academic-term-rules/.prompt.md` instructed "write Notion pages like
+this" without ever mentioning `notion_connector.py`. It had no occurrence of
+the word MCP, so a plain string search missed it, and because the filename
+starts with a dot, it also missed the `SKILL.md` glob. The silence itself —
+never naming the connector — is what steers an agent toward whatever tool it
+already has, which is MCP.
 
-같은 자리에서 두 번째 사각지대도 나왔다. `test_skill_references.py` 는
-260807에 "skills/ **밖** 문서"를 보도록 확장됐는데, 그 반대편 —
-skills/ **안**의 문서가 배포되지 않는 스킬을 가리키는 경우 — 는 여전히
-아무도 안 본다. 죽은 스킬 참조는 그 자체로 또 하나의 폴백 유발기다.
+A second blind spot surfaced in the same pass. `test_skill_references.py` was
+extended on 260807 to look at documents **outside** skills/, but the reverse
+case — a document **inside** skills/ pointing at a skill that isn't actually
+shipped — still had nobody looking at it. A dead skill reference is itself
+another trigger for the same fallback.
 
-검사 2종
---------
-A. 커넥터 보유 서비스(mail·GitHub·Asana·Notion)를 **지시문으로** 언급하는
-   문서가 커넥터 스크립트를 함께 알려주는가
-B. skills/ 안의 문서가 이 저장소에 없는 스킬을 가리키지 않는가
+Two checks
+----------
+A. Does a document that mentions a connector-backed service (mail, GitHub,
+   Asana, Notion) **as an instruction** also name the connector script?
+B. Does a document inside skills/ avoid pointing at a skill not in this repo?
 
-A 는 오탐이 나기 쉬운 검사다(서비스 이름은 렌더링 호환성·예시로도 쓰인다).
-그래서 "지시문"으로 좁힌다 — 제목에 서비스명이 들어간 절만 본다. 절 제목은
-"이 문서는 이 서비스를 다룬다"는 저자의 선언이라, 지나가는 언급과 구분된다.
+A is prone to false positives (a service name also shows up for rendering
+compatibility or as an example). So it's narrowed to "instruction" — only a
+section whose heading names the service. A heading is the author declaring
+"this document covers this service," which is distinct from a passing
+mention.
 """
 import os
 import re
@@ -45,39 +50,46 @@ SKILLS_DIR = os.path.join(ROOT, "skills")
 SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", "node_modules", ".venv"}
 TEXT_SUFFIXES = (".md", ".txt", ".prompt.md")
 
-# 커넥터가 있는 서비스 → 그 서비스를 다루는 문서가 반드시 언급해야 할 스크립트.
-# 캘린더·공유시트는 커넥터가 없으므로(문서화된 예외) 여기 없다.
+# A service with a connector -> the script(s) a document covering that
+# service must mention. Calendar/shared-sheet have no connector (a
+# documented exception) so they aren't listed here.
 CONNECTOR_SERVICES = {
     "notion": ("notion_connector.py", "notion_db_connector.py"),
     "asana": ("asana_connector.py",),
     "github": ("github_connector.py",),
 }
 
-# 제목에 서비스명이 있다고 다 '접근'은 아니다. "GitHub 에서 Mermaid 가 어떻게
-# 보이는가"는 렌더링 호환성이지 API 호출이 아니다. 그래서 제목만으로 판정하지
-# 않고, 그 절이 **행동을 지시하는가**를 함께 본다.
+# A service name in the heading doesn't always mean "access." "How does
+# Mermaid render on GitHub" is about rendering compatibility, not an API
+# call. So this doesn't judge by heading alone — it also checks **whether
+# the section instructs an action**.
 #
-# 지시 동사가 하나도 없으면 그 절은 설명이지 지시가 아니다 — 에이전트가 그걸
-# 읽고 서비스에 접속하려 들 이유가 없으므로 커넥터를 안 알려도 무방하다.
+# If not one action verb is present, the section is descriptive, not
+# instructive — an agent reading it has no reason to try connecting to the
+# service, so it's fine not to name the connector there.
 #
-# 260816 실측: 첫 판은 본문에서만 행동어를 찾다가 원래 위반을 놓쳤다.
-# `.prompt.md` §11 은 제목이 "Notion Page **Writing** Rules" 인데 본문은
-# "use `<br>`", "must use public URLs" 라서 write/작성 이 안 걸렸다.
-# 지시성은 제목에 실리는 경우가 많다 — 제목+본문을 함께 본다.
+# Measured 260816: the first version only searched the body for action
+# words and missed the actual violation. `.prompt.md` §11 has the heading
+# "Notion Page **Writing** Rules" but its body says "use `<br>`", "must use
+# public URLs" — neither the English "write" nor the Korean equivalent
+# appeared in the body. Instructiveness often lives in the heading, so this
+# checks heading + body together.
 ACTION_WORDS = (
-    # 영어 — 명령형과 동명사형을 함께 본다("write"는 "writing"도 포함한다)
+    # English — checks both imperative and gerund forms ("write" also covers "writing")
     "creat", "updat", "writ", "post", "upload", "append", "add ",
     "send", "fetch", "quer", "search", "sync", "log ", "publish",
     "must use", "forbidden", "rules",
-    # 한국어
+    # Korean — these are the input alphabet for detecting instructive Korean
+    # prose in scanned docs, not commentary; do not translate.
     "생성", "작성", "등록", "업로드", "추가", "전송", "조회", "검색",
     "동기화", "기록", "올린", "올려", "발행", "수정", "삭제", "규칙",
 )
 
-# 서비스명이 제목에 있어도 '접근'이 아닌 경우 — 렌더링 호환성, 표기 예시 등.
-# 좁게 유지할 것: 여기 추가하는 건 검사를 약화시키는 일이다.
+# A service name in the heading that is NOT 'access' — rendering
+# compatibility, notation examples, etc. Keep this narrow: adding to it
+# weakens the check.
 HEADING_ALLOW = (
-    "mermaid",        # "GitHub / Notion 에서 Mermaid 가 어떻게 보이는가"
+    "mermaid",        # "How does Mermaid render on GitHub / Notion"
     "markdown",
     "renders", "render",
     "compatib",
@@ -113,7 +125,7 @@ def rel(p):
 
 
 # ─────────────────────────────────────────────────────────────
-print("\n[A] 커넥터 보유 서비스를 다루는 절이 커넥터를 알려주는가")
+print("\n[A] Does a section covering a connector-backed service also name the connector?")
 
 violations = []
 for path in walk_text(SKILLS_DIR):
@@ -132,11 +144,11 @@ for path in walk_text(SKILLS_DIR):
         for svc, scripts in CONNECTOR_SERVICES.items():
             if svc not in low:
                 continue
-            # 파일 어디에서든 커넥터를 언급하면 통과 (같은 절 안일 필요는 없다).
+            # Pass if the connector is mentioned anywhere in the file (not necessarily the same section).
             if any(s in text for s in scripts):
                 continue
-            # 제목 + 절 본문(다음 제목 전까지)이 행동을 지시하는가.
-            # 설명뿐이면 에이전트가 서비스에 접속할 이유가 없으므로 위반이 아니다.
+            # Does the heading + section body (up to the next heading) instruct an action?
+            # If it's purely descriptive, the agent has no reason to access the service — not a violation.
             body = [line]
             for nxt in lines[i:]:
                 if nxt.startswith("#"):
@@ -147,25 +159,29 @@ for path in walk_text(SKILLS_DIR):
                 continue
             violations.append((rel(path), i, line.strip(), svc, scripts))
 
-check("커넥터 침묵 위반 없음", not violations,
-      f"{len(violations)}건")
+check("no connector-silence violations", not violations,
+      f"{len(violations)} found")
 for f, i, head, svc, scripts in violations:
     print(f"        {f}:{i}  {head!r}")
-    print(f"          → {svc} 접근을 지시하면서 {'/'.join(scripts)} 를 알려주지 않는다.")
-    print(f"          → 커넥터를 명시하거나, 접근 지시가 아니면 제목에서 서비스명을 빼라.")
+    print(f"          -> instructs {svc} access without naming {'/'.join(scripts)}.")
+    print(f"          -> either name the connector, or drop the service name from the heading if it isn't an access instruction.")
 
 
 # ─────────────────────────────────────────────────────────────
-print("\n[B] skills/ 안의 문서가 없는 스킬을 가리키지 않는가")
+print("\n[B] Does a document inside skills/ avoid pointing at a skill that isn't shipped?")
 
 shipped = {d for d in os.listdir(SKILLS_DIR)
            if os.path.isdir(os.path.join(SKILLS_DIR, d))}
 
-# 임의의 케밥 토큰을 다 줍지 않는다 — `x-axis`·`margin-top`·`load-bearing` 처럼
-# 스킬과 형태만 같은 말이 너무 많고, 허용목록으로 쫓아가는 건 지는 싸움이다.
-# 대신 **스킬로 호명하는 문법**만 잡는다: 이름 바로 옆에 skill/스킬 이라고
-# 적혀 있거나, Skill(...) 로 호출하는 형태. 저자가 "이건 스킬이다"라고 말한
-# 자리만 보므로 오탐이 거의 없고, 놓치더라도 안전한 쪽으로 놓친다.
+# Don't grab every arbitrary kebab-case token — there are too many that
+# merely look like a skill name in shape (`x-axis`, `margin-top`,
+# `load-bearing`), and chasing that with an allowlist is a losing battle.
+# Instead, this only catches **the grammar that names something as a
+# skill**: the word skill/스킬 sitting right next to the name, or a
+# Skill(...) call form. It only looks where the author explicitly said
+# "this is a skill," so false positives are rare, and any miss errs safe.
+# NOTE: the literal 스킬 (Korean for "skill") in this regex is detection
+# input for scanning Korean-language docs, not commentary — do not translate it.
 NAMED_SKILL = re.compile(
     r"""(?:
           `([a-z][a-z0-9-]*)`\s*(?:스킬|skill\b)     # `foo` 스킬 / `foo` skill
@@ -188,20 +204,20 @@ for path in walk_text(SKILLS_DIR):
                 continue
             filtered.append((rel(path), i, tok, line.strip()))
 
-check("죽은 스킬 참조 없음", not filtered, f"{len(filtered)}건")
+check("no dead skill references", not filtered, f"{len(filtered)} found")
 for f, i, tok, line in filtered:
-    print(f"        {f}:{i}  '{tok}' — 이 저장소에 없다")
+    print(f"        {f}:{i}  '{tok}' — not present in this repository")
     print(f"          {line[:100]}")
-print(f"        (배포 스킬 {len(shipped)}종 기준)")
+print(f"        (checked against {len(shipped)} shipped skill(s))")
 
 
 # ─────────────────────────────────────────────────────────────
 print("\n" + "-" * 60)
-print(f"통과 {_pass} / 실패 {_fail}")
+print(f"PASS {_pass} / FAIL {_fail}")
 if _fail:
-    print("\nFAIL — 문서가 실체 없는 곳을 가리킨다.")
-    print("에이전트는 가리킨 곳이 비어 있으면 자기가 가진 다른 수단으로 넘어간다")
-    print("(= 커넥터 대신 MCP). 참조를 고치거나, 지시가 아니면 표현을 바꿀 것.")
+    print("\nFAIL — a document points at something that doesn't exist.")
+    print("When a target is empty, an agent falls back to whatever other tool it has")
+    print("(= MCP instead of a connector). Fix the reference, or reword it if it isn't an instruction.")
     sys.exit(1)
-print("ALL PASS — 서비스·스킬 참조가 전부 실체를 가리킨다")
+print("ALL PASS — every service/skill reference points at something real")
 sys.exit(0)

@@ -2,12 +2,14 @@
 """
 Vector Registry & Reading Frame Checker
 ========================================
-자주 사용하는 발현 벡터의 MCS 서열을 저장하고,
-RE 클로닝 전략의 reading frame 호환성을 자동 검증.
+Stores the MCS sequences of commonly used expression vectors and
+automatically verifies reading-frame compatibility for an RE cloning
+strategy.
 
-Ligation 모델:
-  Sticky-end ligation 후 양쪽 RE recognition site이 완전히 복원됨.
-  따라서 reading frame은 cut position이 아닌 site position 기준으로 계산.
+Ligation model:
+  After sticky-end ligation, both RE recognition sites are fully restored.
+  Reading frame is therefore calculated from the site position, not the cut
+  position.
 
   5' junction: mcs[0 : site5 + len(RE5)] + INSERT_CDS
   3' junction: INSERT_CDS + mcs[site3 : stop]
@@ -20,9 +22,11 @@ Data sources:
 
 from __future__ import annotations
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# The default Windows console is cp949, which crashes on Korean/symbol
+# output. Force UTF-8. Use reconfigure: wrapping with TextIOWrapper makes it
+# own the underlying stream, so once this module is imported and the
+# wrapper is later garbage collected, it closes the caller's stdout too
+# (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -107,12 +111,12 @@ RESTRICTION_ENZYMES: dict[str, dict] = {
 
 
 # ── Vector MCS Data ─────────────────────────────────────────────────────────
-# 각 벡터의 MCS는 ATG(start) ~ Stop codon (inclusive)
-# reading frame 0 = ATG의 A가 position 0
-# re_sites: recognition seq 첫 뉴클레오타이드의 0-indexed position
+# Each vector's MCS runs from the start ATG through the stop codon (inclusive)
+# reading frame 0 = the A of ATG is position 0
+# re_sites: 0-indexed position of the recognition sequence's first nucleotide
 
 def _verify_re_sites(mcs: str, re_sites: dict[str, int], label: str) -> None:
-    """MCS 내 모든 RE site 위치 검증 (import 시 assertion)."""
+    """Verify every RE site position within the MCS (asserted at import time)."""
     for enzyme, expected_pos in re_sites.items():
         rec = RESTRICTION_ENZYMES[enzyme]["recognition"]
         actual = mcs.find(rec)
@@ -267,18 +271,20 @@ _verify_re_sites(_PET28A_MCS, _PET28A_RE_SITES, "pET-28a(+)")
 # NEB #E8202: His6-MBP-TEV fusion, cytoplasmic expression
 # Source: NEB pMAL-c6T map, reconstructed from documentation
 #
-# 구조: tac promoter → malE (His6-MBP) → TEV site → polylinker → stop
-# 아래 MCS는 TEV cleavage site의 G 잔기(frame 0)부터 stop codon까지.
-# 실제 start codon은 malE ATG (MCS 밖, 훨씬 upstream).
+# Structure: tac promoter -> malE (His6-MBP) -> TEV site -> polylinker -> stop
+# The MCS below runs from the G residue of the TEV cleavage site (frame 0)
+# through the stop codon. The actual start codon is malE's ATG (outside the
+# MCS, far upstream).
 #
 # GGC ATG CTG ATG GGC GGC CGC GAT ATC GTC GAC GGA TCC GAA TTC CCT GCA GGT AAT AAG CTT TAA
 #  G   M   L   M   G   G   R   D   I   V   D   G   S   E   F   P   A   G   N   K   L   *
 #  0   3   6   9  12  15  18  21  24  27  30  33  36  39  42  45  48  51  54  57  60  63
 #                     NotI(13)  EcoRV(21) SalI(27) BamHI(33) EcoRI(39) PstI(46) HindIII(57)
 #
-# NOTE: Position 0 (GGC) = TEV cleavage 후 남는 G 잔기, malE와 동일 reading frame.
-#       Stop codon (TAA) 이후 추가 stop이 다른 frame에도 존재 (모든 frame 종결).
-#       PstI (pos 46)는 codon 경계를 넘으므로 주의.
+# NOTE: Position 0 (GGC) = the G residue left after TEV cleavage, in the
+#       same reading frame as malE. There's an additional stop in other
+#       frames past the stop codon (TAA) too (all frames terminate).
+#       PstI (pos 46) crosses a codon boundary — watch for that.
 
 _PMALC6T_MCS = (
     "GGC"   # 0   G  — TEV cleavage product (frame 0 reference)
@@ -326,9 +332,10 @@ _verify_re_sites(_PMALC6T_MCS, _PMALC6T_RE_SITES, "pMAL-c6T")
 # 48  51  54  57  60  63  66  69  72  75  78  81  84  87
 # SacI(47) AscI(53)PstI(60)SalI(66)HindIII(72)NotI(78)Stop
 #
-# WARNING: BamHI/EcoRI/SacI는 reading frame +2 offset (His6와 out-of-frame).
-#          NcoI는 start codon과 겹침 (MCS 외부, position -2).
-#          실험 전 반드시 TB340 원본 또는 SnapGene 파일로 확인할 것.
+# WARNING: BamHI/EcoRI/SacI are at a +2 reading-frame offset (out-of-frame
+#          with His6). NcoI overlaps the start codon (outside the MCS,
+#          position -2). Always confirm against the original TB340 or a
+#          SnapGene file before running the experiment.
 
 _PETDUET1_MCS1 = (
     "ATG"   # 0   M  — start (within NcoI site CCATGG)
@@ -535,7 +542,7 @@ EXPRESSION_VECTORS: dict[str, dict] = {
 # ── Public API ──────────────────────────────────────────────────────────────
 
 def get_vector(name: str) -> dict:
-    """벡터 조회 (fuzzy matching: "pET21a" → "pET-21a(+)").
+    """Look up a vector (fuzzy matching: "pET21a" -> "pET-21a(+)").
 
     Returns
     -------
@@ -566,28 +573,28 @@ def check_reading_frame(
     insert_has_stop: bool = False,
     insert_cds_bp: int | None = None,
 ) -> dict:
-    """RE 클로닝 전략의 reading frame 호환성 검증.
+    """Verify reading-frame compatibility for an RE cloning strategy.
 
-    Ligation 후 양쪽 RE site이 완전히 복원된다는 모델 사용:
-      5' junction: mcs[0 : site5 + len(RE5)] → INSERT start
-      3' junction: INSERT end → mcs[site3 : stop]
+    Uses the model that both RE sites are fully restored after ligation:
+      5' junction: mcs[0 : site5 + len(RE5)] -> INSERT start
+      3' junction: INSERT end -> mcs[site3 : stop]
 
     Parameters
     ----------
     vector_name : str
-        벡터 이름 (fuzzy matching 지원)
+        Vector name (fuzzy matching supported)
     re_5prime, re_3prime : str
-        5'/3' restriction enzyme 이름
+        5'/3' restriction enzyme names
     insert_has_atg : bool
-        Insert에 자체 start codon 포함 여부
+        Whether the insert carries its own start codon
     insert_has_stop : bool
-        Insert에 자체 stop codon 포함 여부
+        Whether the insert carries its own stop codon
     insert_cds_bp : int or None
-        Insert CDS 길이 (bp, stop codon 제외). None이면 길이 검증 skip.
+        Insert CDS length (bp, excluding the stop codon). None skips the length check.
 
     Returns
     -------
-    dict — in_frame_5prime, in_frame_3prime, linker aa, topology, warnings 등
+    dict — in_frame_5prime, in_frame_3prime, linker aa, topology, warnings, etc.
     """
     vec = get_vector(vector_name)
     mcs = vec["mcs_seq"]
@@ -595,7 +602,7 @@ def check_reading_frame(
     stop_pos = vec["stop_pos"]
     warnings = []
 
-    # RE site 존재 확인
+    # Confirm the RE site exists
     for label, enzyme in [("5'", re_5prime), ("3'", re_3prime)]:
         if enzyme not in re_sites:
             available = ", ".join(sorted(re_sites.keys()))
@@ -609,7 +616,7 @@ def check_reading_frame(
     re5_len = len(RESTRICTION_ENZYMES[re_5prime]["recognition"])
     re3_len = len(RESTRICTION_ENZYMES[re_3prime]["recognition"])
 
-    # 5' RE가 3' RE보다 upstream에 있어야 함
+    # The 5' RE must be upstream of the 3' RE
     if site5 >= site3:
         raise ValueError(
             f"5' RE ({re_5prime}, pos {site5}) must be upstream of "
@@ -617,33 +624,33 @@ def check_reading_frame(
         )
 
     # ── 5' Frame Analysis ───────────────────────────────────────────────
-    # Insert는 5' RE site 직후에 시작
+    # The insert starts right after the 5' RE site
     insert_start = site5 + re5_len
     frame_at_insert_start = insert_start % 3
     in_frame_5prime = (frame_at_insert_start == 0)
 
-    # 5' linker: vector ATG ~ 5' RE site 끝 (insert 시작 직전까지)
+    # 5' linker: from the vector's ATG through the end of the 5' RE site (up to right before the insert starts)
     linker_5prime_nt = mcs[:insert_start]
     linker_5prime_aa = _translate(linker_5prime_nt)
 
     # ── 3' Frame Analysis ───────────────────────────────────────────────
-    # 3' 쪽: insert CDS 끝 → 3' RE site 시작 → stop codon
-    # Ligation 후 3' RE site 전체가 복원되므로, mcs[site3:stop] 전체가 linker
+    # 3' side: end of insert CDS -> start of 3' RE site -> stop codon
+    # Since the entire 3' RE site is restored after ligation, all of mcs[site3:stop] is the linker
     nt_3prime_to_stop = stop_pos - site3
     in_frame_3prime = (nt_3prime_to_stop % 3 == 0)
 
-    # 3' linker: 3' RE site 시작 ~ stop codon 직전
+    # 3' linker: from the start of the 3' RE site to right before the stop codon
     linker_3prime_nt = mcs[site3:stop_pos]
     linker_3prime_aa = _translate(linker_3prime_nt)
 
-    # ── Insert CDS 길이 검증 ────────────────────────────────────────────
+    # ── Insert CDS length check ────────────────────────────────────────────
     if insert_cds_bp is not None:
         if insert_cds_bp % 3 != 0:
             warnings.append(
                 f"Insert CDS length ({insert_cds_bp} bp) is not a multiple of 3"
             )
         if not insert_has_stop:
-            # C-tag in-frame이려면: insert_cds_bp + nt_3prime_to_stop ≡ 0 (mod 3)
+            # For the C-tag to be in-frame: insert_cds_bp + nt_3prime_to_stop == 0 (mod 3)
             total_insert_to_stop = insert_cds_bp + nt_3prime_to_stop
             if total_insert_to_stop % 3 != 0:
                 warnings.append(
@@ -674,10 +681,10 @@ def check_reading_frame(
             "3' junction out of frame -> C-terminal tag will be mistranslated"
         )
 
-    # ── Topology 문자열 ─────────────────────────────────────────────────
+    # ── Topology string ─────────────────────────────────────────────────
     parts = []
 
-    # N-terminal tags (insert_start보다 앞에 있는 것들)
+    # N-terminal tags (ones located before insert_start)
     for tag_name, tag_info in vec["tags"].items():
         if tag_info["type"] == "N-terminal":
             tag_start = tag_info["region"][0]
@@ -726,7 +733,7 @@ def check_reading_frame(
 
 
 def format_frame_report(result: dict) -> str:
-    """check_reading_frame 결과를 보기 좋게 포맷팅."""
+    """Format a check_reading_frame result for readable display."""
     lines = [
         f"Vector:   {result['vector_name']}",
         f"Strategy: {result['re_5prime']} / {result['re_3prime']}",
@@ -767,7 +774,7 @@ def format_frame_report(result: dict) -> str:
 # ── Tests ───────────────────────────────────────────────────────────────────
 
 def _run_tests():
-    """vector_registry 테스트."""
+    """Tests for vector_registry."""
     sep = "=" * 70
     passed = 0
     failed = 0
@@ -784,7 +791,7 @@ def _run_tests():
             print(f"    actual:   {actual!r}")
 
     # ── Test 1: pET-21a(+) EcoRI/NotI ───────────────────────────────────
-    # reviewer case: C-His6 fusion 확인
+    # reviewer case: confirm the C-His6 fusion
     # EcoRI at 42 (6bp) → insert starts at 48 → 48%3=0 ✓
     # NotI at 66, stop at 99 → 33 nt → 33%3=0 ✓
     # 3' linker: GCG GCC GCA CTC GAG CAC×6 = AAALEHHHHHH
@@ -804,7 +811,7 @@ def _run_tests():
     print()
 
     # ── Test 2: pET-28a(+) BamHI/XhoI ──────────────────────────────────
-    # N-His6 + C-His6 모두 in-frame 확인
+    # Confirm both N-His6 and C-His6 are in-frame
     # BamHI at 96 (6bp) → insert starts at 102 → 102%3=0 ✓
     # XhoI at 135, stop at 159 → 24 nt → 24%3=0 ✓
     print(sep)
@@ -821,7 +828,7 @@ def _run_tests():
     print()
 
     # ── Test 3: pET-21a(+) EcoRI/NotI + stop ───────────────────────────
-    # Insert에 stop codon → C-His6 안 붙음
+    # Insert has a stop codon -> C-His6 does not get fused
     print(sep)
     print("Test 3: pET-21a(+) EcoRI/NotI + stop -- no C-tag")
     print(sep)
@@ -836,7 +843,7 @@ def _run_tests():
     print()
 
     # ── Test 4: Frame mismatch ──────────────────────────────────────────
-    # insert_cds_bp=901 → 3의 배수 아님
+    # insert_cds_bp=901 -> not a multiple of 3
     print(sep)
     print("Test 4: insert_cds_bp=901 -- frame mismatch")
     print(sep)
@@ -868,7 +875,7 @@ def _run_tests():
     print()
 
     # ── Test 6: pET-28a(+) NdeI/XhoI ───────────────────────────────────
-    # NdeI → thrombin 이후 insert, XhoI → C-His6
+    # NdeI -> insert after thrombin, XhoI -> C-His6
     # NdeI at 57 (6bp) → insert starts at 63 → 63%3=0 ✓
     # XhoI at 135, stop at 159 → 24%3=0 ✓
     print(sep)

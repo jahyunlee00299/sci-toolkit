@@ -289,11 +289,13 @@ TYPO_PATTERNS = [
     (r'℃', '°C'), (r'(\d)°C', r'\1 °C'), (r'(\d)mM', r'\1 mM'),
     (r'n=(\d)', r'n = \1'), (r'mean ± standard deviation', 'mean ± SD'),
     (r'pH (\d)-(\d)', r'pH \1–\2'), (r'(\d+)-(\d+) °C', r'\1–\2 °C'),
-    # NADP 를 먼저 — 'NAD+' 를 먼저 치환하면 'NADP+' 의 앞부분이 깨진다.
-    # 뒤쪽 \b 를 두지 말 것: '+' 는 non-word 문자라, 'NAD+ regeneration' 처럼
-    # 뒤에 공백·구두점이 오는 실제 문장 대부분에서 경계가 성립하지 않아
-    # 규칙이 사실상 죽는다(실측 확인, 2026-07-23). 'NAD+-dependent' 도
-    # 정정 대상이 맞다 — 하이픈 수식어에서도 위첨자 표기가 정답이다(§3).
+    # NADP first — substituting 'NAD+' first would corrupt the front of 'NADP+'.
+    # Don't add a trailing \b: '+' is a non-word character, so in most real
+    # sentences where it's followed by whitespace or punctuation (e.g.
+    # 'NAD+ regeneration'), the boundary never fires and the rule is
+    # effectively dead (confirmed by measurement, 2026-07-23). 'NAD+-dependent'
+    # is also a correction target — the superscript form is still correct
+    # even in a hyphenated modifier (§3).
     (r'\bNADP\+', 'NADP⁺'), (r'\bNAD\+(?!P)', 'NAD⁺'),
     (r'supertanant', 'supernatant'), (r'seperati', 'separati'),
 ]
@@ -351,9 +353,10 @@ PUNCT_SPACE_WHITELIST = [
     # domain names / URLs / DOIs
     r'\borcid\.org', r'\bdoi\.org', r'[a-z]+\.(com|org|net|edu)\b',
     # filenames (word.ext where ext is a known file extension)
-    # 확장자를 추가할 때는 body_typo_lint.py 의 같은 목록도 함께 고칠 것
-    # (한쪽만 고치면 문서와 구현이 어긋난다). Rmd/Rproj 는 대문자로 시작해
-    # "마침표 뒤 대문자" 패턴에 걸리므로 특히 필요하다.
+    # When adding an extension here, also update the matching list in
+    # body_typo_lint.py (fixing only one side lets the doc and the
+    # implementation drift apart). Rmd/Rproj especially need this since they
+    # start with a capital letter and trip the "capital after a period" pattern.
     r'\.(jpe?g|png|tiff?|docx?|xlsx?|pdf|csv|py|json|[Rr]md|[Rr]proj|ipynb|ya?ml|toml)\b',
     # decimal numbers (digit.digit, not letter.letter)
     r'\d\.\d',
@@ -600,5 +603,5 @@ SPELLING_PATTERNS = [
 
 Body / table / figure values for the same labelled quantity (sEF, cEF, titer, yield, the cost metric, *ee*, …) must trace back to **one canonical rawdata file**. Never reconcile a conflict by editing one site silently. (See manuscript-pipeline Consistency Gate.)
 
-- Body citation cluster ≤ 3; "Table N" 참조 paragraph는 cluster 금지.
-- 본문 반응 화살표 `X → Y` 기호 금지 → `-to-` / 자연어 (Scheme·식·표는 허용).
+- Body citation cluster ≤ 3; a paragraph that references "Table N" may not use a cluster.
+- No reaction-arrow symbol `X → Y` in body text → use `-to-` / natural language instead (Scheme/equation/table figures are exempt).

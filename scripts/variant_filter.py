@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""변이체 통합 pass/fail 매트릭스 생성기 - 여러 QC 체크를 단일 결정 매트릭스로 결합.
+"""Combined variant pass/fail matrix generator - merges several QC checks into a single decision matrix.
 
-사용법:
+Usage:
     python variant_filter.py --ddg ddg.csv --primer-qc primer.csv
     python variant_filter.py --ddg ddg.csv --primer-qc primer.csv --expression expr.csv --output matrix.csv
 
-임포트:
+Import:
     from variant_filter import build_matrix
     matrix = build_matrix(ddg_file="ddg.csv", primer_qc_file="primer.csv")
 
-입력 파일 형식:
-    ddg CSV: variant, ddG_fold, pass_fail (ddg_screen.py 출력)
-    primer QC CSV: variant, pass (True/False) 또는 pass_fail (PASS/FAIL)
-    expression CSV: variant, expression_pass 또는 pass (True/False)
+Input file formats:
+    ddg CSV: variant, ddG_fold, pass_fail (ddg_screen.py output)
+    primer QC CSV: variant, pass (True/False) or pass_fail (PASS/FAIL)
+    expression CSV: variant, expression_pass or pass (True/False)
 """
 import argparse
 import csv
@@ -23,7 +23,7 @@ from typing import Optional
 
 
 def _normalize_pass(value: str) -> Optional[bool]:
-    """다양한 표현의 pass 값을 bool로 정규화."""
+    """Normalize a pass value in various notations to bool."""
     if value is None:
         return None
     v = str(value).strip().upper()
@@ -35,7 +35,7 @@ def _normalize_pass(value: str) -> Optional[bool]:
 
 
 def _read_csv_as_dict(path: str, key_col: str = "variant") -> dict[str, dict]:
-    """CSV를 key_col 기준 딕셔너리로 읽는다."""
+    """Read the CSV into a dict keyed by key_col."""
     result = {}
     with open(path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -47,7 +47,7 @@ def _read_csv_as_dict(path: str, key_col: str = "variant") -> dict[str, dict]:
 
 
 def _extract_pass(row: dict, candidates: list[str]) -> Optional[bool]:
-    """우선순위 컬럼 후보에서 pass 값을 추출한다."""
+    """Extract the pass value from a prioritized list of candidate columns."""
     for col in candidates:
         if col in row:
             return _normalize_pass(row[col])
@@ -59,16 +59,16 @@ def build_matrix(
     primer_qc_file: Optional[str] = None,
     expression_file: Optional[str] = None,
 ) -> list[dict]:
-    """여러 QC 소스를 통합해 변이체별 pass/fail 매트릭스를 생성한다.
+    """Merge several QC sources into a per-variant pass/fail matrix.
 
     Args:
-        ddg_file: ddg_screen.py 출력 CSV 경로
-        primer_qc_file: primer QC 결과 CSV 경로
-        expression_file: 발현 예측 CSV 경로
+        ddg_file: path to the ddg_screen.py output CSV
+        primer_qc_file: path to the primer QC result CSV
+        expression_file: path to the expression prediction CSV
 
     Returns:
-        [{"variant", "ddg_pass", "primer_pass", "expression_pass",
-          "overall_pass", "notes"}, ...] 목록
+        a list of [{"variant", "ddg_pass", "primer_pass", "expression_pass",
+          "overall_pass", "notes"}, ...]
     """
     ddg_data: dict[str, dict] = {}
     primer_data: dict[str, dict] = {}
@@ -81,7 +81,7 @@ def build_matrix(
     if expression_file:
         expr_data = _read_csv_as_dict(expression_file)
 
-    # 모든 소스에서 변이체 목록 수집
+    # collect the variant list from every source
     all_variants = sorted(
         set(ddg_data) | set(primer_data) | set(expr_data)
     )
@@ -101,7 +101,7 @@ def build_matrix(
                 ddg_data[variant], ["pass_fail", "pass", "ddg_pass"]
             )
         elif ddg_file:
-            # ddg 파일이 제공됐지만 이 변이체가 없으면 데이터 누락
+            # a ddg file was given but this variant isn't in it — data missing
             ddg_pass = None
 
         if primer_data and variant in primer_data:
@@ -118,7 +118,7 @@ def build_matrix(
         elif expression_file:
             expr_pass = None
 
-        # overall_pass: 제공된 체크 모두 PASS여야 함 (None은 미평가 = 통과로 간주하지 않음)
+        # overall_pass: every check that was provided must be PASS (None = not evaluated, not treated as a pass)
         checks = []
         if ddg_file:
             checks.append(("ddG", ddg_pass))
@@ -151,17 +151,17 @@ def build_matrix(
 
 
 def _print_summary(matrix: list[dict]) -> None:
-    """요약 통계를 stderr에 출력한다."""
+    """Print summary statistics to stderr."""
     total = len(matrix)
     pass_count = sum(1 for r in matrix if r["overall_pass"] == "PASS")
     fail_count = total - pass_count
 
-    print(f"\n=== 변이체 필터 요약 ===", file=sys.stderr)
-    print(f"전체: {total}개", file=sys.stderr)
-    print(f"PASS: {pass_count}개 ({pass_count/total*100:.1f}%)" if total else "PASS: 0개", file=sys.stderr)
-    print(f"FAIL: {fail_count}개 ({fail_count/total*100:.1f}%)" if total else "FAIL: 0개", file=sys.stderr)
+    print(f"\n=== variant filter summary ===", file=sys.stderr)
+    print(f"total: {total}", file=sys.stderr)
+    print(f"PASS: {pass_count} ({pass_count/total*100:.1f}%)" if total else "PASS: 0", file=sys.stderr)
+    print(f"FAIL: {fail_count} ({fail_count/total*100:.1f}%)" if total else "FAIL: 0", file=sys.stderr)
 
-    # 실패 원인 분석
+    # break down failure reasons
     fail_notes = [r["notes"] for r in matrix if r["overall_pass"] == "FAIL" and r["notes"]]
     if fail_notes:
         reason_counter: Counter = Counter()
@@ -169,27 +169,27 @@ def _print_summary(matrix: list[dict]) -> None:
             for reason in note.split("; "):
                 if reason:
                     reason_counter[reason] += 1
-        print("\n실패 원인 분류:", file=sys.stderr)
+        print("\nfailure reason breakdown:", file=sys.stderr)
         for reason, count in reason_counter.most_common():
-            print(f"  {reason}: {count}개", file=sys.stderr)
+            print(f"  {reason}: {count}", file=sys.stderr)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="여러 QC 체크를 통합해 변이체별 pass/fail 매트릭스를 생성한다."
+        description="Merge several QC checks into a per-variant pass/fail matrix."
     )
     parser.add_argument("--ddg", default=None, metavar="FILE",
-                        help="ddG 결과 CSV (ddg_screen.py 출력)")
+                        help="ddG result CSV (ddg_screen.py output)")
     parser.add_argument("--primer-qc", default=None, metavar="FILE",
-                        help="primer QC 결과 CSV")
+                        help="primer QC result CSV")
     parser.add_argument("--expression", default=None, metavar="FILE",
-                        help="발현 예측 CSV")
+                        help="expression prediction CSV")
     parser.add_argument("--output", "-o", default=None,
-                        help="출력 매트릭스 CSV 경로 (기본값: variant_matrix.csv)")
+                        help="output matrix CSV path (default: variant_matrix.csv)")
     args = parser.parse_args()
 
     if not any([args.ddg, args.primer_qc, args.expression]):
-        parser.error("--ddg, --primer-qc, --expression 중 하나 이상을 지정해야 합니다.")
+        parser.error("at least one of --ddg, --primer-qc, --expression must be specified.")
 
     matrix = build_matrix(
         ddg_file=args.ddg,
@@ -198,7 +198,7 @@ def main() -> None:
     )
 
     if not matrix:
-        print("처리할 변이체가 없습니다.", file=sys.stderr)
+        print("No variants to process.", file=sys.stderr)
         sys.exit(1)
 
     output_path = args.output or "variant_matrix.csv"
@@ -209,7 +209,7 @@ def main() -> None:
         writer.writerows(matrix)
 
     _print_summary(matrix)
-    print(f"\n결과를 {output_path}에 저장했습니다.", file=sys.stderr)
+    print(f"\nSaved results to {output_path}.", file=sys.stderr)
 
 
 if __name__ == "__main__":

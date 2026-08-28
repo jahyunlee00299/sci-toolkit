@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""assumption_check.py 회귀 테스트 — 정답을 아는 데이터로 판정을 검증한다.
+"""assumption_check.py regression test — verifies its verdicts against data whose answer is known.
 
-통계 도구는 "돌아간다"와 "맞다"가 다르다. 여기서는 분포를 알고 만든 데이터를
-넣어서, 도구가 **정답으로 알려진 검정을 지목하는지** 확인한다.
-데이터는 난수가 아니라 분위수로 만든다 — 어느 numpy/scipy 버전에서나 같다.
+For a statistics tool, "it runs" and "it's correct" are different claims.
+Here we feed in data built from a known distribution and check whether the
+tool **names the test that is known to be the right answer**. The data is
+built from quantiles rather than random draws, so it's identical across any
+numpy/scipy version.
 
-실행:
-    python tests/test_assumption_check.py     # exit 0 = 통과
+Run:
+    python tests/test_assumption_check.py     # exit 0 = pass
 """
 import importlib.util
 import io
@@ -18,17 +20,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "skills" / "stats-workflow" / "scripts" / "assumption_check.py"
 
-# 대상 모듈은 import 시점에 sys.stdout 을 UTF-8 래퍼로 교체한다(cp949 대응).
-# 그래서 여기서 먼저 래핑해 두면 그 래퍼가 닫혀 버린다 — 반드시 import 를 먼저 하고,
-# 그 뒤에 최종 stdout 을 UTF-8 로 맞춘다.
+# The target module replaces sys.stdout with a UTF-8 wrapper at import time
+# (to handle cp949). So wrapping it here first would just get that wrapper
+# closed — always import first, and only then finalize stdout to UTF-8.
 spec = importlib.util.spec_from_file_location("assumption_check", str(SCRIPT))
 mod = importlib.util.module_from_spec(spec)
 sys.modules["assumption_check"] = mod
 spec.loader.exec_module(mod)
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서,
-# import 후 GC 되면 호출자의 stdout 까지 닫아버린다(실측).
+# The default Windows console is cp949, which crashes on Korean/symbol
+# output. Force UTF-8. Use reconfigure rather than TextIOWrapper — a wrapper
+# owns the underlying stream, so once garbage collected after import it
+# closes the caller's stdout along with it (measured).
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         try:
@@ -38,12 +41,14 @@ for _s in (sys.stdout, sys.stderr):
 
 
 def _normal_quantiles(mean: float, sd: float, n: int) -> list[float]:
-    """난수 없이 '정규분포를 따르는 표본' 을 만든다 — i/(n+1) 분위수.
+    """Build a 'sample following a normal distribution' without randomness — i/(n+1) quantiles.
 
-    `np.random.default_rng(seed)` 는 시드를 고정해도 numpy 버전이 바뀌면 스트림이
-    달라질 수 있다. 그러면 정규성 p 값이 0.05 를 넘나들며 지목되는 검정이 바뀌어,
-    검정 선택 로직을 재는 테스트가 난수 운에 좌우된다 — CI(다른 numpy/scipy)에서
-    실제로 깨졌다(260807). 분위수 표본은 어느 환경에서나 같은 바이트다.
+    `np.random.default_rng(seed)` can produce a different stream across
+    numpy versions even with the seed fixed. That shifts the normality
+    p-value back and forth across 0.05, which changes which test gets
+    selected — making a test of the selection logic itself hostage to random
+    luck. It actually broke this way in CI (different numpy/scipy) (260807).
+    A quantile-based sample is byte-identical in any environment.
     """
     from statistics import NormalDist
     nd = NormalDist(mean, sd)
@@ -51,7 +56,7 @@ def _normal_quantiles(mean: float, sd: float, n: int) -> list[float]:
 
 
 def _exponential_quantiles(scale: float, n: int) -> list[float]:
-    """지수분포 분위수 — 강하게 치우쳐 정규성이 확실히 깨진다."""
+    """Exponential-distribution quantiles — heavily skewed, so normality reliably fails."""
     import math
     return [-scale * math.log(1.0 - (i + 1) / (n + 1)) for i in range(n)]
 
@@ -63,87 +68,92 @@ def check(label, got, want):
     ok = got == want
     print(f"  {'PASS' if ok else 'FAIL'}  {label}")
     if not ok:
-        print(f"        기대: {want!r}")
-        print(f"        실제: {got!r}")
+        print(f"        expected: {want!r}")
+        print(f"        got:      {got!r}")
         fails.append(label)
 
 
-# ---------------------------------------------------------------- 결정 트리
-# SKILL.md Phase 2 의 트리를 그대로 옮겼는지 확인한다.
-print("=== 결정 트리 (SKILL.md Phase 2) ===")
-check("2군·독립·정규·등분산 → Independent t-test",
+# ---------------------------------------------------------------- decision tree
+# Verify this matches the tree in SKILL.md Phase 2 exactly.
+print("=== Decision tree (SKILL.md Phase 2) ===")
+check("2 groups, independent, normal, equal variance -> Independent t-test",
       mod.decide(2, False, True, True, False), "Independent t-test")
-check("2군·독립·정규·이분산 → Welch's t-test",
+check("2 groups, independent, normal, unequal variance -> Welch's t-test",
       mod.decide(2, False, True, False, False), "Welch's t-test")
-check("2군·독립·비정규 → Mann-Whitney U",
+check("2 groups, independent, non-normal -> Mann-Whitney U",
       mod.decide(2, False, False, True, False), "Mann-Whitney U")
-check("2군·대응·정규 → Paired t-test",
+check("2 groups, paired, normal -> Paired t-test",
       mod.decide(2, True, True, True, False), "Paired t-test")
-check("2군·대응·비정규 → Wilcoxon",
+check("2 groups, paired, non-normal -> Wilcoxon",
       mod.decide(2, True, False, True, False), "Wilcoxon signed-rank")
-check("3군·정규·등분산 → One-way ANOVA",
+check("3 groups, normal, equal variance -> One-way ANOVA",
       mod.decide(3, False, True, True, False), "One-way ANOVA")
-check("3군·정규·이분산 → Welch's ANOVA",
+check("3 groups, normal, unequal variance -> Welch's ANOVA",
       mod.decide(3, False, True, False, False), "Welch's ANOVA")
-check("3군·비정규 → Kruskal-Wallis",
+check("3 groups, non-normal -> Kruskal-Wallis",
       mod.decide(3, False, False, True, False), "Kruskal-Wallis")
-check("3군·반복측정·비정규 → Friedman",
+check("3 groups, repeated measures, non-normal -> Friedman",
       mod.decide(3, True, False, True, False), "Friedman test")
-check("단일표본·정규 → One-sample t-test",
+check("single sample, normal -> One-sample t-test",
       mod.decide(1, False, True, True, True), "One-sample t-test")
 
-# ---------------------------------------------------------------- 정규성 판정
-print("\n=== 정규성 검정 선택 (n 기준) ===")
+# ---------------------------------------------------------------- normality test selection
+print("\n=== Normality test selection (by n) ===")
 try:
     import numpy as np
 except ImportError:
-    print("  SKIP — numpy 없음")
+    print("  SKIP — numpy not available")
     np = None
 
 if np is not None:
     small_normal = _normal_quantiles(10.0, 2.0, 20)
     big_normal = _normal_quantiles(10.0, 2.0, 80)
-    check("n=20 → Shapiro-Wilk 사용",
+    check("n=20 -> uses Shapiro-Wilk",
           mod.check_normality(small_normal, "a")["test"], "Shapiro-Wilk")
-    check("n=80 → D'Agostino-Pearson 사용",
+    check("n=80 -> uses D'Agostino-Pearson",
           mod.check_normality(big_normal, "b")["test"], "D'Agostino-Pearson")
-    check("정규분포 데이터 → normal=True",
+    check("normally-distributed data -> normal=True",
           mod.check_normality(small_normal, "a")["normal"], True)
-    # 지수분포는 강하게 치우쳐 있어 정규성이 깨져야 한다
+    # An exponential distribution is heavily skewed, so normality must fail
     skewed = _exponential_quantiles(3.0, 40)
-    check("지수분포 데이터 → normal=False",
+    check("exponential-distribution data -> normal=False",
           mod.check_normality(skewed, "c")["normal"], False)
 
-# ---------------------------------------------------------------- APA 서식
-print("\n=== APA p 값 서식 ===")
-check("p=.0004 → 'p < .001'", mod.fmt_p(0.0004), "p < .001")
-check("p=.032 → 'p = .032'", mod.fmt_p(0.032), "p = .032")
-check("p=.5 → 'p = .500'", mod.fmt_p(0.5), "p = .500")
+# ---------------------------------------------------------------- APA p-value formatting
+print("\n=== APA p-value formatting ===")
+check("p=.0004 -> 'p < .001'", mod.fmt_p(0.0004), "p < .001")
+check("p=.032 -> 'p = .032'", mod.fmt_p(0.032), "p = .032")
+check("p=.5 -> 'p = .500'", mod.fmt_p(0.5), "p = .500")
 
-print("\n=== 효과크기 해석 (Cohen) ===")
-check("d=0.9 → large", mod.band("d", 0.9), "large")
-check("d=0.55 → medium", mod.band("d", 0.55), "medium")
-check("d=0.25 → small", mod.band("d", 0.25), "small")
-check("d=0.05 → negligible", mod.band("d", 0.05), "negligible")
-check("d=-0.9 (음수도 크기로) → large", mod.band("d", -0.9), "large")
+print("\n=== Effect-size interpretation (Cohen) ===")
+check("d=0.9 -> large", mod.band("d", 0.9), "large")
+check("d=0.55 -> medium", mod.band("d", 0.55), "medium")
+check("d=0.25 -> small", mod.band("d", 0.25), "small")
+check("d=0.05 -> negligible", mod.band("d", 0.05), "negligible")
+check("d=-0.9 (magnitude applies to negatives too) -> large", mod.band("d", -0.9), "large")
 
 # ---------------------------------------------------------------- end-to-end
-print("\n=== 실제 실행 (정답을 아는 데이터) ===")
+print("\n=== Actual execution (data with a known answer) ===")
 if np is None:
-    print("  SKIP — numpy 없음")
+    print("  SKIP — numpy not available")
 else:
     tmp = Path(tempfile.mkdtemp())
 
-    # (1) 두 정규분포, 등분산, 평균이 뚜렷이 다름 → Independent t-test, 유의
+    # (1) Two normal distributions, equal variance, clearly different means
+    #     -> Independent t-test, significant
     #
-    # 난수를 쓰지 않는다. `default_rng(seed)` 는 시드를 고정해도 **numpy 버전이
-    # 바뀌면 스트림이 달라질 수 있고**, 그러면 정규성 p 값이 0.05 를 넘나들며
-    # 지목되는 검정이 바뀐다 — CI(다른 numpy/scipy)에서 이 케이스가 실제로
-    # 깨졌다(260807). 검정 선택 로직을 재는 테스트가 난수 운에 좌우되면 안 된다.
+    # No randomness used. `default_rng(seed)` can produce a different stream
+    # even with a fixed seed **once the numpy version changes**, which shifts
+    # the normality p-value across 0.05 and changes which test gets picked —
+    # this case actually broke in CI (different numpy/scipy) (260807). A test
+    # of the selection logic itself must not depend on random luck.
     #
-    # 대신 정규분포의 분위수를 결정적으로 만든다. 표본이 이론 분포를 거의 정확히
-    # 따르므로 Shapiro-Wilk 가 확실히 "정규"를 주고, 두 군의 분산이 같아 Levene 도
-    # 확실히 "등분산"이며, 평균 차이가 4σ 이상이라 유의성 판정도 경계에서 멀다.
+    # Instead, build deterministic quantiles of a normal distribution. The
+    # sample follows the theoretical distribution almost exactly, so
+    # Shapiro-Wilk reliably reports "normal," the two groups have equal
+    # variance so Levene reliably reports "equal variance," and the mean
+    # difference is 4 sigma or more, so the significance call is nowhere
+    # near the boundary either.
     a = _normal_quantiles(10.0, 1.5, 30)
     b = _normal_quantiles(14.0, 1.5, 30)
     f1 = tmp / "two_normal.csv"
@@ -154,13 +164,16 @@ else:
                         "--value", "value", "--group", "group", "--run"],
                        capture_output=True, text=True, encoding="utf-8", errors="replace")
     out = r.stdout
-    check("정규·등분산 2군 → Independent t-test 지목",
+    check("normal, equal-variance 2 groups -> names Independent t-test",
           "Independent t-test" in out, True)
-    check("  APA 문자열 출력됨", "APA: t(" in out, True)
-    check("  큰 차이 → 유의함", "유의함" in out and "유의하지 않음" not in out, True)
+    check("  APA string printed", "APA: t(" in out, True)
+    # NOTE: "유의함"/"유의하지 않음" are asserted verbatim because that's what
+    # assumption_check.py itself prints (see its NOTE at line ~377) — not
+    # translated here, since this file (assumption_check.py) is out of scope.
+    check("  large difference -> significant", "유의함" in out and "유의하지 않음" not in out, True)
     check("  exit 0", r.returncode, 0)
 
-    # (2) 한쪽이 지수분포 → 비모수로 전환되어야 한다
+    # (2) One side exponential -> must switch to a non-parametric test
     c = _exponential_quantiles(2.0, 30)
     d = _normal_quantiles(10.0, 1.5, 30)
     f2 = tmp / "skewed.csv"
@@ -170,11 +183,11 @@ else:
     r2 = subprocess.run([sys.executable, str(SCRIPT), str(f2),
                          "--value", "value", "--group", "group", "--run"],
                         capture_output=True, text=True, encoding="utf-8", errors="replace")
-    check("비정규 포함 → Mann-Whitney U 로 전환",
+    check("includes non-normal group -> switches to Mann-Whitney U",
           "Mann-Whitney U" in r2.stdout, True)
 
-    # (3) 등분산 위배 → Welch 로 전환
-    # 분산비 36배 — Levene 이 확실히 등분산을 기각한다.
+    # (3) Equal-variance assumption violated -> switch to Welch
+    # 36x variance ratio — Levene reliably rejects equal variance.
     e = _normal_quantiles(10.0, 1.0, 30)
     f = _normal_quantiles(10.5, 6.0, 30)
     f3 = tmp / "unequal_var.csv"
@@ -184,10 +197,10 @@ else:
     r3 = subprocess.run([sys.executable, str(SCRIPT), str(f3),
                          "--value", "value", "--group", "group"],
                         capture_output=True, text=True, encoding="utf-8", errors="replace")
-    check("등분산 위배 → Welch's t-test 로 전환",
+    check("unequal variance -> switches to Welch's t-test",
           "Welch's t-test" in r3.stdout, True)
 
-    # (4) 3군 정규·등분산 → ANOVA
+    # (4) 3 groups, normal, equal variance -> ANOVA
     g1 = _normal_quantiles(10.0, 1.5, 25)
     g2 = _normal_quantiles(12.0, 1.5, 25)
     g3 = _normal_quantiles(14.0, 1.5, 25)
@@ -199,10 +212,12 @@ else:
     r4 = subprocess.run([sys.executable, str(SCRIPT), str(f4),
                          "--value", "value", "--group", "group", "--run"],
                         capture_output=True, text=True, encoding="utf-8", errors="replace")
-    check("3군 정규·등분산 → One-way ANOVA", "One-way ANOVA" in r4.stdout, True)
-    check("  3군 유의 시 사후검정 안내", "사후검정" in r4.stdout, True)
+    check("3 groups, normal, equal variance -> One-way ANOVA", "One-way ANOVA" in r4.stdout, True)
+    # NOTE: "사후검정" ("post-hoc test") is asserted verbatim — matches
+    # assumption_check.py's own output; that file is out of scope here.
+    check("  3-group significant result -> recommends post-hoc test", "사후검정" in r4.stdout, True)
 
-    # (5) 대응표본인데 크기가 다르면 조용히 넘어가지 말고 막아야 한다
+    # (5) Mismatched sizes in a paired sample must be blocked, not silently ignored
     f5 = tmp / "mismatched.csv"
     f5.write_text("value,group\n" +
                   "".join(f"{v},A\n" for v in _normal_quantiles(10.0, 1.0, 20)) +
@@ -211,15 +226,19 @@ else:
                          "--value", "value", "--group", "group",
                          "--paired", "--run"],
                         capture_output=True, text=True, encoding="utf-8", errors="replace")
-    check("대응표본 크기 불일치 → 중단(exit 1)", r5.returncode, 1)
-    check("  이유를 밝힘", "크기가 다르다" in r5.stdout, True)
+    check("paired-sample size mismatch -> aborts (exit 1)", r5.returncode, 1)
+    # NOTE: "크기가 다르다" ("sizes differ") is asserted verbatim — matches
+    # assumption_check.py's own output; that file is out of scope here.
+    check("  states the reason", "크기가 다르다" in r5.stdout, True)
 
-    # (6) 없는 열 → 친절한 오류 + exit 2
+    # (6) Nonexistent column -> a helpful error + exit 2
     r6 = subprocess.run([sys.executable, str(SCRIPT), str(f1),
                          "--value", "nonexistent_column"],
                         capture_output=True, text=True, encoding="utf-8", errors="replace")
-    check("없는 열 → exit 2", r6.returncode, 2)
-    check("  있는 열 목록을 알려줌", "있는 열" in (r6.stdout + r6.stderr), True)
+    check("nonexistent column -> exit 2", r6.returncode, 2)
+    # NOTE: "있는 열" ("columns that exist") is asserted verbatim — matches
+    # assumption_check.py's own output; that file is out of scope here.
+    check("  lists the columns that do exist", "있는 열" in (r6.stdout + r6.stderr), True)
 
 print()
 if fails:

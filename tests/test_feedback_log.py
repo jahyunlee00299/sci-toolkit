@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-피드백 기록 채널 회귀 테스트.
+Feedback-log channel regression test.
 
-이 도구의 계약에서 가장 중요한 것은 **설정 없이 동작한다**는 점이다.
-토큰·계정·네트워크를 요구하는 순간 아무도 기록하지 않기 때문에, 그 성질이
-깨졌는지를 여기서 지킨다.
+The most important thing about this tool's contract is that **it works with
+zero configuration**. The moment it requires a token, account, or network,
+nobody logs anything anymore — this test guards against that property
+breaking.
 
-계약:
-  1. 필수 인자는 "무엇이 불편한가" 하나. 나머지 없이도 기록된다.
-  2. 환경 정보(OS/Python)는 묻지 않고 자동으로 채워진다.
-  3. 기록은 JSONL 한 줄 = 한 건. 한 줄이 깨져도 나머지는 읽힌다.
-  4. 이슈 본문에는 출처(기록 ID·시각)가 반드시 들어간다 — 재현할 수 있어야 한다.
-  5. export 는 --write 없이 아무것도 올리지 않는다(§9 draft-first).
+Contract:
+  1. The only required argument is "what's the problem". It logs with
+     nothing else.
+  2. Environment info (OS/Python) is filled in automatically, never asked for.
+  3. One log line = one JSONL entry. If one line breaks, the rest still read.
+  4. The issue body must always include provenance (entry ID + timestamp) —
+     it must be reproducible.
+  5. export uploads nothing without --write (§9 draft-first).
 """
 from __future__ import annotations
 
@@ -55,63 +58,63 @@ def check(name: str, cond: bool, detail: str = "") -> None:
 
 
 def main() -> int:
-    print("피드백 기록 채널 검증")
+    print("Verifying the feedback-log channel")
     print("=" * 60)
 
     with tempfile.TemporaryDirectory() as td:
-        # 실제 out/feedback.jsonl 을 건드리지 않도록 경로를 갈아끼운다.
+        # Swap the path so the real out/feedback.jsonl is never touched.
         _mod.LOG_PATH = Path(td) / "feedback.jsonl"
 
-        # ── 1. 최소 입력으로 기록 ───────────────────────────────────────
-        print("\n[최소 입력] 설정 없이 한 줄만으로 기록")
-        e = _mod.add_entry("표 편집이 자꾸 실패해요")
-        check("기록이 만들어짐", bool(e.get("id")))
-        check("파일에 쓰임", _mod.LOG_PATH.exists())
-        check("환경이 자동으로 채워짐",
+        # ── 1. Log with minimal input ───────────────────────────────────
+        print("\n[Minimal input] log with just one line, no configuration")
+        e = _mod.add_entry("Table editing keeps failing")
+        check("an entry is created", bool(e.get("id")))
+        check("written to the file", _mod.LOG_PATH.exists())
+        check("environment is auto-filled",
               bool(e["env"].get("os")) and bool(e["env"].get("python")),
               f"env={e['env']}")
-        check("선택 항목은 비어 있어도 됨", e["skill"] is None and e["expected"] is None)
+        check("optional fields may be empty", e["skill"] is None and e["expected"] is None)
 
-        # ── 2. 전체 입력 ────────────────────────────────────────────────
-        print("\n[전체 입력] 아는 것을 모두 담았을 때")
-        e2 = _mod.add_entry("셀 안에서 치환이 안 됨", kind="bug", skill="docx",
-                            expected="셀 값이 바뀜", actual="무한루프")
-        check("kind 가 반영됨", e2["kind"] == "bug")
-        check("skill 이 반영됨", e2["skill"] == "docx")
+        # ── 2. Full input ────────────────────────────────────────────────
+        print("\n[Full input] with everything known filled in")
+        e2 = _mod.add_entry("Find-replace doesn't work inside a cell", kind="bug", skill="docx",
+                            expected="The cell value changes", actual="Infinite loop")
+        check("kind is reflected", e2["kind"] == "bug")
+        check("skill is reflected", e2["skill"] == "docx")
 
-        # ── 3. 읽기 ─────────────────────────────────────────────────────
-        print("\n[읽기] JSONL 파싱")
+        # ── 3. Reading ─────────────────────────────────────────────────────
+        print("\n[Read] JSONL parsing")
         entries = _mod.read_entries()
-        check("두 건 모두 읽힘", len(entries) == 2, f"len={len(entries)}")
+        check("both entries are read", len(entries) == 2, f"len={len(entries)}")
 
-        # 깨진 줄을 섞어도 나머지는 살아야 한다
+        # Mixing in a broken line must not take down the rest
         with _mod.LOG_PATH.open("a", encoding="utf-8") as f:
-            f.write("{ 깨진 줄 아님 json\n")
+            f.write("{ not a broken line json\n")
         entries = _mod.read_entries()
-        check("깨진 줄이 있어도 나머지는 읽힘", len(entries) == 2, f"len={len(entries)}")
+        check("the rest still read even with a broken line present", len(entries) == 2, f"len={len(entries)}")
 
-        # ── 4. 이슈 본문 ────────────────────────────────────────────────
-        print("\n[이슈 변환] 출처가 반드시 들어간다")
+        # ── 4. Issue body ────────────────────────────────────────────────
+        print("\n[Issue conversion] provenance must always be included")
         title, body = _mod.to_issue(e2)
-        check("제목에 스킬 스코프가 붙음", title.startswith("[docx]"), title)
-        check("본문에 기록 ID 포함", e2["id"] in body)
-        check("본문에 기대/실제 포함",
-              "셀 값이 바뀜" in body and "무한루프" in body)
-        check("본문에 환경 포함", "Python" in body)
+        check("title is prefixed with the skill scope", title.startswith("[docx]"), title)
+        check("body includes the entry ID", e2["id"] in body)
+        check("body includes expected/actual",
+              "The cell value changes" in body and "Infinite loop" in body)
+        check("body includes environment", "Python" in body)
 
-        # 선택 항목이 없는 기록도 본문이 만들어져야 한다
+        # An entry with no optional fields must still produce a body
         title1, body1 = _mod.to_issue(e)
-        check("최소 기록도 본문 생성됨", bool(title1) and e["id"] in body1)
+        check("a minimal entry also produces a body", bool(title1) and e["id"] in body1)
 
-        # ── 5. exported 표시 ────────────────────────────────────────────
-        print("\n[승격 표시] 올린 것은 다시 올리지 않는다")
+        # ── 5. exported flag ────────────────────────────────────────────
+        print("\n[Promotion flag] what's been uploaded doesn't get uploaded again")
         _mod.mark_exported({e2["id"]})
         after = {x["id"]: x for x in _mod.read_entries()}
-        check("올린 건은 exported=True", after[e2["id"]]["exported"] is True)
-        check("안 올린 건은 그대로", after[e["id"]]["exported"] is False)
+        check("an uploaded entry has exported=True", after[e2["id"]]["exported"] is True)
+        check("a non-uploaded entry stays as-is", after[e["id"]]["exported"] is False)
 
-        # ── 6. JSONL 형식 ───────────────────────────────────────────────
-        print("\n[형식] 한 줄 = 한 건")
+        # ── 6. JSONL format ───────────────────────────────────────────────
+        print("\n[Format] one line = one entry")
         lines = [l for l in _mod.LOG_PATH.read_text(encoding="utf-8").splitlines()
                  if l.strip()]
         parsed = 0
@@ -121,17 +124,17 @@ def main() -> int:
                 parsed += 1
             except json.JSONDecodeError:
                 pass
-        check("유효한 JSON 줄이 2건", parsed == 2, f"parsed={parsed}/{len(lines)}")
+        check("2 valid JSON lines", parsed == 2, f"parsed={parsed}/{len(lines)}")
 
-        # ── 7. 담당자 = 발견자 (mock, 실제 네트워크 없음) ─────────────────
-        print("\n[담당자] 이슈는 발견자에게 할당된다 — 관리자에게 몰지 않는다")
+        # ── 7. Assignee = finder (mocked, no real network) ─────────────────
+        print("\n[Assignee] the issue is assigned to whoever found it — not dumped on the maintainer")
 
         def _run_export(no_assignee=False, assignee=None, fail_lookup=None):
-            # fail_lookup: None(성공) / "exception"(일반 예외) /
-            # "systemexit"(실제 github_connector.http()가 실패 시 내는
-            # 방식 — sys.exit() 는 BaseException 서브클래스라 일반
-            # except Exception 으로는 안 잡힌다. 적대검증 260810에서
-            # 발견된 실제 실패 경로를 그대로 재현한다).
+            # fail_lookup: None (success) / "exception" (a generic exception) /
+            # "systemexit" (the way the real github_connector.http() fails —
+            # sys.exit() is a BaseException subclass, so a plain
+            # `except Exception` doesn't catch it. This reproduces the real
+            # failure path found during adversarial verification on 260810).
             calls = []
 
             def fake_http(method, url, token, data=None):
@@ -140,7 +143,7 @@ def main() -> int:
                     if fail_lookup == "exception":
                         raise RuntimeError("network down")
                     if fail_lookup == "systemexit":
-                        sys.exit("[오류] 네트워크 연결을 확인하세요: mocked offline")
+                        sys.exit("[Error] Check your network connection: mocked offline")
                     return {"login": "finder-account"}
                 return {"number": 1}
 
@@ -159,47 +162,49 @@ def main() -> int:
             issue_calls = [c for c in calls if c[1].endswith("/issues")]
             return calls, issue_calls
 
-        # 기본값: 지정하지 않으면 /user 로 조회한 본인 계정에 할당
-        # (이전 섹션의 미출력 기록도 함께 올라갈 수 있으므로 "전부"를 검사한다 —
-        #  개수가 아니라 모든 이슈가 같은 담당자를 받았는지가 계약이다.)
-        e3 = _mod.add_entry("담당자 테스트 — 기본값")
+        # Default: when unspecified, assigns to the account looked up via /user
+        # (an unexported entry from an earlier section may also ride along, so
+        #  we check "all of them" — the contract is that every issue gets the
+        #  same assignee, not a specific count.)
+        e3 = _mod.add_entry("Assignee test — default")
         calls, issue_calls = _run_export()
-        check("기본값: /user 조회 호출됨", any(c[1].endswith("/user") for c in calls))
-        check("기본값: 올라간 이슈 전부가 발견자(본인)에게 할당됨",
+        check("default: the /user lookup is called", any(c[1].endswith("/user") for c in calls))
+        check("default: every uploaded issue is assigned to the finder (self)",
               len(issue_calls) >= 1 and
               all(c[2].get("assignees") == ["finder-account"] for c in issue_calls),
               f"issue_calls={issue_calls}")
 
-        # --no-assignee: 아무에게도 할당하지 않음, /user 호출도 생략(불필요한 API 호출 방지)
-        e4 = _mod.add_entry("담당자 테스트 — no-assignee")
+        # --no-assignee: assigns to no one, and skips the /user call too (avoids a needless API call)
+        e4 = _mod.add_entry("Assignee test — no-assignee")
         calls, issue_calls = _run_export(no_assignee=True)
-        check("--no-assignee: /user 호출 생략", not any(c[1].endswith("/user") for c in calls))
-        check("--no-assignee: assignees 필드가 아예 없음",
+        check("--no-assignee: the /user call is skipped", not any(c[1].endswith("/user") for c in calls))
+        check("--no-assignee: the assignees field is absent entirely",
               len(issue_calls) == 1 and "assignees" not in issue_calls[0][2])
 
-        # --assignee 명시: 그 값을 그대로 쓰고, 본인 조회는 하지 않음
-        e5 = _mod.add_entry("담당자 테스트 — 명시적 지정")
+        # --assignee given explicitly: uses that value as-is, doesn't look up self
+        e5 = _mod.add_entry("Assignee test — explicit override")
         calls, issue_calls = _run_export(assignee="someone-else")
-        check("--assignee 명시: /user 조회 생략", not any(c[1].endswith("/user") for c in calls))
-        check("--assignee 명시: 지정한 사람으로 할당",
+        check("--assignee given: the /user lookup is skipped", not any(c[1].endswith("/user") for c in calls))
+        check("--assignee given: assigned to the specified person",
               len(issue_calls) == 1 and issue_calls[0][2].get("assignees") == ["someone-else"])
 
-        # /user 조회가 실패해도(오프라인 등) 이슈 생성 자체는 죽지 않아야 한다
-        e6 = _mod.add_entry("담당자 테스트 — 조회 실패(일반 예외)")
+        # Even if the /user lookup fails (e.g. offline), issue creation itself must not die
+        e6 = _mod.add_entry("Assignee test — lookup failure (generic exception)")
         calls, issue_calls = _run_export(fail_lookup="exception")
-        check("일반 예외: /user 조회 실패해도 이슈는 만들어짐(할당 없이)",
+        check("generic exception: the issue is still created even if the /user lookup fails (unassigned)",
               len(issue_calls) == 1 and "assignees" not in issue_calls[0][2])
 
-        # 실제 github_connector.http() 가 쓰는 실패 방식(sys.exit → SystemExit)도
-        # 같은 계약을 지켜야 한다 — 이게 260810 적대검증에서 실제로 뚫려 있던 경로.
-        e7 = _mod.add_entry("담당자 테스트 — 조회 실패(SystemExit, 실제 실패 경로)")
+        # The failure mode the real github_connector.http() actually uses
+        # (sys.exit → SystemExit) must honor the same contract — this is the
+        # exact path that was found broken in the 260810 adversarial verification.
+        e7 = _mod.add_entry("Assignee test — lookup failure (SystemExit, the real failure path)")
         calls, issue_calls = _run_export(fail_lookup="systemexit")
-        check("SystemExit: /user 조회 실패해도 이슈는 만들어짐(할당 없이), export가 죽지 않음",
+        check("SystemExit: the issue is still created even if the /user lookup fails (unassigned), export doesn't die",
               len(issue_calls) == 1 and "assignees" not in issue_calls[0][2],
               f"issue_calls={issue_calls}")
 
     print("=" * 60)
-    print(f"통과 {_pass} / 실패 {_fail}")
+    print(f"passed {_pass} / failed {_fail}")
     return 1 if _fail else 0
 
 

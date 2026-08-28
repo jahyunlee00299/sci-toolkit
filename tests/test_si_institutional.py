@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""si_fetch.py / institutional_access.py / ref_fetch.py 수집 관문 회귀 테스트.
+"""Regression test for the si_fetch.py / institutional_access.py / ref_fetch.py
+collection gate.
 
-실행: python tests/test_si_institutional.py   (exit 0 = 통과)
+Run: python tests/test_si_institutional.py   (exit 0 = pass)
 
-기존 test_doi_verify.py 와 같은 규약이다:
-  1) 네트워크 없이 도는 부분 (항상 실행)
-  2) 네트워크가 필요한 부분 — 없으면 SKIP 하되 반드시 "SKIP"이라고 출력한다
-     (조용히 통과 금지)
+Same convention as the existing test_doi_verify.py:
+  1) parts that run without network (always executed)
+  2) parts that need network — SKIP if unavailable, but must print "SKIP"
+     (never pass silently)
 """
 import importlib.util
 import json
@@ -51,61 +52,62 @@ def section(title: str) -> None:
 
 
 # --------------------------------------------------------------------------- #
-section("기관 링크 생성 (institutional_access)")
+section("Institutional link generation (institutional_access)")
 
 reg = institutional_access.InstitutionRegistry.load()
-check("config/institutions.json 이 읽힌다", "korea-univ" in reg.available(),
+check("config/institutions.json is read", "korea-univ" in reg.available(),
       f"got={reg.available()}")
 
 link = reg.build_link("korea-univ", "https://example.com/article/1")
-check("프록시 링크가 대상 URL을 감싼다",
+check("proxy link wraps the target URL",
       link is not None and link.url == "https://oca.korea.ac.kr/link.n2s?url=https://example.com/article/1",
       f"got={link.url if link else None}")
 
-check("규정 링크와 한도가 함께 실린다",
+check("policy link and limits are included together",
       link is not None and link.fair_use_url and link.daily_limits.get("per_publisher") == 30,
       f"got={link.daily_limits if link else None}")
 
-check("안내문에 '자동 다운로드가 아님'이 명시된다",
+check("the notice states this is not an auto-download",
       link is not None and "공정이용 위반" in link.human_summary())
 
-check("모르는 기관 키 -> None (조용히 엉뚱한 링크를 만들지 않음)",
+check("unknown institution key -> None (never silently builds the wrong link)",
       reg.build_link("no-such-institution", "https://example.com") is None)
 
-check("대상 URL이 비면 -> None", reg.build_link("korea-univ", "") is None)
+check("empty target URL -> None", reg.build_link("korea-univ", "") is None)
 
-# 자리표시자 없는 템플릿은 링크를 만들면 안 된다 (조용히 깨진 링크 방지).
+# A template without the placeholder must not build a link (prevents a silently broken link).
 bad = institutional_access.InstitutionRegistry(
     {"institutions": {"broken": {"proxy_url_template": "https://proxy.example/no-placeholder"}}}
 )
-check("{url} 자리표시자 없는 템플릿 -> None",
+check("template without the {url} placeholder -> None",
       bad.build_link("broken", "https://example.com/x") is None)
 
-# 설정 파일이 없어도 죽지 않아야 한다 (기관 설정은 선택 기능이다).
+# Must not crash even without a config file (institutional config is optional).
 missing = institutional_access.InstitutionRegistry.load(Path("does-not-exist-12345.json"))
-check("설정 파일이 없으면 빈 레지스트리 (예외 아님)", missing.available() == [])
+check("missing config file -> empty registry (not an exception)", missing.available() == [])
 
 
 # --------------------------------------------------------------------------- #
-section("SI 파일 판별 / 출판사 분기 (si_fetch)")
+section("SI file detection / publisher branching (si_fetch)")
 
-check("MOESM 파일은 보충자료로 판별",
+check("a MOESM file is classified as supplementary",
       si_fetch._looks_supplementary("13321_2015_69_MOESM1_ESM.docx"))
-check("_ESM 파일은 보충자료로 판별",
+check("an _ESM file is classified as supplementary",
       si_fetch._looks_supplementary("12010_2021_3624_MOESM2_ESM.pdf"))
-check("본문 그림(Fig1_HTML.jpg)은 보충자료가 아님",
+check("a body figure (Fig1_HTML.jpg) is not supplementary",
       not si_fetch._looks_supplementary("13321_2015_69_Fig1_HTML.jpg"))
-check("수식 이미지(Article_IEq1.gif)도 보충자료가 아님",
+check("an equation image (Article_IEq1.gif) is not supplementary either",
       not si_fetch._looks_supplementary("13321_2015_69_Article_IEq1.gif"))
 
-check("Elsevier 접두사는 차단 목록에 있다", "10.1016" in si_fetch.BLOCKED_PREFIXES)
-check("ACS 접두사는 차단 목록에 있다", "10.1021" in si_fetch.BLOCKED_PREFIXES)
-check("Springer 접두사도 차단 목록에 있다 (urllib 로는 축소 페이지만 옴)",
+check("Elsevier prefix is on the blocked list", "10.1016" in si_fetch.BLOCKED_PREFIXES)
+check("ACS prefix is on the blocked list", "10.1021" in si_fetch.BLOCKED_PREFIXES)
+check("Springer prefix is on the blocked list too (urllib only gets a reduced page)",
       "10.1007" in si_fetch.BLOCKED_PREFIXES)
-check("DOI 접두사 추출", si_fetch._prefix("10.1016/j.biortech.2019.122213") == "10.1016")
+check("DOI prefix extraction", si_fetch._prefix("10.1016/j.biortech.2019.122213") == "10.1016")
 
-# 아카이브 내부 경로를 그대로 믿으면 저장 위치가 지정 디렉토리 밖으로 샌다(zip-slip).
-# 가짜 아카이브를 만들어 실제 추출 경로를 확인한다.
+# Trusting an archive's internal path as-is lets the write location leak outside
+# the target directory (zip-slip). Build a fake archive and check the real
+# extraction path.
 import io as _io
 import zipfile as _zipfile
 
@@ -125,13 +127,13 @@ with tempfile.TemporaryDirectory() as _td:
     _got = si_fetch.download_si(_fake, _root, extract=True, si_only=True)
     _paths = [Path(f.extracted_path) for f in _got.files if f.extracted_path]
     _inside = all(_root.resolve() in p.resolve().parents for p in _paths)
-    check("아카이브 내부 경로가 저장 디렉토리를 벗어나지 않는다 (zip-slip 방지)",
+    check("archive-internal paths stay inside the target directory (zip-slip prevented)",
           bool(_paths) and _inside,
           f"paths={[str(p) for p in _paths]}")
 
 
 # --------------------------------------------------------------------------- #
-section("수집 관문 (ref_fetch.py CLI) — 네트워크 불필요")
+section("collection gate (ref_fetch.py CLI) — no network required")
 
 with tempfile.TemporaryDirectory() as td:
     proc = subprocess.run(
@@ -142,18 +144,18 @@ with tempfile.TemporaryDirectory() as td:
         capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120,
     )
     out = proc.stdout + proc.stderr
-    check("model 출처 + 제목 미선언 -> 수집 진입 차단 (exit 2, BLOCKED)",
+    check("model source + no declared title -> collection blocked at entry (exit 2, BLOCKED)",
           proc.returncode == 2 and "BLOCKED" in out,
           f"got exit={proc.returncode}, out={out[-200:]!r}")
 
-    # 관문이 조회 전에 막는지 — 네트워크를 탄 흔적이 없어야 한다.
-    check("차단은 조회 '전'에 일어난다 (처리 로그가 찍히지 않음)",
+    # Confirm the gate blocks before the lookup — there must be no trace of network use.
+    check("the block happens 'before' the lookup (no processing log printed)",
           "처리 중:" not in out,
           f"out={out[-200:]!r}")
 
 
 # --------------------------------------------------------------------------- #
-section("네트워크 테스트")
+section("network tests")
 
 
 def _network_available() -> bool:
@@ -165,21 +167,21 @@ def _network_available() -> bool:
 
 
 if _network_available():
-    print("  네트워크 사용 가능 — 실제 API 호출 테스트 실행")
+    print("  network available — running the live API-call tests")
 
-    # PMC 에 있는 OA 논문: 보충자료 3개가 실재한다 (260807 실측).
+    # OA paper on PMC: it actually has 3 supplementary files (measured 260807).
     res = si_fetch.discover_si("10.1186/s13321-015-0069-3")
-    check("[네트워크] PMC 논문 -> status=found",
+    check("[network] PMC paper -> status=found",
           res.status == "found", f"got={res.status} note={res.note}")
-    check("[네트워크] PMCID 해석됨", res.pmcid == "PMC4456712", f"got={res.pmcid}")
-    check("[네트워크] 아카이브에서 보충자료 3개를 골라낸다",
+    check("[network] PMCID resolved", res.pmcid == "PMC4456712", f"got={res.pmcid}")
+    check("[network] picks out 3 supplementary files from the archive",
           len(res.supplementary_files) == 3,
-          f"got={len(res.supplementary_files)} / 전체 {len(res.files)}")
-    check("[네트워크] 본문 그림은 보충자료로 세지 않는다",
+          f"got={len(res.supplementary_files)} / total {len(res.files)}")
+    check("[network] body figures are not counted as supplementary",
           len(res.files) > len(res.supplementary_files),
           f"files={len(res.files)} si={len(res.supplementary_files)}")
 
-    # 실제로 풀었을 때 파일이 그 형식인지 — 크기만으로 판단하지 않는다.
+    # Confirm the extracted file is actually that format — not judged by size alone.
     with tempfile.TemporaryDirectory() as td:
         got = si_fetch.download_si(res, Path(td), extract=True, si_only=True)
         docx = [f for f in got.supplementary_files if f.name.endswith(".docx")]
@@ -189,20 +191,20 @@ if _network_available():
             p = Path(docx[0].extracted_path)
             ok = p.exists() and zipfile.is_zipfile(p) and \
                 "word/document.xml" in zipfile.ZipFile(p).namelist()
-        check("[네트워크] 추출된 .docx 가 실제 Word 문서다 (매직바이트+내부구조)",
+        check("[network] the extracted .docx is a real Word document (magic bytes + internal structure)",
               ok, f"docx={[f.name for f in docx]}")
 
-    # 차단 출판사: 실패가 아니라 '사람이 할 일'로 안내되어야 한다.
+    # Blocked publisher: must be reported as 'something a human does', not a failure.
     blocked = si_fetch.discover_si("10.1016/j.enzmictec.2021.109747")
-    check("[네트워크] Elsevier -> status=blocked + 브라우저 안내",
+    check("[network] Elsevier -> status=blocked + browser guidance",
           blocked.status == "blocked" and bool(blocked.manual_hint),
           f"got={blocked.status}")
-    check("[네트워크] 안내문이 'SI 가 유료라서가 아님'을 밝힌다",
+    check("[network] the notice states this is not because SI is paywalled",
           "유료라서가 아닙니다" in (blocked.manual_hint or ""))
 else:
-    print("  [SKIP] 네트워크 연결 불가 — Europe PMC 호출 테스트를 건너뜁니다 "
-          "(파일 판별/분기 로직은 위에서 이미 검증됨)")
+    print("  [SKIP] no network connection — skipping the Europe PMC call tests "
+          "(the file-detection/branching logic was already verified above)")
 
 
-print(f"\n=== 결과: {PASS} 통과 / {FAIL} 실패 ===")
+print(f"\n=== results: {PASS} passed / {FAIL} failed ===")
 sys.exit(0 if FAIL == 0 else 1)
