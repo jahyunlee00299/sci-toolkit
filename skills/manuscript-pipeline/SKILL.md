@@ -146,6 +146,17 @@ original.docx (read-only)  ──copy──►  working.docx (edit here)
 - **changelog**: every edit records a backup filename (`references/backup_naming.md`) + change summary.
 - **Figure provenance** (before submission): run `python scripts/figure_provenance.py <figures_root>` (path relative to this skill) → record each figure's raw data + producing-script path. Confirm output by file existence, not mtime (cloud-synced folders report stale mtimes).
 - **rawdata single source of truth**: numbers in text / tables / figures must trace back to a single rawdata file.
+- 🔴 **Figure files map to manuscript slots by CAPTION, never by filename** — read the
+  sidecar (`<stem>.caption.txt`) or open the picture. A gallery `Fig6.png` whose own
+  sidecar caption said "Fig. 7" once overwrote the manuscript's correct Fig. 6. Byte-identity
+  and aspect-ratio checks both passed on it, because they answer "is this image
+  well-formed", not "is this the right image". Detail: `publication-figures`
+  §Identifying a figure file.
+- 🔴 **After any figure replacement or resize, re-measure figure/caption pagination**
+  (`scripts/figure_caption_pagination.py --before <original>`). Equal page counts are
+  not evidence of safety — one measured case split a caption off its figure while the
+  document stayed the same length. Fix a split by shrinking the figure's WIDTH, never
+  by dropping lettering below the journal's minimum (typically 7 pt).
 
 ## External tooling integration
 
@@ -156,6 +167,7 @@ original.docx (read-only)  ──copy──►  working.docx (edit here)
 | `scripts/ai_tells_lint.py` | AI 작문 안티패턴(A1~A10) 진단. advisory(exit 0), 자동수정 안 함 | self-review / voice 점검 |
 | `scripts/renumber_figures.py` | Figure/Table 인용순 재번호(2단계 토큰, Main↔SI 동일맵, `--dry-run` 기본·`--apply`·`--tracked`) | figure 순서 재편 시 |
 | `scripts/figure_provenance.py` | figure 폴더 순회 → PROVENANCE.md + MANIFEST.md | figure 제출 직전 |
+| `scripts/figure_caption_pagination.py` | 그림과 **그 캡션이 같은 쪽에 있는지** Word 재조판으로 측정. `--before <원본>`으로 기존 분리와 새로 생긴 분리를 구분. read-only(저장 안 함). exit 1=새 분리. 🔴 `figure_caption_check.py` C7과 다른 축 — C7은 XML의 명시적 page break를 읽고, 이쪽은 그림이 커져서 벌어진 경우를 잡는다(XML엔 흔적이 없다) | **그림 교체·크기 변경 후** |
 | `scripts/numeric_consistency_check.py` | 수치/인용 정합성 게이트 | Phase 3 종료 전 |
 
 > 코멘트/Track Changes를 docx에 삽입하려면 docx 스킬(이 저장소에 없음 — docs/12 참조)의 `inject_comments_from_csv.py`·`comment.py`(rStyle 동적정합)를 쓴다 — 이 스킬엔 별도 코멘트 삽입 스크립트가 없다. Markdown→Word 변환은 docx 스킬(이 저장소에 없음 — docs/12 참조)을 경유.
