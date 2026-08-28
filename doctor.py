@@ -101,10 +101,12 @@ SENTINEL_FORBIDDEN_FILENAMES = {
 
 # This scanner's own test fixtures carry intentionally fake credentials
 # (see tests/test_doctor_sentinel.py) — scanning them would always "find" a leak.
-# 탐지기의 **계약**을 정의하는 파일들. 여기 담긴 문자열은 유출이 아니라
-# "이런 것을 잡아야 한다"는 명세이므로 SENTINEL 스캔에서 제외한다.
-# 제외하지 않으면 유출을 막는 테스트가 스스로 유출로 잡혀, 결국 케이스를
-# 지우는 쪽으로 압력이 생긴다 — 그 순간 탐지기가 무력해진다.
+# These are the files that define the detector's **contract**. The strings
+# they carry are not a leak — they're the specification of "this is what
+# must be caught" — so they're excluded from the SENTINEL scan. Without
+# this exclusion, the test that guards against leaks would flag itself as a
+# leak, which creates pressure to just delete the case — and the moment
+# that happens, the detector goes blind.
 SENTINEL_SELF_TEST_FILES = {
     "test_doctor_sentinel.py",
     "test_research_marker_scan.py",
@@ -757,7 +759,7 @@ def check_sentinel_scan(root: Path) -> CheckResult:
         for pat in PERSONAL_NAME_PATTERNS:
             if any(m.group(0).replace(" ", "") not in PERSONAL_NAME_ALLOWLIST
                    for m in pat.finditer(text)):
-                findings.append(f"{rel}: possible personal name / honorific leaked (개인이름)")
+                findings.append(f"{rel}: possible personal name / honorific leaked")
                 break
         # Unpublished research content is a separate axis from credentials, but
         # it ships out of the same tree, so it is gated here too. v1.2.0 went out
@@ -1086,7 +1088,7 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
             for i, ln in enumerate(lines):
                 if "FAIL" in ln or "Error" in ln or "Traceback" in ln or "attempt " in ln:
                     detail.append(ln.strip()[:160])
-                    # the two lines after a failure usually carry 기대/실제
+                    # the two lines after a failure usually carry the expected/actual values
                     for nxt in lines[i + 1:i + 3]:
                         s = nxt.strip()
                         if s and not s.startswith("PASS"):
@@ -1161,7 +1163,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="doctor.py",
         description="sci-toolkit post-install doctor: diagnose, don't auto-fix. "
-                     "Beginner-friendly (초심자) diagnostics for a fresh install.",
+                     "Beginner-friendly diagnostics for a fresh install.",
     )
     parser.add_argument(
         "--json", action="store_true",

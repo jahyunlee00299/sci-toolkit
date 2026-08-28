@@ -14,7 +14,7 @@ Trigger this skill when the user asks any of:
 - "(Author, 2020) → {Author, 2020 #N} 변환"
 - "EndNote 라이브러리에 ref 추가하고 본문 인용 매칭"
 - "별도 refs.docx에 reference list 있는데 본문 docx에 적용"
-- 사용자가 (Author, Year) 형식 citation을 사용 중이고 EndNote unformatted form으로 전환하려는 경우
+- The user is using (Author, Year) style citations and wants to convert them to EndNote unformatted form
 
 Do NOT use when:
 - User wants pure RIS export/import for a third party (use a simpler RIS-only flow)
@@ -149,8 +149,8 @@ For each hallucinated/404/unresolved ref, spawn `ref-resolver` agent:
 
 The main coordinator MUST pause here and ask the user:
 
-1. **REPLACE 4건 confirmation**: "Apply ref-resolver suggested replacements?"
-2. **DROP 8건 handling**: 3 options:
+1. **REPLACE (4 items) confirmation**: "Apply ref-resolver suggested replacements?"
+2. **DROP (8 items) handling**: 3 options:
    - Remove all
    - Replace with alternative paper
    - Keep as-is (user manually fixes)
@@ -490,7 +490,7 @@ After INSERT, audit and fix:
 
 This match between author field and inline citation key is what makes EndNote CWYW resolve `{Author, Year #N}`.
 
-### Post-render QC gate — `endnote_biblio_check.py` (260714, 재발방지 장치)
+### Post-render QC gate — `endnote_biblio_check.py` (260714, recurrence-prevention gate)
 
 After EndNote renders the bibliography (or on any manuscript before submission), run the
 non-destructive checker to catch the exact errors this incident produced:

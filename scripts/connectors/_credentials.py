@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""공통 자격증명 로더 — 모든 외부서비스 연동 스크립트가 이걸 통해 키를 읽는다.
+"""Shared credential loader — every external-service integration script reads its keys through this.
 
-보안 원칙 (AGENTS.md §9):
-- 실제 키는 배포물에 절대 포함되지 않는다. config/credentials.json(=gitignore/distignore)
-  또는 환경변수에서만 읽는다.
-- 값이 "ENV:VARNAME" 형태면 그 환경변수에서 실제 값을 가져온다(키가 파일에도 안 남게).
-- 토큰을 화면·로그에 출력하지 않는다(마스킹 헬퍼 제공).
+Security principles (AGENTS.md §9):
+- Real keys are never included in the distribution. Read only from
+  config/credentials.json (gitignore/distignore'd) or environment variables.
+- If a value looks like "ENV:VARNAME", the actual value is fetched from that
+  environment variable (so the key never even sits in the file).
+- Never print a token to the screen or a log (a masking helper is provided).
 
-사용:
+Usage:
     from _credentials import load, get, require
-    cfg = load()                          # dict 전체
-    tok = get("github", "token")          # ENV: 해석까지 끝난 실제 값(없으면 None)
-    tok = require("github", "token")      # 없으면 친절한 오류로 종료
+    cfg = load()                          # the whole dict
+    tok = get("github", "token")          # the actual value, ENV: already resolved (None if absent)
+    tok = require("github", "token")      # exits with a helpful error if absent
 """
 from __future__ import annotations
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# Windows' default console is cp949 and dies on Korean/symbol output. Force UTF-8.
+# Use reconfigure: wrapping in TextIOWrapper would take ownership of the
+# underlying stream, so once this module is imported and the wrapper gets
+# GC'd, it closes the caller's stdout too (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -39,20 +41,20 @@ EXAMPLE_PATH = ROOT / "config" / "credentials.example.json"
 
 
 def _resolve_env(value):
-    """'ENV:NAME' → os.environ['NAME']; 그 외 값은 그대로. 미설정 env는 None."""
+    """'ENV:NAME' → os.environ['NAME']; any other value passes through unchanged. An unset env var yields None."""
     if isinstance(value, str) and value.startswith("ENV:"):
         return os.environ.get(value[4:])
     return value
 
 
 def load() -> dict:
-    """credentials.json 을 읽어 dict 반환. 없으면 안내 후 빈 dict."""
+    """Reads credentials.json and returns a dict. If absent, prints guidance and returns an empty dict."""
     if not CRED_PATH.exists():
         print(
-            "[안내] 아직 자격증명 파일이 없습니다.\n"
-            f"  {EXAMPLE_PATH.name} 를 같은 폴더에 credentials.json 으로 복사한 뒤\n"
-            "  본인 계정 정보를 채우세요. 실제 키는 환경변수(ENV:...) 사용을 권장합니다.\n"
-            "  (credentials.json 은 배포·커밋에서 제외됩니다.)",
+            "[Note] No credentials file yet.\n"
+            f"  Copy {EXAMPLE_PATH.name} to credentials.json in the same folder, then\n"
+            "  fill in your own account info. Using an environment variable (ENV:...) for the\n"
+            "  real key is recommended. (credentials.json is excluded from distribution and commits.)",
             file=sys.stderr,
         )
         return {}
@@ -61,9 +63,9 @@ def load() -> dict:
 
 
 def get(*path, cfg: dict | None = None):
-    """중첩 키 경로로 값을 읽고 ENV: 를 해석해 실제 값 반환(없으면 None).
+    """Reads a value by nested key path and resolves ENV: to the actual value (None if absent).
 
-    예: get("mail", "accounts", "work", "password")
+    Example: get("mail", "accounts", "work", "password")
     """
     node = load() if cfg is None else cfg
     for k in path:
@@ -74,34 +76,34 @@ def get(*path, cfg: dict | None = None):
 
 
 def require(*path, cfg: dict | None = None):
-    """get() 과 같되, 값이 없으면 어떤 키/환경변수를 채워야 하는지 알려주고 종료."""
+    """Same as get(), but if the value is absent, exits after saying exactly which key/env var needs filling in."""
     val = get(*path, cfg=cfg)
     if val:
         return val
     key = " → ".join(path)
     sys.exit(
-        f"[오류] 자격증명이 없습니다: {key}\n"
-        f"  config/credentials.json 의 해당 항목을 채우거나, 값이 'ENV:NAME' 이면\n"
-        f"  그 환경변수(NAME)를 설정하세요. 템플릿: config/credentials.example.json"
+        f"[Error] Missing credential: {key}\n"
+        f"  Fill in the corresponding entry in config/credentials.json, or if the value is 'ENV:NAME',\n"
+        f"  set that environment variable (NAME). Template: config/credentials.example.json"
     )
 
 
 def mask(secret) -> str:
-    """토큰을 로그에 안전하게 찍기 위한 마스킹: 앞2·뒤2만 노출."""
+    """Masks a token so it can be safely printed to a log: only the first 2 and last 2 characters shown."""
     if not secret or not isinstance(secret, str):
-        return "(없음)"
+        return "(none)"
     if len(secret) <= 6:
         return "*" * len(secret)
     return f"{secret[:2]}{'*' * (len(secret) - 4)}{secret[-2:]}"
 
 
 if __name__ == "__main__":
-    # 진단: 어떤 서비스가 자격증명을 갖췄는지 (값은 마스킹) 보여준다.
+    # Diagnostic: shows which services have credentials configured (values masked).
     c = load()
     if not c:
         sys.exit(0)
-    print("설정된 서비스(값은 마스킹):")
+    print("Configured services (values masked):")
     for svc in ("mail", "github", "asana", "notion", "google"):
         node = c.get(svc)
-        state = "설정됨" if node else "비어있음"
+        state = "configured" if node else "empty"
         print(f"  - {svc:8s}: {state}")

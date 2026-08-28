@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-"""페이월 논문의 기관 도서관(교외접속) 링크를 만들어 준다 — 링크까지만.
+"""Builds an institutional library (off-campus access) link for a paywalled paper — a link, and nothing more.
 
-이 모듈은 **의도적으로 로그인도 다운로드도 하지 않는다.** 구독 저널 원문을
-스크립트로 받는 행위 자체가 대학 도서관의 공정이용 규정 위반이기 때문이다.
-고려대 규정(위반 사례 1번)은 이렇게 적는다:
+This module **deliberately never logs in or downloads.** Fetching the full
+text of a subscription journal via script is itself a violation of a
+university library's fair-use policy. Korea University's policy (violation
+example #1) states it this way:
 
-    "전자적, 기계적 수단(다운로딩 프로그램, 엔진, 로봇, 매크로, RPA 등)으로
-     원문을 다운로드하는 행위"
+    "Downloading full text by electronic or mechanical means (a download
+     program, engine, robot, macro, RPA, etc.)"
 
-계정 공유(5번)만 금지된 게 아니라 **수단 자체**가 금지 항목이다. 본인 계정으로
-정당하게 로그인해도 그 뒤를 스크립트가 받으면 위반이고, 제재는 도서관 서비스
-1년 제한 + 민사 책임 1차 부담이다. 그래서 이 툴킷이 하는 일은 여기까지다:
-사람이 브라우저에서 클릭할 URL을 만들어 주고, 규정과 한도를 같이 알려준다.
+It's not just account sharing (#5) that's banned — the **means itself** is
+a banned item. Even a legitimate login on the user's own account is a
+violation once a script picks up after it, and the sanction is a one-year
+library-service suspension plus first-line civil liability. So this is as
+far as this toolkit goes: it builds the URL a human clicks in a browser,
+and states the policy and the limits alongside it.
 
-사용:
+Usage:
     from institutional_access import InstitutionRegistry
     reg = InstitutionRegistry.load()                  # config/institutions.json
     link = reg.build_link("korea-univ", "https://www.sciencedirect.com/...")
@@ -32,7 +35,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-# 기본 위치: 이 파일이 scripts/ 안에 있으므로 저장소 루트의 config/ 를 본다.
+# Default location: this file lives in scripts/, so it looks at config/ under the repo root.
 _DEFAULT_CONFIG = Path(__file__).resolve().parent.parent / "config" / "institutions.json"
 
 _PLACEHOLDER = "{url}"
@@ -40,7 +43,7 @@ _PLACEHOLDER = "{url}"
 
 @dataclass(frozen=True)
 class InstitutionalLink:
-    """사람이 브라우저에서 열어야 하는 링크 하나."""
+    """A single link meant to be opened by a human in a browser."""
 
     institution: str
     display_name: str
@@ -50,9 +53,9 @@ class InstitutionalLink:
     daily_limits: dict[str, Any]
 
     def human_summary(self) -> str:
-        """터미널에 그대로 찍을 수 있는 안내문. 자동 다운로드가 아님을 매번 말한다."""
+        """A notice suitable for printing directly to a terminal. States every time that this is not an auto-download."""
         lines = [
-            f"  기관 접속 링크 ({self.display_name}):",
+            f"  Institutional access link ({self.display_name}):",
             f"    {self.url}",
         ]
         if self.login_note:
@@ -61,33 +64,34 @@ class InstitutionalLink:
         per_machine = self.daily_limits.get("per_machine")
         if per_pub or per_machine:
             lines.append(
-                f"    · 1일 한도: 동일 출판사 {per_pub}건 / 동일 PC {per_machine}건"
+                f"    · Daily limit: {per_pub} per publisher / {per_machine} per machine"
             )
         if self.fair_use_url:
-            lines.append(f"    · 공정이용 규정: {self.fair_use_url}")
+            lines.append(f"    · Fair-use policy: {self.fair_use_url}")
         lines.append(
-            "    · 이 링크는 브라우저에서 사람이 직접 여는 용도다. 스크립트·매크로로 "
-            "원문을 내려받는 것은 공정이용 위반이다."
+            "    · This link is meant to be opened by a human in a browser. Downloading "
+            "the full text via script or macro is a 공정이용 위반 (fair-use violation)."
         )
         return "\n".join(lines)
 
 
 class InstitutionRegistry:
-    """config/institutions.json 을 읽어 링크를 만들어 주는 얇은 레지스트리."""
+    """A thin registry that reads config/institutions.json and builds links."""
 
     def __init__(self, data: dict[str, Any], source: Optional[Path] = None) -> None:
         self._institutions: dict[str, Any] = data.get("institutions") or {}
         self._default: Optional[str] = data.get("default_institution")
         self.source = source
 
-    # --- 로딩 ------------------------------------------------------------ #
+    # --- Loading ------------------------------------------------------------ #
 
     @classmethod
     def load(cls, path: Optional[Path] = None) -> "InstitutionRegistry":
-        """설정을 읽는다. 파일이 없으면 빈 레지스트리 — 오류가 아니다.
+        """Reads the config. If the file is absent, returns an empty registry — not an error.
 
-        기관 설정은 선택 사항이다. 없으면 이 기능만 조용히 꺼지고 OA 수집은
-        그대로 동작해야 한다 (설정 파일 하나 없다고 도구 전체가 죽으면 안 된다).
+        Institutional config is optional. Without it, only this feature quietly
+        turns off and OA collection must keep working normally (missing one
+        config file must never take down the whole tool).
         """
         p = Path(path) if path else _DEFAULT_CONFIG
         if not p.exists():
@@ -95,18 +99,18 @@ class InstitutionRegistry:
         try:
             data = json.loads(p.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError) as e:
-            # 깨진 설정을 조용히 무시하면 "왜 링크가 안 나오지"로 이어진다.
-            print(f"[WARN] 기관 설정을 읽지 못했습니다 ({p}): {e}", file=sys.stderr)
+            # Silently ignoring a broken config leads straight to "why is no link showing up".
+            print(f"[WARN] Could not read the institutional config ({p}): {e}", file=sys.stderr)
             return cls({}, source=None)
         return cls(data if isinstance(data, dict) else {}, source=p)
 
-    # --- 조회 ------------------------------------------------------------ #
+    # --- Lookup ------------------------------------------------------------ #
 
     def available(self) -> list[str]:
         return sorted(self._institutions.keys())
 
     def resolve_key(self, key: Optional[str]) -> Optional[str]:
-        """명시 키 > 설정의 default_institution > (하나뿐이면) 그것."""
+        """Explicit key > config's default_institution > (if there's only one) that one."""
         if key:
             return key if key in self._institutions else None
         if self._default and self._default in self._institutions:
@@ -116,7 +120,7 @@ class InstitutionRegistry:
         return None
 
     def build_link(self, key: Optional[str], target_url: str) -> Optional[InstitutionalLink]:
-        """대상 URL을 기관 프록시 링크로 감싼다. 만들 수 없으면 None."""
+        """Wraps the target URL in the institution's proxy link. Returns None if it can't be built."""
         if not target_url:
             return None
         resolved = self.resolve_key(key)
@@ -125,10 +129,10 @@ class InstitutionRegistry:
         entry = self._institutions.get(resolved) or {}
         template = entry.get("proxy_url_template")
         if not template or _PLACEHOLDER not in template:
-            # 자리표시자가 없는 템플릿은 조용히 엉뚱한 링크를 만든다 — 차라리 만들지 않는다.
+            # A template with no placeholder would silently produce a broken link — refuse to build one instead.
             print(
-                f"[WARN] '{resolved}' 의 proxy_url_template 에 {_PLACEHOLDER} 자리표시자가 "
-                "없습니다 — 링크를 만들지 않습니다.",
+                f"[WARN] '{resolved}'s proxy_url_template has no {_PLACEHOLDER} "
+                "placeholder — not building a link.",
                 file=sys.stderr,
             )
             return None
@@ -144,14 +148,14 @@ class InstitutionRegistry:
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="페이월 논문의 기관 도서관 접속 링크를 만든다 (로그인·다운로드 없음).",
+        description="Builds an institutional library access link for a paywalled paper (no login, no download).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    ap.add_argument("--list", action="store_true", help="설정된 기관 목록 출력")
-    ap.add_argument("--institution", default=None, help="기관 키 (예: korea-univ)")
-    ap.add_argument("--url", default=None, help="원문 landing page URL")
-    ap.add_argument("--config", default=None, help="institutions.json 경로 (기본: config/)")
+    ap.add_argument("--list", action="store_true", help="print the list of configured institutions")
+    ap.add_argument("--institution", default=None, help="institution key (e.g. korea-univ)")
+    ap.add_argument("--url", default=None, help="the full-text landing-page URL")
+    ap.add_argument("--config", default=None, help="path to institutions.json (default: config/)")
     args = ap.parse_args()
 
     reg = InstitutionRegistry.load(Path(args.config) if args.config else None)
@@ -159,9 +163,9 @@ def main() -> int:
     if args.list or not args.url:
         keys = reg.available()
         if not keys:
-            print("설정된 기관이 없습니다. config/institutions.json 을 확인하세요.")
+            print("No institutions configured. Check config/institutions.json.")
             return 1
-        print("설정된 기관:")
+        print("Configured institutions:")
         for k in keys:
             print(f"  - {k}")
         if not args.url:
@@ -171,8 +175,8 @@ def main() -> int:
     link = reg.build_link(args.institution, args.url)
     if not link:
         print(
-            "[ERROR] 링크를 만들지 못했습니다 — 기관 키가 없거나 설정되지 않았습니다.\n"
-            f"        사용 가능: {', '.join(reg.available()) or '(없음)'}",
+            "[ERROR] Could not build a link — the institution key is missing or unconfigured.\n"
+            f"        Available: {', '.join(reg.available()) or '(none)'}",
             file=sys.stderr,
         )
         return 1

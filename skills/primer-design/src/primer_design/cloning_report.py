@@ -1,10 +1,10 @@
 """RE Cloning primer design report & vector construct map (matplotlib).
 
-design_re_cloning_primers() 결과를 시각적 리포트(PNG)로 생성.
-- 프라이머 구조 다이어그램 (protection / RE / spacer / annealing 색상 구분)
-- QC 요약 테이블
-- 클로닝 construct 맵
-- Circular vector construct map (원형 플라스미드 맵)
+Generates a visual report (PNG) from design_re_cloning_primers()'s output.
+- Primer structure diagram (protection / RE / spacer / annealing, color-coded)
+- QC summary table
+- Cloning construct map
+- Circular vector construct map (a circular plasmid map)
 """
 
 from __future__ import annotations
@@ -768,30 +768,30 @@ def generate_vector_construct_map(
     signal_peptide: dict | None = None,
     output_path: Path | str | None = None,
 ) -> Path:
-    """Circular vector construct map (원형 플라스미드 맵) PNG 생성.
+    """Generates a circular vector construct map (a circular plasmid map) PNG.
 
     Parameters
     ----------
     vector_name : str
-        벡터 이름 (예: "pET-28a(+)")
+        Vector name (e.g. "pET-28a(+)")
     gene_name : str
-        삽입 유전자 이름
+        Name of the inserted gene
     insert_len : int
-        Insert 길이 (bp)
+        Insert length (bp)
     re_5prime, re_3prime : str
-        5'/3' restriction enzyme 이름
+        5'/3' restriction enzyme names
     include_stop : bool
-        Insert에 stop codon 포함 여부
+        Whether the insert includes a stop codon
     frame_check : dict | None
-        check_reading_frame() 결과
+        Result of check_reading_frame()
     signal_peptide : dict | None
-        signal peptide 분석 결과 (has_signal_peptide, cleavage_site_estimate 등)
+        Signal peptide analysis result (has_signal_peptide, cleavage_site_estimate, etc.)
     output_path : Path | str | None
-        출력 파일 경로 (.png)
+        Output file path (.png)
 
     Returns
     -------
-    Path : 생성된 PNG 파일 경로
+    Path : Path to the generated PNG file
     """
     if output_path is None:
         output_path = Path.cwd() / f"{gene_name}_{vector_name.replace('(', '').replace(')', '').replace('+', '')}_construct.png"

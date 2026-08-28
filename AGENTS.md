@@ -55,11 +55,11 @@ and read its exit code rather than judging by eye.
 | The user asks for… | Route (in order) | Gate before you call it done |
 |---|---|---|
 | Find papers / "what's known about X" | `research-search` → (`openalex-database`, `pubmed-database`, `research-lookup`) | 🔒 `scripts/doi_verify.py --doi <list>` — exit 2 means a DOI does not exist (fabricated) or is retracted. Fabricated citations are the failure mode here; do not rely on your own recall. |
-| Preprints / "has this been posted yet" / 최신 논문 검색 | `biorxiv-database` (Europe PMC `SRC:PPR` + arXiv) | 🔒 Every hit is **not peer reviewed** — say so, and when the skill reports a published DOI, cite that instead. bioRxiv's own API has no keyword search: its `?query=` is silently ignored. |
+| Preprints / "has this been posted yet" / 최신 논문 검색 (search for recent papers) | `biorxiv-database` (Europe PMC `SRC:PPR` + arXiv) | 🔒 Every hit is **not peer reviewed** — say so, and when the skill reports a published DOI, cite that instead. bioRxiv's own API has no keyword search: its `?query=` is silently ignored. |
 | Collect references + OA PDFs for a DOI list | `scripts/ref_fetch.py` | 🔒 Read `refs_report.json`: report `discrepancies` and `not_found` explicitly; never silently pick one source. |
 | Write a full literature review document | `literature-review` | Citations verified against the fetched records, not from memory. |
 | Write / edit a manuscript | `manuscript-pipeline` (+ `academic-term-rules` for notation) | 🔒 `manuscript-pipeline/scripts/nomenclature_lint.py` + `manuscript-pipeline/scripts/numeric_consistency_check.py` + `manuscript-pipeline/scripts/body_typo_lint.py` (units, NAD⁺, glued punctuation) |
-| Edit a `.docx` (any change to an existing file) | `docx`(외부) → its `docx/scripts/incremental_edit.py` | 🔒 `docx/scripts/docx_preflight.py` + `docx/scripts/word_validate.py` on the **output** file. Never promote an unverified file. |
+| Edit a `.docx` (any change to an existing file) | `docx` (external) → its `docx/scripts/incremental_edit.py` | 🔒 `docx/scripts/docx_preflight.py` + `docx/scripts/word_validate.py` on the **output** file. Never promote an unverified file. |
 | Edit a `.docx` the user has open in Word right now | `manuscript-pipeline/scripts/word_live_edit.py` | Re-read the edited range afterwards — a reported "[OK]" is not proof the text changed. |
 | Extract text from a `.docx` for analysis/QC | 🔒 `manuscript-pipeline/scripts/manuscript_text.py --count-only` **first** | Exit 10 = tracked changes present → extract with `--mode accept`. python-docx text is wrong in that case (§4). |
 | Insert citations into a manuscript | `endnote-citation-injection` | 🔒 `scripts/doi_verify.py --bibtex <file>` (DOIs real + metadata matches) **and** `manuscript-pipeline/scripts/endnote_biblio_check.py` (every cited number has a backing entry). |
@@ -71,7 +71,7 @@ and read its exit code rather than judging by eye.
 | Report any number in a document/report/email | — | 🔒 §3 SSOT: re-derive from the canonical script/raw data. A number that only exists in chat history is not verified. |
 | Design primers / cloning | `primer-design` | Sequence re-checked against the construct; order sheet re-read before sending. |
 | Make slides | figures first via `publication-figures` → `journal-presentation-maker` + the office skill your agent ships (see the note below the table) | Numbers and claims traced to their source (§3). Slide figures are finished image files, never plotted by the slide skill. |
-| Convert a file (PDF/docx/xlsx → md) | `markitdown`, `paper-extract` (또는 외부 `pdf`·`xlsx`) | Spot-check the output against the source; conversion silently drops content. |
+| Convert a file (PDF/docx/xlsx → md) | `markitdown`, `paper-extract` (or the external `pdf`/`xlsx` skill) | Spot-check the output against the source; conversion silently drops content. |
 | Search the live web | `research-search` → built-in WebSearch / WebFetch | Cite sources; separate what a source said from your inference. No API key is needed. |
 | Read anything from an external service (my tasks, issues, pages, inbox) | the connector in `scripts/connectors/` — reads need no flag (`mail list`, `github issues`, `asana tasks`, `notion search`) | Report what the service returned, not what you remember. Never reach for an always-on app connection when a connector covers the service (§9). |
 | Send/post anything outward (mail, issue, task, page) | the connector in `scripts/connectors/` | 🔒 §9 draft-first: **stop at the draft.** A human sends it. Without `--write` a connector only previews; that preview is not proof the write would succeed. |
@@ -81,30 +81,35 @@ and read its exit code rather than judging by eye.
 | Write tests, or work out why a green suite missed a real defect | `test-quality` | 🔒 For every assertion, name where the expected value came from. If it was recomputed the way the code computes it, the test passes by construction and verifies nothing. Ask: would this test still pass if the function returned a plausible wrong answer? |
 | Build a new script/tool/feature, or restructure existing code | `spec-first-development` → `test-first-development` (+ `code-quality` for SOLID) | Design approved **before** any code; spec/plan carry no placeholders; §1 SOLID; §2 verification gate before claiming it works. |
 | Implement or fix anything — a function, a loader, a bug | `test-first-development` | You watched the test fail first, for the expected reason. A test that passed on its first run proves nothing. Never weaken a test to make it pass. |
-| Build a new pipeline/tool, or rewrite a module ("설계부터 하자", "스펙부터", "작업 쪼개줘") | `spec-driven-research-dev` (specify → plan → tasks → implement) | Each phase reads the previous artifact, not chat history. Before "done": walk the spec's Success Criteria one at a time and state the observation satisfying each — §2 still applies, a passing run is not a met criterion. Skip the whole workflow for a one-line fix and say you skipped it. |
+| Build a new pipeline/tool, or rewrite a module ("설계부터 하자" [let's design first], "스펙부터" [spec first], "작업 쪼개줘" [break the task down]) | `spec-driven-research-dev` (specify → plan → tasks → implement) | Each phase reads the previous artifact, not chat history. Before "done": walk the spec's Success Criteria one at a time and state the observation satisfying each — §2 still applies, a passing run is not a met criterion. Skip the whole workflow for a one-line fix and say you skipped it. |
 | Test analysis code / "did my change move a number" / a result won't reproduce | `analysis-code-testing` | 🔒 `pytest` exits 0 — quote the summary line. At least one known-answer test for the central computation; every numeric assertion carries an explicit tolerance; stochastic steps take an explicit seed. Regenerating a golden file to go green must be stated and justified. |
 | Set up / install / "it's not working" | `doctor.py` | 🔒 `python doctor.py` must print `PASS` — quote the failing line, don't paraphrase. |
-| The user says something in this toolkit is broken, confusing, missing, or annoying ("이거 불편해요", "왜 안 되지", "자꾸 실패해요", "이런 게 있으면 좋겠는데") | fix it if you can, **and** `scripts/feedback_log.py add "<what>"` | Ask **one** question to fill in what you cannot infer, then record. Do not interrogate — an incomplete record beats no record. See §10. |
+| The user says something in this toolkit is broken, confusing, missing, or annoying ("이거 불편해요" [this is inconvenient], "왜 안 되지" [why doesn't this work], "자꾸 실패해요" [it keeps failing], "이런 게 있으면 좋겠는데" [it'd be nice if there were something like this]) | fix it if you can, **and** `scripts/feedback_log.py add "<what>"` | Ask **one** question to fill in what you cannot infer, then record. Do not interrogate — an incomplete record beats no record. See §10. |
 
-> **외부 의존 — 오피스 문서(docx·pdf·pptx·xlsx)**: 이 저장소는 오피스 스킬을
-> 재배포하지 않는다. 표에서 `docx`·`pdf`·`pptx`·`xlsx` 를 가리키는 행은 **네가
-> 돌고 있는 에이전트가 제공하는 오피스 스킬**로 읽어라 — 구현이 무엇이든 그 행의
-> 게이트(🔒)는 그대로 적용된다.
+> **External dependency — office documents (docx/pdf/pptx/xlsx)**: this repo
+> does not redistribute the office skills. When the table points at
+> `docx`/`pdf`/`pptx`/`xlsx`, read that as **whichever office skill the agent
+> you're running on provides** — whatever the implementation, that row's
+> gate (🔒) still applies as written.
 >
-> - **Claude Code** — Anthropic 오피스 스킬(사용자 환경에 있을 때)
-> - **Codex** — 자체 번들 오피스 플러그인이 기본 활성이다. 이름과 제약은
->   `CODEX.md` 를 볼 것(슬라이드 쪽에 그림 관련 제약이 있다)
-> - **둘 다 없음** — `docs/12_문서스킬_직접_준비하기.md`
+> - **Claude Code** — Anthropic's office skills (when present in the user's environment)
+> - **Codex** — its own bundled office plugin is active by default. See
+>   `CODEX.md` for its name and constraints (it has figure-related
+>   constraints on the slides side)
+> - **Neither available** — `docs/12_문서스킬_직접_준비하기.md`
 >
-> 어느 쪽이든 **산출물 검증 게이트는 동일하다**: `.docx` 텍스트 추출은
-> `manuscript_text.py --count-only` 를 먼저 통과해야 하고(exit 10 = 추적변경),
-> figure 는 `scripts/figure_lint.py`, 수치는 §3 SSOT 를 탄다. 랩 자체 제작 원고 QC
-> 도구 7종(`manuscript-pipeline/scripts/`)은 오피스 스킬과 무관하게 동작한다.
+> Either way, **the output-verification gate is identical**: extracting
+> `.docx` text must first pass `manuscript_text.py --count-only` (exit 10 =
+> tracked changes present), figures go through `scripts/figure_lint.py`, and
+> numbers go through the §3 SSOT. The lab's own 7 manuscript-QC tools
+> (`manuscript-pipeline/scripts/`) work independently of whichever office
+> skill is in use.
 >
-> 슬라이드에 들어갈 그림은 **먼저 `publication-figures` 로 만들고 완성된 이미지
-> 파일을 넘겨라.** 슬라이드 스킬에 데이터를 주고 플롯을 그리게 하지 말 것 —
-> 그림의 출처 추적(§3)과 회귀 방지(§5)가 그 순간 끊기고, 에이전트에 따라서는
-> 아예 금지된 동작이다.
+> For a figure that will go into slides, **make it with `publication-figures`
+> first and hand over the finished image file.** Never give the slide skill
+> raw data and let it plot the figure — doing so breaks the figure's
+> provenance tracking (§3) and regression protection (§5) right there, and on
+> some agents it's outright disallowed.
 
 ### Rules that override the table
 
@@ -617,10 +622,11 @@ The workaround lives in one person's head, and the next person hits the same
 wall. A recorded complaint is the only kind that can be fixed.
 
 **Trigger.** The user says something in this toolkit is broken, confusing,
-missing, or simply annoying — "이거 왜 안 되지", "자꾸 실패해요", "이런 게 있으면
-좋겠는데", "this is confusing", "it keeps failing". This includes the case where
-you have already solved their immediate problem: the workaround is *evidence*,
-not a reason to skip the record.
+missing, or simply annoying — "이거 왜 안 되지" [why doesn't this work], "자꾸
+실패해요" [it keeps failing], "이런 게 있으면 좋겠는데" [it'd be nice if there were
+something like this], "this is confusing", "it keeps failing". This includes
+the case where you have already solved their immediate problem: the
+workaround is *evidence*, not a reason to skip the record.
 
 **What to do.**
 

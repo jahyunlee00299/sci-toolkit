@@ -28,9 +28,10 @@ Usage: python manuscript_ref_order.py "<abs path to .docx>"
 """
 import os, sys, re, io
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서,
-# import 후 GC 되면 호출자의 stdout 까지 닫아버린다(실측).
+# Windows' default console is cp949, which dies on Korean/symbol output.
+# Force UTF-8. Use reconfigure() instead of TextIOWrapper — the wrapper
+# takes ownership of the underlying stream, so once it's GC'd after
+# import, it closes the caller's stdout too (measured).
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         try:
@@ -217,11 +218,12 @@ def main(path):
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):
         print(__doc__ or "")
-        print("사용: python manuscript_ref_order.py <manuscript.docx>")
+        print("Usage: python manuscript_ref_order.py <manuscript.docx>")
         print()
-        print("본문의 Figure/Table 인용 번호가 실제로 등장하는 순서를 캡션 순서와")
-        print("대조해, 인용이 번호순을 벗어난 곳을 찾아낸다. 'PHANTOM CITATION'")
-        print("(캡션 없는 인용)과 'NEVER REFERENCED'(인용 없는 캡션)는 순서 문제가")
-        print("아니라 각각 다른 원인이므로 구분해서 보고한다.")
+        print("Compares the order in which Figure/Table citations actually appear in")
+        print("the body against caption order, and finds where a citation breaks numeric")
+        print("sequence. 'PHANTOM CITATION' (a citation with no caption) and 'NEVER")
+        print("REFERENCED' (a caption with no citation) are different root causes, not")
+        print("an ordering problem, so they are reported separately.")
         sys.exit(0 if len(sys.argv) >= 2 else 2)
     main(sys.argv[1])

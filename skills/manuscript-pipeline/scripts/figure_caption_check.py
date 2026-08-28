@@ -566,6 +566,13 @@ def visual_checklist(caps, images):
     for c in caps:
         if c["kind"] in ("Figure", "Scheme"):
             lines.append(f"  [ ] {c['label']}  ↔  its image:")
+            # Ask the identity question BEFORE the detail questions. A figure
+            # integration once put one figure's chart under another's caption; every
+            # static check passed (bytes intact, aspect ratio exact) because they
+            # answer "is this image well-formed", not "is this the right image".
+            # Comparing panel letters on the wrong figure finds nothing.
+            lines.append("        - IS THIS THE RIGHT FIGURE AT ALL? the image depicts what the")
+            lines.append("          caption describes (not merely a well-formed image)")
             lines.append("        - panel letters (A)/(B)/... in caption match panels in image")
             lines.append("        - marker shapes/colors named in caption appear in image")
             lines.append("        - axis labels named in caption appear on the image axes")

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""HPLC 크로마토그래피 데이터 파서.
+"""HPLC chromatography data parser.
 
-피크 검출·적분 알고리즘을 stdlib only 로 포팅:
-  - .ch 바이너리: Agilent ChemStation format 130/131 delta-compression 디코딩
-  - 텍스트 형식: ChemStation 탭 내보내기 .txt, 헤더 CSV, .arw
-  - 피크 검출: MAD noise + prominence 기반 자동 검출 (valley 경계)
-  - 피크 적분: valley drop-line baseline + trapezoid rule
+Ports the peak detection/integration algorithm to stdlib-only:
+  - .ch binary: decodes Agilent ChemStation format 130/131 delta-compression
+  - text formats: ChemStation tab export .txt, header CSV, .arw
+  - peak detection: automatic detection based on MAD noise + prominence (valley boundary)
+  - peak integration: valley drop-line baseline + trapezoid rule
 
-사용법:
+Usage:
     python hplc_parser.py data.ch [--output parsed.csv] [--peaks]
     python hplc_parser.py *.txt --output combined.csv --peaks
     python hplc_parser.py data.ch --json
 
-임포트:
+Import:
     from hplc_parser import parse_hplc
     result = parse_hplc("vwd1A.ch")
     # result: {
@@ -25,9 +25,11 @@
     # }
 """
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# Windows' default console is cp949, which dies on Korean/symbol output.
+# Force UTF-8. Use reconfigure(): wrapping the stream in a TextIOWrapper
+# instead takes ownership of the underlying stream, so once this module is
+# imported, the caller's stdout gets closed when that wrapper is later
+# garbage-collected (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -45,11 +47,11 @@ from typing import Optional
 
 
 # ---------------------------------------------------------------------------
-# .ch 바이너리 파서 (ChemStation 바이너리 파서 — numpy 없음)
+# .ch binary parser (ChemStation binary parser — no numpy)
 # ---------------------------------------------------------------------------
 
 def _read_pascal_string(raw: bytes, offset: int) -> str:
-    """Pascal string (length byte + chars)을 읽는다."""
+    """Read a Pascal string (length byte + chars)."""
     length = raw[offset]
     if length == 0 or length > 64:
         return ""
@@ -58,12 +60,12 @@ def _read_pascal_string(raw: bytes, offset: int) -> str:
 
 def _decompress_segments(raw: bytes, data_start: int) -> list:
     """
-    Agilent format-130 delta-compression 디코딩.
+    Decode Agilent format-130 delta-compression.
 
-    segment 구조: (label:u8, count:u8) 뒤에 count 개의 int16.
-      - int16 == -32768 (0x8000): 다음 4바이트 int32가 새 절댓값
-      - 그 외: 이전 값에 delta 누적
-    label==0, count==0 → 데이터 끝
+    Segment structure: (label:u8, count:u8) followed by count int16 values.
+      - int16 == -32768 (0x8000): the next 4 bytes are a new absolute int32 value
+      - otherwise: accumulate the delta onto the previous value
+    label==0, count==0 -> end of data
     """
     values = []
     current = 0
@@ -97,33 +99,33 @@ def _decompress_segments(raw: bytes, data_start: int) -> list:
 
 
 def _parse_ch_binary(filepath: str) -> dict:
-    """Agilent .ch 바이너리 파일 파싱 (format 130/131)."""
+    """Parse an Agilent .ch binary file (format 130/131)."""
     raw = Path(filepath).read_bytes()
 
-    # 버전 확인 (offset 0: Pascal string "130" 또는 "131")
+    # Version check (offset 0: Pascal string "130" or "131")
     version = _read_pascal_string(raw, 0)
     if version not in ("130", "131"):
         raise ValueError(
-            f"지원하지 않는 ChemStation 버전: '{version}' "
-            f"(처음 4바이트: {raw[:4].hex()})"
+            f"Unsupported ChemStation version: '{version}' "
+            f"(first 4 bytes: {raw[:4].hex()})"
         )
 
-    # 시간 범위 (offset 0x11A, 0x11E: big-endian uint32 ms)
+    # Time range (offset 0x11A, 0x11E: big-endian uint32 ms)
     start_ms = struct.unpack(">I", raw[0x11A:0x11E])[0]
     end_ms   = struct.unpack(">I", raw[0x11E:0x122])[0]
     start_time = start_ms / 60000.0
     end_time   = end_ms   / 60000.0
 
-    # Y 스케일 인수 (offset 0x127C: big-endian double)
+    # Y-scale factor (offset 0x127C: big-endian double)
     y_scale = struct.unpack(">d", raw[0x127C:0x1284])[0]
     if y_scale == 0.0:
         y_scale = 1.0
 
-    # 데이터 블록 (offset 0x1800)
+    # Data block (offset 0x1800)
     raw_values = _decompress_segments(raw, 0x1800)
     n = len(raw_values)
     if n == 0:
-        raise ValueError("데이터 포인트가 없습니다.")
+        raise ValueError("No data points found.")
 
     signal_list = [v * y_scale for v in raw_values]
 
@@ -132,7 +134,7 @@ def _parse_ch_binary(filepath: str) -> dict:
     step = (end_time - start_time) / (n - 1) if n > 1 else 0.0
     time_list = [start_time + i * step for i in range(n)]
 
-    # 샘플명 (offset 0x18: Pascal string)
+    # Sample name (offset 0x18: Pascal string)
     sample_name = _read_pascal_string(raw, 0x18) or Path(filepath).stem
 
     metadata = {
@@ -153,7 +155,7 @@ def _parse_ch_binary(filepath: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 텍스트 형식 파서 (ChemStation 탭, CSV with header, .arw)
+# Text-format parser (ChemStation tab, CSV with header, .arw)
 # ---------------------------------------------------------------------------
 
 def _detect_text_format(lines: list) -> str:
@@ -340,11 +342,11 @@ def _parse_csv_header(lines: list, filepath: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 피크 검출 + 적분 (prominence 기반 검출 + trapezoid 적분)
+# Peak detection + integration (prominence-based detection + trapezoid integration)
 # ---------------------------------------------------------------------------
 
 def _mad_noise(signal: list) -> float:
-    """MAD 기반 noise 추정 (derivative 기준). MAD 기반 추정."""
+    """MAD-based noise estimate (from the derivative)."""
     if len(signal) < 2:
         return 1.0
     deriv = [signal[i + 1] - signal[i] for i in range(len(signal) - 1)]
@@ -355,7 +357,7 @@ def _mad_noise(signal: list) -> float:
 
 
 def _savgol_smooth(signal: list, window: int = 11) -> list:
-    """가중 이동 평균 스무딩 (scipy 없음 — parabolic kernel 근사)."""
+    """Weighted moving-average smoothing (no scipy — parabolic kernel approximation)."""
     n = len(signal)
     wl = min(window, (n // 2) * 2 - 1)
     if wl < 5 or wl >= n:
@@ -377,10 +379,10 @@ def _find_peaks_prominence(signal: list,
                             min_prominence_factor: float = 0.01,
                             height_multiplier: float = 3.0,
                             min_distance: int = 5) -> list:
-    """prominence 기반 피크 인덱스 검출.
+    """Detect peak indices based on prominence.
 
-    prominence 기반 검출 로직.
-    Returns: 피크 인덱스 목록 (오름차순)
+    Prominence-based detection logic.
+    Returns: list of peak indices (ascending order)
     """
     n = len(signal)
     if n < 3:
@@ -391,14 +393,14 @@ def _find_peaks_prominence(signal: list,
     min_prominence = sig_range * min_prominence_factor
     min_height = noise * height_multiplier
 
-    # 로컬 최댓값 후보
+    # local-maximum candidates
     candidates = []
     for i in range(1, n - 1):
         if signal[i] >= signal[i - 1] and signal[i] >= signal[i + 1]:
             if signal[i] >= min_height:
                 candidates.append(i)
 
-    # min_distance 필터 (높은 피크 우선 유지)
+    # min_distance filter (keeps taller peaks first)
     candidates.sort(key=lambda i: signal[i], reverse=True)
     selected = []
     for c in candidates:
@@ -406,7 +408,7 @@ def _find_peaks_prominence(signal: list,
             selected.append(c)
     selected.sort()
 
-    # prominence 필터
+    # prominence filter
     result = []
     for idx in selected:
         left_min = signal[idx]
@@ -429,8 +431,8 @@ def _find_peaks_prominence(signal: list,
 def _find_valley_boundary(signal: list, peak_idx: int,
                            threshold_ratio: float = 0.003) -> tuple:
     """
-    Valley + threshold 기반 피크 경계 검출.
-    valley 기준 경계 탐색.
+    Detect peak boundaries based on valley + threshold.
+    Boundary search relative to the valley.
 
     Returns: (left_idx, right_idx)
     """
@@ -438,7 +440,7 @@ def _find_valley_boundary(signal: list, peak_idx: int,
     peak_max = signal[peak_idx]
     threshold = peak_max * threshold_ratio
 
-    # 왼쪽 스캔
+    # left scan
     left_idx = peak_idx
     prev_val = peak_max
     for i in range(peak_idx - 1, -1, -1):
@@ -452,7 +454,7 @@ def _find_valley_boundary(signal: list, peak_idx: int,
         prev_val = cur_val
         left_idx = i
 
-    # 오른쪽 스캔
+    # right scan
     right_idx = peak_idx
     prev_val = peak_max
     for i in range(peak_idx + 1, n):
@@ -470,7 +472,7 @@ def _find_valley_boundary(signal: list, peak_idx: int,
 
 
 def _trapezoid(y: list, x: list) -> float:
-    """trapezoid rule 적분 (numpy 없음)."""
+    """Trapezoid-rule integration (no numpy)."""
     if len(y) < 2:
         return 0.0
     return sum(
@@ -481,17 +483,17 @@ def _trapezoid(y: list, x: list) -> float:
 
 def _detect_and_integrate_peaks(time_list: list, signal_list: list) -> list:
     """
-    피크 자동 검출 + valley drop-line baseline 적분.
+    Automatic peak detection + valley drop-line baseline integration.
 
-    prominence 검출 + 상세 적분 통합.
-    Area 단위: mAU·s (time: min → ×60 → s 변환)
+    Combines prominence detection with detailed integration.
+    Area unit: mAU·s (time: min -> x60 -> converted to s)
 
     Returns: list of peak dicts
     """
     if len(time_list) < 10:
         return []
 
-    # 스무딩 (검출 전용, 적분은 원신호 사용)
+    # smoothing (detection only — integration uses the raw signal)
     smoothed = _savgol_smooth(signal_list, window=11)
     corrected = [max(v, 0.0) for v in smoothed]
 
@@ -505,7 +507,7 @@ def _detect_and_integrate_peaks(time_list: list, signal_list: list) -> list:
     if not peak_indices:
         return []
 
-    # 경계 계산 + 인접 피크 valley로 보정
+    # compute boundaries + correct against the neighboring-peak valley
     boundaries = []
     for k, idx in enumerate(peak_indices):
         left_idx, right_idx = _find_valley_boundary(corrected, idx)
@@ -524,18 +526,18 @@ def _detect_and_integrate_peaks(time_list: list, signal_list: list) -> list:
 
         boundaries.append((left_idx, right_idx))
 
-    # 적분 (원신호 기준, valley drop-line baseline)
+    # integration (on the raw signal, valley drop-line baseline)
     peaks = []
     total_area = 0.0
     for k, (idx, (l_idx, r_idx)) in enumerate(zip(peak_indices, boundaries)):
-        # 시간 배열 (min→s)
+        # time array (min -> s)
         seg_t_s = [time_list[i] * 60.0 for i in range(l_idx, r_idx + 1)]
         seg_s   = [max(signal_list[i], 0.0) for i in range(l_idx, r_idx + 1)]
 
         if len(seg_t_s) < 2:
             continue
 
-        # valley drop-line baseline: 양 경계 잇는 직선
+        # valley drop-line baseline: a straight line joining both boundaries
         n_seg = len(seg_t_s)
         baseline = [
             seg_s[0] + (seg_s[-1] - seg_s[0]) * j / (n_seg - 1)
@@ -550,7 +552,7 @@ def _detect_and_integrate_peaks(time_list: list, signal_list: list) -> list:
         rt_end   = time_list[r_idx]
         width    = rt_end - rt_start
 
-        # FWHM width (스무딩 신호 기준)
+        # FWHM width (based on the smoothed signal)
         half = height / 2.0
         wl_i, wr_i = idx, idx
         while wl_i > l_idx and corrected[wl_i] > half:
@@ -580,7 +582,7 @@ def _detect_and_integrate_peaks(time_list: list, signal_list: list) -> list:
 
 
 # ---------------------------------------------------------------------------
-# 텍스트 파일 raw peak 테이블 정규화
+# Normalize the raw peak table from a text file
 # ---------------------------------------------------------------------------
 
 def _normalize_raw_peaks(raw_peaks: list) -> list:
@@ -602,20 +604,20 @@ def _normalize_raw_peaks(raw_peaks: list) -> list:
 
 
 # ---------------------------------------------------------------------------
-# 공개 API
+# Public API
 # ---------------------------------------------------------------------------
 
 def parse_hplc(filepath: str) -> dict:
-    """HPLC 데이터 파일을 파싱해 구조화된 딕셔너리를 반환한다.
+    """Parse an HPLC data file and return a structured dictionary.
 
-    지원 형식:
-      - Agilent .ch 바이너리 (ChemStation format 130/131)
-      - ChemStation 탭 내보내기 .txt
-      - 헤더가 있는 CSV
-      - Agilent .arw (텍스트 헤더)
+    Supported formats:
+      - Agilent .ch binary (ChemStation format 130/131)
+      - ChemStation tab export .txt
+      - CSV with a header
+      - Agilent .arw (text header)
 
     Args:
-        filepath: 데이터 파일 경로 (.ch / .txt / .csv / .arw)
+        filepath: path to the data file (.ch / .txt / .csv / .arw)
 
     Returns:
         {
@@ -626,10 +628,10 @@ def parse_hplc(filepath: str) -> dict:
                     'retention_time': float,   # min
                     'rt_start': float,         # min
                     'rt_end': float,           # min
-                    'height': float,           # mAU 또는 nRIU
-                    'area': float,             # mAU·s 또는 nRIU·s
+                    'height': float,           # mAU or nRIU
+                    'area': float,             # mAU·s or nRIU·s
                     'width': float,            # min (rt_end - rt_start)
-                    'width_fwhm': float,       # min (반치폭)
+                    'width_fwhm': float,       # min (full width at half maximum)
                     'area_percent': float,
                 }, ...
             ],
@@ -639,10 +641,10 @@ def parse_hplc(filepath: str) -> dict:
         }
 
     Notes:
-        피크 처리 우선순위:
-          1. .ch 파일 → 내장 알고리즘으로 자동 검출·적분
-          2. 텍스트 파일에 피크 테이블 포함 → 테이블 사용
-          3. 텍스트 파일에 피크 테이블 없음 → 자동 검출·적분
+        Peak-handling priority:
+          1. .ch file -> auto-detected and integrated by the built-in algorithm
+          2. Text file with a peak table -> use that table
+          3. Text file without a peak table -> auto-detect and integrate
     """
     path = Path(filepath)
     suffix = path.suffix.lower()
@@ -668,7 +670,7 @@ def parse_hplc(filepath: str) -> dict:
         for t, s in zip(time_list, signal_list)
     ]
 
-    # 피크: 텍스트 raw 테이블 우선, 없으면 자동 검출
+    # peaks: prefer the raw text table, fall back to auto-detection
     raw_peaks = parsed.get("_peaks_raw", [])
     if raw_peaks:
         peaks = _normalize_raw_peaks(raw_peaks)
@@ -685,7 +687,7 @@ def parse_hplc(filepath: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# CSV 출력
+# CSV output
 # ---------------------------------------------------------------------------
 
 def _write_chromatogram_csv(results: list, output_path: str) -> None:
@@ -717,7 +719,7 @@ def _write_peaks_csv(results: list, output_path: str) -> None:
             row.update(peak)
             rows.append(row)
     if not rows:
-        print("피크 데이터 없음 — peaks CSV 생성 건너뜀.", file=sys.stderr)
+        print("No peak data — skipping peaks CSV generation.", file=sys.stderr)
         return
     all_keys = list(dict.fromkeys(k for row in rows for k in row))
     base = Path(output_path)
@@ -726,7 +728,7 @@ def _write_peaks_csv(results: list, output_path: str) -> None:
         writer = csv.DictWriter(f, fieldnames=all_keys, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
-    print(f"피크 데이터: {peaks_path} ({len(rows)}행)", file=sys.stderr)
+    print(f"Peak data: {peaks_path} ({len(rows)} rows)", file=sys.stderr)
 
 
 # ---------------------------------------------------------------------------
@@ -736,25 +738,25 @@ def _write_peaks_csv(results: list, output_path: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "HPLC 데이터 파일(.ch/.txt/.csv/.arw)을 정형화된 CSV로 변환한다.\n"
-            "피크는 내장 알고리즘(valley 경계 + trapezoid 적분)으로 자동 검출."
+            "Convert an HPLC data file (.ch/.txt/.csv/.arw) to a structured CSV.\n"
+            "Peaks are auto-detected by the built-in algorithm (valley boundary + trapezoid integration)."
         )
     )
     parser.add_argument(
         "files", nargs="+",
-        help="입력 파일 경로 (여러 파일 지정 가능)"
+        help="input file path(s) (multiple files allowed)"
     )
     parser.add_argument(
         "--output", "-o", default=None,
-        help="출력 CSV 경로 (기본: 첫 번째 파일명_parsed.csv)"
+        help="output CSV path (default: first_filename_parsed.csv)"
     )
     parser.add_argument(
         "--peaks", action="store_true",
-        help="피크 데이터를 별도 <name>_peaks.csv로 저장"
+        help="save peak data separately to <name>_peaks.csv"
     )
     parser.add_argument(
         "--json", action="store_true",
-        help="CSV 대신 JSON으로 출력"
+        help="output JSON instead of CSV"
     )
     args = parser.parse_args()
 
@@ -762,7 +764,7 @@ def main() -> None:
     for fp in args.files:
         p = Path(fp)
         if not p.exists():
-            print(f"경고: {fp} 를 찾을 수 없습니다.", file=sys.stderr)
+            print(f"Warning: could not find {fp}.", file=sys.stderr)
             continue
         try:
             result = parse_hplc(fp)
@@ -770,15 +772,15 @@ def main() -> None:
             n_pts   = len(result["chromatogram"])
             n_peaks = len(result["peaks"])
             print(
-                f"{p.name}: {n_pts}개 포인트, {n_peaks}개 피크 "
+                f"{p.name}: {n_pts} points, {n_peaks} peaks "
                 f"[{result.get('sample_name', '')}]",
                 file=sys.stderr,
             )
         except Exception as e:
-            print(f"오류: {fp} 파싱 실패 — {e}", file=sys.stderr)
+            print(f"Error: failed to parse {fp} — {e}", file=sys.stderr)
 
     if not results:
-        print("파싱된 파일이 없습니다.", file=sys.stderr)
+        print("No files were parsed.", file=sys.stderr)
         sys.exit(1)
 
     if args.json:
@@ -786,7 +788,7 @@ def main() -> None:
         output = json.dumps(results, ensure_ascii=False, indent=2)
         if args.output:
             Path(args.output).write_text(output, encoding="utf-8")
-            print(f"JSON 저장: {args.output}", file=sys.stderr)
+            print(f"JSON saved: {args.output}", file=sys.stderr)
         else:
             print(output)
         return
@@ -798,7 +800,7 @@ def main() -> None:
 
     _write_chromatogram_csv(results, output_path)
     total_pts = sum(len(r["chromatogram"]) for r in results)
-    print(f"크로마토그램 저장: {output_path} ({total_pts}행)", file=sys.stderr)
+    print(f"Chromatogram saved: {output_path} ({total_pts} rows)", file=sys.stderr)
 
     if args.peaks:
         _write_peaks_csv(results, output_path)

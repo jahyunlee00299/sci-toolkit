@@ -1,28 +1,31 @@
 #!/usr/bin/env python3
 """
-iPCR Primer Designer — 모듈화 구조
+iPCR Primer Designer — modular structure
 ====================================
-iPCRDesignerBase : 공통 유틸리티 (Tm, GC%, hairpin/homodimer 판정, annealing 설계)
-iPCRSubstDesigner : 치환(substitution) 프라이머 설계
+iPCRDesignerBase : shared utilities (Tm, GC%, hairpin/homodimer judgment, annealing design)
+iPCRSubstDesigner : substitution primer design
 
-설계 원리 (치환):
+Design principle (substitution):
   overlap = upstream k1 bp + new_seq + downstream k2 bp
   F: 5'-[up_tail]-[new_seq]-[dn_tail]-[annealing]-3'
   R: 5'-RC(dn_tail)-RC(new_seq)-RC(up_tail)-[annealing]-3'
-  Tm 계산: tail이 template과 일치하므로 effective binding 전체 사용.
+  Tm calculation: since the tail matches the template, the entire effective
+  binding region is used.
 
-품질 판정 (Tm-based):
+Quality judgment (Tm-based):
   FAIL: structure Tm > anneal_temp - 10C
   WARNING: structure Tm > anneal_temp - 20C
   PASS: structure Tm <= anneal_temp - 20C or no structure
 
-Hairpin 회피:
-  FAIL 시 대안 annealing 길이로 자동 재시도 (2-pass).
+Hairpin avoidance:
+  On FAIL, automatically retries with an alternate annealing length (2-pass).
 """
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# The default Windows console is cp949, which crashes on Korean/symbol
+# output. Force UTF-8. Use reconfigure: wrapping with TextIOWrapper makes it
+# own the underlying stream, so once this module is imported and the
+# wrapper is later garbage collected, it closes the caller's stdout too
+# (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -39,14 +42,14 @@ from Bio.SeqUtils.MeltingTemp import Tm_NN
 
 
 class iPCRDesignerBase:
-    """iPCR 프라이머 공통 유틸리티 + Tm 기반 품질 판정.
+    """Shared iPCR primer utilities + Tm-based quality judgment.
 
     Parameters
     ----------
-    na : float      Na+ 농도 (mM)
-    mg : float      Mg2+ 농도 (mM)
-    dnac1 : float   primer 농도 (nM)
-    dntps : float   dNTPs 농도 (mM)
+    na : float      Na+ concentration (mM)
+    mg : float      Mg2+ concentration (mM)
+    dnac1 : float   primer concentration (nM)
+    dntps : float   dNTPs concentration (mM)
     """
 
     def __init__(self, na=50, mg=2, dnac1=500, dntps=0.2):
@@ -154,9 +157,11 @@ class iPCRDesignerBase:
                           anneal_temp=None):
         """Annealing region design with tail contribution to Tm.
 
-        anneal_temp=None : 기본 모드 — Tm 충족하는 최단 + GC clamp 우선.
-        anneal_temp=float: hairpin 회피 모드 — Tm 충족 후보 전체에서
-                           quality verdict 최우선, GC clamp, 최단 순으로 선택.
+        anneal_temp=None : default mode — shortest candidate meeting the Tm
+                           target, preferring a GC clamp.
+        anneal_temp=float: hairpin-avoidance mode — among all candidates
+                           meeting the Tm target, select first by quality
+                           verdict, then GC clamp, then shortest length.
         """
         best_no_clamp = None
         candidates = []
@@ -184,7 +189,7 @@ class iPCRDesignerBase:
             clamp = self.gc_clamp_ok(seg)
 
             if anneal_temp is None:
-                # 기본 모드: GC clamp 있는 최단 후보 즉시 반환
+                # Default mode: immediately return the shortest candidate that has a GC clamp
                 if clamp:
                     return seg, tm, gc, length
                 elif best_no_clamp is None:
@@ -198,7 +203,7 @@ class iPCRDesignerBase:
         if not candidates:
             return None, None, None, None
 
-        # Hairpin 회피: 모든 후보를 quality verdict로 랭킹
+        # Hairpin avoidance: rank all candidates by quality verdict
         verdict_rank = {"PASS": 2, "WARNING": 1, "FAIL": 0, "N/A": 1}
         scored = []
         for seg, tm, gc, length, clamp in candidates:
@@ -207,29 +212,29 @@ class iPCRDesignerBase:
             score = verdict_rank.get(qc['verdict'], 0)
             scored.append((score, int(clamp), length, seg, tm, gc))
 
-        # 정렬: verdict 높은 순 → GC clamp 있는 순 → 짧은 순
+        # Sort: highest verdict first -> GC clamp present -> shortest
         scored.sort(key=lambda x: (-x[0], -x[1], x[2]))
         best = scored[0]
         return best[3], best[4], best[5], best[2]
 
 
 class iPCRSubstDesigner(iPCRDesignerBase):
-    """치환 프라이머 설계 (품질 판정 + hairpin 회피 포함)."""
+    """Substitution primer design (includes quality judgment + hairpin avoidance)."""
 
     def design(self, seq, subst_pos, old_seq, new_seq,
                target_tm=61.0, overlap_len=18, min_len=18, max_len=35):
-        """프라이머 설계 메인 메서드.
+        """Main primer design method.
 
         Parameters
         ----------
-        seq : str           template 전체 서열
-        subst_pos : int     치환 시작 위치 (0-indexed)
-        old_seq : str       원래 서열 (검증용)
-        new_seq : str       치환 후 서열
-        target_tm : float   effective binding 목표 Tm (degC)
-        overlap_len : int   overlap 총 길이 (bp)
-        min_len : int       effective binding 최소 길이
-        max_len : int       annealing 최대 길이
+        seq : str           the full template sequence
+        subst_pos : int     substitution start position (0-indexed)
+        old_seq : str       the original sequence (for verification)
+        new_seq : str       the sequence after substitution
+        target_tm : float   target effective-binding Tm (degC)
+        overlap_len : int   total overlap length (bp)
+        min_len : int       minimum effective-binding length
+        max_len : int       maximum annealing length
 
         Returns
         -------
@@ -271,7 +276,7 @@ class iPCRSubstDesigner(iPCRDesignerBase):
         new_seq_rc = str(Seq(new_seq).reverse_complement())
         up_tail_rc = str(Seq(up_tail).reverse_complement())
 
-        # 4. F primer annealing (pass 1: default — 최단 + GC clamp)
+        # 4. F primer annealing (pass 1: default — shortest + GC clamp)
         f_ann_start = subst_pos + old_len + k2
         f_min_len = max(8, min_len - k2)
         f_ann, f_tm, f_gc, _ = self._design_annealing(
@@ -296,7 +301,7 @@ class iPCRSubstDesigner(iPCRDesignerBase):
         f_qc = self.check_primer(f_eff_bind, anneal_temp)
         r_qc = self.check_primer(r_eff_bind, anneal_temp)
 
-        # 7. Hairpin 회피: FAIL이면 대안 annealing 길이로 재시도
+        # 7. Hairpin avoidance: on FAIL, retry with an alternate annealing length
         if f_qc['verdict'] == 'FAIL':
             alt = self._design_annealing(
                 seq, f_ann_start, "+", target_tm, f_min_len, max_len,
@@ -380,16 +385,16 @@ class iPCRSubstDesigner(iPCRDesignerBase):
         }
 
 
-# ── 테스트 ─────────────────────────────────────────────────────────────────
+# ── Tests ─────────────────────────────────────────────────────────────────
 
 def _run_tests():
-    """iPCRSubstDesigner 테스트."""
+    """Tests for iPCRSubstDesigner."""
     import os
 
     sep = "=" * 70
     designer = iPCRSubstDesigner()
 
-    # SnapGene 파서 (minimal)
+    # SnapGene parser (minimal)
     def parse_snapgene(filepath):
         with open(filepath, "rb") as fh:
             data = fh.read()

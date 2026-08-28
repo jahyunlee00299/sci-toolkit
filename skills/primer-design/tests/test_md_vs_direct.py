@@ -3,8 +3,9 @@
 Test: MD Template Parser vs Direct API Pipeline Comparison
 ==========================================================
 
-MD template (md-task-builder/templates/primer-design.md)에서 파라미터를 파싱하여
-primer design을 실행하고, 동일한 파라미터를 직접 Python API로 실행한 결과와 비교.
+Parses parameters out of the MD template (md-task-builder/templates/primer-design.md),
+runs primer design from them, and compares the result against running the same
+parameters directly through the Python API.
 
 Pipeline A (MD-based):
   primer-design.md -> parse params -> RestrictionCloningDesigner.design()
@@ -37,7 +38,7 @@ import tempfile
 from pathlib import Path
 from Bio.Seq import Seq
 
-# Windows cp949 환경에서 한글/특수문자 출력 오류 방지
+# Prevent output errors for Korean/special characters on Windows cp949 consoles
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 # Add src to path
@@ -64,14 +65,14 @@ WARN = "[WARN]"
 # ── MD Template Parser ────────────────────────────────────────────────────────
 
 class MDTemplateParser:
-    """primer-design.md 템플릿에서 모든 입력 파라미터를 파싱."""
+    """Parse every input parameter out of the primer-design.md template."""
 
     def __init__(self, md_path: Path):
         self.md_path = md_path
         self._content = md_path.read_text(encoding="utf-8")
 
     def _extract_section(self, heading: str) -> str:
-        """## Heading 섹션 텍스트 추출 (다음 --- 또는 파일 끝까지)."""
+        """Extract the text of a '## Heading' section (up to the next --- or end of file)."""
         m = re.search(
             r'## ' + re.escape(heading) + r'\s*\n(.*?)(?:\n---|\Z)',
             self._content, re.DOTALL
@@ -80,7 +81,7 @@ class MDTemplateParser:
 
     @staticmethod
     def _get_val_from_section(section: str, label: str, char_class: str = r'[^`|\n]') -> str | None:
-        """마크다운 테이블 섹션에서 특정 행의 값을 추출."""
+        """Extract the value of a specific row from a Markdown table section."""
         escaped = re.escape(label)
         m = re.search(
             r'\|[^|]*' + escaped + r'[^|]*\|\s*`?(' + char_class + r'+)`?\s*\|',
@@ -89,7 +90,7 @@ class MDTemplateParser:
         return m.group(1).strip().strip('`').strip() if m else None
 
     def extract_re_enzymes(self) -> tuple[str | None, str | None]:
-        """RE Cloning 섹션에서 5'/3' 제한효소명 추출."""
+        """Extract the 5'/3' restriction enzyme names from the RE Cloning section."""
         section = self._extract_section("RE Cloning Input")
         re5 = re.search(r"5[^\|]*\|\s*`?([A-Za-z]+I?(?:-HF)?)`?", section)
         re3 = re.search(r"3[^\|]*\|\s*`?([A-Za-z]+I?(?:-HF)?)`?", section)
@@ -99,7 +100,7 @@ class MDTemplateParser:
         )
 
     def parse_template_sequence(self) -> str:
-        """Template DNA Sequence 코드블록에서 서열 추출."""
+        """Extract the sequence out of the Template DNA Sequence code block."""
         match = re.search(
             r'### Template DNA Sequence\s*\n\s*```\s*\n(.*?)\n\s*```',
             self._content, re.DOTALL
@@ -113,7 +114,7 @@ class MDTemplateParser:
         return seq
 
     def parse_re_cloning_params(self) -> dict:
-        """RE Cloning Input 테이블에서 파라미터 파싱."""
+        """Parse parameters from the RE Cloning Input table."""
         section = self._extract_section("RE Cloning Input")
 
         def get_val(label: str) -> str | None:
@@ -140,7 +141,7 @@ class MDTemplateParser:
         }
 
     def parse_sdm_params(self) -> dict:
-        """SDM Input 테이블에서 파라미터 파싱."""
+        """Parse parameters from the SDM Input table."""
         section = self._extract_section("SDM Input")
 
         def get_val(label: str) -> str | None:
@@ -172,7 +173,7 @@ class MDTemplateParser:
         }
 
     def parse_modes(self) -> dict[str, bool]:
-        """SDM / RE Cloning mode 체크박스 파싱."""
+        """Parse the SDM / RE Cloning mode checkboxes."""
         sdm_checked = bool(re.search(r'\[x\]\s*\*\*SDM\*\*', self._content, re.IGNORECASE))
         re_checked = bool(re.search(r'\[x\]\s*\*\*RE Cloning\*\*', self._content, re.IGNORECASE))
         return {"sdm": sdm_checked, "re_cloning": re_checked}
@@ -182,7 +183,7 @@ class MDTemplateParser:
 
 def run_pipeline_from_md(template_path: Path, output_dir: Path) -> dict:
     """
-    Pipeline A: MD 템플릿을 파싱하여 primer design 실행.
+    Pipeline A: parse the MD template and run primer design from it.
     Returns dict with design_result, dna_path, params.
     """
     parser = MDTemplateParser(template_path)
@@ -224,8 +225,8 @@ def run_pipeline_from_md(template_path: Path, output_dir: Path) -> dict:
 
 def run_pipeline_direct(output_dir: Path) -> dict:
     """
-    Pipeline B: 동일한 파라미터를 직접 Python API로 실행.
-    MD 템플릿의 예시값을 그대로 하드코딩하여 기준값(reference) 생성.
+    Pipeline B: run the same parameters directly through the Python API.
+    Hardcodes the MD template's example values verbatim to produce a reference.
     """
     # Exact values from primer-design.md template
     TEMPLATE_SEQ = (
@@ -284,7 +285,7 @@ def run_pipeline_direct(output_dir: Path) -> dict:
 
 def validate_insert_in_vector(dna_path: Path, insert_seq: str) -> dict:
     """
-    생성된 SnapGene .dna 파일에서 insert 서열이 실제로 존재하는지 확인.
+    Confirm the insert sequence actually exists in the generated SnapGene .dna file.
     Also checks if NdeI/XhoI sites flank the insert.
     """
     seq, circular, features = parse_snapgene(str(dna_path))
@@ -323,7 +324,7 @@ def validate_insert_in_vector(dna_path: Path, insert_seq: str) -> dict:
 
 
 def compare_dna_files(path_a: Path, path_b: Path) -> dict:
-    """두 SnapGene .dna 파일의 서열과 feature를 비교."""
+    """Compare the sequence and features of two SnapGene .dna files."""
     seq_a, circ_a, feats_a = parse_snapgene(str(path_a))
     seq_b, circ_b, feats_b = parse_snapgene(str(path_b))
 
@@ -389,7 +390,7 @@ def print_check(label: str, ok: bool, detail: str = ""):
 
 
 def run_all_tests(verbose: bool = False) -> bool:
-    """메인 테스트 실행 및 결과 리포트."""
+    """Run the main test suite and report the results."""
     all_passed = True
 
     # ── 0. Pre-checks ─────────────────────────────────────────────────────

@@ -2,14 +2,14 @@
 """
 Expression Analyzer
 ====================
-CDS 서열의 E. coli 발현 최적화 분석.
+Analyzes a CDS sequence for E. coli expression optimization.
 
-분석 항목:
-  - GC 함량, 분자량, CAI (Codon Adaptation Index)
-  - E. coli K12 rare codon 빈도 및 클러스터 검출
-  - Signal peptide 예측 (rule-based)
-  - N-terminal MAP (Methionine Aminopeptidase) 제거 예측
-  - 발현 숙주 균주 추천 (BL21 / Rosetta / Rosetta 2)
+Analysis items:
+  - GC content, molecular weight, CAI (Codon Adaptation Index)
+  - E. coli K12 rare codon frequency and cluster detection
+  - Signal peptide prediction (rule-based)
+  - N-terminal MAP (Methionine Aminopeptidase) removal prediction
+  - Expression host strain recommendation (BL21 / Rosetta / Rosetta 2)
 """
 
 from __future__ import annotations
@@ -130,26 +130,26 @@ MAP_REMOVABLE_AA = {"A", "C", "G", "P", "S", "T", "V"}
 # ── ExpressionAnalyzer ──────────────────────────────────────────────────────
 
 class ExpressionAnalyzer:
-    """CDS 서열의 E. coli 발현 최적화 분석기."""
+    """Analyzer for a CDS sequence's E. coli expression optimization."""
 
     def analyze(
         self,
         cds_seq: str,
         organism_source: str = "",
     ) -> dict:
-        """CDS 서열 종합 분석.
+        """Comprehensive analysis of a CDS sequence.
 
         Parameters
         ----------
         cds_seq : str
-            CDS DNA 서열 (ATG ~ stop codon 포함)
+            CDS DNA sequence (ATG through the stop codon, inclusive)
         organism_source : str
-            원본 생물 (예: "Agrobacterium tumefaciens"). 정보성 메모 용도.
+            source organism (e.g. "Agrobacterium tumefaciens"). Informational note only.
 
         Returns
         -------
         dict
-            분석 결과 (basic_info, rare_codons, clusters, cai, signal_peptide 등)
+            analysis results (basic_info, rare_codons, clusters, cai, signal_peptide, etc.)
         """
         warnings: list[str] = []
         recommendations: list[str] = []
@@ -387,13 +387,13 @@ class ExpressionAnalyzer:
         }
 
     def recommend_strain(self, analysis: dict) -> dict:
-        """발현 숙주 균주 추천.
+        """Recommend an expression host strain.
 
         Parameters
         ----------
         analysis : dict
-            analyze() 결과 또는 rare_codon_pct, cai, rare_codon_clusters,
-            signal_peptide 키를 포함하는 dict.
+            an analyze() result, or a dict containing the rare_codon_pct, cai,
+            rare_codon_clusters, and signal_peptide keys.
 
         Returns
         -------
@@ -615,12 +615,12 @@ class ExpressionAnalyzer:
         Parameters
         ----------
         cds_seq : str
-            CDS DNA 서열
+            CDS DNA sequence
 
         Returns
         -------
         float
-            CAI 값 (0 ~ 1). 1에 가까울수록 E. coli에 최적화됨.
+            CAI value (0 to 1). Closer to 1 means more optimized for E. coli.
         """
         seq = cds_seq.upper().replace(" ", "").replace("\n", "").replace("\r", "")
         codons = [seq[i:i + 3] for i in range(0, len(seq) - 2, 3)]
@@ -648,7 +648,7 @@ class ExpressionAnalyzer:
 # ── Tests ────────────────────────────────────────────────────────────────────
 
 def _run_tests():
-    """ExpressionAnalyzer 테스트."""
+    """Tests for ExpressionAnalyzer."""
     sep = "=" * 70
     passed = 0
     failed = 0

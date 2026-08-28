@@ -1,22 +1,26 @@
 #!/usr/bin/env python3
-"""스킬 문서가 가리키는 대상이 실제로 존재하는지 검사한다.
+"""Checks that what a skill's docs point at actually exists.
 
-배포판에서 가장 흔한 고장은 코드 오류가 아니라 **죽은 참조**다. 스킬 문서가
-"`scripts/foo.py` 를 실행하라" / "`bar` 스킬을 써라" 라고 지시하는데 그 파일이나
-스킬이 패키지에 없으면, 사용자는 지시를 따르다 실패한다. doctor.py 가 잡는
-무결성(해시)·시크릿과는 다른 축이라 별도 검사가 필요하다.
+The most common failure in a distribution isn't a code bug — it's a **dead
+reference**. A skill's doc says "run `scripts/foo.py`" / "use the `bar`
+skill," but if that file or skill isn't in the package, the user fails
+following the instruction. This is a different axis from the integrity
+(hashes)/secrets that doctor.py catches, so it needs its own check.
 
-실행:
-    python tests/test_skill_references.py           # exit 0 = 통과
-    python tests/test_skill_references.py --verbose # 확인한 참조까지 전부 출력
+Run:
+    python tests/test_skill_references.py           # exit 0 = pass
+    python tests/test_skill_references.py --verbose # also print every reference checked
 
-검사 대상:
-1. 스킬 폴더 내부 파일 참조 (`scripts/x.py`, `references/y.md`, `assets/z.json`)
-   - **대소문자까지** 비교한다. Windows 에서는 통과하지만 Linux/WSL 에서 깨지는
-     `REFERENCE.md` vs `reference.md` 같은 불일치를 잡기 위함이다.
-   - `<other-skill>` 를 함께 언급한 줄은 교차 스킬 참조로 보고 그 스킬 폴더에서도 찾는다.
-2. 다른 스킬 이름 참조 (``foo`` skill / `foo` 스킬)
-   - `deprecated/` 로 표시된 이력 서술은 제외한다(통합되어 사라진 이름을 기록한 것).
+What is checked:
+1. In-skill-folder file references (`scripts/x.py`, `references/y.md`, `assets/z.json`)
+   - Compared **case-sensitively too**. This catches a mismatch like
+     `REFERENCE.md` vs `reference.md` that passes on Windows but breaks on
+     Linux/WSL.
+   - A line that also mentions `<other-skill>` is treated as a cross-skill
+     reference and is also looked up in that skill's folder.
+2. References to other skill names (``foo`` skill / `foo` skill)
+   - History notes marked `deprecated/` are excluded (they record a name that
+     was merged away and no longer exists).
 """
 import argparse
 import io
@@ -25,9 +29,10 @@ import os
 import re
 import sys
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서,
-# import 후 GC 되면 호출자의 stdout 까지 닫아버린다(실측).
+# Windows' default console is cp949, which dies on Korean/symbol output. Force UTF-8.
+# reconfigure instead of TextIOWrapper — a wrapper takes ownership of the
+# underlying stream, so once it's GC'd after import it closes the caller's
+# stdout too (measured).
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         try:
@@ -42,26 +47,35 @@ SKILLS_DIR = os.path.join(ROOT, "skills")
 FILE_REF_RE = re.compile(
     r"(?<![\w/.-])((?:scripts|references|assets|templates)/[A-Za-z0-9_./-]+)")
 # `foo` skill / `foo` 스킬 / **foo** skill
+# NOTE: this regex's literal "스킬" is Korean-language detection logic (it
+# matches the Korean word for "skill" appearing in prose across the repo's
+# docs) — do not translate it. See CLAUDE.md's Repository Language section,
+# category 2.
 SKILL_REF_RE = re.compile(
     r"[`*]{1,2}([a-z][a-z0-9-]{3,40})[`*]{1,2}\s*(?:skill|스킬)"
     r"|(?:skill|스킬)\s*[`*]{1,2}([a-z][a-z0-9-]{3,40})[`*]{1,2}")
 
-# 백틱 없이 산문에 등장하는 스크립트 이름도 잡는다.
-# "see body_typo_lint.py for the enforcement side" 처럼 코드 표시 없이 쓰인
-# 파일명은 위의 FILE_REF_RE(경로 접두어 필요)와 백틱 기반 스캔 양쪽을 빠져나가,
-# 실제로 존재하지 않는 도구 2개가 문서에 남아 있었다(2026-07-23 발견).
+# Also catch a script name that appears in prose without backticks.
+# A filename written without code formatting, like "see body_typo_lint.py for
+# the enforcement side," slips past both FILE_REF_RE above (which requires a
+# path prefix) and the backtick-based scan — 2 tools that don't actually
+# exist were left sitting in the docs this way (found 2026-07-23).
 BARE_SCRIPT_RE = re.compile(r"(?<![\w/.-])([a-z][a-z0-9_]{3,60}\.py)\b")
 
-# "Integration with Other Skills" 류 섹션의 목록 항목 — `- **foo**: 설명`.
-# SKILL_REF_RE 는 뒤에 "skill"/"스킬" 이라는 낱말을 요구하는데, 이런 목록에서는
-# 섹션 제목이 이미 "Skills" 라서 항목마다 그 낱말을 다시 쓰지 않는다. 그래서
-# 배포되지 않는 스킬 9개가 검사를 통째로 빠져나가 있었다 (260807 실측:
-# pydeseq2·scanpy·anndata·scientific-slides·latex-posters·brand-guidelines·
-# internal-comms, 그리고 스킬이 아닌 라이브러리 matplotlib·seaborn).
+# A list item in an "Integration with Other Skills"-style section — `- **foo**: description`.
+# SKILL_REF_RE requires the word "skill"/"스킬" to follow, but in a list like
+# this the section heading already says "Skills," so individual items don't
+# repeat the word. That let 9 undistributed skills slip past the check
+# entirely (measured 260807: pydeseq2, scanpy, anndata, scientific-slides,
+# latex-posters, brand-guidelines, internal-comms, plus matplotlib and
+# seaborn, which aren't skills at all).
 #
-# 판정은 **제목이 스킬 목록이라고 말하는 섹션 안에서만** 한다. 문서 전체에서
-# `**foo**` 를 스킬로 보면 JSON 필드명·matplotlib 인자·mermaid 키워드까지 걸려
-# 383종이 후보로 뜬다 — 그건 검사가 아니라 소음이다.
+# The judgment applies **only inside a section whose heading says it's a
+# skill list.** Treating every `**foo**` in the whole document as a skill
+# would also catch JSON field names, matplotlib arguments, and mermaid
+# keywords — 383 candidates surfaced that way, which is noise, not a check.
+# NOTE: this regex's literal "스킬" is the same Korean-detection case as
+# SKILL_REF_RE above — do not translate it.
 SKILL_SECTION_RE = re.compile(r"^#{1,6}\s+.*\b(skills?|스킬)\b", re.I)
 SKILL_LIST_ITEM_RE = re.compile(
     r"^\s*[-*]\s*[`*]{1,2}([a-z][a-z0-9-]{2,40})[`*]{1,2}\s*[:：]")
@@ -69,69 +83,74 @@ SKILL_LIST_ITEM_RE = re.compile(
 TEXT_SUFFIXES = (".md", ".txt")
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 
-# 패키지에 없어도 정상인 스크립트 이름 — 사용자가 자기 프로젝트에서 만들 예시,
-# 외부 라이브러리 내부 파일, 또는 일반 명사에 가까운 이름.
-# 여기 넣을 때는 "왜 없어도 되는지" 이유를 반드시 함께 적을 것. 이유 없이 추가하면
-# 이 검사는 그냥 통과 도장이 된다.
+# Script names it's fine not to have in the package — an example the user
+# would create in their own project, an internal file of an external
+# library, or a name close to a common noun.
+# When adding an entry here, always write down "why it's OK to not have this
+# file." Adding one with no reason turns this check into a rubber stamp.
 BARE_SCRIPT_ALLOWLIST = {
-    # 사용자가 자기 환경에서 만들 스크립트 예시
+    # Example script names a user would make in their own environment
     "my_analysis.py", "my_job.py",
-    "script.py",            # publication-figures: "data.csv + script.py + figure.png" 산출물 규격 설명
-    "example_module.py",    # 코드 품질 예시
-    # 파이썬 관용/일반 이름 (특정 파일을 가리키지 않음)
+    "script.py",            # publication-figures: describes the "data.csv + script.py + figure.png" output convention
+    "example_module.py",    # code-quality example
+    # Python idiomatic/generic names (don't point at a specific file)
     "setup.py", "app.py", "main.py", "train.py", "run.py", "test.py",
-    # 외부 라이브러리 내부 구조를 설명하는 디렉토리 트리
-    "converter.py",         # markitdown 패키지 내부 구조도 (우리 파일 아님)
-    # 사용자가 원하면 만드는 선택적 헬퍼 ("있으면 짝을 맞춰라" 식 서술)
+    # A directory tree describing an external library's internal structure
+    "converter.py",         # internal structure diagram of the markitdown package (not our file)
+    # An optional helper the user builds if they want ("pair it if you have one" style wording)
     "manuscript_workdir.py",
-    # ── Anthropic 소유 문서 스킬 안의 파일들 (EXTERNAL_SKILLS 참조) ──
-    # 이 패키지는 해당 스킬을 재배포할 수 없어 파일이 없다. 그래도 "그 스킬을 쓸 때는
-    # 이렇게 하라"는 지식은 유효하므로 서술을 지우지 않는다. 사용자 환경에 스킬이
-    # 있으면 그대로 동작하고, 없으면 docs/12 가 안내한다.
-    "incremental_edit.py",          # docx: ZIP 무결성 보존 편집 세션
-    "docx_preflight.py",            # docx: 구조 검증
-    "word_validate.py",             # docx: Word COM ground-truth 검증
-    "comment.py",                   # docx: 코멘트 삽입
-    "inject_comments_from_csv.py",  # docx: CSV → 코멘트 일괄 삽입
-    "pack.py",                      # docx/pptx: OOXML 재패킹
-    "unpack.py",                    # docx/pptx: OOXML 해체
-    "recalc.py",                    # xlsx: 수식 재계산·오류 스캔
+    # ── Files inside Anthropic-owned document skills (see EXTERNAL_SKILLS) ──
+    # This package cannot redistribute those skills, so the files don't
+    # exist here. The "here's how to use that skill" knowledge is still
+    # valid though, so the wording isn't deleted. It works as-is if the
+    # user's environment has the skill, and docs/12 guides them if not.
+    "incremental_edit.py",          # docx: ZIP-integrity-preserving edit session
+    "docx_preflight.py",            # docx: structural validation
+    "word_validate.py",             # docx: Word COM ground-truth verification
+    "comment.py",                   # docx: comment insertion
+    "inject_comments_from_csv.py",  # docx: bulk CSV -> comment insertion
+    "pack.py",                      # docx/pptx: OOXML repacking
+    "unpack.py",                    # docx/pptx: OOXML unpacking
+    "recalc.py",                    # xlsx: formula recalculation / error scan
 }
 
-# 이 패키지가 의존하지만 재배포할 수 없는 외부 스킬 (Anthropic 소유).
-# 이름으로 참조되는 것은 죽은 참조가 아니라 "외부 의존"이다 — doctor.py 의
-# EXTERNAL_SKILLS 와 같은 목록을 본다. docs/12 참조.
+# External skills this package depends on but cannot redistribute (Anthropic-owned).
+# Being referenced by name is "an external dependency," not a dead reference
+# — see the same EXTERNAL_SKILLS list in doctor.py. See docs/12.
 EXTERNAL_SKILLS = {"docx", "pdf", "pptx", "xlsx"}
 
-# ── skills/ 밖 문서(루트 *.md · docs/)의 스킬명 검사 ──────────────────────────
+# ── Skill-name checks in documents outside skills/ (root *.md, docs/) ──────
 #
-# 이 검사는 오래 `skills/` 만 훑었다. 그런데 스킬을 넣고 빼는 편집이 실제로
-# 일어나는 곳은 README·QUICKSTART·docs 다. 260807 실측: 배포되지 않는 스킬
-# 두 개를 README 표에 되살려도 `ALL PASS` 였고, 스킬명 참조의 42%(111건)가
-# 한 번도 검사된 적이 없었다(README 27 · AGENTS 25 · docs 28 · QUICKSTART 12 …).
+# This check long only walked `skills/`. But the place where skills actually
+# get added and removed by edits is README/QUICKSTART/docs. Measured
+# 260807: reviving two undistributed skills in the README table still showed
+# `ALL PASS`, and 42% (111) of skill-name references had never once been
+# checked (README 27, AGENTS 25, docs 28, QUICKSTART 12, ...).
 #
-# CHANGELOG 는 제외한다 — 제거한 스킬의 이름을 기록하는 것이 그 파일의 일이다.
-# AGENTS.md 는 §0 을 test_agents_routing.py 가 이미 대조하지만, 표 밖 서술은
-# 아무도 안 보므로 여기서 함께 본다.
+# CHANGELOG is excluded — recording the name of a removed skill is that
+# file's job. AGENTS.md's §0 is already cross-checked by
+# test_agents_routing.py, but wording outside the table goes unnoticed, so
+# it's covered here too.
 OUTSIDE_SKIP_FILES = {"CHANGELOG.md"}
 
-# 스킬 이름과 형태가 같은(케밥케이스) 토큰 중 스킬이 아닌 것들.
-# 프리셋 이름은 config/catalog.json 에서 읽어 자동 허용하므로 여기 적지 않는다.
+# Tokens shaped like a skill name (kebab-case) that are not actually skills.
+# Preset names are read from config/catalog.json and auto-allowed, so they
+# aren't listed here.
 OUTSIDE_ALLOWLIST = {
-    # pip 패키지 / 외부 라이브러리
+    # pip package / external library
     "python-docx", "scikit-image", "sci-toolkit", "claude-code",
-    # 커넥터 CLI 서브커맨드 (docs/07·08 의 사용 예시)
+    # connector CLI subcommands (usage examples in docs/07, 08)
     "list-dbs", "add-row", "add-task", "add-comment", "add-subtask",
     "add-event",  # calendar_connector (docs/05 §4-4)
     "list-tasks", "get-page", "add-page",
-    # 문서 안의 플레이스홀더 예시
+    # placeholder examples inside docs
     "key-here", "your-token", "project-id",
 }
 KEBAB_TOKEN_RE = re.compile(r"[`*]{1,2}([a-z][a-z0-9]*(?:-[a-z0-9]+)+)[`*]{1,2}")
 
 
 def collect(skill_dir):
-    """스킬 폴더 안의 모든 파일을 상대경로 집합으로."""
+    """All files inside a skill folder, as a set of relative paths."""
     out = set()
     for dp, dns, fns in os.walk(skill_dir):
         dns[:] = [d for d in dns if d not in SKIP_DIRS]
@@ -141,12 +160,12 @@ def collect(skill_dir):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="스킬 문서의 죽은 참조 검사")
-    ap.add_argument("--verbose", action="store_true", help="확인한 참조도 모두 출력")
+    ap = argparse.ArgumentParser(description="Check for dead references in skill docs")
+    ap.add_argument("--verbose", action="store_true", help="Also print every reference checked")
     args = ap.parse_args()
 
     if not os.path.isdir(SKILLS_DIR):
-        print(f"오류: skills/ 폴더가 없다 — {SKILLS_DIR}")
+        print(f"Error: skills/ folder not found — {SKILLS_DIR}")
         return 2
 
     skills = sorted(d for d in os.listdir(SKILLS_DIR)
@@ -154,8 +173,9 @@ def main():
     skillset = set(skills)
     have = {s: collect(os.path.join(SKILLS_DIR, s)) for s in skills}
 
-    # 패키지 전체의 .py 파일 이름(경로 제외) — 산문에 쓰인 스크립트 이름 대조용.
-    # 스킬 폴더 밖(scripts/, tests/, install/, 루트)도 포함해야 한다.
+    # Every .py filename (no path) across the whole package — to cross-check
+    # script names written in prose. Must also include what's outside the
+    # skill folders (scripts/, tests/, install/, root).
     all_py_names = set()
     for dp, dns, fns in os.walk(ROOT):
         dns[:] = [d for d in dns if d not in SKIP_DIRS]
@@ -182,7 +202,7 @@ def main():
                     continue
                 in_skill_section = False
                 for i, line in enumerate(lines, 1):
-                    # --- 스킬 목록 섹션의 항목 (`- **foo**: 설명`) ---
+                    # --- an item in a skill-list section (`- **foo**: description`) ---
                     if line.startswith("#"):
                         in_skill_section = bool(SKILL_SECTION_RE.match(line))
                     elif in_skill_section:
@@ -196,7 +216,7 @@ def main():
                                     dead_skills.append(
                                         (s, srcrel, i, name, line.strip()[:90]))
 
-                    # --- 백틱 없이 산문에 쓰인 스크립트 이름 ---
+                    # --- a script name written in prose without backticks ---
                     for m in BARE_SCRIPT_RE.finditer(line):
                         fname = m.group(1)
                         if fname in BARE_SCRIPT_ALLOWLIST:
@@ -205,23 +225,27 @@ def main():
                         if fname not in all_py_names:
                             dead_bare.append((s, srcrel, i, fname, line.strip()[:90]))
 
-                    # --- 파일 참조 ---
+                    # --- file reference ---
                     for m in FILE_REF_RE.finditer(line):
                         ref = m.group(1)
                         if "." not in os.path.basename(ref):
-                            continue          # 확장자 없는 건 디렉토리 언급으로 본다
+                            continue          # treat no-extension as a directory mention
                         checked += 1
                         if ref in have[s]:
                             continue
-                        # 배포판 루트의 공용 도구(scripts/ref_fetch.py 등)를 가리키는
-                        # 것도 정상이다. 스킬 문서가 루트 도구를 쓰는 일은 흔한데,
-                        # 이걸 "스킬 폴더 안의 scripts/" 로만 해석하면 문서가 억지로
-                        # ../../scripts/ 같은 상대경로를 쓰도록 강요당한다.
+                        # Pointing at a shared tool in the distribution root
+                        # (e.g. scripts/ref_fetch.py) is also normal. It's
+                        # common for a skill's docs to use a root-level tool
+                        # — interpreting this as "only scripts/ inside the
+                        # skill folder" would force docs into an awkward
+                        # relative path like ../../scripts/.
                         if os.path.isfile(os.path.join(ROOT, ref)):
                             continue
-                        # 다른 스킬을 언급한 문맥이면 교차 스킬 참조로 본다.
-                        # 문장이 줄바꿈되며 스킬명과 파일명이 다른 줄에 놓이는 일이
-                        # 흔하므로, 판정은 줄 단위가 아니라 앞뒤 2줄 창으로 본다.
+                        # If the surrounding context mentions another skill,
+                        # treat it as a cross-skill reference. A sentence
+                        # commonly wraps so the skill name and filename land
+                        # on different lines, so judge over a +-2-line window
+                        # rather than a single line.
                         window = "\n".join(lines[max(0, i - 3):i + 2])
                         others = [o for o in skillset if o != s and o in window]
                         if any(ref in have[o] for o in others):
@@ -231,7 +255,7 @@ def main():
                             case_only.append((s, srcrel, i, ref, alt))
                         else:
                             dead_files.append((s, srcrel, i, ref))
-                    # --- 스킬 이름 참조 ---
+                    # --- skill-name reference ---
                     if "deprecated" in line.lower():
                         continue
                     for m in SKILL_REF_RE.finditer(line):
@@ -240,12 +264,12 @@ def main():
                             continue
                         checked += 1
                         if name in EXTERNAL_SKILLS:
-                            # 재배포할 수 없어 일부러 빠진 스킬. 참조는 유효하다.
+                            # A skill deliberately absent because it can't be redistributed. The reference is valid.
                             continue
                         if name not in skillset:
                             dead_skills.append((s, srcrel, i, name, line.strip()[:90]))
 
-    # ── skills/ 밖 문서에서 스킬명 참조 ──
+    # ── skill-name references in documents outside skills/ ──
     dead_outside = []
     try:
         catalog = json.loads(
@@ -277,51 +301,51 @@ def main():
             for m in KEBAB_TOKEN_RE.finditer(line):
                 name = m.group(1)
                 if name in allowed:
-                    continue          # 스킬이 아닌 것으로 이미 판정된 토큰
+                    continue          # a token already judged to not be a skill
                 checked += 1
                 if name in skillset or name in EXTERNAL_SKILLS:
                     continue
                 dead_outside.append((rel, i, name, line.strip()[:90]))
 
-    print(f"스킬 {len(skills)}종에서 참조 {checked}건 확인")
+    print(f"Checked {checked} reference(s) across {len(skills)} skill(s)")
 
     fails = 0
     if case_only:
         fails += len(case_only)
-        print(f"\n=== 대소문자 불일치 {len(case_only)}건 "
-              f"(Windows는 통과, Linux/WSL에서 깨짐) ===")
+        print(f"\n=== {len(case_only)} case mismatch(es) "
+              f"(passes on Windows, breaks on Linux/WSL) ===")
         for s, src, ln, ref, alt in case_only:
-            print(f"  {s}/{src}:{ln}  {ref}  ->  실제 파일은 {alt}")
+            print(f"  {s}/{src}:{ln}  {ref}  ->  actual file is {alt}")
     if dead_files:
         fails += len(dead_files)
-        print(f"\n=== 존재하지 않는 파일 참조 {len(dead_files)}건 ===")
+        print(f"\n=== {len(dead_files)} reference(s) to a nonexistent file ===")
         for s, src, ln, ref in dead_files:
             print(f"  {s}/{src}:{ln}  {ref}")
     if dead_skills:
         fails += len(dead_skills)
-        print(f"\n=== 배포판에 없는 스킬 참조 {len(dead_skills)}건 ===")
+        print(f"\n=== {len(dead_skills)} reference(s) to a skill not in the distribution ===")
         for s, src, ln, name, ctx in dead_skills:
             print(f"  {s}/{src}:{ln}  '{name}'")
             print(f"      {ctx}")
     if dead_outside:
         fails += len(dead_outside)
-        print(f"\n=== skills/ 밖 문서가 없는 스킬을 가리킨다 {len(dead_outside)}건 ===")
-        print("    (README·QUICKSTART·docs — 스킬을 빼고 문서를 안 고친 자리)")
+        print(f"\n=== {len(dead_outside)} document(s) outside skills/ pointing at a skill that doesn't exist ===")
+        print("    (README/QUICKSTART/docs — a spot where a skill was removed but the doc wasn't updated)")
         for src, ln, name, ctx in dead_outside:
             print(f"  {src}:{ln}  '{name}'")
             print(f"      {ctx}")
     if dead_bare:
         fails += len(dead_bare)
-        print(f"\n=== 존재하지 않는 스크립트를 산문에서 언급 {len(dead_bare)}건 ===")
-        print("    (백틱 없이 쓰여 경로 검사를 빠져나간 것들)")
+        print(f"\n=== {len(dead_bare)} mention(s) in prose of a script that doesn't exist ===")
+        print("    (written without backticks, so they slipped past the path check)")
         for s, src, ln, name, ctx in dead_bare:
             print(f"  {s}/{src}:{ln}  {name}")
             print(f"      {ctx}")
 
     if fails:
-        print(f"\nFAIL — 죽은 참조 {fails}건. 사용자가 이 지시를 따르면 실패한다.")
+        print(f"\nFAIL — {fails} dead reference(s). Following these instructions would fail for a user.")
         return 1
-    print("\nALL PASS — 모든 참조가 실존한다")
+    print("\nALL PASS — every reference exists")
     return 0
 
 

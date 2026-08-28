@@ -1,69 +1,83 @@
 #!/usr/bin/env python3
-"""DOI 교차검증 도구 — 이미 원고/문서에 들어간 DOI가 실재하는지, 서지정보가
-맞는지 확인하는 게이트 스크립트.
+"""DOI cross-verification tool — a gate script that checks whether a DOI
+already placed into a manuscript/document actually exists and whether its
+bibliographic data is correct.
 
-`ref_fetch.py`(수집용: DOI → 서지정보+OA PDF)와 역할이 다르다. 이 스크립트는
-**검증**용이다: 문서/BibTeX에 이미 박힌 DOI가 (a) 실제로 존재하는지, (b) 적힌
-저자/연도/제목과 실제 레코드가 일치하는지, (c) 철회(retracted)되지 않았는지를
-확인해 등급을 매긴다. AGENTS.md §8 "literature-review / endnote-citation-injection"
-행의 게이트 도구다 — 환각 DOI가 원고에 들어가는 사고를 막는다.
+Distinct in role from `ref_fetch.py` (for collection: DOI -> bibliographic
+data + OA PDF). This script is for **verification**: it grades a DOI already
+embedded in a document/BibTeX by checking (a) whether it actually exists,
+(b) whether the stated author/year/title matches the real record, and
+(c) whether it has been retracted. It is the gate tool named in AGENTS.md §8's
+"literature-review / endnote-citation-injection" row — it stops a
+hallucinated DOI from making it into a manuscript.
 
-재사용: CrossRef/OpenAlex 조회 함수·정규화·캐시는 `ref_fetch.py`/
-`ref_cache_manager.py`를 그대로 import해서 쓴다. 조회 로직을 새로 짜지 않는다
-(중복 구현은 두 도구가 다른 답을 내는 사고로 이어진다).
+Reuse: the CrossRef/OpenAlex lookup functions, normalization, and cache are
+imported directly from `ref_fetch.py`/`ref_cache_manager.py` as-is. Lookup
+logic is not rewritten here (a duplicated implementation is how two tools end
+up giving different answers).
 
-검증 등급 (심각도 내림차순):
-    HALLUCINATED    — CrossRef와 OpenAlex 양쪽 모두 존재하지 않음
-    RETRACTED       — OpenAlex가 is_retracted=True 로 보고
-    MISMATCH        — 존재는 하지만 문서에 적힌 저자/연도/제목이 실제 레코드와 다름
-    UNCORROBORATED  — 존재는 확인됐지만 대조할 제목/저자/연도가 없어 "그 논문인지"는
-                      확인되지 않음. "존재함" != "내가 찾던 그 논문임"
-    ONE_SOURCE_ONLY — 두 소스 중 한쪽에서만 조회됨 (조용히 통과시키지 않음)
-    UNVERIFIED      — 조회 자체가 실패함 (네트워크 오류 등) — "확인 못 했다" ≠ "괜찮다"
-    OK              — 존재 확인 + 메타데이터 일치 + 철회 아님
+Verification grades (descending severity):
+    HALLUCINATED    — does not exist in either CrossRef or OpenAlex
+    RETRACTED       — OpenAlex reports is_retracted=True
+    MISMATCH        — exists, but the document's stated author/year/title
+                      differs from the real record
+    UNCORROBORATED  — existence is confirmed, but there is no title/author/year
+                      to check it against, so whether it's "the right paper" is
+                      unconfirmed. "exists" != "is the paper I was looking for"
+    ONE_SOURCE_ONLY — found in only one of the two sources (never silently
+                      passed)
+    UNVERIFIED      — the lookup itself failed (network error, etc.) —
+                      "couldn't confirm" != "fine"
+    OK              — existence confirmed + metadata matches + not retracted
 
-왜 UNCORROBORATED 가 따로 있는가 (실측, 260807):
-    LLM이 생성한 10.1016/j.biortech.2019.122211 은 실재하지 않는다. 그런데 같은
-    순차 대역에서 +2 떨어진 122213 은 *실재하는 무관한 논문*이다(촉매 논문을
-    찾던 중에 크롬 환원 논문). 순차 DOI 대역(Elsevier j.xxx.YYYY.NNNNNN, Wiley,
-    ACS)에서 한 자리 오류는 "없는 DOI"가 아니라 "다른 논문"을 낳는다. 없는 DOI는
-    시끄럽게 실패하지만 이쪽은 조용히 통과한다 — 그래서 등급을 분리했다.
+Why UNCORROBORATED exists as its own grade (measured, 260807):
+    The LLM-generated 10.1016/j.biortech.2019.122211 does not exist. But
+    122213, just +2 away in the same sequential range, is a *real, unrelated
+    paper* (a chromium-reduction paper turned up while looking for a catalysis
+    paper). In a sequential DOI range (Elsevier j.xxx.YYYY.NNNNNN, Wiley, ACS),
+    a single-digit error produces not "a DOI that doesn't exist" but "a
+    different paper". A nonexistent DOI fails loudly; this one passes quietly
+    — which is why the grade is split out.
 
 exit code:
-    2 — HALLUCINATED 또는 RETRACTED 가 하나라도 있음
-    1 — (2가 아니면서) MISMATCH/ONE_SOURCE_ONLY/UNVERIFIED 가 하나라도 있음
-        또는 strict 경로(--doi / --doi-source)에서 UNCORROBORATED 가 있음
-    0 — 나머지. --file 대량 스캔의 UNCORROBORATED 는 여기 해당하되, 요약에
-        "몇 건을 대조하지 못했는지"를 반드시 출력한다 (조용한 통과 금지)
+    2 — at least one HALLUCINATED or RETRACTED item
+    1 — (when not 2) at least one MISMATCH/ONE_SOURCE_ONLY/UNVERIFIED item,
+        or an UNCORROBORATED item on the strict path (--doi / --doi-source)
+    0 — everything else. UNCORROBORATED from a --file bulk scan falls here,
+        but the summary must always print "how many items couldn't be
+        corroborated" (never a silent pass)
 
-사용법:
-    # 문서에서 DOI 자동 추출
+Usage:
+    # auto-extract DOIs from a document
     python doi_verify.py --file manuscript.md
 
-    # DOI 직접 지정
+    # specify DOIs directly
     python doi_verify.py --doi 10.1038/nature12373,10.9999/nonexistent.12345
 
-    # BibTeX — 저자/연도/제목까지 대조
+    # BibTeX — checks author/year/title too
     python doi_verify.py --bibtex refs.bib
 
-    # DOI 하나를 "의도한 제목"과 대조 — 존재하지만 무관한 논문을 잡는다
+    # check one DOI against the "intended title" — catches a real but
+    # unrelated paper
     python doi_verify.py --doi 10.1016/j.biortech.2019.122213 \
         --expect-title "Photocatalytic hydrogen evolution over nitrogen-doped titania"
 
-    # LLM이 생성한 DOI — 제목 선언 없이는 조회 단계에 진입조차 못 한다
+    # an LLM-generated DOI — cannot even enter the lookup step without a
+    # declared title
     python doi_verify.py --doi <DOI> --doi-source model --expect-title "..."
 
-    # 캐시 무시하고 강제 재조회
+    # ignore the cache and force a re-lookup
     python doi_verify.py --doi 10.1038/nature12373 --refresh
 
-    # Unpaywall 등 폴라이트 풀용 이메일 (실제 이메일을 코드에 넣지 말 것)
+    # contact email for the Unpaywall etc. polite pool (do not hardcode a
+    # real email in code)
     python doi_verify.py --bibtex refs.bib --email you@example.com
-    # 또는: export SCITK_CONTACT_EMAIL=you@example.com
+    # or: export SCITK_CONTACT_EMAIL=you@example.com
 
-출력:
-    doi_verify_report.json (DOI별 등급·근거) + stdout 사람이 읽는 요약
-    (등급별로 묶어서: HALLUCINATED -> RETRACTED -> MISMATCH -> ONE_SOURCE_ONLY
-     -> UNVERIFIED -> OK)
+Output:
+    doi_verify_report.json (grade + rationale per DOI) + a human-readable
+    stdout summary (grouped by grade: HALLUCINATED -> RETRACTED -> MISMATCH ->
+    ONE_SOURCE_ONLY -> UNVERIFIED -> OK)
 """
 from __future__ import annotations
 
@@ -78,7 +92,7 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-# ref_fetch.py / ref_cache_manager.py 재사용 (같은 scripts/ 폴더).
+# Reuse ref_fetch.py / ref_cache_manager.py (same scripts/ folder).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ref_cache_manager import RefCacheManager  # noqa: E402
 from ref_fetch import (  # noqa: E402
@@ -91,11 +105,12 @@ from ref_fetch import (  # noqa: E402
 )
 import urllib.parse  # noqa: E402
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# TextIOWrapper 대신 reconfigure — 래퍼는 원본 스트림을 소유해서, 이 모듈이
-# import 된 뒤 GC 되거나 다른 모듈이 또 감싸면 공유 buffer 가 닫혀
-# "I/O operation on closed file" 로 죽는다(실측). reconfigure 는 같은 객체를
-# 바꾸므로 몇 번 호출하든, 어떤 순서로 import 하든 안전하다.
+# Windows' default console is cp949, which dies on Korean/symbol output. Force
+# UTF-8. reconfigure instead of TextIOWrapper — a wrapper owns the underlying
+# stream, so if this module is later GC'd or another module wraps it again,
+# the shared buffer gets closed and it dies with "I/O operation on closed
+# file" (measured). reconfigure mutates the same object in place, so it's
+# safe no matter how many times it's called or in what import order.
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         try:
@@ -105,28 +120,31 @@ for _s in (sys.stdout, sys.stderr):
 
 _DOI_RE = re.compile(r"^10\.\d{4,9}/\S+$")
 
-# 문서(.md/.txt)에서 DOI를 뽑아내는 정규식. DOI 뒤에 흔히 붙는 문장부호/괄호는
-# 잘라낸다 — 안 그러면 "10.1038/nature12373." 처럼 마침표가 DOI에 섞여 조회가
-# 항상 실패한다.
+# Regex that pulls DOIs out of a document (.md/.txt). Trailing punctuation/
+# brackets commonly attached after a DOI are stripped — otherwise something
+# like "10.1038/nature12373." ends up with the period folded into the DOI
+# and the lookup always fails.
 _DOI_EXTRACT_RE = re.compile(r"10\.\d{4,9}/[^\s\]\)\"'<>,;]+")
 _TRAILING_PUNCT_RE = re.compile(r"[.,;:)\]\"'>]+$")
 
-# BibTeX 항목 하나(중괄호 균형은 무시하고 최상위 필드만 정규식으로 뽑는다 —
-# 완전한 BibTeX 파서가 필요할 만큼 복잡한 입력은 대상이 아님)
+# One BibTeX entry (brace balance is ignored — only top-level fields are
+# pulled out with a regex; input complex enough to need a full BibTeX parser
+# is out of scope)
 _BIBTEX_ENTRY_RE = re.compile(r"@\w+\s*\{\s*([^,]+),(.*?)\n\}", re.DOTALL)
 _BIBTEX_FIELD_RE = re.compile(r"(\w+)\s*=\s*[{\"](.*?)[}\"]\s*,?\s*$", re.MULTILINE | re.DOTALL)
 
 
 # --------------------------------------------------------------------------- #
-# OpenAlex 철회(retracted) 여부 — ref_fetch.py의 query_openalex()는 이 필드를
-# 반환하지 않으므로(가공된 서지정보 dict만 만듦), _http_get_json 저수준 헬퍼만
-# 재사용해 원본 응답에서 is_retracted 하나만 얇게 뽑는다. query_openalex 자체를
-# 다시 구현하지 않는다 — 이 함수는 순수 부가 정보 하나만 얹는다.
+# OpenAlex retracted status — ref_fetch.py's query_openalex() doesn't return
+# this field (it only builds a processed bibliographic dict), so this reuses
+# just the low-level _http_get_json helper to thinly pull is_retracted out of
+# the raw response. query_openalex itself is not reimplemented — this
+# function layers on exactly one piece of extra information.
 # --------------------------------------------------------------------------- #
 
 
 def query_openalex_retracted(doi: str, email: Optional[str]) -> Optional[bool]:
-    """OpenAlex 원본 응답에서 is_retracted 값만 반환. 조회 실패 시 None."""
+    """Return just the is_retracted value from the raw OpenAlex response. None on lookup failure."""
     url = f"{OPENALEX_BASE}/doi:{urllib.parse.quote(doi)}"
     if email:
         url += f"?mailto={urllib.parse.quote(email)}"
@@ -137,12 +155,12 @@ def query_openalex_retracted(doi: str, email: Optional[str]) -> Optional[bool]:
 
 
 # --------------------------------------------------------------------------- #
-# DOI 추출
+# DOI extraction
 # --------------------------------------------------------------------------- #
 
 
 def extract_dois_from_text(text: str) -> list[str]:
-    """자유 텍스트(.md/.txt)에서 DOI를 정규식으로 추출한다 (중복 제거, 순서 보존)."""
+    """Extract DOIs out of free text (.md/.txt) with a regex (dedup, order preserved)."""
     found = []
     seen = set()
     for m in _DOI_EXTRACT_RE.finditer(text):
@@ -156,11 +174,11 @@ def extract_dois_from_text(text: str) -> list[str]:
 
 
 def parse_bibtex(text: str) -> list[dict[str, Any]]:
-    """BibTeX 항목들을 파싱해 doi/author/year/title 필드를 뽑는다.
+    """Parse BibTeX entries and pull out the doi/author/year/title fields.
 
-    완전한 BibTeX 문법을 지원하지 않는다(중첩 중괄호가 있는 필드 등은
-    최선 노력으로만 처리) — 이 도구의 목적은 DOI 존재/메타데이터 대조이지
-    BibTeX 파서가 아니다.
+    Full BibTeX syntax is not supported (a field with nested braces, etc. is
+    handled only best-effort) — this tool's purpose is checking DOI
+    existence/metadata, not being a BibTeX parser.
     """
     entries = []
     for m in _BIBTEX_ENTRY_RE.finditer(text):
@@ -196,7 +214,8 @@ def parse_bibtex(text: str) -> list[dict[str, Any]]:
 
 
 # --------------------------------------------------------------------------- #
-# 메타데이터 대조 (오탐 방지가 핵심 — 표기 차이만으로 MISMATCH 내지 않는다)
+# Metadata comparison (avoiding false positives is the core concern — never
+# raise a MISMATCH from a notation difference alone)
 # --------------------------------------------------------------------------- #
 
 
@@ -204,13 +223,13 @@ def _normalize_title(s: Optional[str]) -> str:
     if not s:
         return ""
     s = s.lower()
-    s = re.sub(r"[^\w\s]", "", s)  # 구두점 제거 (대소문자/구두점 차이 흡수)
+    s = re.sub(r"[^\w\s]", "", s)  # strip punctuation (absorbs case/punctuation differences)
     s = re.sub(r"\s+", " ", s).strip()
     return s
 
 
 def title_similarity(a: Optional[str], b: Optional[str]) -> float:
-    """정규화 후 SequenceMatcher 유사도 (0~1). 구두점/대소문자 차이에 강건."""
+    """SequenceMatcher similarity after normalization (0-1). Robust to punctuation/case differences."""
     na, nb = _normalize_title(a), _normalize_title(b)
     if not na or not nb:
         return 0.0
@@ -218,12 +237,13 @@ def title_similarity(a: Optional[str], b: Optional[str]) -> float:
 
 
 def _extract_surnames(author_field: Optional[str]) -> list[str]:
-    """BibTeX author 필드에서 성(姓)만 뽑는다.
+    """Extract only surnames from a BibTeX author field.
 
-    BibTeX 관례 두 가지를 모두 지원: "Family, Given" 와 "Given Family".
-    저자는 " and "로 구분된다. 이름 표기(이니셜 vs 풀네임, 미들네임 유무)는
-    소스마다 다르므로(CrossRef vs OpenAlex도 다르다 — ref_fetch.py 관측)
-    성만 비교 대상으로 삼는다.
+    Supports both BibTeX conventions: "Family, Given" and "Given Family".
+    Authors are separated by " and ". Name notation (initials vs. full name,
+    presence of a middle name) varies by source (CrossRef vs. OpenAlex differ
+    too — observed in ref_fetch.py), so only the surname is used for
+    comparison.
     """
     if not author_field:
         return []
@@ -243,7 +263,7 @@ def _extract_surnames(author_field: Optional[str]) -> list[str]:
 
 
 def _extract_surnames_from_names(names: list[str]) -> list[str]:
-    """CrossRef/OpenAlex의 "Given Family" 형태 이름 리스트에서 성만 뽑는다."""
+    """Extract only surnames from a CrossRef/OpenAlex "Given Family" name list."""
     surnames = []
     for name in names:
         tokens = name.strip().split()
@@ -257,25 +277,27 @@ def compare_metadata(
     crossref: dict[str, Any],
     openalex: dict[str, Any],
 ) -> list[str]:
-    """문서/BibTeX에 적힌 메타데이터 vs 실제 레코드(CrossRef 우선, 없으면
-    OpenAlex) 대조. 불일치 사유 문자열 리스트를 반환 (비어있으면 일치).
+    """Compare the metadata stated in the document/BibTeX against the real
+    record (CrossRef first, OpenAlex if not found there). Returns a list of
+    mismatch-reason strings (empty means it matches).
 
-    오탐 방지 원칙: 제목은 정규화 후 유사도 임계값 이하일 때만, 저자는
-    "성(姓) 집합"이 하나도 안 겹칠 때만 flag한다 — 표기 차이(이니셜 vs
-    풀네임, 대소문자, 구두점)만으로는 절대 MISMATCH를 내지 않는다.
+    False-positive-avoidance principle: a title is flagged only when the
+    normalized similarity falls below the threshold, and an author only when
+    the "surname sets" don't overlap at all — a notation difference alone
+    (initials vs. full name, case, punctuation) never produces a MISMATCH.
     """
     reasons: list[str] = []
     record = crossref if crossref.get("found") else openalex
     if not record.get("found"):
-        return reasons  # 존재 자체가 안 되면 HALLUCINATED가 이미 처리 — 여기선 스킵
+        return reasons  # non-existence is already handled by HALLUCINATED — skip here
 
-    # 연도 — 정확히 다르면 flag (연도는 표기 변형의 여지가 없다)
+    # year — flag if it's exactly different (a year has no room for notation variance)
     exp_year = expected.get("year")
     rec_year = record.get("year")
     if exp_year and rec_year and int(exp_year) != int(rec_year):
         reasons.append(f"year mismatch — expected: {exp_year} | actual: {rec_year}")
 
-    # 제목 — 정규화 유사도 0.7 미만일 때만 flag
+    # title — flag only when normalized similarity is below 0.7
     exp_title = expected.get("title")
     rec_title = record.get("title")
     if exp_title and rec_title:
@@ -285,7 +307,7 @@ def compare_metadata(
                 f"title mismatch (similarity={sim:.2f}) — expected: {exp_title!r} | actual: {rec_title!r}"
             )
 
-    # 저자 — 성(姓) 집합이 하나도 안 겹치면 flag (표기 차이는 무시)
+    # author — flag only when the surname sets don't overlap at all (ignore notation differences)
     exp_surnames = set(_extract_surnames(expected.get("author_raw")))
     rec_surnames = set(_extract_surnames_from_names(record.get("authors") or []))
     if exp_surnames and rec_surnames and exp_surnames.isdisjoint(rec_surnames):
@@ -298,7 +320,7 @@ def compare_metadata(
 
 
 # --------------------------------------------------------------------------- #
-# 등급 결정
+# Grade determination
 # --------------------------------------------------------------------------- #
 
 GRADE_ORDER = [
@@ -318,8 +340,9 @@ def grade_one(
     crossref: dict[str, Any],
     openalex: dict[str, Any],
 ) -> dict[str, Any]:
-    """DOI 하나에 대한 등급 판정. (crossref/openalex는 각각 found + error 등
-    ref_fetch.py의 query_crossref/query_openalex 반환 형식.)
+    """Determine the grade for a single DOI. (crossref/openalex are each in
+    the found + error, etc. return format of ref_fetch.py's
+    query_crossref/query_openalex.)
     """
     cr_ok = crossref.get("found") is True
     oa_ok = openalex.get("found") is True
@@ -329,28 +352,29 @@ def grade_one(
 
     reasons: list[str] = []
 
-    # 둘 다 네트워크 자체가 실패 (존재 여부를 판정할 수 없음) → UNVERIFIED
+    # Both lookups failed at the network level (existence cannot be determined) -> UNVERIFIED
     if cr_network_fail and oa_network_fail:
         return {
             "doi": doi,
             "grade": "UNVERIFIED",
             "reasons": [
-                f"CrossRef 조회 실패: {crossref.get('error')}",
-                f"OpenAlex 조회 실패: {openalex.get('error')}",
+                f"CrossRef lookup failed: {crossref.get('error')}",
+                f"OpenAlex lookup failed: {openalex.get('error')}",
             ],
             "crossref": crossref,
             "openalex": openalex,
         }
 
-    # 한쪽은 네트워크 실패, 다른 한쪽은 확실히 not_found → 존재 여부 불확실 → UNVERIFIED
-    # (실패한 쪽이 사실 존재했을 수도 있으므로 HALLUCINATED로 단정하지 않는다)
+    # One side failed at the network level, the other is a confirmed not_found
+    # -> existence is uncertain -> UNVERIFIED
+    # (the failed side might actually exist, so this is not asserted as HALLUCINATED)
     if cr_network_fail and not oa_ok:
         return {
             "doi": doi,
             "grade": "UNVERIFIED",
             "reasons": [
-                f"CrossRef 조회 실패(네트워크): {crossref.get('error')}",
-                "OpenAlex: not_found — 두 소스 모두 확정할 수 없어 HALLUCINATED로 단정하지 않음",
+                f"CrossRef lookup failed (network): {crossref.get('error')}",
+                "OpenAlex: not_found — neither source could confirm it, so not asserted as HALLUCINATED",
             ],
             "crossref": crossref,
             "openalex": openalex,
@@ -360,14 +384,14 @@ def grade_one(
             "doi": doi,
             "grade": "UNVERIFIED",
             "reasons": [
-                f"OpenAlex 조회 실패(네트워크): {openalex.get('error')}",
-                "CrossRef: not_found — 두 소스 모두 확정할 수 없어 HALLUCINATED로 단정하지 않음",
+                f"OpenAlex lookup failed (network): {openalex.get('error')}",
+                "CrossRef: not_found — neither source could confirm it, so not asserted as HALLUCINATED",
             ],
             "crossref": crossref,
             "openalex": openalex,
         }
 
-    # 양쪽 다 명확히 존재하지 않음 (404 등, 네트워크 실패 아님) → HALLUCINATED
+    # Both sides clearly report non-existence (404, etc.; not a network failure) -> HALLUCINATED
     if not cr_ok and not oa_ok:
         return {
             "doi": doi,
@@ -375,15 +399,15 @@ def grade_one(
             "reasons": [
                 f"CrossRef: {crossref.get('error', 'not_found')}",
                 f"OpenAlex: {openalex.get('error', 'not_found')}",
-                "두 소스 모두 이 DOI를 찾지 못함 — 환각(hallucinated) DOI일 가능성이 높음",
+                "Neither source found this DOI — likely a hallucinated DOI",
             ],
             "crossref": crossref,
             "openalex": openalex,
         }
 
-    # 철회 여부 (OpenAlex is_retracted)
+    # Retracted status (OpenAlex is_retracted)
     if oa_ok and openalex.get("is_retracted"):
-        reasons.append("OpenAlex: is_retracted=True — 이 논문은 철회(retracted)되었음")
+        reasons.append("OpenAlex: is_retracted=True — this paper has been retracted")
         return {
             "doi": doi,
             "grade": "RETRACTED",
@@ -392,7 +416,7 @@ def grade_one(
             "openalex": openalex,
         }
 
-    # 한쪽만 존재
+    # found in only one source
     if cr_ok != oa_ok:
         which = "CrossRef" if cr_ok else "OpenAlex"
         missing = "OpenAlex" if cr_ok else "CrossRef"
@@ -400,12 +424,12 @@ def grade_one(
         return {
             "doi": doi,
             "grade": "ONE_SOURCE_ONLY",
-            "reasons": [f"{which}에서만 확인됨 ({missing}: {missing_err}) — 조용히 통과시키지 않음"],
+            "reasons": [f"confirmed only in {which} ({missing}: {missing_err}) — never silently passed"],
             "crossref": crossref,
             "openalex": openalex,
         }
 
-    # 둘 다 존재 — 메타데이터 대조 (expected가 주어졌을 때만)
+    # found in both — compare metadata (only when expected is given)
     if expected:
         mismatch_reasons = compare_metadata(expected, crossref, openalex)
         if mismatch_reasons:
@@ -417,17 +441,19 @@ def grade_one(
                 "openalex": openalex,
             }
 
-    # 대조할 메타데이터가 아예 없으면 "존재한다"까지만 확인된 것이다. 그것을 OK로
-    # 부르면 안 된다 — 순차 DOI 대역은 한 자리만 틀려도 *실재하는 무관한 논문*에
-    # 착지하기 때문이다(모듈 docstring 의 122211/122213 실측 참고).
+    # With no metadata to compare against at all, only "it exists" has been
+    # confirmed. That must not be called OK — a single-digit error in a
+    # sequential DOI range lands on a *real, unrelated paper* (see the
+    # 122211/122213 measurement in the module docstring).
     if not expected:
         return {
             "doi": doi,
             "grade": "UNCORROBORATED",
             "reasons": [
-                "존재 확인(CrossRef+OpenAlex 양쪽) — 그러나 대조할 제목/저자/연도가 "
-                "주어지지 않아 '찾던 그 논문인지'는 확인되지 않았음. "
-                "--expect-title 로 의도한 제목을 함께 넘길 것."
+                "existence confirmed (both CrossRef+OpenAlex) — but no "
+                "title/author/year was given to check against, so whether "
+                "this is 'the paper being looked for' is unconfirmed. "
+                "Pass the intended title with --expect-title."
             ],
             "crossref": crossref,
             "openalex": openalex,
@@ -436,14 +462,14 @@ def grade_one(
     return {
         "doi": doi,
         "grade": "OK",
-        "reasons": ["존재 확인(CrossRef+OpenAlex 양쪽), 메타데이터 일치"],
+        "reasons": ["existence confirmed (both CrossRef+OpenAlex), metadata matches"],
         "crossref": crossref,
         "openalex": openalex,
     }
 
 
 # --------------------------------------------------------------------------- #
-# 메인 verify-one 파이프라인 (캐시 재사용)
+# Main verify-one pipeline (reuses the cache)
 # --------------------------------------------------------------------------- #
 
 
@@ -460,7 +486,7 @@ def verify_one(
         return {
             "doi": doi,
             "grade": "HALLUCINATED",
-            "reasons": [f"DOI 형식이 아님: {doi!r} — 형식부터 실재하지 않는 값일 가능성"],
+            "reasons": [f"not a DOI-shaped string: {doi!r} — likely fabricated from the format up"],
             "crossref": {"found": False, "error": "invalid_format"},
             "openalex": {"found": False, "error": "invalid_format"},
         }
@@ -480,16 +506,17 @@ def verify_one(
     openalex = query_openalex(doi, email)
     time.sleep(_RATE_LIMIT_DELAY)
 
-    # 존재가 확인된 경우에만 철회(retracted) 여부를 추가 조회 — 불필요한
-    # 네트워크 호출을 늘리지 않는다.
+    # Only look up retracted status when existence is confirmed — avoids
+    # adding unnecessary network calls.
     if openalex.get("found"):
         is_retracted = query_openalex_retracted(doi, email)
         time.sleep(_RATE_LIMIT_DELAY)
         openalex = dict(openalex)
         openalex["is_retracted"] = is_retracted
 
-    # 조회 결과(존재/미존재 판정에 필요한 원본)는 캐시에 저장 — 네트워크 실패
-    # 결과(UNVERIFIED로 이어질 것)는 캐시하지 않는다(일시적 오류일 수 있음).
+    # Cache the lookup result (the raw data needed to judge existence) — do
+    # not cache a network-failure result (which would lead to UNVERIFIED),
+    # since it could be a transient error.
     cr_network_fail = not crossref.get("found") and crossref.get("error") not in (None, "not_found")
     oa_network_fail = not openalex.get("found") and openalex.get("error") not in (None, "not_found")
     if not (cr_network_fail or oa_network_fail):
@@ -501,13 +528,13 @@ def verify_one(
 
 
 # --------------------------------------------------------------------------- #
-# 입력 수집
+# Input collection
 # --------------------------------------------------------------------------- #
 
 
 def collect_targets(args: argparse.Namespace) -> list[dict[str, Any]]:
-    """검증 대상 목록을 만든다. 각 항목은 최소 {"doi": ...}, BibTeX 입력이면
-    author_raw/year/title도 포함.
+    """Build the list of verification targets. Each item is at minimum
+    {"doi": ...}; for BibTeX input it also includes author_raw/year/title.
     """
     targets: list[dict[str, Any]] = []
     seen_dois: set[str] = set()
@@ -528,7 +555,7 @@ def collect_targets(args: argparse.Namespace) -> list[dict[str, Any]]:
     if args.file:
         p = Path(args.file)
         if not p.exists():
-            print(f"[ERROR] 파일 없음: {p}", file=sys.stderr)
+            print(f"[ERROR] file not found: {p}", file=sys.stderr)
         else:
             text = p.read_text(encoding="utf-8", errors="replace")
             for doi in extract_dois_from_text(text):
@@ -537,12 +564,12 @@ def collect_targets(args: argparse.Namespace) -> list[dict[str, Any]]:
     if args.bibtex:
         p = Path(args.bibtex)
         if not p.exists():
-            print(f"[ERROR] 파일 없음: {p}", file=sys.stderr)
+            print(f"[ERROR] file not found: {p}", file=sys.stderr)
         else:
             text = p.read_text(encoding="utf-8", errors="replace")
             entries = parse_bibtex(text)
             if not entries:
-                print(f"[WARN] BibTeX에서 doi 필드가 있는 항목을 찾지 못함: {p}", file=sys.stderr)
+                print(f"[WARN] no entry with a doi field found in BibTeX: {p}", file=sys.stderr)
             for e in entries:
                 _add(
                     e["doi"],
@@ -553,13 +580,13 @@ def collect_targets(args: argparse.Namespace) -> list[dict[str, Any]]:
 
 
 # --------------------------------------------------------------------------- #
-# 사람이 읽는 요약 출력
+# Human-readable summary output
 # --------------------------------------------------------------------------- #
 
 
 def print_summary(results: list[dict[str, Any]]) -> None:
-    print("\n=== doi_verify 결과 요약 ===")
-    print(f"  총 DOI: {len(results)}")
+    print("\n=== doi_verify results summary ===")
+    print(f"  total DOIs: {len(results)}")
 
     by_grade: dict[str, list[dict[str, Any]]] = {g: [] for g in GRADE_ORDER}
     for r in results:
@@ -567,13 +594,13 @@ def print_summary(results: list[dict[str, Any]]) -> None:
 
     for grade in GRADE_ORDER:
         items = by_grade.get(grade, [])
-        print(f"  {grade}: {len(items)}건")
+        print(f"  {grade}: {len(items)}")
 
     for grade in GRADE_ORDER:
         items = by_grade.get(grade, [])
         if not items:
             continue
-        print(f"\n--- {grade} ({len(items)}건) ---")
+        print(f"\n--- {grade} ({len(items)}) ---")
         for r in items:
             print(f"  [{r['doi']}]")
             for reason in r.get("reasons", []):
@@ -581,18 +608,21 @@ def print_summary(results: list[dict[str, Any]]) -> None:
 
 
 def exit_code_for(results: list[dict[str, Any]], strict_uncorroborated: bool = False) -> int:
-    """등급 목록 -> exit code.
+    """Grade list -> exit code.
 
-    strict_uncorroborated 는 UNCORROBORATED(존재하지만 대조 근거 없음)를 실패로
-    셀지 결정한다. 경로에 따라 갈리는 이유:
+    strict_uncorroborated decides whether UNCORROBORATED (exists but nothing
+    to check it against) counts as a failure. Why it differs by path:
 
-      --doi 로 특정 DOI를 짚어 검증하러 왔다면, "존재는 한다"까지만 확인하고
-      통과시키는 것은 사실상 검증하지 않은 것이다 -> strict(=exit 1).
+      Arriving via --doi to verify a specific DOI, and passing it after only
+      confirming "it exists" is effectively not verifying it at all ->
+      strict (=exit 1).
 
-      --file 로 원고 전체를 훑는 경우 제목을 얻을 방법이 구조적으로 없어서
-      거의 모든 DOI가 UNCORROBORATED가 된다. 여기에 exit 1을 매기면 게이트가
-      항상 노란불이 되고, 항상 노란불인 게이트는 무시당해 결국 없는 것과 같다
-      -> non-strict(=exit 0, 대신 요약에 몇 건인지 눈에 띄게 적는다).
+      Sweeping a whole manuscript with --file has structurally no way to get
+      a title, so nearly every DOI ends up UNCORROBORATED. Making that
+      exit 1 turns the gate permanently yellow, and a gate that's always
+      yellow gets ignored — which is the same as having no gate ->
+      non-strict (=exit 0, but the summary conspicuously states the count
+      instead).
     """
     grades = {r["grade"] for r in results}
     if "HALLUCINATED" in grades or "RETRACTED" in grades:
@@ -611,70 +641,77 @@ def exit_code_for(results: list[dict[str, Any]], strict_uncorroborated: bool = F
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="이미 문서/BibTeX에 들어간 DOI가 실재하는지, 서지정보가 맞는지 "
-        "CrossRef+OpenAlex 양쪽으로 교차검증한다 (환각 DOI 게이트, API 키 불필요).",
+        description="Cross-verify whether a DOI already placed in a "
+        "document/BibTeX actually exists and whether its bibliographic data "
+        "is correct, checking both CrossRef+OpenAlex (a hallucinated-DOI "
+        "gate, no API key required).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    parser.add_argument("--doi", help="쉼표로 구분된 DOI 목록 (직접 지정)")
-    parser.add_argument("--file", help=".md/.txt 등에서 DOI를 정규식으로 자동 추출")
-    parser.add_argument("--bibtex", help="BibTeX 파일 — doi + author/year/title 대조까지 수행")
+    parser.add_argument("--doi", help="comma-separated DOI list (specified directly)")
+    parser.add_argument("--file", help="auto-extract DOIs from .md/.txt etc. with a regex")
+    parser.add_argument("--bibtex", help="BibTeX file — also checks doi against author/year/title")
     parser.add_argument(
         "--email",
         default=None,
-        help="폴라이트 풀용 연락처 이메일 (없으면 SCITK_CONTACT_EMAIL 환경변수 사용)",
+        help="contact email for the polite pool (falls back to the SCITK_CONTACT_EMAIL env var)",
     )
-    parser.add_argument("--refresh", action="store_true", help="캐시를 무시하고 강제로 재조회")
+    parser.add_argument("--refresh", action="store_true", help="ignore the cache and force a re-lookup")
     parser.add_argument(
         "--output",
         default="doi_verify_report.json",
-        help="결과 JSON 저장 경로 (기본: doi_verify_report.json)",
+        help="path to save the result JSON to (default: doi_verify_report.json)",
     )
-    parser.add_argument("--cache-dir", default=None, help="ref_cache_manager 캐시 디렉토리 (기본값 권장)")
+    parser.add_argument("--cache-dir", default=None, help="ref_cache_manager cache directory (default recommended)")
     parser.add_argument(
         "--expect-title",
         default=None,
-        help="이 DOI가 가리킬 것으로 의도한 논문 제목. 실제 레코드와 대조해 "
-        "'존재하지만 무관한 논문'을 잡는다. --doi 하나와 함께만 쓸 것.",
+        help="the paper title this DOI is intended to point to. Checked "
+        "against the real record to catch a 'real but unrelated paper'. "
+        "Use only together with a single --doi.",
     )
     parser.add_argument(
         "--doi-source",
         choices=["human", "model"],
         default=None,
-        help="DOI의 출처. human=사용자가 브라우저/PDF에서 직접 복사, "
-        "model=LLM이 기억에서 생성. model은 --expect-title 없이 진입할 수 없다.",
+        help="where the DOI came from. human=the user copied it directly "
+        "from a browser/PDF, model=an LLM generated it from memory. model "
+        "cannot enter without --expect-title.",
     )
 
     args = parser.parse_args()
 
     if not (args.doi or args.file or args.bibtex):
-        print("[ERROR] --doi / --file / --bibtex 중 하나는 필요합니다.", file=sys.stderr)
+        print("[ERROR] one of --doi / --file / --bibtex is required.", file=sys.stderr)
         parser.print_help()
         return 1
 
-    # --- DOI 출처 게이트 -------------------------------------------------- #
-    # LLM이 생성한 DOI는 형식이 완벽해도 내용이 틀릴 수 있고, 순차 대역에서는
-    # 실재하는 무관한 논문에 착지한다. 그래서 model 출처는 "무엇을 찾으려 했는지"를
-    # 반드시 함께 선언하게 하고, 선언이 없으면 조회 자체에 들어가지 못하게 한다.
-    # (등급으로 걸러내는 것보다 앞단에서 막는 편이 확실하다 — 등급은 사람이
-    #  무시할 수 있지만 진입 차단은 무시할 수 없다.)
+    # --- DOI provenance gate ---------------------------------------------- #
+    # An LLM-generated DOI can be wrong in content even with a perfect
+    # format, and in a sequential range it lands on a real but unrelated
+    # paper. So a model-sourced DOI must always declare "what it was trying
+    # to find" alongside it, and without that declaration it cannot enter the
+    # lookup at all. (Blocking it upstream is more reliable than filtering it
+    # out by grade — a grade can be ignored by a human, but an entry block
+    # cannot.)
     if args.doi_source == "model" and not args.expect_title:
         print(
-            "[BLOCKED] --doi-source model 은 --expect-title 없이 쓸 수 없습니다.\n"
-            "          LLM이 생성한 DOI는 존재 여부만으로 검증되지 않습니다 — "
-            "찾으려던 논문 제목을 함께 선언하세요.",
+            "[BLOCKED] --doi-source model cannot be used without --expect-title.\n"
+            "          An LLM-generated DOI cannot be verified by existence "
+            "alone — declare the title of the paper you were looking for "
+            "alongside it.",
             file=sys.stderr,
         )
         return 2
 
     if args.expect_title and not args.doi:
-        print("[ERROR] --expect-title 은 --doi 와 함께만 쓸 수 있습니다.", file=sys.stderr)
+        print("[ERROR] --expect-title can only be used together with --doi.", file=sys.stderr)
         return 1
 
     if args.expect_title and len([p for p in args.doi.split(",") if p.strip()]) != 1:
         print(
-            "[ERROR] --expect-title 은 DOI 하나에만 붙일 수 있습니다 "
-            "(제목 하나를 여러 DOI에 공유하면 대조가 무의미해집니다).",
+            "[ERROR] --expect-title can only be attached to a single DOI "
+            "(sharing one title across multiple DOIs makes the comparison meaningless).",
             file=sys.stderr,
         )
         return 1
@@ -682,14 +719,14 @@ def main() -> int:
     email = args.email or os.getenv("SCITK_CONTACT_EMAIL") or None
     if not email:
         print(
-            "[INFO] --email / SCITK_CONTACT_EMAIL 없음 — 폴라이트 풀 없이 조회합니다 "
-            "(속도 제한에 걸릴 수 있음).",
+            "[INFO] no --email / SCITK_CONTACT_EMAIL — looking up without "
+            "the polite pool (may hit rate limits).",
             file=sys.stderr,
         )
 
     targets = collect_targets(args)
     if not targets:
-        print("[ERROR] 검증할 DOI가 없습니다.", file=sys.stderr)
+        print("[ERROR] no DOIs to verify.", file=sys.stderr)
         return 1
 
     cache = RefCacheManager(cache_dir=args.cache_dir)
@@ -697,14 +734,14 @@ def main() -> int:
     results: list[dict[str, Any]] = []
     for i, t in enumerate(targets, 1):
         doi = t["doi"]
-        print(f"[{i}/{len(targets)}] 검증 중: {doi}", file=sys.stderr)
+        print(f"[{i}/{len(targets)}] verifying: {doi}", file=sys.stderr)
         try:
             record = verify_one(doi, t.get("expected"), cache, email, args.refresh)
-        except Exception as e:  # noqa: BLE001 — 개별 DOI 실패가 전체를 죽이지 않게
+        except Exception as e:  # noqa: BLE001 — one DOI failing must not kill the whole run
             record = {
                 "doi": doi,
                 "grade": "UNVERIFIED",
-                "reasons": [f"예외 발생: {type(e).__name__}: {e}"],
+                "reasons": [f"exception raised: {type(e).__name__}: {e}"],
                 "crossref": {"found": False, "error": "exception"},
                 "openalex": {"found": False, "error": "exception"},
             }
@@ -719,38 +756,41 @@ def main() -> int:
         "results": results,
     }
     output_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n[OK] 리포트 저장: {output_path}", file=sys.stderr)
+    print(f"\n[OK] report saved: {output_path}", file=sys.stderr)
 
     print_summary(results)
 
-    # --doi 로 특정 DOI를 짚어 왔거나 출처를 선언했다면 UNCORROBORATED를 실패로 센다.
-    # --file 대량 스캔은 제목을 얻을 방법이 없어 거의 전부 UNCORROBORATED가 되므로
-    # exit 에는 반영하지 않는다 (exit_code_for 의 docstring 참고).
+    # Count UNCORROBORATED as a failure if a specific DOI was targeted via
+    # --doi or a source was declared. A --file bulk scan has no way to get a
+    # title, so nearly everything ends up UNCORROBORATED, and that is not
+    # reflected in the exit code (see exit_code_for's docstring).
     strict = bool(args.doi or args.doi_source)
     code = exit_code_for(results, strict_uncorroborated=strict)
 
     n_uncorr = sum(1 for r in results if r["grade"] == "UNCORROBORATED")
 
     if code == 2:
-        print("\n[FAIL] HALLUCINATED 또는 RETRACTED 항목이 있습니다 (exit 2).", file=sys.stderr)
+        print("\n[FAIL] there are HALLUCINATED or RETRACTED items (exit 2).", file=sys.stderr)
     elif code == 1:
         print(
-            "\n[WARN] MISMATCH/UNCORROBORATED/ONE_SOURCE_ONLY/UNVERIFIED 항목이 "
-            "있습니다 (exit 1).",
+            "\n[WARN] there are MISMATCH/UNCORROBORATED/ONE_SOURCE_ONLY/UNVERIFIED "
+            "items (exit 1).",
             file=sys.stderr,
         )
     elif n_uncorr:
-        # 통과시키되 "무엇을 확인하지 않았는지"를 반드시 말한다. 조용한 통과가
-        # 바로 존재하지만 무관한 DOI를 원고에 들여보내는 경로다.
+        # Pass, but always say "what wasn't confirmed". A silent pass is
+        # exactly the path that lets an existing-but-unrelated DOI into a
+        # manuscript.
         print(
-            f"\n[PASS] 차단 사유 없음 (exit 0) — 단, {n_uncorr}건은 '존재한다'까지만 "
-            "확인됐고 그 DOI가 의도한 논문인지는 대조하지 못했습니다.\n"
-            "       제목까지 대조하려면 --bibtex 로 넘기거나, 개별 DOI에 "
-            "--expect-title 을 주세요.",
+            f"\n[PASS] no blocking reason (exit 0) — but {n_uncorr} item(s) "
+            "were only confirmed to 'exist', and whether that DOI is the "
+            "intended paper was not checked.\n"
+            "       To check the title too, pass it via --bibtex, or give "
+            "an individual DOI --expect-title.",
             file=sys.stderr,
         )
     else:
-        print("\n[PASS] 전부 OK (exit 0).", file=sys.stderr)
+        print("\n[PASS] all OK (exit 0).", file=sys.stderr)
     return code
 
 

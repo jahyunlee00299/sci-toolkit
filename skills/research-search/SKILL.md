@@ -46,50 +46,57 @@ Query arrives
     |       |       +-- General scholarly (any field)
     |       |               --> openalex-database (filters, bibliometrics)
     |
-    +-- 논문 원문 PDF 다운로드? (DOI 기반, OA 경로만)
+    +-- Download the full-text PDF? (DOI-based, OA route only)
     |       |
-    |       +-- 🔒 그 DOI를 어디서 얻었는가? — 수집 전에 먼저 정한다
-    |       |       · 사용자가 브라우저/PDF에서 직접 복사   --> 그대로 진행
-    |       |       · LLM(나)이 기억에서 생성했다
-    |       |           --> ref_fetch.py --doi-source model --expect-title "<찾던 제목>"
-    |       |               제목을 선언하지 않으면 수집에 진입조차 못 한다(exit 2).
-    |       |               이유: 순차 DOI 대역(10.1016/j.xxx.YYYY.NNNNNN, Wiley, ACS)은
-    |       |               한 자리만 틀려도 *실재하는 무관한 논문*에 착지한다. 실측 —
-    |       |               지어낸 10.1016/j.biortech.2019.122211 은 없지만 +2 인 122213 은
-    |       |               실재하는 크롬 환원 논문이고, 옛 게이트는 OK/exit 0 으로 통과시켰다.
-    |       |               "존재함"과 "내가 찾던 그 논문임"은 다른 명제다.
+    |       +-- 🔒 Where did that DOI come from? — decide this BEFORE fetching
+    |       |       · The user copied it directly from a browser/PDF   --> proceed as-is
+    |       |       · The LLM (me) generated it from memory
+    |       |           --> ref_fetch.py --doi-source model --expect-title "<title you were looking for>"
+    |       |               Without declaring a title, fetching cannot even start (exit 2).
+    |       |               Reason: a sequential DOI block (10.1016/j.xxx.YYYY.NNNNNN, Wiley, ACS)
+    |       |               can land on a *real, unrelated paper* from being off by just one digit.
+    |       |               Measured — the invented 10.1016/j.biortech.2019.122211 doesn't exist,
+    |       |               but 122213 (+2) is a real paper on chromium reduction, and the old gate
+    |       |               let it through as OK/exit 0.
+    |       |               "It exists" and "it's the paper I was looking for" are different claims.
     |       |
-    |       +-- DOI를 알고 있음
+    |       +-- The DOI is known
     |       |       --> ../../scripts/ref_fetch.py --doi <DOI> --download
-    |       |           (CrossRef → OpenAlex → Unpaywall 교차검증 후 OA PDF만 수집,
-    |       |            API 키 불필요; 자세한 옵션은 `python ../../scripts/ref_fetch.py --help`)
+    |       |           (cross-verifies via CrossRef → OpenAlex → Unpaywall, then fetches OA PDF only,
+    |       |            no API key needed; see `python ../../scripts/ref_fetch.py --help` for options)
     |       |
-    |       +-- 제목만 알고 있음
-    |       |       --> ../../scripts/ref_fetch.py --title "<제목>" --download
-    |       |           (제목으로 DOI를 먼저 해석한 뒤 동일하게 진행)
+    |       +-- Only the title is known
+    |       |       --> ../../scripts/ref_fetch.py --title "<title>" --download
+    |       |           (resolves the DOI from the title first, then proceeds the same way)
     |       |
-    |       +-- 보충자료(SI)도 필요함
-    |       |       --> ref_fetch.py ... --with-si   (또는 scripts/si_fetch.py 단독)
-    |       |           본문과 SI는 접근성이 다르다 — 본문이 페이월이어도 SI는 열려 있을 수 있다.
-    |       |           자동 수집 경로는 Europe PMC 하나뿐이다(표준 라이브러리로 되는 유일한 길).
-    |       |           실측: 출판사 landing page 는 urllib 로 축소 페이지만 오고,
-    |       |           PMC 파일 직링크는 "Preparing to download" JS 인터스티셜을 준다.
-    |       |           PMC 에 없는 논문은 링크만 안내한다 — 우회하지 않는다.
+    |       +-- Supplementary information (SI) is also needed
+    |       |       --> ref_fetch.py ... --with-si   (or scripts/si_fetch.py standalone)
+    |       |           Body text and SI have different access levels — SI can be open even
+    |       |           when the body is paywalled. The only automated route is Europe PMC
+    |       |           (the sole path achievable with the standard library alone).
+    |       |           Measured: a publisher landing page returns only a stripped-down page
+    |       |           via urllib, and a direct PMC file link returns a "Preparing to download"
+    |       |           JS interstitial.
+    |       |           For a paper not on PMC, only the link is given — no workaround is used.
     |       |
-    |       +-- 기관 구독 저널(페이월) 논문 — OA 링크 없음
-    |               --> ref_fetch.py ... --institution <키>   (config/institutions.json)
-    |                   oa_status 가 "closed" 면 **사람이 클릭할** 기관 도서관 링크를
-    |                   만들어 리포트와 화면에 넣는다. 로그인도 다운로드도 하지 않는다.
-    |                   🔒 왜 자동화하지 않는가: 대학 도서관 공정이용 규정은 위반 사례
-    |                   첫 항목으로 "전자적, 기계적 수단(다운로딩 프로그램, 엔진, 로봇,
-    |                   매크로, RPA 등)으로 원문을 다운로드하는 행위"를 든다. 본인 계정으로
-    |                   로그인했더라도 그 뒤를 스크립트가 받으면 수단 자체가 위반이고,
-    |                   제재는 도서관 서비스 1년 제한 + 민사 책임 1차 부담이다.
-    |                   한도(예: 동일 출판사 30건/일, 동일 PC 50건/일)도 함께 안내된다.
+    |       +-- Journal behind an institutional subscription (paywall) — no OA link
+    |               --> ref_fetch.py ... --institution <key>   (config/institutions.json)
+    |                   When oa_status is "closed", build a **human-clickable** institutional
+    |                   library link and place it in the report and on screen. No login, no
+    |                   download performed.
+    |                   🔒 Why this is not automated: a university library's fair-use policy
+    |                   lists, as its first violation example, "downloading full text by
+    |                   electronic or mechanical means (a downloader program, engine, bot,
+    |                   macro, RPA, etc.)." Even after a human logs in with their own account,
+    |                   handing the rest to a script violates the policy by the means alone,
+    |                   and the penalty is a one-year library-service restriction plus primary
+    |                   civil liability.
+    |                   Rate limits (e.g. 30/day per publisher, 50/day per machine) are also
+    |                   reported alongside.
     |
     +-- Preprint / not yet peer reviewed?
     |       |
-    |       +-- "has this been posted yet", newest work, 최신 논문 검색
+    |       +-- "has this been posted yet", newest work, searching for the latest paper
     |               --> biorxiv-database (Europe PMC SRC:PPR + arXiv, no API key)
     |
     +-- General web search / current non-academic information?
@@ -160,7 +167,7 @@ results = client.search_works(search="topic", filter_params={"cited_by_count": "
 
 ### 4. biorxiv-database (Preprints)
 
-**When:** The work may be too new to be peer reviewed — "has anyone posted this yet", newest results in a fast-moving field, 최신 논문 검색 before journal publication.
+**When:** The work may be too new to be peer reviewed — "has anyone posted this yet", newest results in a fast-moving field, searching for the latest paper before journal publication.
 
 - Europe PMC `SRC:PPR` (bioRxiv, medRxiv, Research Square, ChemRxiv, SSRN) + arXiv Atom API
 - No API key, no registration
@@ -191,14 +198,14 @@ No general web-search skill ships here (they all require a paid API key). For no
 | "PubMed search with MeSH terms" | pubmed-database | — |
 | "Author's publication list" | openalex-database | — |
 | "Citation analysis for paper X" | openalex-database | — |
-| "프리프린트 / 아직 안 나온 최신 결과" | biorxiv-database | research-lookup |
-| "이미 누가 올렸는지 확인" | biorxiv-database | openalex-database |
+| "Preprint / newest result not yet published" | biorxiv-database | research-lookup |
+| "Check whether someone already posted this" | biorxiv-database | openalex-database |
 | "What methods did studies use for X" | literature-review | research-lookup |
 | "Recent advances in X (2026)" | biorxiv-database | research-lookup |
 | "Systematic review on X" | literature-review (workflow) | — |
-| "논문 PDF 다운로드 (OA)" | `scripts/ref_fetch.py --doi <DOI> --download` | `--title "<제목>"` |
-| "논문 PDF 다운로드 (기관 구독)" | 미지원 — `oa_status: closed` 로 남기고 도서관 경로는 사용자가 직접 | — |
-| "Latest news / market data (비학술)" | 에이전트 내장 웹 검색 | — |
+| "Download paper PDF (OA)" | `scripts/ref_fetch.py --doi <DOI> --download` | `--title "<title>"` |
+| "Download paper PDF (institutional subscription)" | Not supported — leave as `oa_status: closed`, user follows the library route themselves | — |
+| "Latest news / market data (non-academic)" | agent's built-in web search | — |
 
 ## API Key Requirements
 

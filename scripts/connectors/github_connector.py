@@ -11,9 +11,10 @@ your own fork instead.
 """
 from __future__ import annotations
 
-# Windows 기본 콘솔은 cp949 라서 한글/기호 출력에서 죽는다. UTF-8로 맞춘다.
-# reconfigure 를 쓴다: TextIOWrapper 로 감싸면 원본 스트림을 소유하게 되어,
-# 이 모듈이 import 된 뒤 래퍼가 GC 될 때 호출자의 stdout 까지 닫는다(실측).
+# Windows' default console is cp949, which dies on Korean/symbol output. Force UTF-8.
+# Use reconfigure(): wrapping in a TextIOWrapper would take ownership of the
+# underlying stream, so once the wrapper is GC'd after this module is imported,
+# it closes the caller's stdout too (measured).
 import sys as _sys
 for _s in (_sys.stdout, _sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -37,7 +38,7 @@ API_ROOT = "https://api.github.com"
 
 
 def http(method, url, token, data=None, headers=None):
-    """urllib 기반 최소 HTTP 헬퍼. 파싱된 JSON을 반환하거나 친절한 한글 오류로 종료."""
+    """Minimal urllib-based HTTP helper. Returns parsed JSON, or exits with a friendly error."""
     hdrs = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github+json",
@@ -56,26 +57,26 @@ def http(method, url, token, data=None, headers=None):
             return json.loads(raw) if raw else {}
     except urllib.error.HTTPError as e:
         if e.code == 401:
-            sys.exit(f"[오류] 인증 실패(401). 토큰(github.token)을 확인하세요. (마스킹: {cred.mask(token)})")
+            sys.exit(f"[Error] Authentication failed (401). Check your token (github.token). (masked: {cred.mask(token)})")
         if e.code == 403:
-            sys.exit("[오류] 403 — API 요청 한도 초과 또는 권한 부족일 수 있습니다.")
+            sys.exit("[Error] 403 — could be an API rate limit or insufficient permission.")
         if e.code == 404:
-            sys.exit("[오류] 404 — 저장소/리소스를 찾을 수 없습니다. --repo owner/name 형식을 확인하세요.")
+            sys.exit("[Error] 404 — repository/resource not found. Check the --repo owner/name format.")
         detail = ""
         try:
             detail = e.read().decode("utf-8", "ignore")
         except Exception:
             pass
-        sys.exit(f"[오류] GitHub API 오류 {e.code}: {detail[:300]}")
+        sys.exit(f"[Error] GitHub API error {e.code}: {detail[:300]}")
     except urllib.error.URLError as e:
-        sys.exit(f"[오류] 네트워크 연결을 확인하세요: {e.reason}")
+        sys.exit(f"[Error] Check your network connection: {e.reason}")
 
 
 def cmd_issues(args, token):
     url = f"{API_ROOT}/repos/{args.repo}/issues?state={args.state}"
     data = http("GET", url, token)
     items = [d for d in data if "pull_request" not in d]
-    print(f"[{args.repo}] {args.state} 이슈 {len(items)}건")
+    print(f"[{args.repo}] {args.state} issue(s): {len(items)}")
     for it in items:
         print(f"  #{it['number']:<5} {it['title']}  (by {it['user']['login']})")
 
@@ -83,7 +84,7 @@ def cmd_issues(args, token):
 def cmd_prs(args, token):
     url = f"{API_ROOT}/repos/{args.repo}/pulls?state=open"
     data = http("GET", url, token)
-    print(f"[{args.repo}] open PR {len(data)}건")
+    print(f"[{args.repo}] open PR(s): {len(data)}")
     for pr in data:
         draft = " (draft)" if pr.get("draft") else ""
         print(f"  #{pr['number']:<5} {pr['title']}{draft}  {pr['head']['ref']} -> {pr['base']['ref']}")
@@ -97,16 +98,17 @@ def cmd_repo(args, token):
     print(f"  fork: {is_fork}")
     if is_fork:
         parent = data.get("parent", {}) or {}
-        print(f"  parent(upstream): {parent.get('full_name', '(알 수 없음)')}")
+        print(f"  parent(upstream): {parent.get('full_name', '(unknown)')}")
     print(f"  private: {data.get('private')}")
     print(f"  default_branch: {data.get('default_branch')}")
 
 
 def cmd_open_pr(args, token):
-    # fork 가드는 저장소를 조회해야 판정된다 → 토큰이 필요하다. 토큰 없이 부른
-    # dry-run 은 페이로드만 보여주고, 가드를 "통과"한 게 아니라 "아직 못 돌렸다"고
-    # 밝힌다. 여기서 조용히 넘어가면 --write 없이 본 미리보기가 upstream 안전을
-    # 확인해 준 것처럼 읽힌다.
+    # The fork guard needs to look up the repo to decide, which needs a token. A
+    # dry-run called without a token shows only the payload, and states plainly
+    # that the guard "hasn't run yet" rather than that it "passed." Staying quiet
+    # here would make a preview without --write read as if it had confirmed
+    # upstream safety.
     fork_checked = token is not None
     if fork_checked:
         repo_url = f"{API_ROOT}/repos/{args.repo}"
@@ -116,9 +118,9 @@ def cmd_open_pr(args, token):
 
         if is_fork and parent and parent == args.repo:
             sys.exit(
-                "[거부] 이 저장소는 fork이며 --repo 가 가리키는 대상이 바로 그 upstream(parent) 저장소입니다.\n"
-                "  upstream에 대한 push/PR은 명시적인 사람의 직접 조작이 필요합니다.\n"
-                "  대신 본인 fork에서 PR을 여세요 (예: --repo <your-username>/<repo>)."
+                "[Refused] This repository is a fork, and --repo points at its own upstream (parent) repository.\n"
+                "  A push/PR against upstream requires an explicit human action.\n"
+                "  Open the PR from your own fork instead (e.g. --repo <your-username>/<repo>)."
             )
 
     body_preview = {
@@ -130,53 +132,53 @@ def cmd_open_pr(args, token):
     }
 
     if not args.write:
-        print("[DRY-RUN] --write 플래그가 없어 실제로 실행하지 않습니다.")
-        print(f"  대상 저장소: {args.repo}")
-        print("  생성될 PR (draft):")
+        print("[DRY-RUN] --write flag not set, not actually executing.")
+        print(f"  Target repository: {args.repo}")
+        print("  PR to be created (draft):")
         print(json.dumps(body_preview, ensure_ascii=False, indent=2))
         if not fork_checked:
-            print("  [주의] 토큰이 없어 fork/upstream 검사를 아직 돌리지 못했습니다.")
-            print("         --write 실행 시 검사 후 upstream 대상이면 거부됩니다.")
-        print("  실행하려면 --write 를 추가하세요.")
+            print("  [Caution] No token, so the fork/upstream check has not run yet.")
+            print("            On --write it will run first and refuse if the target is upstream.")
+        print("  Add --write to execute.")
         return
 
-    print("[알림] 외부로 나가는(outward) 되돌리기 어려운 작업입니다 — GitHub에 실제 draft PR을 생성합니다.")
+    print("[Notice] This is an outward, hard-to-undo action — creating a real draft PR on GitHub.")
     url = f"{API_ROOT}/repos/{args.repo}/pulls"
     result = http("POST", url, token, data=body_preview)
-    print(f"[완료] draft PR 생성됨: #{result.get('number')} {result.get('html_url')}")
+    print(f"[Done] Draft PR created: #{result.get('number')} {result.get('html_url')}")
 
 
 def build_parser():
     p = argparse.ArgumentParser(
         prog="github_connector.py",
         description=(
-            "GitHub REST 커넥터 (read-first). issues/prs/repo 는 자유 조회, "
-            "open-pr 만 쓰기 동작이며 --write 필요. PR은 항상 draft로만 생성되고, "
-            "fork의 upstream 대상은 자동 거부됩니다. merge 서브커맨드는 존재하지 않습니다."
+            "GitHub REST connector (read-first). issues/prs/repo are free reads; "
+            "open-pr is the only write action and requires --write. A PR is always created as "
+            "draft only, and a fork's upstream target is refused automatically. No merge subcommand exists."
         ),
     )
     sub = p.add_subparsers(dest="command")
 
-    sp = sub.add_parser("issues", help="[READ] open 이슈 목록")
+    sp = sub.add_parser("issues", help="[READ] list open issues")
     sp.add_argument("--repo", required=True, help="owner/name")
     sp.add_argument("--state", default="open")
     sp.set_defaults(func=cmd_issues)
 
-    sp = sub.add_parser("prs", help="[READ] open PR 목록")
+    sp = sub.add_parser("prs", help="[READ] list open PRs")
     sp.add_argument("--repo", required=True)
     sp.set_defaults(func=cmd_prs)
 
-    sp = sub.add_parser("repo", help="[READ] 저장소 정보 (fork 여부/parent)")
+    sp = sub.add_parser("repo", help="[READ] repository info (fork status/parent)")
     sp.add_argument("--repo", required=True)
     sp.set_defaults(func=cmd_repo)
 
-    sp = sub.add_parser("open-pr", help="[WRITE, --write 필요] draft PR 생성 (upstream 가드 포함)")
+    sp = sub.add_parser("open-pr", help="[WRITE, requires --write] create a draft PR (includes upstream guard)")
     sp.add_argument("--repo", required=True)
     sp.add_argument("--head", required=True)
     sp.add_argument("--base", required=True)
     sp.add_argument("--title", required=True)
     sp.add_argument("--body", default="")
-    sp.add_argument("--write", action="store_true", help="실제로 PR을 생성합니다 (없으면 dry-run)")
+    sp.add_argument("--write", action="store_true", help="Actually create the PR (dry-run if omitted)")
     sp.set_defaults(func=cmd_open_pr)
 
     return p
@@ -187,9 +189,9 @@ def main():
     args = parser.parse_args()
     if not getattr(args, "command", None):
         parser.print_help()
-        print("\n[안내] 읽기(issues/prs/repo)는 바로 실행됩니다. 쓰기(open-pr)는 --write 가 있어야 실행됩니다.")
+        print("\n[Note] Reads (issues/prs/repo) run immediately. Writes (open-pr) require --write.")
         return
-    # dry-run(쓰기 명령인데 --write 없음)은 토큰 없이도 미리보기 가능하게 한다.
+    # A dry-run (a write command without --write) can preview without a token.
     is_dryrun_write = hasattr(args, "write") and not args.write
     token = None if is_dryrun_write else cred.require("github", "token")
     args.func(args, token)
