@@ -3,6 +3,10 @@
 이 파일은 sci-toolkit 배포판의 버전별 변경 이력을 기록합니다.
 형식은 [Keep a Changelog](https://keepachangelog.com/) 를 따르며, 버전은 [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 사용합니다.
 
+## [1.2.44] — 2026-08-28
+
+- skills: two figure-integration failure modes the existing gates cannot see
+
 ## [1.2.43] — 2026-08-27
 
 - docs(asana): cap tables at ~5 columns in sanitize_html rules

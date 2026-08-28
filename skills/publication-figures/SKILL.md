@@ -34,6 +34,28 @@ Figure request
 
 ---
 
+## Identifying a figure file (applies to every route)
+
+**A render's filename is not evidence of which figure it is.** Map a file to a
+manuscript slot by its caption sidecar (`<stem>.caption.txt`, line 1 names the
+figure) or by opening the picture — never by the name. Filenames in a figure
+repo record which script emitted the file, so they stop tracking the manuscript
+the moment figures are reordered, and a legacy-naming convention is never
+partial: assume every filename in the directory is legacy.
+
+Worked failure: a gallery held `Fig6.png` whose own sidecar caption read
+"Fig. 7. ..." — the real Fig. 6 sat in a differently named file. An integration
+pass mapped by filename and overwrote the manuscript's correct Fig. 6 with
+Fig. 7's chart, leaving the same chart printed twice and Fig. 6's subject
+missing entirely. The manuscript had held the right image before the edit.
+
+🔴 **Verification corollary.** Byte-identity and aspect-ratio checks PASS while
+the wrong picture sits in the slot — they did, in that case. When verifying a
+figure integration, one check must open the image and read the caption it landed
+under. See `manuscript-pipeline` §Logging & Provenance for the docx-side gates.
+
+---
+
 ## Route 1 — Scientific Schematics (AI-Generated)
 
 For: experimental setups, metabolic pathways, protein mechanisms, workflow diagrams
