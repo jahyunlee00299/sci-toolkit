@@ -158,15 +158,50 @@ with tempfile.TemporaryDirectory() as td:
 section("network tests")
 
 
-def _network_available() -> bool:
+_FIXTURE_PMCID = "PMC4456712"
+_EPMC_PROBE = ("https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+               f"?query={_FIXTURE_PMCID}&format=json&resultType=core&pageSize=1")
+
+
+def _upstream_available() -> tuple[bool, str]:
+    """(ok, reason). A TCP handshake is not enough.
+
+    Measured 2026-09-02: the host accepted connections while
+    /supplementaryFiles answered HTTP 500 in the morning and 404 for every
+    PMCID in the evening, and the search record for the fixture paper said
+    hasSuppl=N although it carried 3 SI files on 2026-08-07. Every [network]
+    case then failed as if si_fetch were broken. So ask the search API
+    whether the fixture record currently HAS supplementary files; if the
+    upstream says no (or is down), skip the live group with the reason on the
+    line — that is the other side's state, not a regression here.
+    """
+    import urllib.error
+    import urllib.request
     try:
         socket.create_connection(("www.ebi.ac.uk", 443), timeout=5).close()
-        return True
-    except OSError:
-        return False
+    except OSError as exc:
+        return False, f"no network connection ({exc.__class__.__name__})"
+    try:
+        with urllib.request.urlopen(urllib.request.Request(
+                _EPMC_PROBE, headers={"User-Agent": "sci-toolkit-selftest"}), timeout=15) as r:
+            payload = json.loads(r.read().decode("utf-8", errors="replace"))
+    except urllib.error.HTTPError as exc:
+        return False, f"Europe PMC upstream returned HTTP {exc.code}"
+    except (urllib.error.URLError, OSError, ValueError) as exc:
+        return False, f"Europe PMC unreachable or malformed ({exc.__class__.__name__}: {exc})"
+    results = (payload.get("resultList") or {}).get("result") or []
+    if not results:
+        return False, f"Europe PMC upstream returned no record for {_FIXTURE_PMCID}"
+    if results[0].get("hasSuppl") != "Y":
+        return False, (f"Europe PMC upstream reports hasSuppl={results[0].get('hasSuppl')!r} for "
+                       f"{_FIXTURE_PMCID} (had 3 SI files on 2026-08-07) — supplementaryFiles "
+                       "service degraded or fixture stale; live SI cases cannot be judged")
+    return True, "HTTP 200, hasSuppl=Y"
 
 
-if _network_available():
+_NET_OK, _NET_WHY = _upstream_available()
+
+if _NET_OK:
     print("  network available — running the live API-call tests")
 
     # OA paper on PMC: it actually has 3 supplementary files (measured 260807).
@@ -202,7 +237,7 @@ if _network_available():
     check("[network] the notice states this is not because SI is paywalled",
           "유료라서가 아닙니다" in (blocked.manual_hint or ""))
 else:
-    print("  [SKIP] no network connection — skipping the Europe PMC call tests "
+    print(f"  [SKIP] {_NET_WHY} — skipping the Europe PMC call tests "
           "(the file-detection/branching logic was already verified above)")
 
 

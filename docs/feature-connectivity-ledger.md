@@ -500,3 +500,49 @@ wired-by: scripts/connectivity_check.py
 wired-by: tests/test_connectivity.py
 wired-by: tests/test_tool_cli_smoke.py
 wired-by: skills/web-scraping/tests
+
+## 2026-09-02 — Doctor verdict quality: upstream outage ≠ broken tool
+
+**Scope / layer** — cross-cutting: `doctor.py` (`_run_python`,
+`_classify_selftest_failure`, `check_toolkit_selftests`, `_run_test_script`),
+`tests/test_si_institutional.py`, `tests/test_doi_verify.py`,
+`tests/test_doctor_selftest_verdicts.py`, `PROJECT_STRUCTURE.md`.
+
+**Why** — measured 2026-09-02: Europe PMC answered HTTP 500 in the morning
+and 404-for-every-PMCID in the evening; the fixture record's `hasSuppl`
+flipped to N. Only `[network]` cases failed, yet doctor said "a verification
+tool is broken". The tests' availability probe was a TCP handshake, which
+succeeds while the REST service is down. Separately, `_run_test_script`
+chose its summary line by matching two Korean words that no test has printed
+since the 2026-08-28 translation — the summary silently fell back to the
+generic message on every run.
+
+**Change** — (1) one `_run_python` helper replaces four `subprocess.run`
+copies; (2) a self-test whose failing lines are all `[network]`-tagged and
+whose output carries an outage marker (HTTP 5xx/429, URLError, timed out…)
+is reported as *blocked by an upstream outage* → WARN, never FAIL; a mixed
+failure stays FAIL; (3) the two network tests probe the endpoint/record they
+actually use and SKIP with the reason on the line; (4) the summary is the
+script's own last stdout line; (5) `PROJECT_STRUCTURE.md` table rows that had
+drifted below a prose section are back in the table.
+
+**Evidence** — doctor 13 OK / 1 WARN / 0 FAIL; the "Skill reference
+integrity" row now prints the script's real verdict ("ALL PASS — every
+reference exists") instead of the fallback; `test_si_institutional.py` prints
+`[SKIP] Europe PMC upstream reports hasSuppl='N' …` and exits 0.
+
+**Refutation** — `tests/test_doctor_selftest_verdicts.py`, 23 cases:
+outage-only → WARN; broken → FAIL; outage + broken → FAIL (an outage never
+hides a real break); `[network]` FAIL *without* an outage marker → broken (a
+wrong answer from a live API is a real bug); crash with no FAIL line →
+broken; timeout raises; exactly one `subprocess.run` in doctor.py; the Korean
+matcher is gone.
+
+**Deferred risk** — the SI fixture (PMC4456712, "3 SI files on 2026-08-07")
+may be stale rather than the service degraded; when Europe PMC recovers and
+still says hasSuppl=N, replace the fixture PMCID.
+
+wired-by: doctor.py
+wired-by: tests/test_doctor_selftest_verdicts.py
+wired-by: tests/test_si_institutional.py
+wired-by: tests/test_doi_verify.py

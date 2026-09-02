@@ -23,7 +23,13 @@ as a `.claude-plugin` and is the packaging layer that feeds skills into
 | `config/` | `catalog.json`, `institutions.json`, `credentials.example.json` (template only, no live secrets) |
 | `hooks/` | Guard scripts (git safety, secret scan, destructive-delete, multiline, cloud-path) + `hooks.json` wiring |
 | `skills/` | Bundled skill directories (academic-term-rules, biorxiv-database, code-quality, conda-env-manager, endnote-citation-injection, experiment-hub, generate-image, git-workflow-manager, journal-presentation-maker, lab-data-analysis, literature-review, manuscript-pipeline, markdown-mermaid-writing, markitdown, openalex-database, paper-extract, primer-design, publication-figures, pubmed-database, research-ideation/-lookup/-search, scientific-validation, skill-developer, stats-workflow, statsmodels, get-available-resources) |
-| `scripts/` | Utility scripts backing the skills (DOI verify, Excel formula check, HPLC parser, JCR batch verify, primer/variant checks, reference cache/fetch, SI fetch, checksum manifest, `skill_drift.py`) |
+| `scripts/` | Utility scripts backing the skills (DOI verify, Excel formula check, HPLC parser, JCR batch verify, primer/variant checks, reference cache/fetch, SI fetch, checksum manifest, `skill_drift.py`, `connectivity_check.py`) |
+| `evals/` | Routing probe + Codex compliance probe/schema |
+| `install/install.py` | Installer |
+| `tests/` | Standalone self-check scripts (run by `doctor.py`, or `pytest tests/` via the subprocess collector in `conftest.py`): hooks/guards, doctor sentinel, DOI verify, feedback log/sanitize, checksums, skill references, install non-destructiveness, tool connectivity ratchet, standalone-tool smoke. Skill-local pytest suites (`skills/*/tests/`) are registered in `doctor.py` `SELF_TEST_SCRIPTS` as directory entries |
+| `out/` | Run output artifacts (gitignored except `.gitkeep`) |
+| `SHA256SUMS` | Checksum manifest for distributed files |
+| `.distignore` | Files excluded from distribution packaging |
 
 ## Shared skills — which copy is the source of truth
 
@@ -37,9 +43,12 @@ changed after the toolkit copy was last touched (LAGGING); on a machine with no
 runtime tree it reports "nothing to compare" and exits 0. Skills that exist only
 here (`analysis-code-testing`, `biorxiv-database`, `data-quality-checks`,
 `debugging-loop`, `spec-*`, `test-*`) are authored here.
-| `evals/` | Routing probe + Codex compliance probe/schema |
-| `install/install.py` | Installer |
-| `tests/` | Pytest suite covering hooks/guards, doctor sentinel, DOI verify, feedback log/sanitize, checksums, skill references, install non-destructiveness |
-| `out/` | Run output artifacts (should be gitignored) |
-| `SHA256SUMS` | Checksum manifest for distributed files |
-| `.distignore` | Files excluded from distribution packaging |
+
+## Connectivity — every tool must be reachable and tested
+
+`python scripts/connectivity_check.py` classifies every non-underscore `.py`
+under `scripts/`, `scripts/connectors/` and `skills/*/scripts/`: ORPHAN when no
+doc, importer, hook or doctor names it (exit 1), UNTESTED when nothing under
+`tests/`, `skills/*/tests/` or `doctor.py` names it (WARN, ratcheted by
+`tests/test_connectivity.py`). `docs/feature-connectivity-ledger.md` entries
+carry `wired-by: <path>` lines that must exist. Doctor check 13 runs it.
