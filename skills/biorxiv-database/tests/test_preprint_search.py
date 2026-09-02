@@ -72,6 +72,8 @@ def _print_check(label: str, ok: bool, detail: str = "") -> bool:
 
 
 def _network_available() -> bool:
+    if os.environ.get("SCI_TOOLKIT_OFFLINE") == "1":
+        return False  # doctor.py --offline: the SKIP line below says F2/F3 were NOT exercised
     try:
         req = urllib.request.Request(
             _NETWORK_PROBE_URL, headers={"User-Agent": "sci-toolkit-test/1.0"}

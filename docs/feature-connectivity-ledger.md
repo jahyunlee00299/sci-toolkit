@@ -442,3 +442,249 @@ not that its content is correct.
 machine for a missing `scipy`; unrelated to this branch and present on
 `origin/main`.
 
+
+## 2026-09-02 — Tool connectivity check (orphan / untested ratchet)
+
+**Scope / layer** — cross-cutting verification: `scripts/connectivity_check.py`,
+doctor check 13, `tests/test_connectivity.py`, `tests/test_tool_cli_smoke.py`.
+
+**Why** — measured 2026-09-02: nine tools (`hplc_parser`, `jcr_batch_verify`,
+`excel_formula_check`, `fetch_public_vector`, `primer_structure_check`,
+`variant_filter`, `convert_literature`, `manuscript_packet`, `fetch_github`)
+had no doc naming them, no importer and no test, while doctor reported 12 OK.
+This ledger itself was read by nothing. The failure the ledger describes
+("build the right artifact and nothing calls it") had happened to the ledger.
+
+**Rule** — every non-underscore `.py` under `scripts/`, `scripts/connectors/`
+and `skills/*/scripts/` is classified on two axes. *Reachable*: a doc an
+agent/user reads names it, or a module imports it, or a hook/installer/doctor
+runs it. *Exercised*: `tests/**`, `skills/*/tests/**`, `doctor.py` or `evals/`
+names it. ORPHAN (unreachable) = FAIL. UNTESTED (reachable, no test) = WARN
+in doctor, with a ratchet in the test (`MAX_UNTESTED`) so the count can only
+fall. Prose that says "hplc parser" without `.py` does not count — the stem
+alone matched unrelated sentences.
+
+**Ledger contract** — an entry may carry `wired-by: <path>` lines; every path
+must exist. This is the only mechanically checked part of the ledger.
+
+**Resolution of the nine** — routed (README package-layout table +
+`docs/agents/08-verification-routes.md` + smoke test): the six `scripts/`
+tools, `convert_literature.py`, `fetch_github.py`. Retired (deleted; git
+history keeps them): `skills/research-lookup/scripts/manuscript_packet.py`
+(pure helpers with no importer in the toolkit *or* the authoring tree) and
+`skills/primer-design/tests/test_md_vs_direct.py` (depends on a task-builder
+skill that does not ship in this toolkit, printed FAIL and exited 0 — a test
+that can never pass and never fails). The authoring tree should drop the same two files.
+
+**Also wired** — `skills/web-scraping/tests` (129 pytest cases: EZproxy scope,
+PDF pipeline, target safety, GitHub failure surfacing) now runs under doctor;
+`SELF_TEST_SCRIPTS` accepts a directory entry and runs it with pytest.
+
+**Evidence** — `python scripts/connectivity_check.py` → 0 orphan; doctor 13 OK;
+`tests/test_tool_cli_smoke.py` re-parses real output (2 peaks at 3.0/7.5 min
+from a synthetic chromatogram; hairpin primer FAILs, clean primer PASSes;
+3-row PASS/FAIL matrix).
+
+**Refutation** — synthetic trees: nothing-points-here → ORPHAN exit 1;
+doc-only → UNTESTED exit 0 and exit 1 under `--max-untested 0`; import+test →
+OK; `_helper.py` not a tool; stem-only prose does not count; dangling
+`wired-by:` → exit 1; empty tree → PASS; adverse tool inputs (non-chromatogram
+file, no primer sequences, missing CSV) never yield a silent PASS.
+
+**Deferred risk** — 52 reachable skill scripts have no test in this toolkit
+(they are downstream copies of skills authored elsewhere). The ratchet stops
+growth; it does not shrink the number.
+
+wired-by: doctor.py
+wired-by: scripts/connectivity_check.py
+wired-by: tests/test_connectivity.py
+wired-by: tests/test_tool_cli_smoke.py
+wired-by: skills/web-scraping/tests
+
+## 2026-09-02 — Doctor verdict quality: upstream outage ≠ broken tool
+
+**Scope / layer** — cross-cutting: `doctor.py` (`_run_python`,
+`_classify_selftest_failure`, `check_toolkit_selftests`, `_run_test_script`),
+`tests/test_si_institutional.py`, `tests/test_doi_verify.py`,
+`tests/test_doctor_selftest_verdicts.py`, `PROJECT_STRUCTURE.md`.
+
+**Why** — measured 2026-09-02: Europe PMC answered HTTP 500 in the morning
+and 404-for-every-PMCID in the evening; the fixture record's `hasSuppl`
+flipped to N. Only `[network]` cases failed, yet doctor said "a verification
+tool is broken". The tests' availability probe was a TCP handshake, which
+succeeds while the REST service is down. Separately, `_run_test_script`
+chose its summary line by matching two Korean words that no test has printed
+since the 2026-08-28 translation — the summary silently fell back to the
+generic message on every run.
+
+**Change** — (1) one `_run_python` helper replaces four `subprocess.run`
+copies; (2) a self-test whose failing lines are all `[network]`-tagged and
+whose output carries an outage marker (HTTP 5xx/429, URLError, timed out…)
+is reported as *blocked by an upstream outage* → WARN, never FAIL; a mixed
+failure stays FAIL; (3) the two network tests probe the endpoint/record they
+actually use and SKIP with the reason on the line; (4) the summary is the
+script's own last stdout line; (5) `PROJECT_STRUCTURE.md` table rows that had
+drifted below a prose section are back in the table.
+
+**Evidence** — doctor 13 OK / 1 WARN / 0 FAIL; the "Skill reference
+integrity" row now prints the script's real verdict ("ALL PASS — every
+reference exists") instead of the fallback; `test_si_institutional.py` prints
+`[SKIP] Europe PMC upstream reports hasSuppl='N' …` and exits 0.
+
+**Refutation** — `tests/test_doctor_selftest_verdicts.py`, 23 cases:
+outage-only → WARN; broken → FAIL; outage + broken → FAIL (an outage never
+hides a real break); `[network]` FAIL *without* an outage marker → broken (a
+wrong answer from a live API is a real bug); crash with no FAIL line →
+broken; timeout raises; exactly one `subprocess.run` in doctor.py; the Korean
+matcher is gone.
+
+**Deferred risk** — the SI fixture (PMC4456712, "3 SI files on 2026-08-07")
+may be stale rather than the service degraded; when Europe PMC recovers and
+still says hasSuppl=N, replace the fixture PMCID.
+
+wired-by: doctor.py
+wired-by: tests/test_doctor_selftest_verdicts.py
+wired-by: tests/test_si_institutional.py
+wired-by: tests/test_doi_verify.py
+
+## 2026-09-02 — Shared HTTP retry policy for the scripts/ tools (sci_http)
+
+**Scope / layer** — sub-feature under the `scripts/` tools: `scripts/sci_http.py`;
+callers `ref_fetch.py` (`_http_get_json`, `_http_get_text`), `si_fetch.py`
+(`_fetch_archive`), `jcr_batch_verify.py` (`_get`); `doi_verify.py` inherits
+through `ref_fetch`.
+
+**Why** — measured 2026-09-02: six private `for attempt … urlopen` loops that
+disagreed on what to retry (one retried every non-404 status including
+400/401/403; one retried nothing) and none honoured `Retry-After`.
+
+**Contract** — 429/5xx and network errors retried with linear backoff;
+other 4xx raised at once; `Retry-After` honoured (capped 30 s); no sleep
+after the last attempt; `(value, error)` tuple helpers keep the exact error
+strings the existing tests pin (`not_found`, `HTTP 503`, `URLError: …`,
+`JSON parse error: …`). `opener`/`sleep` injectable.
+
+**Scope boundary (deliberate)** — skill folders install stand-alone and
+cannot import `scripts/sci_http.py`, so `biorxiv-database`, `openalex-database`
+and `web-scraping` keep their private loops. The two shared skills are
+authored in the runtime tree (skill_drift rule): a change there goes to the
+runtime first.
+
+**Evidence** — `tests/test_sci_http.py` 23/23 with a scripted fake opener;
+`test_doi_verify.py` 45/45 and `test_si_institutional.py` 19/19 unchanged
+through the swap; `test_tool_cli_smoke.py` 28/28 (jcr `--help`).
+
+**Refutation** — 500,500,200 → success with sleeps [1.5, 3.0]; 404 and 403 →
+raised at once, no sleep; 429 + `Retry-After: 2` → sleeps 2.0 not 1.5;
+`Retry-After: 600` → capped; URLError ×3 → NetworkError with 2 sleeps;
+TimeoutError retried; `retries=0` rejected; bad JSON → parse error tuple.
+
+**Deferred risk** — `ref_fetch._download_pdf` still has its own redirect/
+content-type handling (it must inspect the response, not just the body);
+left as is.
+
+wired-by: scripts/sci_http.py
+wired-by: scripts/ref_fetch.py
+wired-by: scripts/si_fetch.py
+wired-by: scripts/jcr_batch_verify.py
+wired-by: tests/test_sci_http.py
+
+## 2026-09-03 — doctor.py split into doctor_lib/ (entry point unchanged)
+
+**Scope / layer** — structural: `doctor.py` 1,305 → 269 lines; new package
+`doctor_lib/` (result 80 · sentinel 357 · fswalk 31 · checks_env 188 ·
+checks_repo 275 · dead_automation 152 · selftests 99). Every symbol a test
+reads (`STATUS_*`, `SELF_TEST_SCRIPTS`, `check_*`, `_run_python`,
+`_run_test_script`, `_is_placeholder`, `API_KEY_RE`, `scan_research_markers`,
+`_classify_selftest_failure`) is re-exported by name from `doctor.py`.
+`SELF_TEST_SCRIPTS` stays in `doctor.py` verbatim because
+`tests/test_doc_counts.py` reads it from that file's source.
+
+**Why** — six concerns in one 1,300-line module (sentinel scanner, env
+checks, repo checks, dead-automation detector, self-test runner, reporting).
+
+**Deliberately NOT split** — `skills/web-scraping/scripts/fetch_academic.py`
+(1,638 lines) and `skills/get-available-resources/scripts/detect_resources.py`
+(1,767 lines). Both are shared-skill scripts; the SSOT rule sends structural
+changes to the authoring tree first. Measured 2026-09-02: fetch_academic
+differs from its runtime copy by 166 lines (translation-level, truly
+shared); **detect_resources differs by 2,050 lines — runtime copy 401 lines,
+toolkit copy 1,767** — the toolkit has effectively forked it. Which copy is
+canonical is the maintainer's call, so the split is deferred with the seam
+list in `~/scratch/sci-toolkit-refactor-plan-260902.md` §D.
+
+**Test edits (both widen a scope, neither weakens a check)** —
+`tests/test_doctor_selftest_verdicts.py`: "exactly one `subprocess.run`" now
+counted over `doctor.py` + `doctor_lib/*.py` (the one call moved into
+`result.py`). `tests/test_doc_counts.py`: the "every test is reachable from
+doctor" scan now concatenates `doctor_lib/*.py` (the two `_run_test_script`
+callers moved there; scanning `doctor.py` alone reported two false "never
+runs"). Reproduced on the pre-split tree via `git stash`: passed there, so
+the failure was caused by the split, not pre-existing.
+
+**Sentinel self-exemption** — the scanner skipped `doctor.py` by basename
+because it carries the detection regexes as literals; `sentinel.py` now
+carries them too, so `SENTINEL_DETECTOR_FILES = {"doctor.py", "sentinel.py"}`.
+Fixture exemptions (`SENTINEL_SELF_TEST_FILES`) untouched.
+
+**Evidence** — `python doctor.py` → 13 OK / 1 WARN / 0 FAIL (34 self-tests);
+`doctor.py --json` → 14 checks; every module < 500 lines; no star imports.
+
+**Deferred risk** — the detector exemption is by basename, so any other file
+named `sentinel.py` would be skipped by the secret scan; tighten to the
+`doctor_lib/` path if a second one ever appears.
+
+wired-by: doctor.py
+wired-by: doctor_lib/selftests.py
+wired-by: doctor_lib/sentinel.py
+wired-by: tests/test_doctor_selftest_verdicts.py
+wired-by: tests/test_doc_counts.py
+
+## 2026-09-03 — Gates that stop regrowth: SKILL.md size ratchet, dual-mode test runner, offline switch
+
+**Scope / layer** — cross-cutting: `tests/test_skill_sizes.py`,
+`tests/conftest.py`, `doctor_lib/selftests.py` (`is_pytest_style`,
+`_selftest_command`, `OFFLINE_ENV`), `doctor.py --offline`, `pytest.ini`
+(`network` marker), the three network probes (`test_si_institutional`,
+`test_doi_verify`, `biorxiv-database/tests/test_preprint_search`),
+`tests/test_sci_http.py` rewritten pytest-style as the conversion exemplar.
+
+**Why** — (1) avoid-ai-writing/SKILL.md is 93.6 KB with nothing to stop
+regrowth after a hand trim; the runtime copies are the same size, so the
+trim is runtime-first and this gate only ratchets. (2) Every check in
+`tests/` was a script, so `-k`, markers and per-test reporting did not
+exist, and a pytest-style file dropped into `tests/` would have been run as
+a bare script by doctor — defining its functions and exiting 0 without one
+assertion, a silent pass. (3) There was no way to run doctor on a machine
+without internet, or during an upstream outage, without red.
+
+**Rules** — SKILL.md ≤ 24 KiB hard, > 16 KiB advisory; three grandfathered
+files may only shrink and must be delisted once under the cap. A file that
+defines `def test_` runs under pytest in both runners (conftest and doctor);
+everything else stays a subprocess script. `SCI_TOOLKIT_OFFLINE=1` (set by
+`doctor.py --offline`) makes script probes SKIP with the reason on the line
+and deselects `network`-marked pytest tests.
+
+**Evidence** — `doctor.py --offline` → 13 OK / 1 WARN / 0 FAIL; online run
+identical; `pytest tests/` collects 66 items (19 native + 47 script items);
+`pytest tests/test_sci_http.py` collects exactly 19 (explicit-path double
+collection fixed — measured "IndexError: pop from empty list" before).
+
+**Refutation** — `test_doctor_selftest_verdicts.py` (31 cases): a pytest-
+style file with a failing assert registered in SELF_TEST_SCRIPTS → FAIL
+with the assertion text in details (so it was run under pytest, not as a
+script); a `network`-marked test that asserts False → OK under offline, FAIL
+online; the env var is visible inside the subprocess. `test_skill_sizes.py`
+(48 cases) pins every verdict on synthetic size tables: over cap, exactly
+at cap, grandfathered +1 byte, grandfathered under cap ("remove it"),
+grandfathered with no file, empty tree.
+
+**Deferred** — the other 34 script-style tests convert one file per commit
+using `test_sci_http.py` as the pattern; nothing forces it, both runners
+accept either style indefinitely.
+
+wired-by: tests/test_skill_sizes.py
+wired-by: tests/conftest.py
+wired-by: doctor_lib/selftests.py
+wired-by: tests/test_sci_http.py
+wired-by: pytest.ini

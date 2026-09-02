@@ -54,15 +54,14 @@ import argparse
 import io
 import json
 import sys
-import time
 import urllib.parse
-import urllib.request
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sci_http  # noqa: E402
 from ref_fetch import (  # noqa: E402
     _build_user_agent,
     _http_get_json,
@@ -182,26 +181,12 @@ def _fetch_archive(pmcid: str, email: Optional[str], timeout: int = 120) -> tupl
 
     A 404 (no supplementary material) is not retried — it ends immediately
     as "not_found." Only other network/server errors are retried, using the
-    same pattern as ref_fetch._http_get_json.
+    shared policy in scripts/sci_http.py (the same one ref_fetch uses).
     """
     url = _EPMC_SUPPL.format(pmcid=pmcid)
-    req = urllib.request.Request(url, headers={"User-Agent": _build_user_agent(email)})
-    last_err: Optional[str] = None
-    for attempt in range(1, _ARCHIVE_MAX_RETRIES + 1):
-        try:
-            with urllib.request.urlopen(req, timeout=timeout) as r:
-                return r.read(), None
-        except urllib.error.HTTPError as e:  # type: ignore[attr-defined]
-            if e.code == 404:
-                return None, "not_found"
-            last_err = f"HTTP {e.code}"
-        except Exception as e:  # noqa: BLE001
-            last_err = f"{type(e).__name__}: {e}"
-
-        if attempt < _ARCHIVE_MAX_RETRIES:
-            time.sleep(_ARCHIVE_RETRY_BACKOFF * attempt)
-
-    return None, last_err or "unknown_error"
+    return sci_http.get_bytes(url, headers={"User-Agent": _build_user_agent(email)},
+                              timeout=timeout, retries=_ARCHIVE_MAX_RETRIES,
+                              backoff=_ARCHIVE_RETRY_BACKOFF)
 
 
 def discover_si(doi: str, email: Optional[str] = None) -> SIResult:
