@@ -1,29 +1,15 @@
 ---
 name: spec-driven-research-dev
-description: |
-  Four-phase spec-driven workflow for research code: specify → plan → tasks → implement.
-  Use it when a coding request is big enough that jumping straight to an edit loses the
-  thread — a new analysis pipeline, a new script that several people will run, a rewrite
-  of a fitting/simulation module, or any change whose scope you cannot hold in your head.
-
-  Each phase writes one artifact under `specs/<NNN-short-name>/`, and each phase reads the
-  previous one instead of re-deriving intent from chat history. The point is that the
-  intent survives: a spec written on Monday still says what the code was for on Friday,
-  after the conversation is gone.
-
-  Use this skill when:
-  - The user describes a capability to build, not a line to change ("we need something
-    that batches the HPLC exports and flags outliers")
-  - A script is about to be rewritten and the current behavior is only in someone's head
-  - Work will be split across sessions, machines, or people and must survive the handoff
-  - The user says: "새 파이프라인 만들자", "이거 제대로 설계해서 만들자", "스펙부터",
-    "설계부터 하자", "명세 먼저", "작업 쪼개줘", "구현 계획 세워줘",
-    "spec first", "plan this out", "break this into tasks", "spec-driven"
-
-  Do NOT use for: a one-line fix, a parameter change, a single-file edit, or a question
-  (just do it — the ceremony costs more than the work). Do NOT use for running a fit or
-  an optimization (kinetic-bo-pipeline / the relevant analysis skill), for validating a
-  number a run produced (scientific-validation), or for writing a manuscript
+description: >-
+  Four-phase spec-driven workflow for research code: specify → plan → tasks → implement. Use it
+  when a coding request is too big to jump straight to an edit — a new analysis pipeline, a script
+  several people will run, a rewrite of a fitting/simulation module, or any change whose scope you
+  cannot hold in your head. Each phase writes one artifact under specs/<NNN-short-name>/ and reads
+  the previous one, so the intent survives the conversation. Triggers: "새 파이프라인 만들자",
+  "이거 제대로 설계해서 만들자", "스펙부터", "설계부터 하자", "명세 먼저", "작업 쪼개줘",
+  "구현 계획 세워줘", "spec first", "plan this out", "break this into tasks", "spec-driven".
+  Not for a one-line fix, a parameter change, a single-file edit, a question, running a fit
+  (kinetic-bo-pipeline), validating a number (scientific-validation), or writing a manuscript
   (manuscript-pipeline).
 license: MIT license
 metadata:
@@ -32,6 +18,22 @@ metadata:
 ---
 
 # Spec-Driven Development for Research Code
+
+## When to use (full list)
+
+- The user describes a capability to build, not a line to change ("we need something
+  that batches the HPLC exports and flags outliers")
+- A script is about to be rewritten and the current behavior is only in someone's head
+- Work will be split across sessions, machines, or people and must survive the handoff
+- The user says: "새 파이프라인 만들자", "이거 제대로 설계해서 만들자", "스펙부터",
+  "설계부터 하자", "명세 먼저", "작업 쪼개줘", "구현 계획 세워줘",
+  "spec first", "plan this out", "break this into tasks", "spec-driven"
+
+Do NOT use for: a one-line fix, a parameter change, a single-file edit, or a question
+(just do it — the ceremony costs more than the work). Do NOT use for running a fit or
+an optimization (kinetic-bo-pipeline / the relevant analysis skill), for validating a
+number a run produced (scientific-validation), or for writing a manuscript
+(manuscript-pipeline).
 
 Research code fails in a particular way. It is written quickly against a question that is
 clear at the time, it works, and six months later nobody — including its author — can say

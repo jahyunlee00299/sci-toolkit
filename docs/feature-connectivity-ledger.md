@@ -688,3 +688,61 @@ wired-by: tests/conftest.py
 wired-by: doctor_lib/selftests.py
 wired-by: tests/test_sci_http.py
 wired-by: pytest.ini
+
+## 2026-09-03 — GitHub-survey adoptions: spec contract, script-level drift, dependency declaration, gitleaks layer
+
+Source: a 12-repo structure comparison (K-Dense-AI/scientific-agent-skills,
+Imbad0202/academic-research-skills, anthropics/claude-plugins-community,
+wshobson/agents, alirezarezvani/claude-skills, …); only rules whose gap was
+measured here were adopted.
+
+### P1 — Agent Skills structural contract (`tests/test_skill_contract.py`)
+**Why** — the upstream contract applied to 37 skills found 8 violations. One
+was a live defect: paper-extract kept ten Korean triggers under a top-level
+`triggers:` key that no harness reads; the session's skill list showed
+paper-extract with no description at all. **Rule** — closed frontmatter key
+set, name = folder, description ≤ 1,024 chars, local links resolve, scripts
+compile, no tracked bytecode; body > 500 lines advisory for the three
+grandfathered files. **Fixes** — paper-extract triggers folded into
+description (+ `execution_method` dropped, no consumer); avoid-ai-writing
+`version` → `metadata.version`; scientific-validation and
+spec-driven-research-dev descriptions condensed to < 1,024 with the full
+trigger lists moved into a body section; repo CLAUDE.md no longer names
+`triggers:` as a valid place. Shared skills edited in the authoring tree first
+(claude-scientific-skills 633af8d). **Evidence** — after the rewrite the
+harness re-listed paper-extract WITH its description and Korean triggers
+(firing test). 54 cases incl. both directions per rule.
+
+### P2 — skill_drift compares scripts/ and references/
+**Why** — detect_resources.py differed by 2,050 lines for 26 days while the
+SKILL.md-only compare said SAME. **Now** — per-file drift / toolkit-only /
+runtime-only, CRLF-insensitive, `__pycache__`/`downloads/` ignored; SAME only
+when prose and files match. `tests/test_skill_drift.py` +9 cases.
+
+### P6 — `config/skill-requirements.toml` (generated) + doctor check 14
+**Rule** — every import a skill script needs, module-level or lazy, except
+those inside `try: … except ImportError` (the author's optional marker);
+import → pip mapping; `--check` fails when the TOML lags the scripts;
+`--missing` lists packages that do not import here → doctor WARN (never FAIL).
+docs/06 stays hand-written. `tests/test_skill_requirements.py` 12 cases.
+
+### P5 — gitleaks second layer (`.gitleaks.toml`, doctor check 15, CI step)
+**Verdicts** — absent binary WARN (SENTINEL still ran), clean OK, findings
+FAIL, tool error WARN; allowlist = the same detector/fixture files SENTINEL
+exempts (pinned). CI installs a pinned release so doctor runs it there.
+🔴 The real binary has NOT run yet (none on laptop or home PC; installing is a
+user rail) — `tests/test_gitleaks_layer.py` pins the wrapper with a shim;
+first real run happens on the next CI push.
+
+**Deferred / queued** — P3 lockfile (skipped: P2 covers content drift; upstream
+commit unknowable for runtime-adopted skills), P4 version-per-merge, P7
+scheduled CI run, P8 Codex manifest — proposals in the night-run folder.
+
+wired-by: tests/test_skill_contract.py
+wired-by: tests/test_skill_requirements.py
+wired-by: tests/test_gitleaks_layer.py
+wired-by: scripts/skill_requirements.py
+wired-by: scripts/skill_drift.py
+wired-by: config/skill-requirements.toml
+wired-by: .gitleaks.toml
+wired-by: .github/workflows/doctor.yml

@@ -1,18 +1,11 @@
 ---
 name: paper-extract
-description: Extract tables (xlsx), figures (png), and full text (md) from research paper PDFs and Word documents (docx) for patent preparation, literature review, and manuscript writing.
-triggers:
-  - "extract tables from paper"
-  - "extract figures from PDF"
-  - "논문에서 테이블 추출"
-  - "논문 그래프 가져와"
-  - "선행연구 테이블"
-  - "paper assets"
-  - "PDF에서 이미지 추출"
-  - "Word에서 테이블 추출"
-  - "docx에서 그래프 가져와"
-  - "원고에서 피겨 추출"
-execution_method: direct
+description: >-
+  Extract tables (xlsx), figures (png), and full text (md) from research paper PDFs and Word
+  documents (docx) for patent preparation, literature review, and manuscript writing. Use when
+  the user asks to extract tables from a paper, extract figures from a PDF, pull images from a
+  PDF or docx, or collect paper assets. 한국어 트리거 — 논문에서 테이블 추출, 논문 그래프 가져와,
+  선행연구 테이블, PDF에서 이미지 추출, Word에서 테이블 추출, docx에서 그래프 가져와, 원고에서 피겨 추출.
 ---
 
 # Paper Extract Skill

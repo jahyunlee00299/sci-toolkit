@@ -1,34 +1,41 @@
 ---
 name: scientific-validation
-description: |
-  Scientific validity gate for any experimental fit / model calibration / optimization result
-  BEFORE it is reported, written into a manuscript, merged into params files, or used downstream.
-  This is the "does this actually make scientific sense" check that sits AFTER a fit converges
-  and BEFORE the number is trusted. Complements (does not replace) kinetic-bo-pipeline (which
-  runs the fit) and verify_reminder/verify_gate_stop hooks (which nudge generic verification).
-
-  Use this skill when:
-  - A fit / regression / ODE calibration just produced parameters (kcat, Km, alpha, kLa, ...) or a curve
-  - A Bayesian optimization / NSGA / Pareto run produced an optimum to be reported
-  - A model number (the cost metric, titer, yield, E-factor, ΔG) is about to go into a manuscript / report / docx
-  - Raw experimental data is being extracted / stored / version-controlled, or a mass balance must
-    close (measured total = product + byproducts + residual substrate vs t0) — run the
-    Axis 0 raw-integrity + Axis 3 mass-balance checks
-  - The user says: "이 fitting 맞아?", "결과 검증", "이거 말이 돼?", "타당한지 봐줘",
-    "validate fit", "sanity check", "physical plausibility", "scientific validation",
-    "mass balance", "질량 보존", "raw 저장", "raw 버전관리", "컬럼 확정",
-    "/scientific-validation", "/sci-validate"
-  - You delegated a fit to a remote/home machine and got numbers back (remote/delegated numbers are PROVISIONAL until
-    this gate + an independent 1-line reproduction agree)
-
-  Do NOT use for: running the fit itself (kinetic-bo-pipeline), generic code review (code-review),
-  manuscript reference auditing (manuscript-pipeline).
+description: >-
+  Scientific validity gate for any experimental fit, model calibration, or optimization result
+  BEFORE it is reported, written into a manuscript, merged into params files, or used downstream:
+  the "does this make scientific sense" check that sits after a fit converges and before the
+  number is trusted. Use when a fit / regression / ODE calibration produced parameters or a curve,
+  a BO / NSGA / Pareto run produced an optimum, a model number (the cost metric, titer, yield, E-factor,
+  ΔG) is headed into a manuscript or report, raw data must be stored or a mass balance must close,
+  or numbers came back from a remote machine (provisional until this gate passes). Triggers:
+  "이 fitting 맞아?", "결과 검증", "이거 말이 돼?", "타당한지 봐줘", "validate fit", "sanity check",
+  "physical plausibility", "mass balance", "질량 보존", "raw 저장", "raw 버전관리", "컬럼 확정",
+  /scientific-validation, /sci-validate. Not for running the fit, generic code review, or
+  reference auditing.
 license: MIT license
 metadata:
     skill-author: generic
 ---
 
 # Scientific Validation Gate
+
+## When to use (full list)
+
+- A fit / regression / ODE calibration just produced parameters (kcat, Km, alpha, kLa, ...) or a curve
+- A Bayesian optimization / NSGA / Pareto run produced an optimum to be reported
+- A model number (the cost metric, titer, yield, E-factor, ΔG) is about to go into a manuscript / report / docx
+- Raw experimental data is being extracted / stored / version-controlled, or a mass balance must
+  close (measured total = product + byproducts + residual substrate vs t0) — run the
+  Axis 0 raw-integrity + Axis 3 mass-balance checks
+- The user says: "이 fitting 맞아?", "결과 검증", "이거 말이 돼?", "타당한지 봐줘",
+  "validate fit", "sanity check", "physical plausibility", "scientific validation",
+  "mass balance", "질량 보존", "raw 저장", "raw 버전관리", "컬럼 확정",
+  "/scientific-validation", "/sci-validate"
+- You delegated a fit to a remote/home machine and got numbers back (remote/delegated numbers are
+  PROVISIONAL until this gate + an independent 1-line reproduction agree)
+
+Do NOT use for: running the fit itself (kinetic-bo-pipeline), generic code review (code-review),
+manuscript reference auditing (manuscript-pipeline).
 
 A converged fit is **not** a correct fit. High R², optimizer "SUCCESS", and "all checks PASS"
 self-reports have all shipped wrong science (a single-basis number that drifted across re-runs; a

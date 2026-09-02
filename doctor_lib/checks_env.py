@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from doctor_lib.result import CheckResult, STATUS_FAIL, STATUS_OK, STATUS_WARN, _run_python
+from doctor_lib.result import CheckResult, STATUS_FAIL, STATUS_OK, STATUS_WARN, _run_command, _run_python
 
 MIN_PYTHON = (3, 10)
 
@@ -155,6 +155,75 @@ def check_hooks_config(root: Path) -> CheckResult:
         return CheckResult(name, STATUS_WARN, "present and parses, but has no 'hooks' entries")
     n_events = len(data["hooks"])
     return CheckResult(name, STATUS_OK, f"present and valid ({n_events} hook event type(s) configured)")
+
+
+def check_skill_requirements(root: Path) -> CheckResult:
+    """Declared per-skill packages that do not import in this interpreter.
+
+    WARN, never FAIL: a missing optional package limits one skill, it does not
+    break the toolkit. The declaration itself (config/skill-requirements.toml)
+    is kept honest by tests/test_skill_requirements.py, which fails when the
+    scripts and the TOML disagree.
+    """
+    name = "Skill dependencies (declared packages importable)"
+    script = root / "scripts" / "skill_requirements.py"
+    toml_path = root / "config" / "skill-requirements.toml"
+    if not script.is_file() or not toml_path.is_file():
+        return CheckResult(name, STATUS_WARN, "scripts/skill_requirements.py or config/skill-requirements.toml absent — skipped")
+    try:
+        _rc, out, err = _run_python(root, [str(script), "--missing", "--json"], timeout=60)
+        data = json.loads(out)
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        return CheckResult(name, STATUS_WARN, f"could not run skill_requirements.py: {exc}")
+    missing = data.get("missing") or {}
+    if not missing:
+        return CheckResult(name, STATUS_OK, "every package a skill's scripts import is available here")
+    details = [f"{skill}: pip install {' '.join(pkgs)}" for skill, pkgs in sorted(missing.items())]
+    return CheckResult(name, STATUS_WARN,
+                       f"{len(missing)} skill(s) need packages not installed here — those skills' scripts "
+                       f"will fail until installed (see docs/06)", details)
+
+
+def check_gitleaks(root: Path) -> CheckResult:
+    """Second secret-scan layer: gitleaks with .gitleaks.toml, when the binary is present.
+
+    SENTINEL (doctor_lib/sentinel.py) is a hand-kept pattern set tuned to this
+    repo's own incidents; gitleaks brings ~150 vendor rules maintained
+    upstream. Absent binary = WARN (the regex layer still ran), findings =
+    FAIL, clean = OK. CI runs the same config via .github/workflows/doctor.yml.
+    """
+    name = "Secret scan (gitleaks, second layer)"
+    exe = shutil.which("gitleaks")
+    config = root / ".gitleaks.toml"
+    if not config.is_file():
+        return CheckResult(name, STATUS_WARN, ".gitleaks.toml absent — only the SENTINEL regex layer ran")
+    if not exe:
+        return CheckResult(name, STATUS_WARN,
+                           "gitleaks not on PATH — only the SENTINEL regex layer ran "
+                           "(install: https://github.com/gitleaks/gitleaks#installing; CI runs it regardless)")
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        report = Path(td) / "gitleaks.json"
+        try:
+            rc, out, err = _run_command(
+                root, [exe, "detect", "--source", str(root), "--config", str(config), "--no-git",
+                       "--redact", "--exit-code", "1", "--report-format", "json", "--report-path", str(report)],
+                timeout=300)
+        except (OSError, subprocess.SubprocessError) as exc:
+            return CheckResult(name, STATUS_WARN, f"gitleaks could not run: {exc}")
+        findings = []
+        if report.is_file():
+            try:
+                findings = json.loads(report.read_text(encoding="utf-8") or "[]")
+            except ValueError:
+                findings = []
+    if rc == 0 and not findings:
+        return CheckResult(name, STATUS_OK, f"gitleaks found nothing ({Path(exe).name}, config .gitleaks.toml)")
+    if rc == 1 or findings:
+        details = [f"{f.get('File')}:{f.get('StartLine')} {f.get('RuleID')}" for f in findings[:12]] \
+            or [(out + err).strip()[-300:]]
+        return CheckResult(name, STATUS_FAIL, f"gitleaks reported {len(findings) or 'some'} finding(s)", details)
+    return CheckResult(name, STATUS_WARN, f"gitleaks exited {rc}", [(out + err).strip()[-300:]])
 
 
 def check_shell_env(root: Path) -> CheckResult:
