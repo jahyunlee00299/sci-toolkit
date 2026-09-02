@@ -162,10 +162,20 @@ try:
     check("timeout raises TimeoutExpired", False, "no exception")
 except subprocess.TimeoutExpired:
     check("timeout raises TimeoutExpired", True)
+# doctor.py's own subprocess.run call moved into doctor_lib/result.py when
+# the 1,300-line module was split into the doctor_lib/ package (260902) --
+# _run_python is still the ONE place that shells out, it just no longer lives
+# in doctor.py itself. Concatenate doctor.py with every doctor_lib/*.py file
+# so the "exactly one subprocess.run call across the whole tool" guarantee
+# still holds post-split, instead of narrowing the check to a file that no
+# longer carries the call.
 src = (ROOT / "doctor.py").read_text(encoding="utf-8")
-check("doctor.py has exactly one subprocess.run call (inside _run_python)",
-      src.count("subprocess.run(") == 1, f"count={src.count('subprocess.run(')}")
-check("the dead Korean summary matcher is gone", "대조 대상" not in src)
+lib_src = "".join((p).read_text(encoding="utf-8")
+                  for p in sorted((ROOT / "doctor_lib").glob("*.py")))
+combined = src + lib_src
+check("doctor.py + doctor_lib/*.py have exactly one subprocess.run call (inside _run_python)",
+      combined.count("subprocess.run(") == 1, f"count={combined.count('subprocess.run(')}")
+check("the dead Korean summary matcher is gone", "대조 대상" not in combined)
 
 
 # --------------------------------------------------------------------------

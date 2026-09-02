@@ -95,7 +95,16 @@ def main() -> int:
     # the criterion here is not "is it in SELF_TEST_SCRIPTS" but "does
     # doctor.py mention this file at all".
     checked += 1
+    # doctor.py was split into doctor_lib/ (260902): SELF_TEST_SCRIPTS stayed
+    # in doctor.py verbatim, but check_skill_references()/check_agents_routing()
+    # — the dedicated calls that reach test_skill_references.py and
+    # test_agents_routing.py without going through SELF_TEST_SCRIPTS — moved
+    # into doctor_lib/checks_repo.py. Scanning doctor.py alone would now miss
+    # them and report two false "never runs" failures, so every doctor_lib/*.py
+    # file is concatenated in too.
     doctor_src = (ROOT / "doctor.py").read_text(encoding="utf-8")
+    doctor_src += "".join((p).read_text(encoding="utf-8")
+                          for p in sorted((ROOT / "doctor_lib").glob("*.py")))
     # Only look at actual execution points. Treating this as a plain
     # substring search over the whole source would let **writing the name
     # in a comment on one line** pass the check — a gate that's green while
