@@ -1,17 +1,17 @@
-c631f71633c7442083da5844dd9eb2b9db788bb3e301a5d1e719b290727ab325 *./.claude-plugin/plugin.json
+04835384318fc1d7998871a8e548f0746827b818e8f3c34bc8fd8cc5a222356c *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 792184e0f991f0b28fe71e4c2d24bde82db739661a02aa32635363b3ba5b8edd *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 de1747aa206a4444dcec11723a903c8b8d9e58553a4e3442d9a8d25270e201ad *./AGENTS.md
-d628451fc64394c9a2c94ebdeefcd167c50f393543d963515feffdc82dce2c6d *./CHANGELOG.md
+795a46dec29beec9ad8c927c5c59b455c6b6619230b3bcb24a06fb5cb70ea44f *./CHANGELOG.md
 99b6a25b6a8df13384d180eb2435b19a7fe1baa495e28e700d58596716e8b2e9 *./CLAUDE.md
 ad540fed46a17b6464d4cc527fbcd6a850a73c39f8c72d04c6fb9e7d2a52e6fc *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
 a5893c822bb3ac6a5dd3a8a7a23bf71dd628a60c0315c0fec7f0150a0965fa90 *./NOTICE.md
 65e90719f8f0255d3d5ccf2c33f3dba9b27f28689a51e8e5596eb300decced87 *./PROJECT_STRUCTURE.md
 79445559726189e3b7d8867f7d108e080c5c028bb49aeac893658dab38436341 *./QUICKSTART.md
-e8d9a5e25d332612a4f24f3843c821a95700ad2306b647404564577324a3251b *./README.md
+f4e3dcce075d042b0c4971fd3c4fc6264d53e5d88c8029b5bc03c67244339006 *./README.md
 f2341cb7ab8a0570449fc8de076abc6076fc25a81970dda6c85cd33681d51cc3 *./config/automations.example.json
 978a8f6c17b076b00ff820146232e778c98db96ee833a5c0a1cd8a34bb799f23 *./config/catalog.json
 4a00ecee8dc70d01eadf8960b50f0970f94abe00d485b80576f70f8e7a1b852c *./config/credentials.example.json
@@ -34,12 +34,12 @@ b8adbac227d0b0f6eb1018d478a3bd7f4e2bf9700282a40f76799233deb071f2 *./docs/14_í„°ë
 3d8a88ddc03dd4dd7cdb2305e6328b2c7e9ac569471cd409c87c9a934cd01e81 *./docs/agents/06-model-routing.md
 3591c247d54fcf798b8e6dfb3bc792326414d8296428e2a44e9002a1a9f2e764 *./docs/agents/06b-bio-filter.md
 3186439b796fee2e3499f0fdc9bf1a51242beda78dadc302386278b6692e24ba *./docs/agents/07-git-branch-hygiene.md
-4e4bce02e36211b12bdbe5c90dfb9fd8fbc654e3ef121ac11776a27d9b521eb6 *./docs/agents/08-verification-routes.md
+2689d1bf99046aaa4ffd13a20a4313c032f07ab8e25a9088d8406346e6fd9f56 *./docs/agents/08-verification-routes.md
 6c424913ead689ad4e2bc5ea673156085204b5c93135386b1fafcf8b27bb3ce8 *./docs/agents/09-external-services.md
 e8f69c386883b52f3fe48fd9d8ab296a947a5e7f3a94ca61c9bf85dc56b53dc3 *./docs/agents/10-recording-friction.md
-84eec99eab6cb47cfb39057aa9b4dd0b42daf10e4a037a9bc566595ef632d3ab *./docs/feature-connectivity-ledger.md
+87ac10c96a558792a3f5ed8a3b119f9ede187d2969147db1f7ec6f3768b28592 *./docs/feature-connectivity-ledger.md
 77ab0f7dfa903cb620c00663920bd02de9d8872ed3c1b2e75018691d1d987086 *./doctor.ps1
-b1cba95a886daed3f59c57bb7c140dbc2296df0443c322e5b4bea8b2b99d9c5c *./doctor.py
+a1ab99c97406f5538d01ad359d48f7185e317d7b256ea8a22cae712432eb6e62 *./doctor.py
 da0b96a40968705ad2457236a7065f0850e948eb85a8d328fbabf5868ffc6fbf *./evals/codex_compliance_probe.py
 3986c22328fa7d5b0b658faa8411e8870b6267a8e3d2d7fe4eac15b10555973a *./evals/codex_compliance_schema.json
 5e705c6a768ba5cb9ed8e950bcf3cf0cf7f8b88a2a0b37fa36c972c2df0a21e5 *./evals/routing_probe.py
@@ -59,6 +59,7 @@ e4a68fb5d965fe722f44d475599b827fbfb18187db62984aaf2556797a3ead4d *./hooks/hooks.
 1c32cdee0a1eb0a18a05bb747a2ab13faa61447d2f699caca1f2597cf59205a1 *./scripts/advanced_wsl/ddg_screen.py
 fc802ef112b692365b8eb9683a2890f2a8c945d7ebe3aae237f7ad31c17b79b7 *./scripts/bump_version.py
 b9e31b3832c0d3b4fe0c23261227a31c49e0ad88f03f787469c9b5d29e36ca7d *./scripts/capability_diff.py
+35bb7b87b5c79d31fc975a3df71f3ab3ddf14fd326d293c86e91a2aa0cbd74ea *./scripts/connectivity_check.py
 e64b98c64570db755a9ccc809d8b2902da9fdaa4276d93edbc8bee1963accf07 *./scripts/connectors/README.md
 86d983970198cafcaeaa1859ce9d2352107b74456690677248b177cee3bc3931 *./scripts/connectors/_credentials.py
 0c186e725e7e31c7e96f8df67906fa5d047866d09c12f511d388d8cbad5f6ba1 *./scripts/connectors/_google_auth.py
@@ -267,7 +268,6 @@ ba4f8d327900f98fec3e6247fefebc844ccf553bdf5bfc5a31058fd8ff7d9b51 *./skills/prime
 ff113f748f61c6748671d3d2d64bd2f846f3eb9eac1746812d2d1f3f294db4a5 *./skills/primer-design/templates/Macrogen_StandardSeq_template.xlsx
 2eb6ad5d08fd8564cc612b0a731b6b163f9dd8176ad08bbf58e84c884a6656ff *./skills/primer-design/tests/stress_test_genes.py
 ae302472c9e55620e450c65cb8da3805bc8ed0a285079e6c4c9ebd2928c51b0f *./skills/primer-design/tests/stress_test_results.json
-4d3075698a323401f66dd42008452e9b7591bb74e4351433d112640f349825f3 *./skills/primer-design/tests/test_md_vs_direct.py
 e7d9dc0de63acdcc8c07e17f55c15b39d471bb9f027c543f774c6ed52b767a4a *./skills/primer-design/vectors/pACYCDuet-1.dna
 4dd8bce4c343da1663c83aa1bf1922661a9049f0c6e764da9021fb42c62dd97e *./skills/primer-design/vectors/pET-21a(+).dna
 5adc379f0f401e1ed2c6c799835486679afdcfaf6e7ef7c89b0c136134b4ef60 *./skills/primer-design/vectors/pET-28a(+).dna
@@ -302,7 +302,6 @@ cd171529f513f87462c276925902b8c47a2338a8e9990b6cab5f602f623402b9 *./skills/resea
 8919824d3fb657a45f3b3b6d792e4c4a63e80d99a794c7f8a66bcecede13bac8 *./skills/research-lookup/examples.py
 0393da071b62e8f0503e6fd3e507e565d8d0f35726813addf511450a682e3229 *./skills/research-lookup/lookup.py
 6e4fd6dd3001f42d33e7aea67d5ba25fe096709711660bae9eaf7fc05de0c755 *./skills/research-lookup/research_lookup.py
-8d7bbbdee631c9cb2d176b4dda9560c82ebf507ed453ad376c573f1498d323ba *./skills/research-lookup/scripts/manuscript_packet.py
 290571b07d3a61bdb2dcbf150eba71d1260fd680b166e4e69ae6529cfc25ddb2 *./skills/research-lookup/scripts/research_lookup.py
 e6df2b5cbcc24cff048a04028dec4cd911c2af3f19003f83f6b2df7f044093b3 *./skills/research-search/SKILL.md
 38aff7f2140dcfaa5b4b761a09b38ab1345743292431b9401f90b96d856f4fdc *./skills/scientific-validation/SKILL.md
@@ -353,6 +352,7 @@ e005141f53c08734254bc87c011cd37fff4fe7a2be52da32e0e6f4e58aada365 *./tests/test_b
 5fb838afedf5158cb1b7cb3508b7f68e1a1f2c0d3dbce017111d450f4433f7e2 *./tests/test_capability_diff.py
 40404c7743aebe835624c5664d33bdcefbef5b73d65f0484a4a6b78a66a7c16a *./tests/test_checksums_manifest.py
 c3ec8e768cd249614f823a71b2e4a51a2a3c62f54e6de1a923963e88ee1980bb *./tests/test_codex_hook_adapter.py
+b801f342ff8d9e699beb5b5fabf88c60c78cac37be4a5f9416e7bd31874cf1d8 *./tests/test_connectivity.py
 73348f6774ef5b59e436c52b3d0647e91e3148a9f6da0a5888ef1438583dd890 *./tests/test_connectors.py
 f85cf16e7e117a171bccbcd894a2cb9d770d29e1cf2f3abd820aae6c1f03b8c6 *./tests/test_credentials_divergence.py
 78ebe956e92eca6d7519dbe47eaff86b443d5297776d1577456ee4304c50dd14 *./tests/test_dead_automation.py
@@ -374,4 +374,5 @@ e86e9b4372a901cad8730bf58ceff7c62c2645fe458ea1e780ae9325e71cd28f *./tests/test_i
 b8f5246d0a4495f2669ffd4887915dcc58816cb0dc31f3104b02ca742903838f *./tests/test_skill_drift.py
 54f96cbfcf586affad4c22c12a925d855eaf564408f634a15be8a8753deda374 *./tests/test_skill_references.py
 d8171592c296e7517e62133d13a089470d6e3dbf1a314b262808a45c776e8a0f *./tests/test_spec_driven_workflow.py
+81e3a840e306c39b8a0d87570bb3442e6972d4a34d7a2d58853051204a013999 *./tests/test_tool_cli_smoke.py
 af92e6bd489a489d68969589bb17838dcbfdd5f67965c25cdf6c34911aa2089e *./tests/test_vector_integrity.py

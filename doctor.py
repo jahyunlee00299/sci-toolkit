@@ -986,6 +986,49 @@ def check_dead_automation(root: Path) -> CheckResult:
     )
 
 
+def check_connectivity(root: Path) -> CheckResult:
+    """Every shipped tool must be reachable (a doc, importer or hook leads to it)
+    and should be exercised (a test or doctor names it).
+
+    FAIL = an ORPHAN (nothing points at the file) or a dangling ``wired-by:``
+    path in the connectivity ledger. WARN = reachable tools with no test; the
+    ratchet that stops that number from growing lives in
+    tests/test_connectivity.py, not here, so doctor reports and the test gates.
+    """
+    name = "Tool connectivity (orphans / untested)"
+    script = root / "scripts" / "connectivity_check.py"
+    if not script.is_file():
+        return CheckResult(name, STATUS_WARN, "scripts/connectivity_check.py not present — skipped")
+    import subprocess
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(script), "--root", str(root), "--json"], cwd=str(root),
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return CheckResult(name, STATUS_WARN, f"could not run connectivity_check.py: {exc}")
+    try:
+        data = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return CheckResult(name, STATUS_FAIL, "connectivity_check.py emitted no JSON",
+                           [(proc.stdout + proc.stderr).strip()[-300:]])
+
+    details = [f"ORPHAN (nothing leads here): {p}" for p in data["orphans"]]
+    details += [f"ledger wired-by path missing: {p}" for p in data["dangling_ledger_paths"]]
+    if details:
+        return CheckResult(name, STATUS_FAIL,
+                           f"{data['orphan_count']} orphan tool(s), "
+                           f"{len(data['dangling_ledger_paths'])} dangling ledger path(s) "
+                           f"— name it in a doc/SKILL.md or retire it", details)
+    if data["untested_count"]:
+        return CheckResult(name, STATUS_WARN,
+                           f"{data['tool_count']} tools reachable; {data['untested_count']} have no test "
+                           f"(ratchet in tests/test_connectivity.py) — "
+                           f"`python scripts/connectivity_check.py` lists them")
+    return CheckResult(name, STATUS_OK,
+                       f"{data['tool_count']} tools reachable and tested; "
+                       f"{data['ledger_wired_by_count']} ledger wired-by path(s) exist")
+
+
 def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
     """quick=True skips check_toolkit_selftests — that check alone runs 17+
     regression scripts (minutes), which is the wrong cost for a check that
@@ -1007,6 +1050,7 @@ def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
         check_agents_routing(root),
         check_credentials_divergence(root),
         check_dead_automation(root),
+        check_connectivity(root),
     ]
     if not quick:
         checks.append(check_toolkit_selftests(root))
@@ -1045,7 +1089,22 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_spec_driven_workflow.py", "spec-driven workflow (4 phases, templates, attribution, wiring)"),
     ("tests/test_dead_automation.py", "dead-automation detector (artifact freshness)"),
     ("tests/test_adopted_skills.py", "adopted-skill contract (upstream attribution, model-neutral, no vendored deps)"),
+    ("tests/test_connectivity.py", "tool connectivity (orphan/untested ratchet, ledger wired-by paths)"),
+    ("tests/test_tool_cli_smoke.py", "standalone tool smoke (HPLC parser, primer structure, variant filter, CLIs)"),
+    # A directory entry is a pytest suite: run with pytest, not as a script.
+    # The root pytest.ini disables import-collection (tests/ are scripts), so
+    # the suite passes its own python_files pattern back in.
+    ("skills/web-scraping/tests", "web-scraping pytest suite (EZproxy scope, PDF pipeline, target safety, GitHub failure surfacing)"),
 ]
+
+
+def _selftest_command(root: Path, rel: str) -> list[str]:
+    """Script entries run as `python <file>`; directory entries run under pytest."""
+    target = root / rel
+    if target.is_dir():
+        return [sys.executable, "-m", "pytest", str(target), "-q",
+                "-o", "python_files=test_*.py", "-p", "no:cacheprovider"]
+    return [sys.executable, str(target)]
 
 
 def check_toolkit_selftests(root: Path) -> CheckResult:
@@ -1058,7 +1117,7 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
     name = "Toolkit self-tests"
     import subprocess
     present = [(rel, label) for rel, label in SELF_TEST_SCRIPTS
-               if (root / rel).is_file()]
+               if (root / rel).exists()]
     if not present:
         return CheckResult(name, STATUS_WARN, "no self-test scripts present — skipped")
 
@@ -1070,7 +1129,7 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
     for rel, label in present:
         try:
             proc = subprocess.run(
-                [sys.executable, str(root / rel)], cwd=str(root),
+                _selftest_command(root, rel), cwd=str(root),
                 capture_output=True, text=True, encoding="utf-8",
                 errors="replace", timeout=300)
         except (OSError, subprocess.SubprocessError) as exc:
