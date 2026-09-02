@@ -38,9 +38,13 @@ changes behavior or defeats the text's purpose. Leave them in Korean and do
 not "clean them up":
 
 1. **Router trigger phrases.** `한국어 트리거 — …` lines, and Korean phrases in
-   a `SKILL.md` frontmatter `description:` or `triggers:` list. These are how
-   a Korean-language request matches the skill. Translate them and the skill
-   stops firing.
+   a `SKILL.md` frontmatter `description:`. These are how a Korean-language
+   request matches the skill. Translate them and the skill stops firing.
+   🔴 They must live INSIDE `description:` — the router reads only that field.
+   A top-level `triggers:` list is not part of the Agent Skills spec and is
+   never read (measured 2026-09-03: paper-extract carried ten Korean triggers
+   there and none of them could fire); `tests/test_skill_contract.py` rejects
+   such keys.
 2. **Korean-language detection logic.** Korean literals used as patterns —
    particles, counters, honorifics, josa — e.g. the regexes in
    `scripts/feedback_sanitize.py` that catch Korean PII, and the taxonomy in

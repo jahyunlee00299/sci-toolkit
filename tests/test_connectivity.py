@@ -37,9 +37,9 @@ if sys.platform == "win32":
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "connectivity_check.py"
 
-# Ratchet: 52 reachable-but-untested tools measured 2026-09-02, after the
+# Ratchet: 51 reachable-but-untested tools measured 2026-09-03 (52 on 09-02), after the
 # smoke tests for the routed scripts/ tools landed. Only ever lower this number.
-MAX_UNTESTED = 52
+MAX_UNTESTED = 51
 
 _results: list[tuple[bool, str]] = []
 

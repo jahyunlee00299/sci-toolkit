@@ -42,8 +42,17 @@ def _run_python(root: Path, argv: list[str], timeout: int) -> tuple[int, str, st
     that shells out goes through it. Raises OSError / subprocess.SubprocessError
     (TimeoutExpired included) so the caller decides whether that is WARN or FAIL.
     """
+    return _run_command(root, [sys.executable, *argv], timeout)
+
+
+def _run_command(root: Path, argv: list[str], timeout: int) -> tuple[int, str, str]:
+    """The ONE subprocess call in doctor, for any executable (gitleaks included).
+
+    Same contract as _run_python: returns (rc, stdout, stderr), raises OSError /
+    subprocess.SubprocessError so the caller decides WARN vs FAIL.
+    """
     proc = subprocess.run(
-        [sys.executable, *argv], cwd=str(root),
+        argv, cwd=str(root),
         capture_output=True, text=True, encoding="utf-8", errors="replace",
         timeout=timeout)
     return proc.returncode, proc.stdout or "", proc.stderr or ""
