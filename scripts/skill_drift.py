@@ -80,6 +80,41 @@ def _git_last_date(path: Path):
         return None
 
 
+#: Sub-trees compared file by file in addition to SKILL.md. Measured 2026-09-02:
+#: get-available-resources/scripts/detect_resources.py differed by 2,050 lines
+#: (runtime 401, toolkit 1,767) for 26 days while this script, comparing only
+#: SKILL.md, reported the skill as SAME. A skill is its scripts as much as its
+#: prose.
+COMPARED_SUBTREES = ("scripts", "references")
+_SKIP_PARTS = {"__pycache__", ".pytest_cache", "downloads"}
+
+
+def _files(skill_dir: Path):
+    """{relative posix path: Path} for every file under the compared sub-trees."""
+    out = {}
+    for sub in COMPARED_SUBTREES:
+        base = skill_dir / sub
+        if not base.is_dir():
+            continue
+        for p in sorted(base.rglob("*")):
+            if p.is_file() and not (set(p.relative_to(skill_dir).parts) & _SKIP_PARTS) \
+                    and p.suffix not in (".pyc",):
+                out[p.relative_to(skill_dir).as_posix()] = p
+    return out
+
+
+def compare_files(toolkit_dir: Path, runtime_dir: Path) -> dict:
+    """Per-file verdict: which compared files differ or exist on one side only."""
+    t, r = _files(toolkit_dir), _files(runtime_dir)
+    drift = sorted(k for k in t.keys() & r.keys() if _norm(t[k]) != _norm(r[k]))
+    return {
+        "files_compared": len(t.keys() & r.keys()),
+        "files_drift": drift,
+        "files_toolkit_only": sorted(t.keys() - r.keys()),
+        "files_runtime_only": sorted(r.keys() - t.keys()),
+    }
+
+
 def compare(toolkit_skills: Path, runtime: Path):
     rows = []
     for skill_md in sorted(toolkit_skills.glob("*/SKILL.md")):
@@ -88,15 +123,18 @@ def compare(toolkit_skills: Path, runtime: Path):
         if not rt.exists():
             rows.append({"skill": name, "status": "TOOLKIT-ONLY"})
             continue
-        same = _norm(skill_md) == _norm(rt)
+        md_same = _norm(skill_md) == _norm(rt)
+        files = compare_files(skill_md.parent, rt.parent)
+        files_same = not (files["files_drift"] or files["files_toolkit_only"] or files["files_runtime_only"])
+        same = md_same and files_same
         t_date = _git_last_date(skill_md.parent)
         r_date = _git_last_date(rt.parent)
         status = "SAME" if same else "DRIFT"
         lagging = (not same) and bool(t_date) and bool(r_date) and r_date > t_date
         if lagging:
             status = "LAGGING"
-        rows.append({"skill": name, "status": status,
-                     "toolkit_last": t_date, "runtime_last": r_date})
+        rows.append({"skill": name, "status": status, "skill_md_same": md_same,
+                     "toolkit_last": t_date, "runtime_last": r_date, **files})
     return rows
 
 
@@ -124,9 +162,22 @@ def main() -> int:
     if args.json:
         print(json.dumps({"rows": rows, "lagging": len(lag)}, ensure_ascii=False, indent=1))
     else:
-        print(f"{'skill':32} {'status':13} toolkit_last  runtime_last")
+        print(f"{'skill':32} {'status':13} toolkit_last  runtime_last  files (drift / toolkit-only / runtime-only)")
         for r in rows:
-            print(f"{r['skill']:32} {r['status']:13} {r.get('toolkit_last') or '-':12}  {r.get('runtime_last') or '-'}")
+            files = ""
+            if r["status"] != "TOOLKIT-ONLY":
+                d, to, ro = len(r["files_drift"]), len(r["files_toolkit_only"]), len(r["files_runtime_only"])
+                files = f"{d} / {to} / {ro}" if (d or to or ro) else "-"
+                if not r.get("skill_md_same", True):
+                    files = "SKILL.md + " + files
+            print(f"{r['skill']:32} {r['status']:13} {r.get('toolkit_last') or '-':12}  "
+                  f"{r.get('runtime_last') or '-':12}  {files}")
+            for f in r.get("files_drift", [])[:6]:
+                print(f"{'':32} {'':13}   drift: {f}")
+            for f in r.get("files_runtime_only", [])[:6]:
+                print(f"{'':32} {'':13}   runtime-only: {f}")
+            for f in r.get("files_toolkit_only", [])[:6]:
+                print(f"{'':32} {'':13}   toolkit-only: {f}")
         n = {s: sum(1 for r in rows if r["status"] == s) for s in ("SAME", "DRIFT", "LAGGING", "TOOLKIT-ONLY")}
         print(f"\nsummary: {n}")
         if lag:

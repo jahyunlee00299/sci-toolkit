@@ -47,6 +47,21 @@ jobs:
 
       # doctor prints a WARN and keeps going if the claude CLI is missing
       # (not a FAIL). A CI runner having no CLI is expected, so leave it as is.
+      # Second secret-scan layer. doctor runs gitleaks itself when the binary
+      # is on PATH (check "Secret scan (gitleaks, second layer)"), so install
+      # the binary here and let doctor own the verdict — no separate CI-only
+      # check list to drift from doctor. Pinned release, checksum-free
+      # download kept to the official GitHub release asset; bump deliberately.
+      - name: Install gitleaks (second secret-scan layer)
+        run: |
+          set -euo pipefail
+          GL_VERSION=8.24.3
+          curl -sSfL -o /tmp/gitleaks.tgz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GL_VERSION}/gitleaks_${GL_VERSION}_linux_x64.tar.gz"
+          tar -xzf /tmp/gitleaks.tgz -C /tmp gitleaks
+          sudo install -m 0755 /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
       - name: Run doctor
         run: python doctor.py
 

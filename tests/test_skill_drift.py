@@ -84,5 +84,54 @@ with tempfile.TemporaryDirectory() as tmp:
     check(st.get("gamma") == "SAME", f"CRLF-only difference -> SAME (got {st.get('gamma')})")
     check(rc == 0, f"drift without git dates is not LAGGING, exit 0 (got {rc})")
 
+# 4. file-level drift — a skill is its scripts as much as its SKILL.md.
+# Measured 2026-09-02: detect_resources.py differed by 2,050 lines while the
+# SKILL.md-only compare reported SAME for 26 days.
+with tempfile.TemporaryDirectory() as tmp:
+    toolkit = os.path.join(tmp, "toolkit_skills")
+    runtime = os.path.join(tmp, "runtime_skills")
+
+    def mk(base, skill, files):
+        for rel, body in files.items():
+            p = os.path.join(base, skill, rel)
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, "w", encoding="utf-8", newline="") as f:
+                f.write(body)
+
+    # delta: SKILL.md identical, one script differs -> DRIFT, file named
+    mk(toolkit, "delta", {"SKILL.md": "same\n", "scripts/tool.py": "print(1)\n"})
+    mk(runtime, "delta", {"SKILL.md": "same\n", "scripts/tool.py": "print(2)\n"})
+    # epsilon: SKILL.md identical, a script exists only in the runtime tree
+    mk(toolkit, "epsilon", {"SKILL.md": "same\n"})
+    mk(runtime, "epsilon", {"SKILL.md": "same\n", "scripts/extra.py": "x = 1\n"})
+    # zeta: everything identical incl. references/, CRLF differs on one script -> SAME
+    mk(toolkit, "zeta", {"SKILL.md": "same\n", "scripts/a.py": "a = 1\r\n", "references/r.md": "ref\n"})
+    mk(runtime, "zeta", {"SKILL.md": "same\n", "scripts/a.py": "a = 1\n", "references/r.md": "ref\n"})
+    # eta: pycache / downloads noise on one side must not count
+    mk(toolkit, "eta", {"SKILL.md": "same\n", "scripts/a.py": "a\n"})
+    mk(runtime, "eta", {"SKILL.md": "same\n", "scripts/a.py": "a\n",
+                        "scripts/__pycache__/a.cpython-313.pyc": "junk", "scripts/downloads/x.json": "{}"})
+
+    rc, out, err = run("--toolkit", toolkit, "--runtime", runtime)
+    try:
+        rows = {r["skill"]: r for r in json.loads(out)["rows"]}
+    except Exception as e:  # noqa: BLE001
+        rows = {}
+        check(False, f"json output parses ({e}); stderr={err[:200]}")
+    check(rows.get("delta", {}).get("status") == "DRIFT", "identical SKILL.md + differing script -> DRIFT")
+    check(rows.get("delta", {}).get("files_drift") == ["scripts/tool.py"],
+          f"the differing script is named (got {rows.get('delta', {}).get('files_drift')})")
+    check(rows.get("delta", {}).get("skill_md_same") is True, "skill_md_same flag says the prose matched")
+    check(rows.get("epsilon", {}).get("status") == "DRIFT", "runtime-only script -> DRIFT")
+    check(rows.get("epsilon", {}).get("files_runtime_only") == ["scripts/extra.py"],
+          f"runtime-only file named (got {rows.get('epsilon', {}).get('files_runtime_only')})")
+    check(rows.get("zeta", {}).get("status") == "SAME", "identical scripts+references (CRLF-only diff) -> SAME")
+    check(rows.get("zeta", {}).get("files_compared") == 2, f"two files compared for zeta (got {rows.get('zeta', {}).get('files_compared')})")
+    check(rows.get("eta", {}).get("status") == "SAME", "__pycache__ and downloads/ noise ignored -> SAME")
+    check("drift: scripts/tool.py" in run.__globals__["subprocess"].run(
+        [sys.executable, SCRIPT, "--toolkit", toolkit, "--runtime", runtime],
+        capture_output=True, text=True, encoding="utf-8", errors="replace").stdout,
+        "human table lists the drifting file")
+
 print(f"\n{len(fails)} failure(s)")
 sys.exit(1 if fails else 0)
