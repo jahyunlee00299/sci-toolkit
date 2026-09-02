@@ -88,6 +88,8 @@ from doctor_lib.checks_env import (  # noqa: E402
     check_plugin_manifest,
     check_hooks_config,
     check_shell_env,
+    check_skill_requirements,
+    check_gitleaks,
 )
 from doctor_lib.checks_repo import (  # noqa: E402
     check_sha256sums,
@@ -131,6 +133,8 @@ def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
         check_credentials_divergence(root),
         check_dead_automation(root),
         check_connectivity(root),
+        check_skill_requirements(root),
+        check_gitleaks(root),
     ]
     if not quick:
         checks.append(check_toolkit_selftests(root))
@@ -174,6 +178,9 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_doctor_selftest_verdicts.py", "doctor self-test verdicts (upstream outage = WARN, broken tool = FAIL)"),
     ("tests/test_sci_http.py", "shared HTTP retry policy (429/5xx retried, 4xx not, Retry-After, backoff)"),
     ("tests/test_skill_sizes.py", "SKILL.md size ratchet (24 KiB cap; grandfathered files may only shrink)"),
+    ("tests/test_skill_contract.py", "Agent Skills structural contract (closed frontmatter keys, name=folder, description<=1024, links, scripts compile)"),
+    ("tests/test_skill_requirements.py", "per-skill dependency declaration matches the scripts; missing-package report"),
+    ("tests/test_gitleaks_layer.py", "gitleaks second layer (absent=WARN, clean=OK, findings=FAIL; config allowlist paths exist)"),
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.

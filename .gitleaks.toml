@@ -1,0 +1,32 @@
+# gitleaks configuration — second, deterministic secret-scan layer beside the
+# SENTINEL regex scan in doctor_lib/sentinel.py.
+#
+# Why two layers: SENTINEL is a small hand-kept pattern set tuned to this
+# repo's incidents (vendor key prefixes, Tailscale IPs, Korean honorific
+# names). gitleaks ships ~150 vendor rules maintained upstream and catches
+# the classes nobody here has been bitten by yet. Both must pass.
+#
+# Runs: `python doctor.py` (check "Secret scan (gitleaks)") when the binary is
+# on PATH — reported as WARN, not FAIL, when it is absent; and in CI via
+# .github/workflows/doctor.yml.
+
+title = "sci-toolkit gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Files that DEFINE the detectors or their fixtures; their strings are the specification of what must be caught, not a leak (same set as SENTINEL_SELF_TEST_FILES + SENTINEL_DETECTOR_FILES)"
+paths = [
+  '''^tests/test_doctor_sentinel\.py$''',
+  '''^tests/test_research_marker_scan\.py$''',
+  '''^tests/test_feedback_sanitize\.py$''',
+  '''^tests/test_gitleaks_layer\.py$''',
+  '''^doctor_lib/sentinel\.py$''',
+  '''^doctor\.py$''',
+  '''^SHA256SUMS$''',
+]
+regexes = [
+  # documented placeholders in config/credentials.example.json and docs
+  '''(?i)(your[-_]?token[-_]?here|YOUR_API_KEY|<token>|xxx+|\.\.\.)''',
+]
