@@ -388,7 +388,13 @@ fragment.
 ## Setup
 
 Codex reads `AGENTS.md` from the working directory upward, plus
-`~/.codex/AGENTS.md` globally. Two ways to wire this toolkit in:
+`~/.codex/AGENTS.md` globally — **but only the first 32 KiB in total**
+(`project_doc_max_bytes`, default 32768 in Codex's `config.toml`; content past
+the limit is dropped without a warning). This repo's `AGENTS.md` is kept under
+that; if you append it to a global `~/.codex/AGENTS.md` that already has
+content, either raise `project_doc_max_bytes` in `~/.codex/config.toml` or keep
+the combined size under the cap — check with `wc -c`. Two ways to wire this
+toolkit in:
 
 **Per-project** — work inside a directory that has this repo's `AGENTS.md` in
 its path, or copy it to your project root.

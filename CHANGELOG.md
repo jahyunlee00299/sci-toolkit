@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.47] — 2026-09-02
+
+- Lightweight agent rules and two oversized skills; add skill-drift check
+
 ## [1.2.46] — 2026-08-28
 
 - Merge branch 'toolkit/chore/english-only-260828' into main
