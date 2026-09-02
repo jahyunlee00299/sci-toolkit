@@ -134,6 +134,52 @@ try:
     r = doctor.check_toolkit_selftests(fake_root({}))
     check("no registered script present -> WARN 'skipped', not a crash",
           r.status == doctor.STATUS_WARN and "skipped" in r.message, f"{r.status} {r.message}")
+
+    # A pytest-style file run as a bare script defines its functions and exits
+    # 0 without running one assertion. doctor must sniff `def test_` and run
+    # it under pytest — proven here by a failing assertion that MUST surface.
+    PYTEST_FAILING = "def test_it():\n    assert 1 == 2, 'must surface'\n"
+    PYTEST_PASSING = "def test_it():\n    assert 1 == 1\n"
+    doctor.SELF_TEST_SCRIPTS = [("tests/test_py_fail.py", "pytest-style failing")]
+    r = doctor.check_toolkit_selftests(fake_root({"test_py_fail.py": PYTEST_FAILING}))
+    check("pytest-style file with a failing assert -> FAIL (not a silent exit-0 script run)",
+          r.status == doctor.STATUS_FAIL and any("must surface" in d for d in r.details),
+          f"{r.status} {r.message} {r.details[:4]}")
+    doctor.SELF_TEST_SCRIPTS = [("tests/test_py_pass.py", "pytest-style passing")]
+    r = doctor.check_toolkit_selftests(fake_root({"test_py_pass.py": PYTEST_PASSING}))
+    check("pytest-style file with a passing assert -> OK", r.status == doctor.STATUS_OK, f"{r.status} {r.message}")
+    check("is_pytest_style: 'def test_' sniff", doctor.is_pytest_style(fake_root({"t.py": PYTEST_PASSING}) / "tests" / "t.py"))
+    check("is_pytest_style: script-style file is not", not doctor.is_pytest_style(fake_root({"t.py": GREEN}) / "tests" / "t.py"))
+    check("_selftest_command: pytest-style -> 'python -m pytest <file>'",
+          doctor._selftest_command(fake_root({"t.py": PYTEST_PASSING}), "tests/t.py")[1:3] == ["-m", "pytest"])
+    check("_selftest_command: script-style -> 'python <file>'",
+          len(doctor._selftest_command(fake_root({"t.py": GREEN}), "tests/t.py")) == 2)
+
+    # --offline: the flag reaches the subprocess as SCI_TOOLKIT_OFFLINE=1 and
+    # pytest-style tests marked `network` are deselected, not run.
+    import os
+    NETWORK_MARKED = ("import os, pytest\n"
+                      "@pytest.mark.network\n"
+                      "def test_net():\n    assert False, 'network test ran'\n"
+                      "def test_env():\n    assert os.environ.get('SCI_TOOLKIT_OFFLINE') == '1'\n")
+    fr = fake_root({"test_net.py": NETWORK_MARKED})
+    (fr / "pytest.ini").write_text("[pytest]\nmarkers =\n    network: live API\n", encoding="utf-8")
+    doctor.SELF_TEST_SCRIPTS = [("tests/test_net.py", "network-marked")]
+    saved_env = os.environ.get(doctor.OFFLINE_ENV)
+    try:
+        os.environ[doctor.OFFLINE_ENV] = "1"
+        r = doctor.check_toolkit_selftests(fr)
+        check("offline: network-marked pytest test deselected, env visible in subprocess -> OK",
+              r.status == doctor.STATUS_OK, f"{r.status} {r.message} {r.details[:4]}")
+        os.environ.pop(doctor.OFFLINE_ENV)
+        r = doctor.check_toolkit_selftests(fr)
+        check("online: the same network-marked test runs and fails -> FAIL",
+              r.status == doctor.STATUS_FAIL, f"{r.status} {r.message}")
+    finally:
+        if saved_env is None:
+            os.environ.pop(doctor.OFFLINE_ENV, None)
+        else:
+            os.environ[doctor.OFFLINE_ENV] = saved_env
 finally:
     doctor.SELF_TEST_SCRIPTS = saved
 

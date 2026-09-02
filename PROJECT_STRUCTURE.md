@@ -27,7 +27,7 @@ as a `.claude-plugin` and is the packaging layer that feeds skills into
 | `scripts/` | Utility scripts backing the skills (DOI verify, Excel formula check, HPLC parser, JCR batch verify, primer/variant checks, reference cache/fetch, SI fetch, checksum manifest, `skill_drift.py`, `connectivity_check.py`) |
 | `evals/` | Routing probe + Codex compliance probe/schema |
 | `install/install.py` | Installer |
-| `tests/` | Standalone self-check scripts (run by `doctor.py`, or `pytest tests/` via the subprocess collector in `conftest.py`): hooks/guards, doctor sentinel, DOI verify, feedback log/sanitize, checksums, skill references, install non-destructiveness, tool connectivity ratchet, standalone-tool smoke. Skill-local pytest suites (`skills/*/tests/`) are registered in `doctor.py` `SELF_TEST_SCRIPTS` as directory entries |
+| `tests/` | Self-checks in two styles, both run by `doctor.py` and by `pytest tests/`: script-style files (module-level checks + `sys.exit`, run as a subprocess) and pytest-style files (`def test_...`, collected natively — `test_sci_http.py` is the exemplar for converting the rest). `conftest.py` and `doctor_lib/selftests.py` apply the same sniff. Covers hooks/guards, doctor sentinel, DOI verify, feedback log/sanitize, checksums, skill references, install non-destructiveness, tool connectivity ratchet, standalone-tool smoke, SKILL.md size ratchet. Skill-local pytest suites (`skills/*/tests/`) are registered in `SELF_TEST_SCRIPTS` as directory entries. `doctor.py --offline` / `SCI_TOOLKIT_OFFLINE=1` keeps every network probe off |
 | `out/` | Run output artifacts (gitignored except `.gitkeep`) |
 | `SHA256SUMS` | Checksum manifest for distributed files |
 | `.distignore` | Files excluded from distribution packaging |

@@ -430,8 +430,11 @@ def _upstream_available() -> tuple[bool, str]:
     connection while the REST service answers 5xx (measured on Europe PMC
     2026-09-02). Probe the endpoint the tests call; a 5xx/429 is the other
     side's outage and skips the network group instead of failing it."""
+    import os
     import urllib.error
     import urllib.request
+    if os.environ.get("SCI_TOOLKIT_OFFLINE") == "1":
+        return False, "network tests disabled by SCI_TOOLKIT_OFFLINE=1 (doctor.py --offline)"
     try:
         socket.create_connection(("api.crossref.org", 443), timeout=5).close()
     except OSError as exc:

@@ -1,23 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Retry policy of scripts/sci_http.py, pinned without a network.
+"""Retry policy of scripts/sci_http.py, pinned without a network — pytest style.
+
+This is the exemplar for converting the script-style checks in tests/ to
+pytest: plain ``test_*`` functions with ``assert``, fixtures instead of the
+``check()`` accumulator, and no module-level side effects. Both runners
+handle it: ``doctor.py`` sniffs ``def test_`` and runs the file under pytest;
+``tests/conftest.py`` hands it to pytest's native collector. Run it alone with
+``python -m pytest tests/test_sci_http.py -q``.
 
 A fake opener scripts the sequence of outcomes (status codes, URLError,
 timeout, success) and a fake sleep records the backoff schedule, so every
-branch of the policy is an executable case:
-
-  500,500,200 -> success on the 3rd attempt, two sleeps (1.5s, 3.0s)
-  404          -> HttpError immediately, no retry, no sleep
-  403          -> HttpError immediately (a 4xx will not change on retry)
-  429 + Retry-After: 2 -> sleeps 2.0 (header wins over backoff), then succeeds
-  URLError x3  -> NetworkError after 3 attempts, 2 sleeps, none after the last
-  500 x3       -> HttpError(500, 'retries exhausted')
-  get_json: 404 -> (None, 'not_found'); 503 x3 -> (None, 'HTTP 503');
-            bad JSON -> (None, 'JSON parse error: ...'); ok -> (dict, None)
-  get_text / get_bytes tuple shapes; user_agent with and without email;
-  retries=0 rejected; Retry-After capped at MAX_RETRY_AFTER.
-
-Run: python tests/test_sci_http.py
+branch of the policy is an executable case.
 """
 from __future__ import annotations
 
@@ -27,30 +21,15 @@ import sys
 import urllib.error
 from pathlib import Path
 
-if sys.platform == "win32":
-    for _s in (sys.stdout, sys.stderr):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except (AttributeError, ValueError):
-            pass
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
-spec = importlib.util.spec_from_file_location("sci_http", str(ROOT / "scripts" / "sci_http.py"))
-sci_http = importlib.util.module_from_spec(spec)
+_spec = importlib.util.spec_from_file_location("sci_http", str(ROOT / "scripts" / "sci_http.py"))
+sci_http = importlib.util.module_from_spec(_spec)
 sys.modules["sci_http"] = sci_http
-spec.loader.exec_module(sci_http)
+_spec.loader.exec_module(sci_http)
 
-_results: list[tuple[bool, str]] = []
-
-
-def check(name: str, cond: bool, note: str = "") -> None:
-    _results.append((cond, name))
-    tag = "[OK]  " if cond else "[FAIL]"
-    print(f"  {tag} {name}" + (f"  {note}" if note and not cond else ""))
-
-
-def section(title: str) -> None:
-    print(f"\n== {title}")
+URL = "https://api.example.org/works/1"
 
 
 class _FakeResp:
@@ -72,9 +51,10 @@ class _FakeResp:
         return False
 
 
-def make_opener(script: list):
+def _opener(script: list):
     """script items: int status (>=400 -> HTTPError), bytes (200 body),
-    Exception instance (raised), or (status, body, headers) tuple."""
+    Exception instance (raised), or (status, body, headers) tuple.
+    Returns (opener, calls)."""
     calls: list[str] = []
 
     def opener(req, timeout=None):
@@ -95,107 +75,121 @@ def make_opener(script: list):
     return opener, calls
 
 
-def make_sleep():
-    slept: list[float] = []
-    return (lambda s: slept.append(s)), slept
+@pytest.fixture
+def slept():
+    return []
 
 
-URL = "https://api.example.org/works/1"
+@pytest.fixture
+def sleep(slept):
+    return slept.append
+
 
 # --------------------------------------------------------------------------
-section("request(): retry policy")
+# request(): retry policy
+# --------------------------------------------------------------------------
 
-op, calls = make_opener([500, 500, b'{"ok":1}'])
-sl, slept = make_sleep()
-r = sci_http.request(URL, opener=op, sleep=sl)
-check("500,500,200 -> success on 3rd attempt", r.status == 200 and r.json() == {"ok": 1})
-check("two sleeps with linear backoff 1.5, 3.0", slept == [1.5, 3.0], str(slept))
-check("opener called 3 times", len(calls) == 3)
+def test_retries_500_then_succeeds_with_linear_backoff(sleep, slept):
+    op, calls = _opener([500, 500, b'{"ok":1}'])
+    r = sci_http.request(URL, opener=op, sleep=sleep)
+    assert r.status == 200 and r.json() == {"ok": 1}
+    assert slept == [1.5, 3.0]
+    assert len(calls) == 3
 
-op, calls = make_opener([404])
-sl, slept = make_sleep()
-try:
-    sci_http.request(URL, opener=op, sleep=sl)
-    check("404 -> HttpError", False, "no exception")
-except sci_http.HttpError as e:
-    check("404 -> HttpError immediately", e.status == 404 and len(calls) == 1 and slept == [], f"{e} calls={len(calls)} slept={slept}")
 
-op, calls = make_opener([403])
-sl, slept = make_sleep()
-try:
-    sci_http.request(URL, opener=op, sleep=sl)
-    check("403 -> HttpError", False, "no exception")
-except sci_http.HttpError as e:
-    check("403 -> HttpError, not retried", e.status == 403 and len(calls) == 1, f"calls={len(calls)}")
+def test_404_raises_immediately_no_retry_no_sleep(sleep, slept):
+    op, calls = _opener([404])
+    with pytest.raises(sci_http.HttpError) as ei:
+        sci_http.request(URL, opener=op, sleep=sleep)
+    assert ei.value.status == 404 and len(calls) == 1 and slept == []
 
-op, calls = make_opener([(429, b"", {"Retry-After": "2"}), b"ok"])
-sl, slept = make_sleep()
-r = sci_http.request(URL, opener=op, sleep=sl)
-check("429 with Retry-After: 2 -> sleeps 2.0 (header wins), then succeeds", r.status == 200 and slept == [2.0], str(slept))
 
-op, calls = make_opener([(503, b"", {"Retry-After": "600"}), b"ok"])
-sl, slept = make_sleep()
-sci_http.request(URL, opener=op, sleep=sl)
-check("Retry-After capped at MAX_RETRY_AFTER", slept == [sci_http.MAX_RETRY_AFTER], str(slept))
+def test_403_is_not_retried(sleep):
+    op, calls = _opener([403])
+    with pytest.raises(sci_http.HttpError) as ei:
+        sci_http.request(URL, opener=op, sleep=sleep)
+    assert ei.value.status == 403 and len(calls) == 1
 
-op, calls = make_opener([urllib.error.URLError("timed out")] * 3)
-sl, slept = make_sleep()
-try:
-    sci_http.request(URL, opener=op, sleep=sl)
-    check("URLError x3 -> NetworkError", False, "no exception")
-except sci_http.NetworkError as e:
-    check("URLError x3 -> NetworkError after 3 attempts", len(calls) == 3 and "timed out" in e.reason, f"{e}")
-    check("no sleep after the last attempt", len(slept) == 2, str(slept))
 
-op, calls = make_opener([500, 500, 500])
-sl, slept = make_sleep()
-try:
-    sci_http.request(URL, opener=op, sleep=sl)
-    check("500 x3 -> HttpError", False, "no exception")
-except sci_http.HttpError as e:
-    check("500 x3 -> HttpError(500, retries exhausted)", e.status == 500 and "exhausted" in e.reason, f"{e}")
+def test_429_honours_retry_after_over_backoff(sleep, slept):
+    op, _ = _opener([(429, b"", {"Retry-After": "2"}), b"ok"])
+    r = sci_http.request(URL, opener=op, sleep=sleep)
+    assert r.status == 200 and slept == [2.0]
 
-op, calls = make_opener([TimeoutError("socket timeout"), b"ok"])
-sl, slept = make_sleep()
-r = sci_http.request(URL, opener=op, sleep=sl)
-check("socket TimeoutError is retried", r.status == 200 and len(calls) == 2)
 
-try:
-    sci_http.request(URL, retries=0, opener=make_opener([b"ok"])[0], sleep=lambda s: None)
-    check("retries=0 rejected", False, "no exception")
-except ValueError:
-    check("retries=0 rejected with ValueError", True)
+def test_retry_after_is_capped(sleep, slept):
+    op, _ = _opener([(503, b"", {"Retry-After": "600"}), b"ok"])
+    sci_http.request(URL, opener=op, sleep=sleep)
+    assert slept == [sci_http.MAX_RETRY_AFTER]
 
-op, calls = make_opener([b"ok"])
-sci_http.request(URL, headers={"X-Test": "1"}, opener=op, sleep=lambda s: None)
-check("custom headers reach the request (no crash on Mapping)", calls == [URL])
+
+def test_urlerror_three_times_is_network_error_with_two_sleeps(sleep, slept):
+    op, calls = _opener([urllib.error.URLError("timed out")] * 3)
+    with pytest.raises(sci_http.NetworkError) as ei:
+        sci_http.request(URL, opener=op, sleep=sleep)
+    assert len(calls) == 3 and "timed out" in ei.value.reason
+    assert len(slept) == 2, "no sleep after the last attempt"
+
+
+def test_500_three_times_is_http_error_retries_exhausted(sleep):
+    op, _ = _opener([500, 500, 500])
+    with pytest.raises(sci_http.HttpError) as ei:
+        sci_http.request(URL, opener=op, sleep=sleep)
+    assert ei.value.status == 500 and "exhausted" in ei.value.reason
+
+
+def test_socket_timeout_is_retried(sleep):
+    op, calls = _opener([TimeoutError("socket timeout"), b"ok"])
+    r = sci_http.request(URL, opener=op, sleep=sleep)
+    assert r.status == 200 and len(calls) == 2
+
+
+def test_retries_zero_rejected():
+    with pytest.raises(ValueError):
+        sci_http.request(URL, retries=0, opener=_opener([b"ok"])[0], sleep=lambda s: None)
+
+
+def test_custom_headers_accepted():
+    op, calls = _opener([b"ok"])
+    sci_http.request(URL, headers={"X-Test": "1"}, opener=op, sleep=lambda s: None)
+    assert calls == [URL]
+
 
 # --------------------------------------------------------------------------
-section("(value, error) conveniences")
+# (value, error) conveniences
+# --------------------------------------------------------------------------
 
-v, err = sci_http.get_json(URL, opener=make_opener([404])[0], sleep=lambda s: None)
-check("get_json 404 -> (None, 'not_found')", v is None and err == "not_found", f"{v} {err}")
-v, err = sci_http.get_json(URL, opener=make_opener([503, 503, 503])[0], sleep=lambda s: None)
-check("get_json 503 x3 -> (None, 'HTTP 503')", v is None and err == "HTTP 503", f"{v} {err}")
-v, err = sci_http.get_json(URL, opener=make_opener([b"not json"])[0], sleep=lambda s: None)
-check("get_json bad body -> (None, 'JSON parse error: ...')", v is None and str(err).startswith("JSON parse error"), f"{v} {err}")
-v, err = sci_http.get_json(URL, opener=make_opener([b'{"a": [1, 2]}'])[0], sleep=lambda s: None)
-check("get_json ok -> (dict, None)", v == {"a": [1, 2]} and err is None, f"{v} {err}")
-v, err = sci_http.get_json(URL, opener=make_opener([urllib.error.URLError("dns")] * 3)[0], sleep=lambda s: None)
-check("get_json network failure -> (None, 'URLError: dns')", v is None and err == "URLError: dns", f"{v} {err}")
-v, err = sci_http.get_text(URL, opener=make_opener(["café".encode("utf-8")])[0], sleep=lambda s: None)
-check("get_text decodes utf-8", v == "café" and err is None, f"{v!r} {err}")
-v, err = sci_http.get_bytes(URL, opener=make_opener([b"\x00\x01"])[0], sleep=lambda s: None)
-check("get_bytes returns raw bytes", v == b"\x00\x01" and err is None, f"{v!r} {err}")
+@pytest.mark.parametrize("script, expect", [
+    ([404], (None, "not_found")),
+    ([503, 503, 503], (None, "HTTP 503")),
+    ([b'{"a": [1, 2]}'], ({"a": [1, 2]}, None)),
+    ([urllib.error.URLError("dns")] * 3, (None, "URLError: dns")),
+])
+def test_get_json_tuple_shapes(script, expect):
+    assert sci_http.get_json(URL, opener=_opener(script)[0], sleep=lambda s: None) == expect
+
+
+def test_get_json_bad_body_is_parse_error():
+    v, err = sci_http.get_json(URL, opener=_opener([b"not json"])[0], sleep=lambda s: None)
+    assert v is None and str(err).startswith("JSON parse error")
+
+
+def test_get_text_decodes_utf8():
+    assert sci_http.get_text(URL, opener=_opener(["café".encode("utf-8")])[0], sleep=lambda s: None) == ("café", None)
+
+
+def test_get_bytes_returns_raw():
+    assert sci_http.get_bytes(URL, opener=_opener([b"\x00\x01"])[0], sleep=lambda s: None) == (b"\x00\x01", None)
+
 
 # --------------------------------------------------------------------------
-section("user_agent")
-
-check("with email -> mailto", "mailto:a@b.c" in sci_http.user_agent("ref_fetch", "a@b.c"))
-check("without email -> no-contact-provided", "no-contact-provided" in sci_http.user_agent("ref_fetch"))
-check("tool name embedded", sci_http.user_agent("si_fetch").startswith("sci-toolkit-si_fetch/"))
-
+# user_agent
 # --------------------------------------------------------------------------
-n_fail = sum(1 for ok, _ in _results if not ok)
-print(f"\nSUMMARY: {len(_results) - n_fail} passed, {n_fail} failed")
-sys.exit(1 if n_fail else 0)
+
+def test_user_agent_with_email_has_mailto():
+    assert "mailto:a@b.c" in sci_http.user_agent("ref_fetch", "a@b.c")
+
+
+def test_user_agent_without_email():
+    ua = sci_http.user_agent("si_fetch")
+    assert "no-contact-provided" in ua and ua.startswith("sci-toolkit-si_fetch/")

@@ -175,8 +175,11 @@ def _upstream_available() -> tuple[bool, str]:
     upstream says no (or is down), skip the live group with the reason on the
     line — that is the other side's state, not a regression here.
     """
+    import os
     import urllib.error
     import urllib.request
+    if os.environ.get("SCI_TOOLKIT_OFFLINE") == "1":
+        return False, "network tests disabled by SCI_TOOLKIT_OFFLINE=1 (doctor.py --offline)"
     try:
         socket.create_connection(("www.ebi.ac.uk", 443), timeout=5).close()
     except OSError as exc:
