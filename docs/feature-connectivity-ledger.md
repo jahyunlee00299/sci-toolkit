@@ -588,3 +588,54 @@ wired-by: scripts/ref_fetch.py
 wired-by: scripts/si_fetch.py
 wired-by: scripts/jcr_batch_verify.py
 wired-by: tests/test_sci_http.py
+
+## 2026-09-03 — doctor.py split into doctor_lib/ (entry point unchanged)
+
+**Scope / layer** — structural: `doctor.py` 1,305 → 269 lines; new package
+`doctor_lib/` (result 80 · sentinel 357 · fswalk 31 · checks_env 188 ·
+checks_repo 275 · dead_automation 152 · selftests 99). Every symbol a test
+reads (`STATUS_*`, `SELF_TEST_SCRIPTS`, `check_*`, `_run_python`,
+`_run_test_script`, `_is_placeholder`, `API_KEY_RE`, `scan_research_markers`,
+`_classify_selftest_failure`) is re-exported by name from `doctor.py`.
+`SELF_TEST_SCRIPTS` stays in `doctor.py` verbatim because
+`tests/test_doc_counts.py` reads it from that file's source.
+
+**Why** — six concerns in one 1,300-line module (sentinel scanner, env
+checks, repo checks, dead-automation detector, self-test runner, reporting).
+
+**Deliberately NOT split** — `skills/web-scraping/scripts/fetch_academic.py`
+(1,638 lines) and `skills/get-available-resources/scripts/detect_resources.py`
+(1,767 lines). Both are shared-skill scripts; the SSOT rule sends structural
+changes to the authoring tree first. Measured 2026-09-02: fetch_academic
+differs from its runtime copy by 166 lines (translation-level, truly
+shared); **detect_resources differs by 2,050 lines — runtime copy 401 lines,
+toolkit copy 1,767** — the toolkit has effectively forked it. Which copy is
+canonical is the maintainer's call, so the split is deferred with the seam
+list in `~/scratch/sci-toolkit-refactor-plan-260902.md` §D.
+
+**Test edits (both widen a scope, neither weakens a check)** —
+`tests/test_doctor_selftest_verdicts.py`: "exactly one `subprocess.run`" now
+counted over `doctor.py` + `doctor_lib/*.py` (the one call moved into
+`result.py`). `tests/test_doc_counts.py`: the "every test is reachable from
+doctor" scan now concatenates `doctor_lib/*.py` (the two `_run_test_script`
+callers moved there; scanning `doctor.py` alone reported two false "never
+runs"). Reproduced on the pre-split tree via `git stash`: passed there, so
+the failure was caused by the split, not pre-existing.
+
+**Sentinel self-exemption** — the scanner skipped `doctor.py` by basename
+because it carries the detection regexes as literals; `sentinel.py` now
+carries them too, so `SENTINEL_DETECTOR_FILES = {"doctor.py", "sentinel.py"}`.
+Fixture exemptions (`SENTINEL_SELF_TEST_FILES`) untouched.
+
+**Evidence** — `python doctor.py` → 13 OK / 1 WARN / 0 FAIL (34 self-tests);
+`doctor.py --json` → 14 checks; every module < 500 lines; no star imports.
+
+**Deferred risk** — the detector exemption is by basename, so any other file
+named `sentinel.py` would be skipped by the secret scan; tighten to the
+`doctor_lib/` path if a second one ever appears.
+
+wired-by: doctor.py
+wired-by: doctor_lib/selftests.py
+wired-by: doctor_lib/sentinel.py
+wired-by: tests/test_doctor_selftest_verdicts.py
+wired-by: tests/test_doc_counts.py

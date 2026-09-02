@@ -101,6 +101,7 @@ READER_GLOBS = (
 #: Files that call or import tools at runtime (not tests).
 INVOKER_GLOBS = (
     "doctor.py",
+    "doctor_lib/*.py",
     "install/*.py",
     "scripts/**/*.py",
     "skills/*/scripts/**/*.py",
@@ -113,6 +114,7 @@ INVOKER_GLOBS = (
 #: Files that verify tools.
 TEST_GLOBS = (
     "doctor.py",
+    "doctor_lib/*.py",
     "tests/**/*.py",
     "skills/*/tests/**/*.py",
     "evals/*.py",
