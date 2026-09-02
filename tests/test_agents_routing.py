@@ -151,6 +151,48 @@ def main():
         print(f"\nFAIL — §0 points at {fails} thing(s) that don't exist. "
               f"Agents follow this table literally, so fix it immediately.")
         return 1
+
+    # Codex reads at most `project_doc_max_bytes` (default 32768) of AGENTS.md
+    # and silently drops the rest (measured 2026-09-02: at 47.8 KB, §9 and §10
+    # were never seen). A table that exists but is never read is as dead as a
+    # dangling reference, so the size is part of this check.
+    CODEX_CAP = 32 * 1024
+    size = os.path.getsize(AGENTS)
+    if size >= CODEX_CAP:
+        print(f"\nFAIL — AGENTS.md is {size} bytes; Codex reads only the first "
+              f"{CODEX_CAP}. Move long sections to docs/agents/ and leave a stub.")
+        return 1
+    print(f"AGENTS.md size {size} bytes (< {CODEX_CAP} Codex cap)")
+
+    # Every "AGENTS.md §N" cross-reference in the repo must land on a real
+    # "## N." heading. Measured 2026-09-02: §8 lost its heading during a
+    # split and four live pointers (CODEX.md, doi_verify.py, ...) dangled
+    # while this test stayed green — a heading that moved is as dead as a
+    # skill that was never shipped.
+    with open(AGENTS, encoding="utf-8", errors="replace") as fh:
+        headings = set(re.findall(r"^## (\d+[a-z]?)\.", fh.read(), flags=re.M))
+    dangling = []
+    for dp, dn, fn in os.walk(ROOT):
+        dn[:] = [d for d in dn if d not in (".git", "__pycache__", ".pytest_cache", "out")]
+        for f in fn:
+            if not f.endswith((".md", ".py")):
+                continue
+            path = os.path.join(dp, f)
+            try:
+                with open(path, encoding="utf-8", errors="replace") as fh:
+                    text = fh.read()
+            except OSError:
+                continue
+            for n in set(re.findall(r"AGENTS\.md\s*§\s*(\d+[a-z]?)", text)):
+                if n not in headings:
+                    dangling.append((os.path.relpath(path, ROOT), n))
+    if dangling:
+        print(f"\nFAIL — {len(dangling)} 'AGENTS.md §N' reference(s) point at a section "
+              f"heading that does not exist:")
+        for p, n in sorted(dangling):
+            print(f"   {p}: §{n}")
+        return 1
+    print(f"AGENTS.md §N cross-references resolve ({len(headings)} headings)")
     print("\nALL PASS — every skill/script §0 names actually exists")
     return 0
 
