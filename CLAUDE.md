@@ -86,24 +86,14 @@ Everything outside those five is prose and gets translated.
 
 ## Safety baseline (do not override)
 
-- Never write, print, or commit real secrets (API keys, tokens, passwords).
-  Treat any `secrets.json` / `*.credentials.json` file as off-limits for
-  Write/Edit. Use environment variables or a local, gitignored config file
-  instead, and never hardcode a credential literal into a script.
-- Never run destructive git operations (`git push --force`, `git reset
-  --hard`, `git config --global`, force-deleting a branch) unless the user
-  explicitly asks for exactly that operation in those words.
-- Never run recursive/forced deletes (`rm -rf`, `sudo rm`, `find ... -delete`)
-  without explicit user confirmation of the exact path.
-- Respect cloud-sync folders (OneDrive, Dropbox, iCloud Drive, Google Drive):
-  avoid recursive scans (`find`, `ls -R`, `**` globs, bulk `cat *`) over
-  paths inside them — this can force every file to download from the cloud.
-  Prefer reading one specific file at a time, or the provider's own API/skill
-  if one is available.
-- These four guards are also enforced mechanically by the hook scripts in
-  `hooks/` (see `hooks/hooks.json`) when this package is loaded as a plugin —
-  treat this section as documentation of what those hooks do, not a
-  substitute for thinking before running a command.
+The single statement of the safety rules is **`AGENTS.md` §7** (secrets,
+destructive git, recursive deletes, cloud-sync folders, PII, ask-before /
+proceed-by-default). It is not repeated here so that it cannot drift. Under
+Claude Code the four command-level guards are also enforced mechanically by the
+scripts in `hooks/` (wired in `hooks/hooks.json` when this package is loaded
+as a plugin); the exact command patterns each guard matches are listed in
+`CODEX.md` §1–4. Treat the hooks as a backstop, not a substitute for reading
+§7 before a destructive or outward-facing action.
 
 ## Working style
 
