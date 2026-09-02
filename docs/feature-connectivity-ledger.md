@@ -442,3 +442,61 @@ not that its content is correct.
 machine for a missing `scipy`; unrelated to this branch and present on
 `origin/main`.
 
+
+## 2026-09-02 — Tool connectivity check (orphan / untested ratchet)
+
+**Scope / layer** — cross-cutting verification: `scripts/connectivity_check.py`,
+doctor check 13, `tests/test_connectivity.py`, `tests/test_tool_cli_smoke.py`.
+
+**Why** — measured 2026-09-02: nine tools (`hplc_parser`, `jcr_batch_verify`,
+`excel_formula_check`, `fetch_public_vector`, `primer_structure_check`,
+`variant_filter`, `convert_literature`, `manuscript_packet`, `fetch_github`)
+had no doc naming them, no importer and no test, while doctor reported 12 OK.
+This ledger itself was read by nothing. The failure the ledger describes
+("build the right artifact and nothing calls it") had happened to the ledger.
+
+**Rule** — every non-underscore `.py` under `scripts/`, `scripts/connectors/`
+and `skills/*/scripts/` is classified on two axes. *Reachable*: a doc an
+agent/user reads names it, or a module imports it, or a hook/installer/doctor
+runs it. *Exercised*: `tests/**`, `skills/*/tests/**`, `doctor.py` or `evals/`
+names it. ORPHAN (unreachable) = FAIL. UNTESTED (reachable, no test) = WARN
+in doctor, with a ratchet in the test (`MAX_UNTESTED`) so the count can only
+fall. Prose that says "hplc parser" without `.py` does not count — the stem
+alone matched unrelated sentences.
+
+**Ledger contract** — an entry may carry `wired-by: <path>` lines; every path
+must exist. This is the only mechanically checked part of the ledger.
+
+**Resolution of the nine** — routed (README package-layout table +
+`docs/agents/08-verification-routes.md` + smoke test): the six `scripts/`
+tools, `convert_literature.py`, `fetch_github.py`. Retired (deleted; git
+history keeps them): `skills/research-lookup/scripts/manuscript_packet.py`
+(pure helpers with no importer in the toolkit *or* the authoring tree) and
+`skills/primer-design/tests/test_md_vs_direct.py` (depends on a task-builder
+skill that does not ship in this toolkit, printed FAIL and exited 0 — a test
+that can never pass and never fails). The authoring tree should drop the same two files.
+
+**Also wired** — `skills/web-scraping/tests` (129 pytest cases: EZproxy scope,
+PDF pipeline, target safety, GitHub failure surfacing) now runs under doctor;
+`SELF_TEST_SCRIPTS` accepts a directory entry and runs it with pytest.
+
+**Evidence** — `python scripts/connectivity_check.py` → 0 orphan; doctor 13 OK;
+`tests/test_tool_cli_smoke.py` re-parses real output (2 peaks at 3.0/7.5 min
+from a synthetic chromatogram; hairpin primer FAILs, clean primer PASSes;
+3-row PASS/FAIL matrix).
+
+**Refutation** — synthetic trees: nothing-points-here → ORPHAN exit 1;
+doc-only → UNTESTED exit 0 and exit 1 under `--max-untested 0`; import+test →
+OK; `_helper.py` not a tool; stem-only prose does not count; dangling
+`wired-by:` → exit 1; empty tree → PASS; adverse tool inputs (non-chromatogram
+file, no primer sequences, missing CSV) never yield a silent PASS.
+
+**Deferred risk** — 52 reachable skill scripts have no test in this toolkit
+(they are downstream copies of skills authored elsewhere). The ratchet stops
+growth; it does not shrink the number.
+
+wired-by: doctor.py
+wired-by: scripts/connectivity_check.py
+wired-by: tests/test_connectivity.py
+wired-by: tests/test_tool_cli_smoke.py
+wired-by: skills/web-scraping/tests

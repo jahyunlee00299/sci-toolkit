@@ -12,8 +12,8 @@ the artifact isn't done until the gate passes, and the gate is a script, not a
 suggestion.
 
 ```
-37 skills · 30 regression tests · 7 safety guards
-python doctor.py   ->   12 OK / 0 FAIL
+37 skills · 32 regression tests · 7 safety guards
+python doctor.py   ->   13 OK / 0 FAIL
 ```
 
 No personal accounts, PII, or funding information included. Undisclosed research
@@ -150,11 +150,20 @@ this order:
 | `hooks/` | 7 safety guards — secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
 | `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
 | `docs/` | 15 beginner docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
-| `tests/` | 30 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection). `doctor.py` runs all of them automatically |
+| `tests/` | 32 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke). `doctor.py` runs all of them automatically |
 | `doctor.py` | Integrity/environment check. `PASS` means it's ready |
 | `evals/` | Headless measurement of whether routing **actually fires** (slow, costs money — run manually) |
 | `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |
+| `scripts/connectivity_check.py` | Lists every shipped tool that nothing leads to (ORPHAN) or nothing tests (UNTESTED). `doctor.py` runs it; the untested count can only go down (`tests/test_connectivity.py`) |
 | `scripts/feedback_log.py` | Records inconveniences/errors (no account or token needed) |
+| `scripts/hplc_parser.py` | HPLC chromatogram `.ch`/`.txt`/`.csv`/`.arw` -> CSV/JSON with auto-detected, integrated peaks (stdlib only) |
+| `scripts/primer_structure_check.py` | Hairpin / homodimer dG for a primer list (nearest-neighbor model), PASS/FAIL per primer |
+| `scripts/variant_filter.py` | Merges ddG, primer-QC and expression CSVs into one PASS/FAIL matrix per variant |
+| `scripts/fetch_public_vector.py` | Fetches a PUBLIC plasmid/vector by NCBI accession for the primer-design registry (network) |
+| `scripts/jcr_batch_verify.py` | Enriches a journal impact-factor cache with OpenAlex venue data (network) |
+| `scripts/excel_formula_check.py` | Windows-native (Excel COM) scan of a workbook for live `#REF!`/`#DIV/0!`/... errors — no LibreOffice needed |
+| `skills/markitdown/scripts/convert_literature.py` | Batch-converts a folder of paper PDFs to Markdown for review (needs the `markitdown` package) |
+| `skills/web-scraping/scripts/fetch_github.py` | GitHub repo discovery/monitoring through the official REST API (5th web-scraping mode) |
 | `SHA256SUMS` | Hashes for every file — verify integrity after copying/transferring |
 
 </details>
