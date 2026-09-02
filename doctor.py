@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -101,7 +102,7 @@ from doctor_lib.dead_automation import (  # noqa: E402
     _resolve_artifact_paths,
     check_dead_automation,
 )
-from doctor_lib.selftests import _selftest_command, run_selftests  # noqa: E402
+from doctor_lib.selftests import OFFLINE_ENV, _selftest_command, is_pytest_style, run_selftests  # noqa: E402
 
 
 # --------------------------------------------------------------------------
@@ -172,6 +173,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_tool_cli_smoke.py", "standalone tool smoke (HPLC parser, primer structure, variant filter, CLIs)"),
     ("tests/test_doctor_selftest_verdicts.py", "doctor self-test verdicts (upstream outage = WARN, broken tool = FAIL)"),
     ("tests/test_sci_http.py", "shared HTTP retry policy (429/5xx retried, 4xx not, Retry-After, backoff)"),
+    ("tests/test_skill_sizes.py", "SKILL.md size ratchet (24 KiB cap; grandfathered files may only shrink)"),
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.
@@ -251,7 +253,16 @@ def main(argv: list[str] | None = None) -> int:
              "checks (shell/hooks/sentinel/routing). Used by install.py's "
              "post-install check; run without --quick for the full gate.",
     )
+    parser.add_argument(
+        "--offline", action="store_true",
+        help="keep every self-test off the network (sets SCI_TOOLKIT_OFFLINE=1 for "
+             "the subprocesses): script probes print SKIP with the reason, "
+             "pytest-style tests marked 'network' are deselected. Use on a "
+             "machine with no internet or when an upstream API is down.",
+    )
     args = parser.parse_args(argv)
+    if args.offline:
+        os.environ[OFFLINE_ENV] = "1"
 
     root = (args.root or Path(__file__).resolve().parent).resolve()
 

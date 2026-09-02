@@ -3,6 +3,8 @@ the doctor gate, so a broken verification tool never ships quietly."""
 
 from __future__ import annotations
 
+import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -13,12 +15,38 @@ from doctor_lib.result import (
 )
 
 
+#: Set by `doctor.py --offline` (or by the user) to keep every self-test off
+#: the network: script-style probes print SKIP with this reason, pytest-style
+#: tests marked `network` are deselected.
+OFFLINE_ENV = "SCI_TOOLKIT_OFFLINE"
+
+_PYTEST_STYLE = re.compile(r"^\s*(?:async\s+)?def\s+test_\w+\s*\(", re.MULTILINE)
+
+
+def is_pytest_style(path: Path) -> bool:
+    """A file that defines `def test_...` functions must run under pytest.
+
+    Running such a file as a bare script defines the functions and exits 0
+    without executing one assertion — a silent no-op that would show up in
+    doctor as a passing self-test. Measured risk, not a hypothetical: the
+    first pytest-style file (tests/test_sci_http.py, 2026-09-03) would have
+    "passed" that way.
+    """
+    try:
+        return _PYTEST_STYLE.search(path.read_text(encoding="utf-8", errors="replace")) is not None
+    except OSError:
+        return False
+
+
 def _selftest_command(root: Path, rel: str) -> list[str]:
-    """Script entries run as `python <file>`; directory entries run under pytest."""
+    """Script entries run as `python <file>`; directories and pytest-style files run under pytest."""
     target = root / rel
-    if target.is_dir():
-        return [sys.executable, "-m", "pytest", str(target), "-q",
-                "-o", "python_files=test_*.py", "-p", "no:cacheprovider"]
+    if target.is_dir() or is_pytest_style(target):
+        cmd = [sys.executable, "-m", "pytest", str(target), "-q",
+               "-o", "python_files=test_*.py", "-p", "no:cacheprovider"]
+        if os.environ.get(OFFLINE_ENV) == "1":
+            cmd += ["-m", "not network"]
+        return cmd
     return [sys.executable, str(target)]
 
 

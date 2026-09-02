@@ -639,3 +639,52 @@ wired-by: doctor_lib/selftests.py
 wired-by: doctor_lib/sentinel.py
 wired-by: tests/test_doctor_selftest_verdicts.py
 wired-by: tests/test_doc_counts.py
+
+## 2026-09-03 — Gates that stop regrowth: SKILL.md size ratchet, dual-mode test runner, offline switch
+
+**Scope / layer** — cross-cutting: `tests/test_skill_sizes.py`,
+`tests/conftest.py`, `doctor_lib/selftests.py` (`is_pytest_style`,
+`_selftest_command`, `OFFLINE_ENV`), `doctor.py --offline`, `pytest.ini`
+(`network` marker), the three network probes (`test_si_institutional`,
+`test_doi_verify`, `biorxiv-database/tests/test_preprint_search`),
+`tests/test_sci_http.py` rewritten pytest-style as the conversion exemplar.
+
+**Why** — (1) avoid-ai-writing/SKILL.md is 93.6 KB with nothing to stop
+regrowth after a hand trim; the runtime copies are the same size, so the
+trim is runtime-first and this gate only ratchets. (2) Every check in
+`tests/` was a script, so `-k`, markers and per-test reporting did not
+exist, and a pytest-style file dropped into `tests/` would have been run as
+a bare script by doctor — defining its functions and exiting 0 without one
+assertion, a silent pass. (3) There was no way to run doctor on a machine
+without internet, or during an upstream outage, without red.
+
+**Rules** — SKILL.md ≤ 24 KiB hard, > 16 KiB advisory; three grandfathered
+files may only shrink and must be delisted once under the cap. A file that
+defines `def test_` runs under pytest in both runners (conftest and doctor);
+everything else stays a subprocess script. `SCI_TOOLKIT_OFFLINE=1` (set by
+`doctor.py --offline`) makes script probes SKIP with the reason on the line
+and deselects `network`-marked pytest tests.
+
+**Evidence** — `doctor.py --offline` → 13 OK / 1 WARN / 0 FAIL; online run
+identical; `pytest tests/` collects 66 items (19 native + 47 script items);
+`pytest tests/test_sci_http.py` collects exactly 19 (explicit-path double
+collection fixed — measured "IndexError: pop from empty list" before).
+
+**Refutation** — `test_doctor_selftest_verdicts.py` (31 cases): a pytest-
+style file with a failing assert registered in SELF_TEST_SCRIPTS → FAIL
+with the assertion text in details (so it was run under pytest, not as a
+script); a `network`-marked test that asserts False → OK under offline, FAIL
+online; the env var is visible inside the subprocess. `test_skill_sizes.py`
+(48 cases) pins every verdict on synthetic size tables: over cap, exactly
+at cap, grandfathered +1 byte, grandfathered under cap ("remove it"),
+grandfathered with no file, empty tree.
+
+**Deferred** — the other 34 script-style tests convert one file per commit
+using `test_sci_http.py` as the pattern; nothing forces it, both runners
+accept either style indefinitely.
+
+wired-by: tests/test_skill_sizes.py
+wired-by: tests/conftest.py
+wired-by: doctor_lib/selftests.py
+wired-by: tests/test_sci_http.py
+wired-by: pytest.ini
