@@ -8,9 +8,16 @@ into a new project, or import/symlink it from a shared toolkit repo, and
 adapt the pointers (marked `<project-specific>`) to your own setup.
 
 **Section 0 is the entry point**: it maps an incoming request to the route it
-must take. Sections 1–7 state the operating *principles*; **Section 8 maps each
-capability to the concrete command that re-checks its output and the pass
-bar** — read it before finalizing any artifact a skill produced.
+must take. Sections 1–7 state the operating *principles*; **Section 8 names the
+file that maps each capability to the concrete command that re-checks its
+output and the pass bar** — read it before finalizing any artifact a skill
+produced.
+
+**Size budget.** Codex reads at most 32 KiB of this file (`project_doc_max_bytes`,
+default 32768) and silently drops the rest, so this file stays under that
+(`tests/test_agents_routing.py` fails past the cap): sections 6, 6b, 8, 9, 10 and
+§7's branch-hygiene procedure are stubs here with the rules in force, and their
+full text lives in `docs/agents/`. Add long material there, not here.
 
 **Language.** When the user writes in a non-English language, reason/think in
 that language too — don't silently switch to English for internal reasoning
@@ -18,27 +25,16 @@ while replying in the user's language. Keep code, identifiers, and technical
 terms in English regardless. Never substitute a language's native accented or
 special characters with plain ASCII equivalents when writing in that language.
 
-> **Claude Code note**: Claude Code automatically reads a file named
-> `CLAUDE.md` in the project root (and in parent directories) as its system
-> instructions. If you use Claude Code, either rename this file to
-> `CLAUDE.md`, or keep both and symlink one to the other so a single source
-> of truth serves every tool:
-> ```
-> ln -s AGENTS.md CLAUDE.md
-> ```
-> Other agents (Codex CLI, etc.) generally look for `AGENTS.md` directly —
-> keep that as the canonical name and symlink the tool-specific name to it,
-> not the reverse, so the generic file stays the source of truth.
+> **Claude Code note**: Claude Code reads `CLAUDE.md` automatically, not this
+> file. This repo ships a short `CLAUDE.md` that points here; in your own
+> project either do the same or symlink `CLAUDE.md` → `AGENTS.md`, keeping
+> `AGENTS.md` as the canonical name.
 
-> **Codex note**: everything in this file applies to you. One thing does not
-> carry over automatically: the guards in `hooks/` run as `PreToolUse` hooks
-> under Claude Code, and **under Codex nothing runs them unless you wire them
-> yourself** — so by default no check inspects a command before it executes.
-> The seven rules those guards enforce therefore become rules you follow by
-> reading them. They are spelled out, with the exact patterns, in
-> **[`CODEX.md`](CODEX.md)** — which also covers Codex's own hook and rules
-> mechanisms, and its sub-agent tools. Read it before your first destructive or
-> outward-facing action.
+> **Codex note**: everything here applies to you, but the guards in `hooks/`
+> do **not** run under Codex unless you wire them yourself — until then the
+> seven rules they enforce are rules you follow by reading them. Exact
+> patterns, the wiring procedure and Codex's sub-agent tools:
+> **[`CODEX.md`](CODEX.md)**. Read it before any destructive or outward action.
 
 ---
 
@@ -86,30 +82,17 @@ and read its exit code rather than judging by eye.
 | Set up / install / "it's not working" | `doctor.py` | 🔒 `python doctor.py` must print `PASS` — quote the failing line, don't paraphrase. |
 | The user says something in this toolkit is broken, confusing, missing, or annoying ("이거 불편해요" [this is inconvenient], "왜 안 되지" [why doesn't this work], "자꾸 실패해요" [it keeps failing], "이런 게 있으면 좋겠는데" [it'd be nice if there were something like this]) | fix it if you can, **and** `scripts/feedback_log.py add "<what>"` | Ask **one** question to fill in what you cannot infer, then record. Do not interrogate — an incomplete record beats no record. See §10. |
 
-> **External dependency — office documents (docx/pdf/pptx/xlsx)**: this repo
-> does not redistribute the office skills. When the table points at
-> `docx`/`pdf`/`pptx`/`xlsx`, read that as **whichever office skill the agent
-> you're running on provides** — whatever the implementation, that row's
-> gate (🔒) still applies as written.
->
-> - **Claude Code** — Anthropic's office skills (when present in the user's environment)
-> - **Codex** — its own bundled office plugin is active by default. See
->   `CODEX.md` for its name and constraints (it has figure-related
->   constraints on the slides side)
-> - **Neither available** — `docs/12_문서스킬_직접_준비하기.md`
->
-> Either way, **the output-verification gate is identical**: extracting
-> `.docx` text must first pass `manuscript_text.py --count-only` (exit 10 =
-> tracked changes present), figures go through `scripts/figure_lint.py`, and
-> numbers go through the §3 SSOT. The lab's own 7 manuscript-QC tools
-> (`manuscript-pipeline/scripts/`) work independently of whichever office
-> skill is in use.
->
-> For a figure that will go into slides, **make it with `publication-figures`
-> first and hand over the finished image file.** Never give the slide skill
-> raw data and let it plot the figure — doing so breaks the figure's
-> provenance tracking (§3) and regression protection (§5) right there, and on
-> some agents it's outright disallowed.
+> **External dependency — office documents (docx/pdf/pptx/xlsx)**: not
+> redistributed here. `docx`/`pdf`/`pptx`/`xlsx` in the table means whichever
+> office skill your agent provides (Claude Code: Anthropic's; Codex: its
+> bundled plugin, see `CODEX.md`; neither: `docs/12_문서스킬_직접_준비하기.md`),
+> and that row's gate (🔒) applies unchanged: `.docx` text extraction passes
+> `manuscript_text.py --count-only` first (exit 10 = tracked changes), figures
+> go through `scripts/figure_lint.py`, numbers through §3. The lab's own
+> manuscript-QC tools (`manuscript-pipeline/scripts/`) work with any of them.
+> A figure bound for slides is made with `publication-figures` first and handed
+> over as a finished image — never let the slide skill plot raw data (breaks §3
+> provenance and §5 regression protection; disallowed on some agents).
 
 ### Rules that override the table
 
@@ -247,114 +230,40 @@ this discipline:
 
 ## 6. Model Routing Philosophy
 
-Match model/agent capability to task difficulty — this saves cost and
-often improves quality (a heavy model overthinking a trivial task can
-introduce unnecessary changes).
+Match model tier to task difficulty: shallow / mechanical work (read, look up,
+extract, compare, count, apply a known formula) → cheapest tier; standard
+implementation (a function, a bug with a known cause, a single-file refactor)
+→ mid tier; deep reasoning (architecture, adversarial or security review,
+physics / numerical plausibility, cross-validation of a scientific result,
+multi-objective optimisation design) → strongest tier. Do not spawn a
+sub-agent for what one or two direct reads answer. When unsure, draft on the
+cheaper tier and escalate to the strongest one for the verification pass (§2).
+Adversarial verification = ONE agent given the whole output, unless the axes
+are genuinely independent. **Diagnose first, escalate second**: a few cheap
+direct checks before any agent or workflow. **A second AI system that does not
+read this file** is a verifier at high-error-cost checkpoints only — never the
+first-pass executor for rule-dependent or file-writing work, never with write
+access to rule-critical directories, and its identifiers / DOIs still need a
+primary-source check. Full text: `docs/agents/06-model-routing.md`.
 
-- **Simple, mechanical, or shallow tasks** (read a file, run a lookup,
-  extract a field, compare two short things, count something, apply a
-  known formula) → use the cheapest/fastest model tier available.
-- **Standard implementation work** (write a function, fix a bug with a
-  known cause, refactor a single file) → use a mid-tier model.
-- **Deep reasoning tasks** (architecture decisions, adversarial/security
-  review, physics or numerical plausibility diagnosis, cross-validation
-  of a scientific result, multi-objective optimization design) → use the
-  strongest available model.
-- Don't spawn a sub-agent/session at all for something answerable in one
-  or two direct read/search calls — the overhead of spinning up a fresh
-  agent context can exceed the cost of just doing it directly.
-- When in doubt about which tier a task needs, err toward the cheaper
-  tier for exploration/drafting, then escalate to the stronger model
-  specifically for the verification pass (Section 2) — this pairs
-  naturally with "distrust self-report."
-- For adversarial/verification work, a single agent given the *entire*
-  output to check is usually more reliable than splitting the check
-  across multiple parallel agents (which risks truncation or
-  contradictory partial views), unless the checks are on genuinely
-  independent axes (different files, different methods) that don't fit
-  in one context.
-
-**Diagnose first, escalate second.** When troubleshooting an operational
-failure (a service down, a broken connection, a failing request), run a few
-direct, cheap diagnostic checks yourself before spawning an agent or an
-automated workflow to investigate. Escalate to an agent only if the cause is
-still unknown after those checks, or the fix genuinely needs autonomous
-multi-step judgment.
-
-**Using a second AI system that doesn't share your rules.** If you have access
-to a second AI tool/agent that operates outside your normal rule/config
-context (a different app, a different account, a sandbox that doesn't read this
-file), do NOT use it as the first-pass executor for rule-dependent or
-file-writing work — it will silently violate conventions (naming, safety,
-formatting) it never saw.
-- Use such a second system only as an independent adversarial *verifier* at
-  high-error-cost checkpoints (a number about to enter a publication, a
-  structural prediction, a citation list) — not for every task, and never give
-  it write access to rule-critical directories.
-- Any factual claim it produces (an identifier, a citation, a DOI) still needs
-  cross-verification against a primary source before you trust it — don't chain
-  trust through an unverified secondary tool.
+---
 
 ## 6b. Life-science requests can be blocked ABOVE the model
 
-Molecular-biology, primer-design, and enzyme-engineering prompts can be refused
-by a provider-side safety classifier **before any model reads them**. On the
-Anthropic API this surfaces as an API error carrying `Details: [bio]`. It is not
-the assistant declining — nothing in the prompt was reasoned about, so framing,
-credentials, or an institutional preamble have no effect on the outcome.
+A provider-side safety classifier can refuse molecular-biology, primer-design and
+enzyme-engineering prompts **before any model reads them** (on the Anthropic API:
+an error carrying `Details: [bio]`). Measured 2026-08-26 over 16 calls:
+deterministic (an unchanged retry is always wasted), whole-call kill (a batch
+dies entirely), rewording is NOT a lever, legitimate vocabulary mostly passes.
+Rules: **one request, one subject** when delegating; never re-send a blocked
+prompt unchanged — split it; do not self-censor standard terminology; read the
+error text ("can sometimes flag legitimate … tasks" = false positive → split,
+retry, report via `/feedback`; a terse "can't help with this" = real boundary →
+say so and stop); never shop for a model tier; a blocked fan-out branch is
+UNRUN, not empty. Full measurement table and the reporting procedure:
+`docs/agents/06b-bio-filter.md`.
 
-Measured over 16 calls (2026-08-26). Reproduce before trusting any of it:
-
-| Property | What was measured |
-|---|---|
-| Deterministic | One blocked prompt re-sent unchanged 3x → 3/3 blocked. A bare retry is always wasted. |
-| Whole-call kill | A 5-question batch died entirely; the same questions sent one-per-call returned 11/12 answers. There is no partial refusal. |
-| Legitimate vocabulary mostly passes | `virulence factor`, `toxin`, `pathogenic isolate`, `lethal dose`, `knockout` all returned full technical answers. |
-| Real boundaries still hold | A request to increase a toxin's potency was blocked. That is correct, and a tactic that unblocked it would be a bad tactic. |
-| Rewording is NOT a lever | Same question, two phrasings: the naive wording passed; the "sanitized" academic wording was blocked 3/3. |
-
-### Operating rules
-
-1. **One request, one subject.** The only lever with a measured, consistent
-   direction. Never bundle several life-science questions into one delegated
-   call — one flagged item kills all of them and you cannot tell which.
-2. **Never re-send a blocked prompt unchanged.** Split it instead.
-3. **Do not self-censor standard terminology.** Rewriting normal scientific
-   vocabulary wastes effort and, per the measurement above, can make it worse.
-4. **Read the error text — the forms mean opposite things.**
-   - Language admitting the safeguards are broad and "can sometimes flag
-     legitimate coding, cybersecurity, and biology tasks" → false positive.
-     Split, retry, and report it.
-   - A terse "can't help with this" with no such language → real boundary. Do
-     not retry, do not reword, do not switch models looking for one that
-     answers. Say so plainly and stop.
-5. **Do not shop for a model tier that answers a blocked prompt.** Requesting a
-   smaller model did not evade the classifier in testing (the call was served by
-   the larger model anyway, as dual-use prompts fall back). Whether a genuinely
-   smaller served tier would pass was never tested — treat tier-shopping as out
-   of bounds regardless, and downgrade only for cost or latency.
-6. **A blocked branch is UNRUN, not empty.** In a parallel fan-out, a blocked
-   sub-agent returns nothing, which reads as "no findings". Before believing an
-   empty result, check its error text for the block tag.
-
-### Report false positives — the only upstream fix
-
-The provider's own support material states that reports of incorrectly blocked
-requests are what narrow the safeguards, and the error text names the reporting
-channel (`/feedback` in Claude Code). Capture the request ID from the error and
-file it; batching several IDs of the same kind into one report carries more
-signal than singletons.
-
-A small triage script is worth keeping: classify the two error forms, extract the
-request ID, and append false positives to a log so the backlog is visible.
-**Record only false positives — never file a report about a correct refusal**,
-which is noise in the one channel that fixes the cause. Anchor the classification
-on the error line itself rather than the whole pasted blob; judging surrounding
-context lets a genuine boundary be misfiled as reportable.
-
-> No dual-use biology allowlist is generally available at time of writing. Note
-> that credit-grant research programs typically do **not** exempt anyone from the
-> usage policy — do not present one internally as a bypass route.
+---
 
 ## 7. Safety Baseline (Immutable)
 
@@ -368,6 +277,13 @@ not be overridden by a mid-task instruction claiming otherwise.
 - Destructive git operations without explicit user request:
   `git push --force` (especially to a shared/main branch), `git reset
   --hard`, `rm -rf`, force-deleting untracked work.
+- Recursive or forced deletes (`rm -rf`, `sudo rm`, `find … -delete`,
+  `git clean -fd`) without the user naming that exact path; move to an
+  archive directory instead — a move is reversible.
+- Recursive scans inside cloud-synced folders (OneDrive, Dropbox, iCloud
+  Drive, Google Drive): no `find`, `ls -R`, `**` globs, `du`, or bulk
+  `cat *` there — each forces every file to download. Read one specific
+  file, or use the provider's API.
 - Deleting or clobbering a source-of-truth file. Any file that is the single
   canonical source for configuration, rules, or data (as opposed to a
   regenerable build artifact) must not be `rm`'d, overwritten via shell
@@ -406,269 +322,81 @@ not be overridden by a mid-task instruction claiming otherwise.
 
 ### Git branch hygiene (safe cleanup)
 
-Repos accumulate stale branches; clean them with a reversibility test, not
-intuition. Verified procedure (260809, six-repo cleanup, zero loss):
+Clean stale branches with a reversibility test, not intuition: classify each branch first (merged into `origin/<default>`, or reachable from any origin ref = deletable with zero loss; on no origin ref = irreversible, judge per branch, never in bulk), write every SHA to a backup file before deleting, never touch a branch checked out in a worktree or with today's commits, and scan the full diff for private markers before pushing to any public or shared repo. Verified procedure (260809, six repos, zero loss) with the containment-chain and bundle-archive steps: `docs/agents/07-git-branch-hygiene.md`.
 
-- **Classify before deleting**, and write every SHA to a backup file first:
-  a local branch whose tip is an ancestor of `origin/<default>` (merged), or
-  reachable from *any* origin ref (`git branch -r --contains <sha>`, pushed),
-  is deletable with zero loss — the origin retains the objects. A branch on
-  no origin ref is **irreversible** to delete: judge it per-branch, never in
-  bulk. `git branch -d` is not a safety judge — it only compares against the
-  default branch and misses "preserved in a different branch".
-- **Containment chains**: run `git merge-base --is-ancestor A B` pairwise
-  among unmerged branches; in a chain `A ⊂ B ⊂ TIP`, processing the TIP
-  resolves the members. `git cherry origin/<default> <branch>` with all `-`
-  means the content already lives in default (squash/rebase residue).
-- **Hands off live work**: never delete a branch checked out in a worktree,
-  and treat a branch with today's commits as belonging to a live session.
-- **Oversized/binary-polluted branches**: archive as a verified `git bundle`
-  (checksum both ends) on bulk storage instead of pushing to the code host.
-- **Before pushing to any public or shared repo**, scan the full diff — not
-  just filenames — for private markers (names, home paths, tokens,
-  unpublished model/reaction structure). Example code and docs are the
-  classic leak: the numbers are absent but the structure of unpublished
-  work is not.
-- **Merging accumulated branches**: merge only with the repo's test suite
-  green on the *merged* tree; otherwise record a verdict (HOLD / SUPERSEDED
-  / ARCHIVE) with the exact command as evidence. "Superseded" needs
-  file-level diff proof, not "looks replaced".
+---
 
 ## 8. Per-Capability Verification Routes (execute after using a skill)
 
-Sections 2–7 are the *principles*. This section is the *operational map*: for
-each capability that ships a real verification device, it states the error the
-device prevents, the exact command to run, the pass condition, and which
-principle it enforces. **When you use one of these skills to produce an
-artifact, running its verification route is not optional — it is the second
-half of the task.** Paths are relative to the toolkit root.
-
-Two hard truths from auditing the actual scripts, so you don't misuse them:
-- **A "PASS" from a static/structural checker is not always ground truth.**
-  Where a skill provides both a static check and a real-engine check (docx),
-  you must pass *both* — the static one has documented blind spots.
-- **"Advisory" ≠ "gate."** Some linters always exit 0 and only *report*. Don't
-  treat their clean output as a pass, and don't treat their findings as
-  blocking. Each row below marks which is which.
-
-### Blocking gates — artifact is NOT done until this passes
-
-| Capability | Error prevented | Command (from toolkit root) | Pass condition | Enforces |
-|---|---|---|---|---|
-| **publication-figures** | Style regressions in a figure: raw legend calls, hardcoded hex/fontsize, descriptive panel titles, `suptitle`, in-axes condition labels, external legend, no layout manager, `savefig` without dpi/bbox | `python skills/publication-figures/scripts/figure_lint.py <render_script.py>` | **0 HIGH-severity** findings; nonzero exit = not done. Run on *every* render script. | §5, §2 |
-| **manuscript-pipeline** (numeric) | Same quantity with conflicting values across text/table/figure-CSV (>2% rel.); figure/table cited-but-not-captioned or vice-versa | `python skills/manuscript-pipeline/scripts/numeric_consistency_check.py <MANUSCRIPT.docx> --csv <FIGURES_DIR> --json review.json` | exit 0 / `RESULT: PASS`. Rerun until PASS before finalizing (Phase 3→4 gate). | §3, §2 |
-| **docx** (structural) | OOXML corruption incl. the duplicate-ZIP-member pattern that python-docx and the static preflight silently miss but Word rejects | `python skills/docx/scripts/docx_preflight.py <file>` **AND** `python skills/docx/scripts/word_validate.py <file>` | preflight = PASS/PASS_WITH_WARNINGS **AND** word_validate = CLEAN. **Both required** — preflight alone is NOT sufficient (documented blind spot). | §2, §7 |
-| **scientific-validation** (5 axes) | Physically implausible / unidentifiable / overfit / bound-hit / mass-balance-violating fit reported as trustworthy; results from uncommitted raw data | `python skills/scientific-validation/scripts/check_raw.py <rawfile>` (Axis 0) then `python skills/scientific-validation/scripts/sci_validate.py --json <results.json> --emit-json` (Axes 1–4) | Axis 0 not FAIL; sci_validate exit 0 (exit 1 = real science FAIL, exit 3 = check crashed — distinct). A single contradiction invalidates a blanket PASS. | §2, §3 |
-| **primer-design** | Hairpin/homodimer primers, F/R pairs that don't form the intended overlap, internal RE cut sites in the insert, frameshift / premature-stop / CDS-not-×3 | Auto-invoked in the design pipeline (`_check_expression_viability` after design). You must read the result: `overlap_verified == True`, reading frame preserved, `expression_check.verdict != "FAIL"`. | If verdict FAIL → redesign, do not proceed. | §2 |
-| **xlsx** | Delivered spreadsheet with live formula errors (`#VALUE! #DIV/0! #REF! #NAME? #NULL! #NUM! #N/A`) | `python skills/xlsx/scripts/recalc.py <file.xlsx>` | **Zero** formula errors reported. Mandatory whenever formulas are used. Note: xlsx has **no** structural/corruption validator — only this formula scan. | §2 |
-| **literature-review / endnote-citation-injection** | Hallucinated/unresolvable DOIs, duplicate papers, citation-injection docx corruption | DOI cross-verify (CrossRef **and** OpenAlex — never trust a single source) + dedup before finalizing; for endnote, post-injection docx integrity check | No unresolved DOI; no dup; injected docx passes structural counts | §3, §2 |
-
-### Advisory checks — run and read, but they do NOT block (never treat clean output as a "gate passed")
-
-| Capability | Reports | Command |
-|---|---|---|
-| **manuscript-pipeline** (nomenclature) | Abbrev/unit/dash/species-italic flags for *manual* review (does not verify formatting itself) | `python skills/manuscript-pipeline/scripts/nomenclature_lint.py <file>` — advisory, no exit gate |
-| **manuscript-pipeline** (AI-tells) | AI-sounding prose (inflated adjectives, filler, signature verbs) | `python skills/manuscript-pipeline/scripts/ai_tells_lint.py <file>` — always exits 0, report-only |
-| **docx** (visual) | Renders pages to PNG for layout inspection (figure placement, table overflow, page breaks) — a *rendering* aid, not a structural check | `python skills/manuscript-pipeline/scripts/visual_check.py <file> <outdir>` |
-| **publication-figures** (fidelity) | SSIM + pixel-MAE vs a reference image when reconstructing a figure | `python skills/publication-figures/scripts/figure_compare.py <a> <b>` (≥0.85 high) |
-
-### Capabilities with NO built-in verification device
-
-Do **not** invent a `*_lint.py` for these — none exists. Enforce the relevant
-principle *manually* instead:
-- **research-ideation** — judgement-shaped output; there is
-  nothing mechanical to check. The claims it produces still pass §2/§3.
-- **paper-extract, markitdown, pdf** — extraction/conversion wrappers. They fail
-  by silently dropping content, so spot-check the output against the source
-  rather than trusting a clean exit.
-- **research-search, research-lookup, openalex-database, pubmed-database, biorxiv-database** — the
-  search itself has no correctness gate, but **the DOIs they return do**: run
-  `scripts/doi_verify.py` before any of them enters a document (see below).
-
-### Devices added because "no device" was the wrong answer
-
-These three used to be in the list above. Each was a place where a wrong result
-was both plausible and expensive, and the check turned out to be mechanical
-after all — so it became a script instead of a instruction to be careful.
-
-| Was "manual only" | Now | What it catches |
-|---|---|---|
-| DOI cross-verify (literature, citations) | `python scripts/doi_verify.py --doi <list>` / `--bibtex <file>` | A DOI that **does not exist** (fabricated), a retracted paper, or metadata that disagrees with the record. Exit 2 = fabricated/retracted, 1 = mismatch or could-not-verify. **"Could not reach the API" is reported as UNVERIFIED, never as a pass.** |
-| stats-workflow assumption checks | `python skills/stats-workflow/scripts/assumption_check.py <data> --value <col> [--group <col>] [--run]` | Running a t-test on non-normal data, or a pooled t-test under unequal variance. Implements the SKILL.md decision tree: normality (Shapiro / D'Agostino by n) + Levene → names the test to use, and with `--run` reports it in APA form with effect size. |
-| academic-term-rules TYPO_PATTERNS | `python skills/manuscript-pipeline/scripts/body_typo_lint.py <file.md>` | Unit/notation typos (`50ul`, `37°C`, `n=3`, `NAD+`) as AUTO-FIXABLE, and punctuation glued to the next word as REVIEW-ONLY (never auto-replaced — the whitelist for abbreviations/URLs/decimals must be applied by a human first). |
-
-> The lesson worth keeping: "the mistake is cheap to undo" is not a reason to
-> leave a check unwritten. If the rule is stated precisely enough to follow, it
-> is usually precise enough to execute — and a script does not get tired or
-> assume it already checked. Only leave it manual when the judgement genuinely
-> cannot be reduced to a rule.
-
-> **How to wire this into your own project**: if you add or fork a skill,
-> add its verification route to the correct table above (blocking vs advisory
-> vs none). An AI reading this file should be able to answer, for any artifact
-> it just produced, "which command re-checks it, and what's the pass bar?"
-> If the answer is "there is no device," that means *you* run the §2/§3 check
-> by hand — it does not mean the artifact is exempt from verification.
+Sections 2–7 are the *principles*; the operational map — per capability, the
+error prevented, the exact command, the pass condition — is
+`docs/agents/08-verification-routes.md`. **Read it after producing an artifact
+with any of these skills; running the route is the second half of the task.**
+Two hard truths: a PASS from a static checker is not ground truth where a
+real-engine check also exists (docx needs `docx_preflight.py` **and**
+`word_validate.py`); "advisory" ≠ "gate" (`nomenclature_lint.py`,
+`ai_tells_lint.py`, `visual_check.py`, `figure_compare.py` only report).
+Blocking gates exist for: publication-figures (`figure_lint.py`, 0 HIGH),
+manuscript-pipeline numeric (`numeric_consistency_check.py` → PASS), docx
+structural, scientific-validation (`check_raw.py` then `sci_validate.py` exit 0),
+primer-design (`expression_check.verdict != "FAIL"`), xlsx (`recalc.py`, zero
+formula errors), literature / citations (`scripts/doi_verify.py` — exit 2 =
+fabricated or retracted; UNVERIFIED is never a pass), stats
+(`stats-workflow/scripts/assumption_check.py`) and notation
+(`body_typo_lint.py`). No device: research-ideation; paper-extract / markitdown /
+pdf (spot-check against the source); the search skills (their DOIs still go
+through `doi_verify.py`). Adding or forking a skill = add its route to that file.
 
 ---
 
 ## 9. External Service Connections (mail, GitHub, Asana, Notion, calendar, shared sheets)
 
-Connecting the agent to external services (mail, code host, task/doc
-managers, calendar, shared spreadsheets) adds power but also the ability to
-take OUTWARD, hard-to-undo actions. These rules govern how to do it safely;
-they extend §7 (Safety Baseline).
+Extends §7. The rules below are in force as written here; rationale and worked
+detail are in `docs/agents/09-external-services.md`.
 
-### Credentials & connection
-
-- **Avoid MCP-style always-on connections.** For any service that already
-  ships a REST/API connector script (`scripts/connectors/`) — mail, GitHub,
-  Asana, Notion, calendar, shared sheets — use that connector with a scoped
-  personal token (or, for calendar/sheets, a one-time OAuth consent) instead
-  of the tool's built-in "connect" button. A connector invocation only
-  touches what that one command asked for; an MCP connection stays open to
-  the whole account for every future turn regardless of whether the current
-  task needs it. Treat MCP as a last resort: only for a service that has no
-  connector yet, or for exploratory browser work that has no API
-  equivalent.
-- Once a service has been switched to its connector, disconnect that
-  service's MCP connection in the app's own settings (a human action, not
-  something the agent does on its own) so the standing access shrinks to
-  what's actually in use.
-- When a token IS required (e.g. a code-host personal access token), store
-  it in a secrets store or the tool's credential manager, NEVER inline in
-  code, chat, commits, or a plaintext file in the repo. Never echo a token
-  into visible output.
-- Treat tokens like keys: scope them minimally, rotate/revoke on any
-  suspected leak. Do not commit anything matching a secret pattern (check
-  the diff before committing — this restates §7).
-
-### ⭐ Draft-first for outward actions (the core rule)
-
-- **Anything that goes OUT to other people is draft-first by default:
-  compose it and leave it in a draft / staging state; do NOT send/publish/
-  submit it.** The human reviews and performs the final send themselves.
-  This applies to: email (leave in Drafts, never auto-send), posting/
-  commenting on a task or doc, sending a calendar invite to others, opening
-  a pull request.
-- State clearly when you've left something as a draft and that the human
-  must send it. Do not press "send" on a person's behalf unless they
-  explicitly, unambiguously ask you to send *this specific* message now.
-- Prefer composing via the service's own draft mechanism (a real Drafts
-  folder) so the human sends from the normal UI, rather than staging text
-  somewhere non-standard.
-
-### The `--write` contract (what a dry-run does and does not prove)
-
-Every write-capable connector command refuses to act without `--write`; it
-prints the exact payload instead. Two consequences worth stating, because
-getting either backwards is how a preview turns into a surprise:
-
-- **A dry-run runs without credentials.** Previewing a write does not require
-  a token, so you can inspect what *would* be sent before any token exists.
-  The one deliberate exception is a command whose preview must be checked
-  against live schema to mean anything — there, the connector says so and
-  asks for the token rather than showing an unvalidated payload.
-- **A dry-run is not a rehearsal.** It shows the payload; it does not prove
-  the request would be accepted, that the target exists, or that a safety
-  check passed. When a connector could not run one of its guards without a
-  token, it says so in the preview — read that line rather than assuming
-  silence means "checked and fine."
-
-Never remove or weaken a `--write` gate to make an automation smoother. If a
-flow needs many writes, have the human approve the batch — do not make the
-gate disappear.
-
-### Reading vs. writing vs. sending
-
-- **Reading** your own inbox / repo / task list / sheet / calendar = safe,
-  proceed without asking.
-- **Writing to your own space** that's easily reversible (a draft, a local
-  branch, a scratch row) = proceed, state what you did.
-- **Sending outward, deleting shared data, assigning work to a real
-  person, force-pushing** = confirm first (and for outward messages,
-  draft-first per above).
-
-### Code host (e.g. GitHub) specifics
-
-- Never push unpublished research, private data, or personal info to a
-  public repository.
-- If a repo has an upstream/original remote (i.e. it's a fork), treat any
-  push or PR to that upstream as requiring explicit human confirmation
-  EVERY time — an accidental push there can expose unpublished work.
-  Default pushes go to your OWN fork/origin, on a feature branch, never
-  directly to a shared main/master.
-- Pull requests are draft-first: open them for review; do not merge to a
-  shared main branch on your own authority.
-
-### Shared spreadsheets / documents
-
-- A shared sheet/doc is multi-person data: prefer additive, reversible
-  edits; never bulk-delete or restructure a shared sheet without explicit
-  confirmation and ideally a backup/snapshot first.
-- When a number will be read by others, it still follows §3 (Number SSOT)
-  — trace it to its source, don't hand-type.
-
-These rules exist so the agent can safely touch external systems without
-ever taking an irreversible outward action on a human's behalf by
-surprise.
+1. Prefer the REST connectors in `scripts/connectors/` with a scoped token over
+   an always-on MCP connection; once a service has a connector, disconnect its
+   MCP link (a human action). Never inline or echo a token; scope and rotate.
+2. ⭐ **Draft-first for anything outward** — mail, comment, task, page, calendar
+   invite, pull request: compose it, leave it in a draft / staging state, say
+   so, and let the human send. Press "send" only on an explicit, unambiguous
+   request for *this specific* message.
+3. The `--write` contract: without `--write` a connector only prints the
+   payload. A dry-run needs no token and **is not a rehearsal** — it proves
+   neither acceptance nor that every guard ran; read the preview's own caveat
+   line. Never remove or weaken a `--write` gate.
+4. Reading your own data = proceed. Reversible writes to your own space =
+   proceed and state what you did. Sending outward, deleting shared data,
+   assigning work to a real person, force-pushing = confirm first.
+5. Code host: nothing unpublished or private to a public repo; in a fork, any
+   push or PR to upstream needs explicit confirmation every time; default
+   pushes go to your own origin on a feature branch; PRs are draft-first.
+6. Shared sheets / docs: additive, reversible edits only; no bulk delete or
+   restructure without confirmation and a snapshot; numbers still follow §3.
 
 ---
 
 ## 10. Recording Friction — when the toolkit itself is the problem
 
-Most friction with a tool gets worked around silently and then forgotten.
-The workaround lives in one person's head, and the next person hits the same
-wall. A recorded complaint is the only kind that can be fixed.
-
 **Trigger.** The user says something in this toolkit is broken, confusing,
-missing, or simply annoying — "이거 왜 안 되지" [why doesn't this work], "자꾸
-실패해요" [it keeps failing], "이런 게 있으면 좋겠는데" [it'd be nice if there were
-something like this], "this is confusing", "it keeps failing". This includes
-the case where you have already solved their immediate problem: the
-workaround is *evidence*, not a reason to skip the record.
-
-**What to do.**
-
-1. **Fix or unblock them first.** The record is not a substitute for helping.
-2. **Ask at most one question** — whatever you genuinely cannot infer from the
-   conversation (usually "what did you expect to happen instead?"). Then stop
-   asking. Interrogating someone who is already frustrated is how you get zero
-   records. An incomplete record beats no record.
-3. **Record it**, filling in what you already know from context:
-
-   ```bash
-   python scripts/feedback_log.py add "<what went wrong, in their words>" \
-       --kind bug --skill <skill name> \
-       --expected "<what they wanted>" --actual "<what happened>"
-   ```
-
-   `--kind` is one of `bug`, `friction`, `missing`, `docs`, `idea`.
-   Everything except the first argument is optional; omit what you don't know
-   rather than guessing.
-4. **Tell them it was recorded**, in one line. People stop reporting things
-   when reports seem to vanish.
-
-**Where it goes.** `out/feedback.jsonl`, a local file. No account, token, or
-network access is required — that is deliberate. Someone who received this
-toolkit on a USB stick must be able to record a problem on day one.
-
-**Promotion (maintainers).** Whoever maintains the toolkit collects the records
-later:
+missing or annoying — "이거 왜 안 되지" [why doesn't this work], "자꾸 실패해요"
+[it keeps failing], "이런 게 있으면 좋겠는데" [it'd be nice if there were
+something like this] — including when you already worked around it.
+**Do:** ① fix or unblock them first ② ask at most **one** question ③ record it:
 
 ```bash
-python scripts/feedback_log.py list --pending
-python scripts/feedback_log.py export                       # print issue bodies
-python scripts/feedback_log.py export --github --repo owner/name --write
+python scripts/feedback_log.py add "<what went wrong, in their words>" \
+    --kind bug|friction|missing|docs|idea --skill <name> \
+    --expected "<what they wanted>" --actual "<what happened>"
 ```
 
-Each exported issue carries its origin (record ID, timestamp, OS, Python and
-Claude Code versions) so it can be reproduced without going back to ask.
-Per §9 this is an outward action: without `--write` it only previews.
-
-**Do not** record another person's private data, credentials, or unpublished
-research content in a feedback entry — it is written to a file that is meant to
-be shared upward. Describe the failure, not the material it happened to.
+(omit what you don't know rather than guessing) ④ tell them in one line that
+it was recorded. It goes to `out/feedback.jsonl`; no account, token or network
+is required. Never record another person's private data, credentials or
+unpublished research content. Maintainers promote records with
+`feedback_log.py list --pending` and `export [--github --repo owner/name
+--write]` (an outward action — draft-first per §9). Full text:
+`docs/agents/10-recording-friction.md`.
 
 ---
 

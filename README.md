@@ -12,7 +12,7 @@ the artifact isn't done until the gate passes, and the gate is a script, not a
 suggestion.
 
 ```
-37 skills · 29 regression tests · 7 safety guards
+37 skills · 30 regression tests · 7 safety guards
 python doctor.py   ->   12 OK / 0 FAIL
 ```
 
@@ -150,7 +150,7 @@ this order:
 | `hooks/` | 7 safety guards — secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
 | `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
 | `docs/` | 15 beginner docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
-| `tests/` | 29 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection). `doctor.py` runs all of them automatically |
+| `tests/` | 30 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection). `doctor.py` runs all of them automatically |
 | `doctor.py` | Integrity/environment check. `PASS` means it's ready |
 | `evals/` | Headless measurement of whether routing **actually fires** (slow, costs money — run manually) |
 | `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |
