@@ -1129,6 +1129,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_connectivity.py", "tool connectivity (orphan/untested ratchet, ledger wired-by paths)"),
     ("tests/test_tool_cli_smoke.py", "standalone tool smoke (HPLC parser, primer structure, variant filter, CLIs)"),
     ("tests/test_doctor_selftest_verdicts.py", "doctor self-test verdicts (upstream outage = WARN, broken tool = FAIL)"),
+    ("tests/test_sci_http.py", "shared HTTP retry policy (429/5xx retried, 4xx not, Retry-After, backoff)"),
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.

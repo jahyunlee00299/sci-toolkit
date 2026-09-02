@@ -546,3 +546,45 @@ wired-by: doctor.py
 wired-by: tests/test_doctor_selftest_verdicts.py
 wired-by: tests/test_si_institutional.py
 wired-by: tests/test_doi_verify.py
+
+## 2026-09-02 — Shared HTTP retry policy for the scripts/ tools (sci_http)
+
+**Scope / layer** — sub-feature under the `scripts/` tools: `scripts/sci_http.py`;
+callers `ref_fetch.py` (`_http_get_json`, `_http_get_text`), `si_fetch.py`
+(`_fetch_archive`), `jcr_batch_verify.py` (`_get`); `doi_verify.py` inherits
+through `ref_fetch`.
+
+**Why** — measured 2026-09-02: six private `for attempt … urlopen` loops that
+disagreed on what to retry (one retried every non-404 status including
+400/401/403; one retried nothing) and none honoured `Retry-After`.
+
+**Contract** — 429/5xx and network errors retried with linear backoff;
+other 4xx raised at once; `Retry-After` honoured (capped 30 s); no sleep
+after the last attempt; `(value, error)` tuple helpers keep the exact error
+strings the existing tests pin (`not_found`, `HTTP 503`, `URLError: …`,
+`JSON parse error: …`). `opener`/`sleep` injectable.
+
+**Scope boundary (deliberate)** — skill folders install stand-alone and
+cannot import `scripts/sci_http.py`, so `biorxiv-database`, `openalex-database`
+and `web-scraping` keep their private loops. The two shared skills are
+authored in the runtime tree (skill_drift rule): a change there goes to the
+runtime first.
+
+**Evidence** — `tests/test_sci_http.py` 23/23 with a scripted fake opener;
+`test_doi_verify.py` 45/45 and `test_si_institutional.py` 19/19 unchanged
+through the swap; `test_tool_cli_smoke.py` 28/28 (jcr `--help`).
+
+**Refutation** — 500,500,200 → success with sleeps [1.5, 3.0]; 404 and 403 →
+raised at once, no sleep; 429 + `Retry-After: 2` → sleeps 2.0 not 1.5;
+`Retry-After: 600` → capped; URLError ×3 → NetworkError with 2 sleeps;
+TimeoutError retried; `retries=0` rejected; bad JSON → parse error tuple.
+
+**Deferred risk** — `ref_fetch._download_pdf` still has its own redirect/
+content-type handling (it must inspect the response, not just the body);
+left as is.
+
+wired-by: scripts/sci_http.py
+wired-by: scripts/ref_fetch.py
+wired-by: scripts/si_fetch.py
+wired-by: scripts/jcr_batch_verify.py
+wired-by: tests/test_sci_http.py

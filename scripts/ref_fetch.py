@@ -76,6 +76,7 @@ for _s in (sys.stdout, sys.stderr):
 # Reuse ref_cache_manager.py (same scripts/ folder)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ref_cache_manager import RefCacheManager  # noqa: E402
+import sci_http  # noqa: E402
 
 CROSSREF_BASE = "https://api.crossref.org/works"
 OPENALEX_BASE = "https://api.openalex.org/works"
@@ -95,10 +96,7 @@ _DOI_RE = re.compile(r"^10\.\d{4,9}/\S+$")
 
 
 def _build_user_agent(email: Optional[str]) -> str:
-    base = "sci-toolkit-ref_fetch/1.0 (https://github.com/; mailto:CONTACT)"
-    if email:
-        return base.replace("CONTACT", email)
-    return "sci-toolkit-ref_fetch/1.0 (no-contact-provided)"
+    return sci_http.user_agent("ref_fetch", email)
 
 
 def _http_get_json(url: str, email: Optional[str], timeout: int = _TIMEOUT) -> tuple[Optional[dict], Optional[str]]:
@@ -106,52 +104,17 @@ def _http_get_json(url: str, email: Optional[str], timeout: int = _TIMEOUT) -> t
 
     A clear "does not exist" like a 404 is returned quietly as
     (None, "not_found"); any other network/server error that still fails
-    after retries is returned as (None, error_message).
+    after retries is returned as (None, error_message). The retry policy
+    (429/5xx/network retried, other 4xx not, Retry-After honoured) lives in
+    scripts/sci_http.py — one copy for every tool under scripts/.
     """
-    headers = {"User-Agent": _build_user_agent(email), "Accept": "application/json"}
-    last_err = None
-    for attempt in range(1, _MAX_RETRIES + 1):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                raw = resp.read().decode("utf-8", errors="replace")
-                return json.loads(raw), None
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                return None, "not_found"
-            last_err = f"HTTP {e.code}"
-        except urllib.error.URLError as e:
-            last_err = f"URLError: {e.reason}"
-        except json.JSONDecodeError as e:
-            last_err = f"JSON parse error: {e}"
-        except Exception as e:  # noqa: BLE001 — caught broadly so every network-failure reason ends up in the report
-            last_err = f"{type(e).__name__}: {e}"
-
-        if attempt < _MAX_RETRIES:
-            time.sleep(_RETRY_BACKOFF * attempt)
-
-    return None, last_err or "unknown_error"
+    return sci_http.get_json(url, headers={"User-Agent": _build_user_agent(email)},
+                             timeout=timeout, retries=_MAX_RETRIES, backoff=_RETRY_BACKOFF)
 
 
 def _http_get_text(url: str, email: Optional[str], timeout: int = _TIMEOUT) -> tuple[Optional[str], Optional[str]]:
-    headers = {"User-Agent": _build_user_agent(email)}
-    last_err = None
-    for attempt in range(1, _MAX_RETRIES + 1):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return resp.read().decode("utf-8", errors="replace"), None
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                return None, "not_found"
-            last_err = f"HTTP {e.code}"
-        except Exception as e:  # noqa: BLE001
-            last_err = f"{type(e).__name__}: {e}"
-
-        if attempt < _MAX_RETRIES:
-            time.sleep(_RETRY_BACKOFF * attempt)
-
-    return None, last_err or "unknown_error"
+    return sci_http.get_text(url, headers={"User-Agent": _build_user_agent(email)},
+                             timeout=timeout, retries=_MAX_RETRIES, backoff=_RETRY_BACKOFF)
 
 
 def _download_pdf(url: str, dest: Path, email: Optional[str], timeout: int = 60) -> tuple[bool, Optional[str]]:
