@@ -4,6 +4,26 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.52] — 2026-09-03
+
+- tests: SKILL.md size ratchet, dual-mode runner (script + pytest), doctor --offline
+
+## [1.2.51] — 2026-09-03
+
+- doctor: split the 1,300-line module into doctor_lib/ (result, sentinel, env/repo checks, dead-automation, self-test runner)
+
+## [1.2.50] — 2026-09-02
+
+- scripts: one HTTP retry policy (sci_http) for ref_fetch, si_fetch and jcr_batch_verify
+
+## [1.2.49] — 2026-09-02
+
+- doctor: report an upstream outage as WARN, not a broken tool; one subprocess helper; drop the dead Korean summary matcher
+
+## [1.2.48] — 2026-09-02
+
+- Make tool connectivity measurable: orphan/untested check in doctor, route eight orphan tools, retire two dead files
+
 ## [1.2.47] — 2026-09-02
 
 - Lightweight agent rules and two oversized skills; add skill-drift check

@@ -422,15 +422,38 @@ check(
 section("Network tests")
 
 
-def _network_available() -> bool:
+_CROSSREF_PROBE = "https://api.crossref.org/works/10.1038/nature12373"
+
+
+def _upstream_available() -> tuple[bool, str]:
+    """(ok, reason). A TCP handshake is not enough — the host can accept the
+    connection while the REST service answers 5xx (measured on Europe PMC
+    2026-09-02). Probe the endpoint the tests call; a 5xx/429 is the other
+    side's outage and skips the network group instead of failing it."""
+    import os
+    import urllib.error
+    import urllib.request
+    if os.environ.get("SCI_TOOLKIT_OFFLINE") == "1":
+        return False, "network tests disabled by SCI_TOOLKIT_OFFLINE=1 (doctor.py --offline)"
     try:
         socket.create_connection(("api.crossref.org", 443), timeout=5).close()
-        return True
-    except OSError:
-        return False
+    except OSError as exc:
+        return False, f"no network connection ({exc.__class__.__name__})"
+    try:
+        with urllib.request.urlopen(urllib.request.Request(
+                _CROSSREF_PROBE, headers={"User-Agent": "sci-toolkit-selftest"}), timeout=15) as r:
+            return (r.status == 200), f"HTTP {r.status}"
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return True, "HTTP 404 (service up; record lookup is what the tests check)"
+        return False, f"CrossRef upstream returned HTTP {exc.code}"
+    except (urllib.error.URLError, OSError) as exc:
+        return False, f"CrossRef unreachable ({exc.__class__.__name__}: {exc})"
 
 
-if _network_available():
+_NET_OK, _NET_WHY = _upstream_available()
+
+if _NET_OK:
     print("  Network available — running real API-call tests")
 
     valid_result = doi_verify.verify_one(
@@ -549,7 +572,7 @@ if _network_available():
             f"got exit={_proc_ok.returncode}, out={(_proc_ok.stdout + _proc_ok.stderr)[-300:]!r}",
         )
 else:
-    print("  [SKIP] no network connection — skipping real API-call tests (the UNVERIFIED path is already covered by grade_one unit tests)")
+    print(f"  [SKIP] {_NET_WHY} — skipping real API-call tests (the UNVERIFIED path is already covered by grade_one unit tests)")
 
 
 # --------------------------------------------------------------------------- #

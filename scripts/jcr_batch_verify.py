@@ -31,11 +31,12 @@ import argparse
 import json
 import sys
 import time
-import urllib.error
 import urllib.parse
-import urllib.request
 from pathlib import Path
 from typing import Optional
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sci_http  # noqa: E402
 
 # Default cache path priority order
 _DEFAULT_CACHE_PATHS = [
@@ -80,11 +81,11 @@ def _save_cache(data: dict, output_path: Path) -> None:
 
 
 def _get(url: str, timeout: int = 15) -> dict:
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "jcr_batch_verify/1.0 (research tool)"}
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    """GET JSON with the shared retry policy (429/5xx retried, other 4xx raised at once)."""
+    return sci_http.request(
+        url, headers={"User-Agent": sci_http.user_agent("jcr_batch_verify"),
+                      "Accept": "application/json"},
+        timeout=timeout).json()
 
 
 def _query_openalex_source(journal_name: str) -> Optional[dict]:
@@ -111,8 +112,8 @@ def _query_openalex_source(journal_name: str) -> Optional[dict]:
             "openalex_verified": True,
             "verified_date": VERIFIED_DATE,
         }
-    except urllib.error.HTTPError as e:
-        print(f"  HTTP error {e.code}: {journal_name}", file=sys.stderr)
+    except sci_http.HttpError as e:
+        print(f"  HTTP error {e.status}: {journal_name}", file=sys.stderr)
         return None
     except Exception as e:
         print(f"  lookup failed: {journal_name} — {e}", file=sys.stderr)
