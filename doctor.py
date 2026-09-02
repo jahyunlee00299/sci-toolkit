@@ -375,6 +375,47 @@ class CheckResult:
         }
 
 
+def _run_python(root: Path, argv: list[str], timeout: int) -> tuple[int, str, str]:
+    """Run a Python subprocess from the toolkit root and return (rc, stdout, stderr).
+
+    The one place that knows the encoding/cwd/timeout conventions; every check
+    that shells out goes through it. Raises OSError / subprocess.SubprocessError
+    (TimeoutExpired included) so the caller decides whether that is WARN or FAIL.
+    """
+    import subprocess
+    proc = subprocess.run(
+        [sys.executable, *argv], cwd=str(root),
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        timeout=timeout)
+    return proc.returncode, proc.stdout or "", proc.stderr or ""
+
+
+# Output fragments that mean "the other side is down", not "our tool is broken".
+# A self-test whose only failing cases are [network]-tagged AND whose output
+# carries one of these is reported as blocked by an upstream outage (WARN),
+# never as a broken verification tool (FAIL). Measured 2026-09-02: Europe PMC
+# returned HTTP 500 and doctor told a fresh-clone user "a verification tool is
+# broken" — a non-bug that costs an afternoon to chase.
+_UPSTREAM_OUTAGE_MARKERS = (
+    "HTTP 500", "HTTP 502", "HTTP 503", "HTTP 504", "HTTP 429",
+    "URLError", "timed out", "Connection reset", "RemoteDisconnected",
+    "upstream", "Temporary failure in name resolution", "getaddrinfo failed",
+)
+
+
+def _classify_selftest_failure(out: str) -> str:
+    """'external' when every FAIL line is [network]-tagged and an outage marker
+    is present; otherwise 'broken'."""
+    fail_lines = [ln for ln in out.splitlines() if "[FAIL]" in ln]
+    if not fail_lines:
+        return "broken"  # exited nonzero without a FAIL line: a crash, not an outage
+    if not all("[network]" in ln for ln in fail_lines):
+        return "broken"
+    if not any(m in out for m in _UPSTREAM_OUTAGE_MARKERS):
+        return "broken"
+    return "external"
+
+
 # --------------------------------------------------------------------------
 # Checks
 # --------------------------------------------------------------------------
@@ -690,11 +731,8 @@ def check_shell_env(root: Path) -> CheckResult:
     if not script.is_file():
         return CheckResult(name, STATUS_WARN, "scripts/env_detect.py not found — skipped")
     try:
-        proc = subprocess.run(
-            [sys.executable, str(script), "--json"], cwd=str(root),
-            capture_output=True, text=True, encoding="utf-8",
-            errors="replace", timeout=30)
-        r = json.loads(proc.stdout)
+        _rc, out, _err = _run_python(root, [str(script), "--json"], timeout=30)
+        r = json.loads(out)
     except (OSError, subprocess.SubprocessError, ValueError) as exc:
         return CheckResult(name, STATUS_WARN, f"could not run env_detect.py: {exc}")
 
@@ -813,18 +851,19 @@ def _run_test_script(root: Path, rel: str, name: str,
         return CheckResult(name, STATUS_WARN, f"{rel} not present — skipped")
     import subprocess
     try:
-        proc = subprocess.run(
-            [sys.executable, str(script)], cwd=str(root),
-            capture_output=True, text=True, encoding="utf-8",
-            errors="replace", timeout=180)
+        rc, stdout, stderr = _run_python(root, [str(script)], timeout=180)
     except (OSError, subprocess.SubprocessError) as exc:
         return CheckResult(name, STATUS_WARN, f"could not run {rel}: {exc}")
 
-    out = (proc.stdout or "") + (proc.stderr or "")
-    summary = next((ln for ln in out.splitlines()
-                    if ("확인" in ln or "대조 대상" in ln) and ln.strip()), "")
-    if proc.returncode == 0:
-        return CheckResult(name, STATUS_OK, summary.strip() or ok_msg)
+    out = stdout + stderr
+    # The script's own verdict is its last non-empty stdout line ("ALL PASS —
+    # every reference exists", "Checked N reference(s) ..."). An earlier
+    # version matched two Korean words here; after the 2026-08-28 English
+    # translation nothing printed them and the summary silently fell back to
+    # ok_msg for every run.
+    summary = next((ln.strip() for ln in reversed(stdout.splitlines()) if ln.strip()), "")
+    if rc == 0:
+        return CheckResult(name, STATUS_OK, summary or ok_msg)
     details = [ln for ln in out.splitlines() if ln.startswith("  ") and ln.strip()][:20]
     return CheckResult(name, STATUS_FAIL, fail_msg, details)
 
@@ -1001,16 +1040,14 @@ def check_connectivity(root: Path) -> CheckResult:
         return CheckResult(name, STATUS_WARN, "scripts/connectivity_check.py not present — skipped")
     import subprocess
     try:
-        proc = subprocess.run(
-            [sys.executable, str(script), "--root", str(root), "--json"], cwd=str(root),
-            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
+        _rc, stdout, stderr = _run_python(root, [str(script), "--root", str(root), "--json"], timeout=120)
     except (OSError, subprocess.SubprocessError) as exc:
         return CheckResult(name, STATUS_WARN, f"could not run connectivity_check.py: {exc}")
     try:
-        data = json.loads(proc.stdout)
+        data = json.loads(stdout)
     except json.JSONDecodeError:
         return CheckResult(name, STATUS_FAIL, "connectivity_check.py emitted no JSON",
-                           [(proc.stdout + proc.stderr).strip()[-300:]])
+                           [(stdout + stderr).strip()[-300:]])
 
     details = [f"ORPHAN (nothing leads here): {p}" for p in data["orphans"]]
     details += [f"ledger wired-by path missing: {p}" for p in data["dangling_ledger_paths"]]
@@ -1091,6 +1128,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_adopted_skills.py", "adopted-skill contract (upstream attribution, model-neutral, no vendored deps)"),
     ("tests/test_connectivity.py", "tool connectivity (orphan/untested ratchet, ledger wired-by paths)"),
     ("tests/test_tool_cli_smoke.py", "standalone tool smoke (HPLC parser, primer structure, variant filter, CLIs)"),
+    ("tests/test_doctor_selftest_verdicts.py", "doctor self-test verdicts (upstream outage = WARN, broken tool = FAIL)"),
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.
@@ -1121,22 +1159,24 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
     if not present:
         return CheckResult(name, STATUS_WARN, "no self-test scripts present — skipped")
 
-    failed, errored = [], []
+    failed, errored, external = [], [], []
     # `failed` mixes one header line per script with its detail lines, so its
     # length counts lines, not scripts — reporting it as "N of 16" produced
     # nonsense like "19 of 16". Count the scripts separately.
     n_failed_scripts = 0
     for rel, label in present:
         try:
-            proc = subprocess.run(
-                _selftest_command(root, rel), cwd=str(root),
-                capture_output=True, text=True, encoding="utf-8",
-                errors="replace", timeout=300)
+            rc, stdout, stderr = _run_python(root, _selftest_command(root, rel)[1:], timeout=300)
         except (OSError, subprocess.SubprocessError) as exc:
             errored.append(f"{rel}: could not run ({exc})")
             continue
-        if proc.returncode != 0:
-            out = (proc.stdout or "") + (proc.stderr or "")
+        if rc != 0:
+            out = stdout + stderr
+            if _classify_selftest_failure(out) == "external":
+                marker = next((m for m in _UPSTREAM_OUTAGE_MARKERS if m in out), "outage")
+                external.append(f"{rel} ({label}): blocked by an upstream outage ({marker}) "
+                                f"— only [network] cases failed; re-run later, nothing to fix here")
+                continue
             # Keep the failing lines AND what follows them. Reporting only the
             # first "FAIL" line throws away the expected/actual values printed
             # underneath it, which is exactly what you need to tell a real
@@ -1156,7 +1196,7 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
                 if len(detail) >= 12:
                     detail.append("    …")
                     break
-            failed.append(f"{rel} ({label}) exited {proc.returncode}")
+            failed.append(f"{rel} ({label}) exited {rc}")
             failed.extend(f"    {d}" for d in detail)
             n_failed_scripts += 1
 
@@ -1164,10 +1204,17 @@ def check_toolkit_selftests(root: Path) -> CheckResult:
         return CheckResult(name, STATUS_FAIL,
                            f"{n_failed_scripts} of {len(present)} self-test(s) failing — "
                            f"a verification tool is broken",
-                           failed + errored)
-    if errored:
+                           failed + errored + external)
+    if errored or external:
+        parts = []
+        if external:
+            parts.append(f"{len(external)} blocked by an upstream outage")
+        if errored:
+            parts.append(f"{len(errored)} could not run")
         return CheckResult(name, STATUS_WARN,
-                           f"{len(errored)} self-test(s) could not run", errored)
+                           f"{len(present) - len(errored) - len(external)} of {len(present)} "
+                           f"self-test(s) passing; " + ", ".join(parts),
+                           external + errored)
     return CheckResult(name, STATUS_OK,
                        f"{len(present)} self-test(s) passing "
                        f"({', '.join(label for _, label in present)})")
