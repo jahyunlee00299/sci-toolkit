@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.54] — 2026-09-03
+
+- web-scraping suite: importorskip habanero on the three CrossRef CLI cases; CI installs habanero and pyyaml
+
 ## [1.2.53] — 2026-09-03
 
 - Adopt four measured gaps from a 12-repo GitHub survey: skill spec contract, script-level drift, dependency declaration, gitleaks layer

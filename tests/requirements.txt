@@ -17,3 +17,13 @@
 numpy
 scipy
 pandas
+# The web-scraping pytest suite (registered in doctor 2026-09-02) exercises
+# fetch_academic's CrossRef CLI path, which exits before the mock is reached
+# when habanero is absent. Measured 2026-09-03 on the Linux home PC: 3 of 129
+# cases failed for that reason while the laptop (habanero installed) passed.
+# The three cases now importorskip; installing it here keeps them RUNNING in
+# CI instead of skipped.
+habanero
+# tests/test_skill_contract.py parses frontmatter with PyYAML when present
+# (falls back to a key scan without it).
+pyyaml

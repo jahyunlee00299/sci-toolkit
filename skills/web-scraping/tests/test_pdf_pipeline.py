@@ -732,6 +732,7 @@ class TestFetchAcademicCLI:
 
     def test_cli_crossref_query(self, tmp_path):
         """--source crossref --query → main() returns 0 (mock Crossref)."""
+        pytest.importorskip("habanero")  # the CLI exits before the mock is reached without it (measured on Linux 2026-09-03)
         from fetch_academic import main, CrossrefProvider
         with patch.object(
             CrossrefProvider, "search",
@@ -743,6 +744,7 @@ class TestFetchAcademicCLI:
 
     def test_cli_doi_lookup(self, tmp_path):
         """--source crossref --doi → main() returns 0."""
+        pytest.importorskip("habanero")
         from fetch_academic import main, CrossrefProvider
         with patch.object(
             CrossrefProvider, "lookup_doi",
@@ -796,6 +798,7 @@ class TestHarvestFilesCLI:
 
     def test_harvest_cli_doi_mode(self, tmp_path):
         """harvest_files main --doi → return code 0 with mocked pipeline."""
+        pytest.importorskip("habanero")
         from harvest_files import main as harvest_main
         from harvest_files import DoiHarvester
 
