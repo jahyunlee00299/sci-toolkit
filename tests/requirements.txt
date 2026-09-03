@@ -35,3 +35,8 @@ pytest
 # tests/test_tool_cli_smoke.py runs `fetch_github.py --help`, which imports
 # httpx at module level (measured on the same CI run).
 httpx
+# web-scraping PdfDownloader validates every download with pypdf; without it
+# the verdict is not_pdf and every source comes back None (second CI run,
+# 2026-09-03: 3 TestPdfDownloader cases). The fixture importorskips; this
+# keeps them running in CI.
+pypdf
