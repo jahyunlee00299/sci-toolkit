@@ -40,3 +40,7 @@ httpx
 # 2026-09-03: 3 TestPdfDownloader cases). The fixture importorskips; this
 # keeps them running in CI.
 pypdf
+# fetch_academic's EZproxy cookie path imports requests (third CI run,
+# 2026-09-03: TestEZproxyAutoLogin). Verified in a clean venv built from this
+# file: with requests added the suite is 128 passed / 4 skipped / 0 failed.
+requests

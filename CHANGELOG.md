@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.57] — 2026-09-03
+
+- CI installs requests for the web-scraping EZproxy path
+
 ## [1.2.56] — 2026-09-03
 
 - web-scraping suite: importorskip pypdf in the PdfDownloader fixture; CI installs pypdf
