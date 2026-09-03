@@ -17,14 +17,20 @@ useDefault = true
 
 [allowlist]
 description = "Files that DEFINE the detectors or their fixtures; their strings are the specification of what must be caught, not a leak (same set as SENTINEL_SELF_TEST_FILES + SENTINEL_DETECTOR_FILES)"
+# Matched against the path gitleaks reports. With --no-git that path is
+# relative to --source; doctor passes `--source .` from the repo root, but a
+# caller that passes an absolute source gets absolute paths back (measured on
+# CI 2026-09-03: 13 "findings", every one in a file listed here, because the
+# `^tests/` anchor never matched `/home/runner/.../tests/`). `(^|/)` anchors
+# at either a path start or a directory boundary so both forms are covered.
 paths = [
-  '''^tests/test_doctor_sentinel\.py$''',
-  '''^tests/test_research_marker_scan\.py$''',
-  '''^tests/test_feedback_sanitize\.py$''',
-  '''^tests/test_gitleaks_layer\.py$''',
-  '''^doctor_lib/sentinel\.py$''',
-  '''^doctor\.py$''',
-  '''^SHA256SUMS$''',
+  '''(^|/)tests/test_doctor_sentinel\.py$''',
+  '''(^|/)tests/test_research_marker_scan\.py$''',
+  '''(^|/)tests/test_feedback_sanitize\.py$''',
+  '''(^|/)tests/test_gitleaks_layer\.py$''',
+  '''(^|/)doctor_lib/sentinel\.py$''',
+  '''(^|/)doctor\.py$''',
+  '''(^|/)SHA256SUMS$''',
 ]
 regexes = [
   # documented placeholders in config/credentials.example.json and docs

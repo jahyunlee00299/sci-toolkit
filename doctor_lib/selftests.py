@@ -21,21 +21,30 @@ from doctor_lib.result import (
 OFFLINE_ENV = "SCI_TOOLKIT_OFFLINE"
 
 _PYTEST_STYLE = re.compile(r"^\s*(?:async\s+)?def\s+test_\w+\s*\(", re.MULTILINE)
+_MAIN_GUARD = re.compile(r"^if\s+__name__\s*==\s*[\"']__main__[\"']\s*:", re.MULTILINE)
 
 
 def is_pytest_style(path: Path) -> bool:
-    """A file that defines `def test_...` functions must run under pytest.
+    """A file that defines `def test_...` functions AND has no `__main__` guard runs under pytest.
 
-    Running such a file as a bare script defines the functions and exits 0
-    without executing one assertion — a silent no-op that would show up in
-    doctor as a passing self-test. Measured risk, not a hypothetical: the
-    first pytest-style file (tests/test_sci_http.py, 2026-09-03) would have
-    "passed" that way.
+    Running a pytest-style file as a bare script defines the functions and
+    exits 0 without executing one assertion — a silent no-op that would show
+    up in doctor as a passing self-test (tests/test_sci_http.py, 2026-09-03,
+    would have "passed" that way).
+
+    The `__main__` guard is the second half of the rule, measured the same
+    day on CI: four script-style checks (test_body_typo_lint,
+    test_feedback_sanitize, test_dead_automation, biorxiv test_preprint_search)
+    define `test_*` helpers and call them from `if __name__ == "__main__":`.
+    The `def test_` sniff alone sent them to pytest, which was not installed
+    on the runner, and all four went red. A file that carries its own entry
+    point is a script; pytest-style files never have one.
     """
     try:
-        return _PYTEST_STYLE.search(path.read_text(encoding="utf-8", errors="replace")) is not None
+        text = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return False
+    return _PYTEST_STYLE.search(text) is not None and _MAIN_GUARD.search(text) is None
 
 
 def _selftest_command(root: Path, rel: str) -> list[str]:

@@ -205,8 +205,10 @@ def check_gitleaks(root: Path) -> CheckResult:
     with tempfile.TemporaryDirectory() as td:
         report = Path(td) / "gitleaks.json"
         try:
+            # `--source .` (cwd is root) so reported paths are repo-relative;
+            # an absolute source made every allowlist anchor miss on CI.
             rc, out, err = _run_command(
-                root, [exe, "detect", "--source", str(root), "--config", str(config), "--no-git",
+                root, [exe, "detect", "--source", ".", "--config", str(config), "--no-git",
                        "--redact", "--exit-code", "1", "--report-format", "json", "--report-path", str(report)],
                 timeout=300)
         except (OSError, subprocess.SubprocessError) as exc:

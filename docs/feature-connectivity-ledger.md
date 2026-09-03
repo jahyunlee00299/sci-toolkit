@@ -746,3 +746,18 @@ wired-by: scripts/skill_drift.py
 wired-by: config/skill-requirements.toml
 wired-by: .gitleaks.toml
 wired-by: .github/workflows/doctor.yml
+
+### Addendum 2026-09-03 — first CI run after the push found two defects of my own
+1. **Sniff too loose.** `is_pytest_style` classified four script-style checks
+   (test_body_typo_lint, test_feedback_sanitize, test_dead_automation, biorxiv
+   test_preprint_search) as pytest-style because they define `test_*` helpers
+   called from a `__main__` guard; CI had no pytest and all four went red with
+   no FAIL line. Rule is now `def test_` present AND no `__main__` guard, in
+   both `doctor_lib/selftests.py` and `tests/conftest.py`; pinned by a
+   verdicts case that runs such a script through doctor.
+2. **gitleaks allowlist anchors.** With an absolute `--source`, gitleaks
+   reports absolute paths and `^tests/...$` never matched: 13 "findings", all
+   in allowlisted files. doctor now passes `--source .`, the regexes are
+   `(^|/)…$`, and the test matches both a relative and an absolute sample.
+3. CI dependencies: `pytest` and `httpx` added to tests/requirements.txt (the
+   runner had neither; the laptop had both, which is why nothing failed here).
