@@ -400,6 +400,7 @@ class TestPdfDownloader:
                          ezproxy_mock=None, stream_side_effect=None,
                          stream_size=5000):
         """Construct a PdfDownloader with fully mocked providers."""
+        pytest.importorskip("pypdf")  # PdfDownloader validates with pypdf; without it every source is None (measured on CI 2026-09-03)
         from fetch_academic import (
             PdfDownloader, UnpaywallProvider, PmcPdfLocator,
         )
