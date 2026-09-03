@@ -150,6 +150,21 @@ try:
     check("pytest-style file with a passing assert -> OK", r.status == doctor.STATUS_OK, f"{r.status} {r.message}")
     check("is_pytest_style: 'def test_' sniff", doctor.is_pytest_style(fake_root({"t.py": PYTEST_PASSING}) / "tests" / "t.py"))
     check("is_pytest_style: script-style file is not", not doctor.is_pytest_style(fake_root({"t.py": GREEN}) / "tests" / "t.py"))
+    # A script that defines test_* helpers and calls them from a __main__
+    # guard is a SCRIPT. Measured on CI 2026-09-03: four such files were sent
+    # to pytest (not installed there) and went red with no FAIL line.
+    SCRIPT_WITH_HELPERS = ("import sys\n"
+                           "def test_thing():\n    return True\n"
+                           "if __name__ == '__main__':\n"
+                           "    print('  [OK] thing' if test_thing() else '  [FAIL] thing')\n"
+                           "    sys.exit(0)\n")
+    p = fake_root({"t.py": SCRIPT_WITH_HELPERS}) / "tests" / "t.py"
+    check("is_pytest_style: 'def test_' + __main__ guard -> script, not pytest", not doctor.is_pytest_style(p))
+    check("_selftest_command runs it as 'python <file>'", len(doctor._selftest_command(p.parent.parent, "tests/t.py")) == 2)
+    doctor.SELF_TEST_SCRIPTS = [("tests/t.py", "helpers-script")]
+    r = doctor.check_toolkit_selftests(p.parent.parent)
+    check("such a script passes through doctor on its own exit code (no pytest needed)",
+          r.status == doctor.STATUS_OK, f"{r.status} {r.message} {r.details[:3]}")
     check("_selftest_command: pytest-style -> 'python -m pytest <file>'",
           doctor._selftest_command(fake_root({"t.py": PYTEST_PASSING}), "tests/t.py")[1:3] == ["-m", "pytest"])
     check("_selftest_command: script-style -> 'python <file>'",

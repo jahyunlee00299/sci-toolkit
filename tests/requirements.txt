@@ -27,3 +27,11 @@ habanero
 # tests/test_skill_contract.py parses frontmatter with PyYAML when present
 # (falls back to a key scan without it).
 pyyaml
+# pytest-style checks (tests/test_sci_http.py, skills/web-scraping/tests, and
+# the pytest cases inside test_doctor_selftest_verdicts) run under
+# `python -m pytest`. Measured 2026-09-03: the first CI run after they were
+# registered had no pytest and every one of them exited 1 with no FAIL line.
+pytest
+# tests/test_tool_cli_smoke.py runs `fetch_github.py --help`, which imports
+# httpx at module level (measured on the same CI run).
+httpx

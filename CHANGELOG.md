@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.55] — 2026-09-03
+
+- CI fixes: pytest-style sniff requires no __main__ guard; gitleaks allowlist anchors match relative and absolute paths; CI installs pytest and httpx
+
 ## [1.2.54] — 2026-09-03
 
 - web-scraping suite: importorskip habanero on the three CrossRef CLI cases; CI installs habanero and pyyaml

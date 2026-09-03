@@ -62,12 +62,21 @@ check(".gitleaks.toml present", cfg_path.is_file())
 cfg = tomllib.loads(cfg_path.read_text(encoding="utf-8"))
 check("parses as TOML with an [allowlist]", isinstance(cfg.get("allowlist"), dict))
 paths = cfg.get("allowlist", {}).get("paths", [])
-unanchored = [p for p in paths if not re.fullmatch(r"\^.*\$", p)]
-check("every allowlist path regex is anchored (^...$)", not unanchored, str(unanchored))
-missing = [p for p in paths if not (ROOT / re.sub(r"^\^|\$$", "", p).replace("\\.", ".")).exists()]
+# Anchor form: `(^|/)relative/path$` — matches the repo-relative path doctor
+# produces (`--source .`) AND an absolute path from another caller. A bare
+# `^relative$` missed every absolute path on CI (13 false findings, 2026-09-03).
+_ANCHOR = re.compile(r"^\(\^\|/\)(.+)\$$")
+unanchored = [p for p in paths if not _ANCHOR.fullmatch(p)]
+check("every allowlist path regex is anchored as (^|/)...$", not unanchored, str(unanchored))
+_rel = lambda p: _ANCHOR.fullmatch(p).group(1).replace("\\.", ".") if _ANCHOR.fullmatch(p) else p  # noqa: E731
+missing = [p for p in paths if not (ROOT / _rel(p)).exists()]
 check("every allowlisted path exists in the repo", not missing, str(missing))
+for sample in ("tests/test_doctor_sentinel.py", "/home/runner/work/sci-toolkit/sci-toolkit/tests/test_doctor_sentinel.py"):
+    check(f"allowlist matches {sample!r}", any(re.search(p, sample) for p in paths))
+check("allowlist does NOT match a look-alike outside the list",
+      not any(re.search(p, "skills/x/tests/test_doctor_sentinel.py.bak") for p in paths))
 exempt = set(sentinel.SENTINEL_SELF_TEST_FILES) | set(sentinel.SENTINEL_DETECTOR_FILES)
-covered = {Path(re.sub(r"^\^|\$$", "", p).replace("\\.", ".")).name for p in paths}
+covered = {Path(_rel(p)).name for p in paths}
 check("SENTINEL's exempt files are all allowlisted for gitleaks too",
       exempt <= covered, f"not covered: {sorted(exempt - covered)}")
 

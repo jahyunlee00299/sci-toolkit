@@ -42,13 +42,22 @@ import sys
 import pytest
 
 _PYTEST_STYLE = re.compile(r"^\s*(?:async\s+)?def\s+test_\w+\s*\(", re.MULTILINE)
+_MAIN_GUARD = re.compile(r"^if\s+__name__\s*==\s*[\"']__main__[\"']\s*:", re.MULTILINE)
 
 
 def is_pytest_style(path) -> bool:
+    """Same rule as doctor_lib/selftests.py: `def test_` present AND no `__main__` guard.
+
+    Four script-style checks define `test_*` helpers and call them from a
+    `__main__` block; the `def test_` sniff alone sent them to pytest and CI
+    (no pytest installed) went red on 2026-09-03. A file with its own entry
+    point is a script.
+    """
     try:
-        return _PYTEST_STYLE.search(path.read_text(encoding="utf-8", errors="replace")) is not None
+        text = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return False
+    return _PYTEST_STYLE.search(text) is not None and _MAIN_GUARD.search(text) is None
 
 
 class SelfCheckItem(pytest.Item):
