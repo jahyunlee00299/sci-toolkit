@@ -36,6 +36,10 @@ packages = ["requests"]
 [paper-extract]
 packages = []
 
+[patent-invention-disclosure]
+packages = ["python-docx"]
+# python-docx: import docx
+
 [publication-figures]
 packages = ["cycler", "matplotlib", "numpy", "pillow", "scikit-image"]
 # pillow: import PIL

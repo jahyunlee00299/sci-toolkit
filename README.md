@@ -12,7 +12,7 @@ the artifact isn't done until the gate passes, and the gate is a script, not a
 suggestion.
 
 ```
-37 skills · 38 regression tests · 7 safety guards
+38 skills · 39 regression tests · 7 safety guards
 python doctor.py   ->   15 checks · 0 FAIL
 ```
 
@@ -39,11 +39,11 @@ situation, do this," with a helper script attached where needed. It's documents,
 not code, so Claude Code reads the conversation context and picks the right one
 on its own — nothing needs to be run directly.
 
-## What's inside (37 skills)
+## What's inside (38 skills)
 
 | Area | Skills |
 |---|---|
-| **Literature search & writing** | `research-search` (entry point) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `web-scraping` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `academic-term-rules` · `endnote-citation-injection` |
+| **Literature search & writing** | `research-search` (entry point) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `web-scraping` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `patent-invention-disclosure` · `academic-term-rules` · `endnote-citation-injection` |
 | **Molecular biology & experiments** | `primer-design` · `experiment-hub` |
 | **Figures** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
 | **Data & statistics** | `data-quality-checks` (pre-analysis table check) · `lab-data-analysis` · `stats-workflow` · `statsmodels` · `analysis-code-testing` · `conda-env-manager` · `get-available-resources` |
@@ -150,7 +150,7 @@ this order:
 | `hooks/` | 7 safety guards — secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
 | `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
 | `docs/` | 15 beginner docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
-| `tests/` | 38 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer). `doctor.py` runs all of them automatically |
+| `tests/` | 39 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer, patent numeric-claim arithmetic gate). `doctor.py` runs all of them automatically |
 | `doctor.py` | Integrity/environment check (`doctor_lib/` holds the checks). `PASS` means it's ready; `--offline` keeps every self-test off the network. Its checks live in `doctor_lib/` (SENTINEL/research-marker scan, env checks, repo-integrity checks, dead-automation detector, self-test runner); `doctor.py` itself is the thin entry point |
 | `evals/` | Headless measurement of whether routing **actually fires** (slow, costs money — run manually) |
 | `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |
