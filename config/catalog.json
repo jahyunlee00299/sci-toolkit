@@ -72,6 +72,16 @@
       ],
       "size_kb": 173
     },
+    "patent-invention-disclosure": {
+      "category": "paper-writing",
+      "role": "Manuscript -> Korean patent invention disclosure (발명내용설명서) for attorney review",
+      "requires": [
+        "docx",
+        "academic-term-rules",
+        "paper-extract"
+      ],
+      "size_kb": 64
+    },
     "endnote-citation-injection": {
       "category": "paper-writing",
       "role": "Bulk EndNote citation insertion + dual DOI verification",
@@ -379,7 +389,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 41 skills",
+      "desc": "All 42 skills",
       "skills": [
         "__ALL__"
       ]

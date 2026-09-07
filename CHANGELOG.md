@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.58] — 2026-09-07
+
+- feat(skills): add patent-invention-disclosure
+
 ## [1.2.57] — 2026-09-03
 
 - CI installs requests for the web-scraping EZproxy path

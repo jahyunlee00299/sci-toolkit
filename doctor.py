@@ -146,6 +146,7 @@ def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
 SELF_TEST_SCRIPTS = [
     ("tests/test_doctor_sentinel.py", "secret scan"),
     ("tests/test_body_typo_lint.py", "body typo lint"),
+    ("tests/test_verify_numeric_claims.py", "patent numeric-claim gate"),
     ("tests/test_doi_verify.py", "DOI verification"),
     ("tests/test_assumption_check.py", "stats assumption check"),
     ("tests/test_install_nondestructive.py", "non-destructive install"),

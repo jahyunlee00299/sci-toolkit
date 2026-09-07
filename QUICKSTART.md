@@ -30,6 +30,7 @@ Don't copy/install the moment you plug in the USB drive. Skim through in this or
 |---|---|
 | Find/summarize/review papers | `research-search`, `literature-review` |
 | Write/polish a manuscript | `manuscript-pipeline`, `academic-term-rules` |
+| Turn a manuscript into a Korean patent disclosure | `patent-invention-disclosure` |
 | Design primers/sequences | `primer-design` |
 | Make figures for a paper/presentation | `publication-figures` |
 | Not sure what statistical test to use | `stats-workflow` |
@@ -73,9 +74,9 @@ python install/install.py
 ```
 python install/install.py --list
 ```
-This lists 41 skills and the presets, grouped by category. Four of them
+This lists 42 skills and the presets, grouped by category. Four of them
 (docx · xlsx · pdf · pptx) are owned by Anthropic, so they are not bundled in
-this repository and only a pointer is shown — 37 are actually installable.
+this repository and only a pointer is shown — 38 are actually installable.
 
 ### If you already know what you want to install (one-liner)
 
@@ -117,7 +118,7 @@ That's it — this is the minimum path a beginner can complete in 5 minutes.
 ## Step 4 (optional) — install everything, or copy files by hand without the installer
 
 **If you genuinely need everything** (e.g. setting up a shared lab PC), use the
-installer's `all` preset. Pulling all 37 at once makes it hard to tell what
+installer's `all` preset. Pulling all 38 at once makes it hard to tell what
 got loaded and why, so the two-step approach — pick only what you need — is
 the better starting point. But if you really do need everything:
 
