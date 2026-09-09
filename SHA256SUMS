@@ -4,7 +4,7 @@ cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattribut
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 78bbe260fac1652fd5a55f7d218d96aa4cb52f4f6d61822e11b77b5d1aa3261e *./.gitleaks.toml
-b98ebdce64bc40e60aa8ccc2aa94d8cd81929182819e18ec88755046c02e5434 *./AGENTS.md
+cbf7a6abddb9f3006346ed3881550dc512118ace1c7c816979ab878bf9bc4b61 *./AGENTS.md
 d69bc66ac66355de1ce20e7fc607ced1b985e57a5a41847e61921110c72f47a5 *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 ad540fed46a17b6464d4cc527fbcd6a850a73c39f8c72d04c6fb9e7d2a52e6fc *./CODEX.md
@@ -33,7 +33,7 @@ c5cb795bb0f7959a1531b97b8220e4daa480a5deb51ac769d3ac2cca74a6a355 *./docs/09_원�
 9edbcaba7769f18eb4bf68aad7c400bb3523bfb02dc2ecb20cbbe8ff91c9a136 *./docs/12_문서스킬_직접_준비하기.md
 8b656b08de26edb5799a594104878de21b5249a3f57e5300af6ed0616b99f69d *./docs/13_토큰_발급_Chrome으로_받기.md
 b8adbac227d0b0f6eb1018d478a3bd7f4e2bf9700282a40f76799233deb071f2 *./docs/14_터미널_읽기좋게.md
-3d8a88ddc03dd4dd7cdb2305e6328b2c7e9ac569471cd409c87c9a934cd01e81 *./docs/agents/06-model-routing.md
+e3dc811241c710ffe2092473ea52794fd6fe8786987e6742d0699834f67399ac *./docs/agents/06-model-routing.md
 3591c247d54fcf798b8e6dfb3bc792326414d8296428e2a44e9002a1a9f2e764 *./docs/agents/06b-bio-filter.md
 3186439b796fee2e3499f0fdc9bf1a51242beda78dadc302386278b6692e24ba *./docs/agents/07-git-branch-hygiene.md
 2689d1bf99046aaa4ffd13a20a4313c032f07ab8e25a9088d8406346e6fd9f56 *./docs/agents/08-verification-routes.md

@@ -236,7 +236,7 @@ extract, compare, count, apply a known formula) → cheapest tier; standard
 implementation (a function, a bug with a known cause, a single-file refactor)
 → mid tier; deep reasoning (architecture, adversarial or security review,
 physics / numerical plausibility, cross-validation of a scientific result,
-multi-objective optimisation design) → strongest tier. Do not spawn a
+multi-objective optimisation design) → strongest tier, run at a *medium* effort setting by default and raised only when a verification pass asks for it. Do not spawn a
 sub-agent for what one or two direct reads answer. When unsure, draft on the
 cheaper tier and escalate to the strongest one for the verification pass (§2).
 Adversarial verification = ONE agent given the whole output, unless the axes
