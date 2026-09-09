@@ -14,7 +14,11 @@ introduce unnecessary changes).
 - **Deep reasoning tasks** (architecture decisions, adversarial/security
   review, physics or numerical plausibility diagnosis, cross-validation
   of a scientific result, multi-objective optimization design) → use the
-  strongest available model.
+  strongest available model, at a medium effort setting by default; raise
+  effort only for a verification pass that explicitly needs it. If the
+  strongest tier reads cached context more cheaply than the tier below
+  (check the current price table), a long interactive session can be
+  cheaper on the strongest tier — measure before assuming it costs more.
 - Don't spawn a sub-agent/session at all for something answerable in one
   or two direct read/search calls — the overhead of spinning up a fresh
   agent context can exceed the cost of just doing it directly.
