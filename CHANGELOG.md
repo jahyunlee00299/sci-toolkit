@@ -4,11 +4,11 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.64] — 2026-09-16
+
+- chore: dedupe CHANGELOG entry from rebase
+
 ## [1.2.63] — 2026-09-16
-
-- docs: English pass on README/QUICKSTART/docs-04 for public distribution
-
-## [1.2.62] — 2026-09-16
 
 - docs: English pass on README/QUICKSTART/docs-04 for public distribution
 
