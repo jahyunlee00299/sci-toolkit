@@ -1,33 +1,27 @@
 # sci-toolkit
 
 **A shared Claude Code skillset for the lab.** A collection of instructions that
-gets the AI to handle literature search, manuscript writing, figure production,
-and data analysis the same way every time. Every workflow ends in a
-**verification gate** — it doesn't stop at "it ran," it stops after
-"confirmed the result is correct."
-
-A shared Claude Code skillset for lab work — literature search, manuscript writing,
-figure production, data analysis. Every workflow ends in a **verification gate**:
-the artifact isn't done until the gate passes, and the gate is a script, not a
-suggestion.
+gets the AI to handle literature search/writing, molecular biology, figures,
+statistics, the lab portal, and work-logging the same way every time. Every
+workflow ends in a **verification gate** — it doesn't stop at "it ran," it
+stops after "confirmed the result is correct."
 
 ```
 38 skills · 39 regression tests · 7 safety guards
 python doctor.py   ->   15 checks · 0 FAIL
 ```
 
-No personal accounts, PII, or funding information included. Undisclosed research
-content is filtered out by a mechanical check (`doctor.py` SENTINEL).
+No personal accounts, PII, or funding information included. Undisclosed
+research content is filtered out by a mechanical check (`doctor.py` SENTINEL).
 
 | I am… | start here |
 |---|---|
-| new here, not sure what's what | [docs/00_시작하기](docs/00_시작하기.md) (Getting Started) |
+| 초심자, not sure what's what | [docs/00_시작하기](docs/00_시작하기.md) (Getting Started) |
 | just want to install first | [QUICKSTART.md](QUICKSTART.md) — install only the skills you need |
 | want to understand how it works | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) (Full Workflow Map) |
 | the AI keeps going off track | [AGENTS.md](AGENTS.md) §0 routing table -> say "follow §0" |
-| want to work with Word/PDF/PPT/Excel | just ask — it's a built-in Claude Code capability. See the [module list](#-word--pdf--ppt--excel) for manuscript QC tools |
+| want to work with Word/PDF/PPT/Excel | just ask — it's a built-in Claude Code capability. See the [module list](#module-list) |
 | found something annoying while using it | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) (Filing Feedback) — say it and it's recorded automatically |
-| the terminal is hard to read (colors, Korean-character width, tabs) | [docs/14_터미널_읽기좋게](docs/14_터미널_읽기좋게.md) (Making the Terminal Readable) — `python scripts/terminal_setup.py` |
 | **I use Codex, not Claude Code** | [CODEX.md](CODEX.md) — hooks don't work there; separate notes |
 
 ---
@@ -35,23 +29,54 @@ content is filtered out by a mechanical check (`doctor.py` SENTINEL).
 ## What is sci-toolkit?
 
 Each folder under `skills/` is a set of instructions organized as "in this
-situation, do this," with a helper script attached where needed. It's documents,
-not code, so Claude Code reads the conversation context and picks the right one
-on its own — nothing needs to be run directly.
+situation, do this," with a helper script attached where needed. It's
+documents, not code, so Claude Code reads the conversation context and picks
+the right one on its own — nothing needs to be run directly.
 
-## What's inside (38 skills)
+**Base environment: Claude Code + a subscription (Pro/Max), used first.**
+Most skills need no separate API key; only a handful of external-database
+lookup skills use a free API or an optional key, and each `SKILL.md` states
+which.
 
-| Area | Skills |
-|---|---|
-| **Literature search & writing** | `research-search` (entry point) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `web-scraping` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `patent-invention-disclosure` · `academic-term-rules` · `endnote-citation-injection` |
-| **Molecular biology & experiments** | `primer-design` · `experiment-hub` |
-| **Figures** | `publication-figures` · `markdown-mermaid-writing` · `generate-image` |
-| **Data & statistics** | `data-quality-checks` (pre-analysis table check) · `lab-data-analysis` · `stats-workflow` · `statsmodels` · `analysis-code-testing` · `conda-env-manager` · `get-available-resources` |
-| **Document conversion** | `markitdown` (PDF/docx/xlsx/image OCR -> Markdown) · `journal-presentation-maker` |
-| **Verification & development discipline** | `scientific-validation` · `spec-first-development` · `test-first-development` · `code-quality` · `avoid-ai-writing` · `git-workflow-manager` · `skill-developer` · `token-efficient-routing` · `debugging-loop` · `test-quality` · `spec-driven-research-dev` |
+## Module list
 
-> **Word, PDF, PPT, Excel** are handled without a skill — a built-in Claude Code
-> capability. The 7 manuscript QC tools live under `skills/manuscript-pipeline/scripts/`.
+논문검색·작성 / 분자생물학 / figure / 통계 / 포털 / 작업로그 — six areas the
+lab actually works in. Not every area is a `skills/` folder; a few are a
+script or a doc instead, and that's noted below.
+
+| 영역 (Area) | 내용 (What it covers) | 모듈 (Module) |
+|---|---|---|
+| **논문검색·작성**<br>Paper search & writing | Find/summarize/review papers, draft and polish a manuscript, insert EndNote citations, write a patent disclosure | `research-search` (entry point) · `research-lookup` · `openalex-database` · `pubmed-database` · `biorxiv-database` · `web-scraping` · `paper-extract` · `literature-review` · `research-ideation` · `manuscript-pipeline` · `patent-invention-disclosure` · `academic-term-rules` · `endnote-citation-injection` |
+| **분자생물학**<br>Molecular biology | Primer/sequence design, hairpin/dimer QC, variant-QC matrices, public vector fetch, lab experiment tracking | `primer-design` · `experiment-hub` · `scripts/primer_structure_check.py` · `scripts/variant_filter.py` · `scripts/fetch_public_vector.py` |
+| **figure** | Publication figures, mermaid diagrams, AI-generated schematics, HPLC chromatogram parsing for plotting | `publication-figures` · `markdown-mermaid-writing` · `generate-image` · `scripts/hplc_parser.py` |
+| **통계**<br>Statistics | Pre-analysis data-quality checks, test selection, general stats workflows, statsmodels-based analysis | `data-quality-checks` · `stats-workflow` · `statsmodels` · `lab-data-analysis` |
+| **포털**<br>Portal | ⚠️ No dedicated portal skill ships in this package yet. The closest existing pieces are `get-available-resources` (what's installed/available right now) and `doctor.py` (environment/integrity status as a single dashboard-style report). Request a real lab-portal skill from the admin if this is a recurring need. | `get-available-resources` · `doctor.py` |
+| **작업로그**<br>Work log | Record what was tried, what failed, and inconveniences hit while using the toolkit — the closest thing to a lab notebook this package ships | `scripts/feedback_log.py` · `experiment-hub` · `CHANGELOG.md` (toolkit's own change log, for reference) |
+
+> **Word, PDF, PPT, Excel** are handled without a skill — a built-in Claude
+> Code capability. The 7 manuscript QC tools live under
+> `skills/manuscript-pipeline/scripts/`.
+
+## How to load it
+
+A skill is just a directory — there's no separate registration step. Copying
+the folder into Claude Code's skills location *is* the install.
+
+```bash
+python install/install.py --list                      # check the catalog
+python install/install.py --preset paper-writing --apply
+python doctor.py                                      # PASS means ready
+```
+
+- Default install target: `~/.claude/skills/` (auto-detected). Use `--dest`
+  for a different location.
+- Existing files are kept; a same-named file is updated, a file that only
+  existed at the destination is preserved. `--force` for a full replacement.
+- Restart Claude Code (or open a new session) after installing — skills are
+  picked up at session start.
+
+See [QUICKSTART.md](QUICKSTART.md) for the 5-minute 초심자 path from a USB
+drive, including which install mode to pick.
 
 ## How to use it
 
@@ -60,14 +85,6 @@ Just talk to it normally.
 ```
 "find papers on this topic"     "design a primer for me"      "what stats test should I use for this data?"
 "redraw this figure"            "check the manuscript notation"    "does this result make sense?"
-```
-
-Install only what you need:
-
-```bash
-python install/install.py --list                      # check the catalog
-python install/install.py --preset paper-writing --apply
-python doctor.py                                      # PASS means ready
 ```
 
 ---
@@ -80,11 +97,13 @@ python doctor.py                                      # PASS means ready
 Document work runs without a skill. Say "fix this Word file" and it's handled
 the normal way. These skills aren't in the repository not because the
 capability is missing, but because they are Anthropic-owned assets that
-cannot be redistributed ([docs/12](docs/12_문서스킬_직접_준비하기.md), "Preparing Document Skills Yourself").
+cannot be redistributed ([docs/12](docs/12_문서스킬_직접_준비하기.md), "Preparing
+Document Skills Yourself").
 
 Use `markitdown` when a PDF/document needs to be read as text. It converts
 PDF/docx/pptx/xlsx/images (OCR) to Markdown, and `paper-extract` and
-`journal-presentation-maker` both go through this path when reading a paper PDF.
+`journal-presentation-maker` both go through this path when reading a paper
+PDF.
 
 The 7 manuscript QC/editing tools were built in-house by the lab, so they're
 included as-is:
@@ -149,13 +168,13 @@ this order:
 | `config/catalog.json` | Skill catalog SSOT (categories, dependencies, size, presets) |
 | `hooks/` | 7 safety guards — secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
 | `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
-| `docs/` | 15 beginner docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
+| `docs/` | 15 초심자 docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
 | `tests/` | 39 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer, patent numeric-claim arithmetic gate). `doctor.py` runs all of them automatically |
-| `doctor.py` | Integrity/environment check (`doctor_lib/` holds the checks). `PASS` means it's ready; `--offline` keeps every self-test off the network. Its checks live in `doctor_lib/` (SENTINEL/research-marker scan, env checks, repo-integrity checks, dead-automation detector, self-test runner); `doctor.py` itself is the thin entry point |
+| `doctor.py` | Integrity/environment check (`doctor_lib/` holds the checks). `PASS` means it's ready; `--offline` keeps every self-test off the network |
 | `evals/` | Headless measurement of whether routing **actually fires** (slow, costs money — run manually) |
 | `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |
-| `scripts/connectivity_check.py` | Lists every shipped tool that nothing leads to (ORPHAN) or nothing tests (UNTESTED). `doctor.py` runs it; the untested count can only go down (`tests/test_connectivity.py`) |
-| `scripts/feedback_log.py` | Records inconveniences/errors (no account or token needed) |
+| `scripts/connectivity_check.py` | Lists every shipped tool that nothing leads to (ORPHAN) or nothing tests (UNTESTED). `doctor.py` runs it |
+| `scripts/feedback_log.py` | Records inconveniences/errors (no account or token needed) — the 작업로그 tool |
 | `scripts/hplc_parser.py` | HPLC chromatogram `.ch`/`.txt`/`.csv`/`.arw` -> CSV/JSON with auto-detected, integrated peaks (stdlib only) |
 | `scripts/primer_structure_check.py` | Hairpin / homodimer dG for a primer list (nearest-neighbor model), PASS/FAIL per primer |
 | `scripts/variant_filter.py` | Merges ddG, primer-QC and expression CSVs into one PASS/FAIL matrix per variant |
@@ -173,8 +192,6 @@ this order:
 
 <br>
 
-A skill is just a directory — there's no separate registration step.
-
 ```bash
 python install/install.py --list                          # catalog and presets
 python install/install.py --preset paper-writing --apply  # by preset
@@ -190,9 +207,11 @@ python install/install.py --skills docx --dest ./my-skills --apply
   replacement.
 - Copying just one folder works too — a full install isn't required.
 
-**Base environment**: Claude Code (subscription). Most skills need no API key;
-only a few external-database lookup skills use a free API or an optional key.
-Each `SKILL.md` states which.
+**Base environment**: Claude Code (subscription) is the default, used first —
+most skills need no API key; only a few external-database lookup skills use
+a free API or an optional key. Each `SKILL.md` states which. An all-in-one
+install (the `all` preset) is a manual, opt-in step (§Step 4 of
+[QUICKSTART.md](QUICKSTART.md)), not the recommended default.
 
 If using another agent such as Codex, read [CODEX.md](CODEX.md) first.
 
@@ -205,7 +224,7 @@ If using another agent such as Codex, read [CODEX.md](CODEX.md) first.
 
 <br>
 
-- No PII, account credentials, or funding information is included.
+- **No PII, account credentials, or funding information is included.**
   `.distignore` strips these out automatically at packaging time, and
   `doctor.py`'s SENTINEL scan mechanically checks for secrets, personally
   identifiable information, and undisclosed-research markers.
@@ -219,9 +238,10 @@ If using another agent such as Codex, read [CODEX.md](CODEX.md) first.
   repository, though document work itself still works as a built-in Claude
   Code capability.
 
-This distribution ships with no personal data, account credentials, or funding
-information: `.distignore` strips it at packaging time, and `doctor.py`'s SENTINEL
-scan checks for it mechanically. If you extend it, don't add personal tokens, emails,
-or grant numbers — and check with the lab admin before redistributing outside the lab.
+This distribution ships with no personal data, account credentials, or
+funding information: `.distignore` strips it at packaging time, and
+`doctor.py`'s SENTINEL scan checks for it mechanically. If you extend it,
+don't add personal tokens, emails, or grant numbers — and check with the lab
+admin before redistributing outside the lab.
 
 </details>
