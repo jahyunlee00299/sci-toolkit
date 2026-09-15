@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.60] — 2026-09-16
+
+- publication-figures: retire the white marker edge, separate series by stroke
+
+## [1.2.59] — 2026-09-15
+
+- publication-figures: retire the white marker edge, separate series by stroke
+
 ## [1.2.58] — 2026-09-07
 
 - feat(skills): add patent-invention-disclosure

@@ -124,6 +124,20 @@ When trade-offs collide, resolve in this order:
   darkened ~0.78 for legibility on light fills), not a fixed `#333`/`#000`.
 - **Bars: no edge.** Bar charts use `edgecolor="none"`, `linewidth=0` — flat filled bars,
   no black outline, unless a specific journal figure requires outlined bars.
+- **Markers: no edge either (2026-09-15).** `markeredgecolor="none"`, `markeredgewidth=0`.
+  The white marker outline that `plot_style_sigmaplot_prism.md` used to recommend separates
+  overlapping markers by erasing what sits under them — at a crossing it deletes the other
+  series instead of layering over it. Same principle as the bar rule above: the fill carries
+  the series, an outline is a second object competing with it.
+- **Series identity = colour AND stroke, both keyed by the series name.** Keep a linestyle map
+  beside the colour map, keyed by the same names, so one name settles both and no script picks
+  either by hand. Colour alone is not enough: Okabe-Ito is colour-blind safe, not greyscale
+  safe — `#0072B2` and `#D55E00` converge to nearly the same grey under an L conversion, and
+  only solid-vs-dashed keeps them apart in a black-and-white print.
+  🔴 If your helper draws error bars with `fmt="none"` (the usual way to colour-match them to
+  the series), it draws *only* the bars — the marker and line need their own `ax.plot()` call.
+  Calling the error-bar helper alone yields floating caps with no series, a failure that is
+  easy to miss because nothing raises. Wrap both in one function so it cannot happen.
 - **Bars must not touch the y-axis.** A 'tight' x-axis (`margins(x=0)`) glues the first bar
   onto the y-axis (and the last onto the right spine), which reads as a layout bug. Give the
   x-axis a half-category + a small pad on both ends — use `bar_xlim_pad(ax, n_groups)`
