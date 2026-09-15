@@ -302,20 +302,9 @@ The rcParams above set fonts/axes/ticks, but a plot still looks "matplotlib-ish"
 add the per-artist touches Prism applies by default. Confirmed in practice on a multi-panel
 manuscript figure set:
 
-- **Marker edge** — 🔴 **RETIRED 2026-09-15. Do not add a white marker outline.** This entry
-  used to recommend `markeredgecolor="white"` with `markeredgewidth≈1.3`, on the grounds that
-  overlapping markers otherwise smear together. The outline does separate them, but it does so
-  by punching a white hole through whatever sits underneath — at a crossing point it erases the
-  other series rather than layering over it, and on a tinted panel the ring reads as a defect.
-
-  The problem the outline was solving is real, so it moves rather than disappearing: separate
-  series by **stroke shape** instead. Keep a linestyle map alongside the colour map, keyed by
-  the same series names, so one series name settles both. That axis also survives greyscale,
-  which the outline never addressed — an Okabe-Ito blue (`#0072B2`) and vermillion (`#D55E00`)
-  converge to nearly the same grey under an L conversion, and only the solid/dashed contrast
-  keeps the two series apart in a black-and-white print.
-
-  Set `markeredgecolor="none"` and `markeredgewidth=0`.
+- **Marker edge** — Prism markers have a thin contrasting outline. Set
+  `markeredgecolor="white"` (or black on light fills) with `markeredgewidth≈1.3`. Without it,
+  overlapping markers smear together and the plot looks flat.
 - **Minor ticks** — Prism shows minor ticks by default. Add
   `ax.xaxis.set_minor_locator(AutoMinorLocator(2))` (and y), `tick_params(which="minor",
   direction="in")`. On a categorical (bar) axis, suppress the *category*-axis minor ticks
