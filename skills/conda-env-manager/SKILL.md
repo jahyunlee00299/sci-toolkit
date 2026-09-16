@@ -33,6 +33,10 @@ Step 2: Project scan (scan_imports.py <dir> [env])
 Step 3: Conflict check (check_env.py --check <env>)
     → Detect conda/pip duplicates + check known version conflicts
     ↓
+Step 3.5: Pre-install probe for anything pip-only (see `compat-check` below)
+    → For a missing package with no conda-forge build (or a GitHub source),
+      dry-run it before installing for real
+    ↓
 Step 4: Install/fix
     → Install missing packages (conda-forge priority → pip fallback)
     → Fix version conflicts
@@ -40,6 +44,19 @@ Step 4: Install/fix
 Step 5: VS Code connection (optional)
     → Set interpreter path in .vscode/settings.json
 ```
+
+## Related skill: `compat-check`
+
+This skill diagnoses environments **after the fact** — conda/pip duplicates,
+known version conflicts, a package that already failed to import. It has no
+step that checks a candidate package *before* actually installing it.
+
+For a package Step 2 flags as missing that has no conda-forge build (so it
+has to go through pip) or comes from a GitHub URL, run
+`skills/compat-check` first: it does a real dry-run install in a disposable
+venv and surfaces the resolver's own conflict message, instead of you
+discovering the conflict mid-`pip install`. See
+`skills/compat-check/SKILL.md` for usage.
 
 ## Scripts
 
