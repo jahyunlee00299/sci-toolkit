@@ -283,6 +283,12 @@
       "requires": [],
       "size_kb": 24
     },
+    "compat-check": {
+      "category": "data-stats",
+      "role": "pre-install compatibility probe (real dry-run install in a disposable venv, uv preferred / pip fallback) for a GitHub repo or PyPI package, before installing it for real",
+      "requires": [],
+      "size_kb": 84
+    },
     "experiment-hub": {
       "category": "molbio",
       "role": "Experiment protocols, condition optimization, history logging, experiment comparison",
@@ -389,7 +395,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 42 skills",
+      "desc": "All 43 skills",
       "skills": [
         "__ALL__"
       ]

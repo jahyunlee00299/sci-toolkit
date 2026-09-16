@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.65] — 2026-09-16
+
+- Add compat-check skill: pre-install dry-run compatibility probe
+
 ## [1.2.64] — 2026-09-16
 
 - chore: dedupe CHANGELOG entry from rebase
