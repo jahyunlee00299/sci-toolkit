@@ -7,7 +7,7 @@ workflow ends in a **verification gate** — it doesn't stop at "it ran," it
 stops after "confirmed the result is correct."
 
 ```
-39 skills · 39 regression tests · 7 safety guards
+40 skills · 39 regression tests · 7 safety guards
 python doctor.py   ->   15 checks · 0 FAIL
 ```
 

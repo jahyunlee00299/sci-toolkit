@@ -34,14 +34,14 @@ two drift apart with nothing to detect it.
 ### rule ① — measured keys must not be hard-coded or silently defaulted
 
 ```bash
-paramguard literals --keys eta,kla_scale,kcat_gdh scripts/
+paramguard literals --keys eta,k_transfer,kcat_enzyme scripts/
 ```
 
 Flags two shapes, for keys **you declare** as measured:
 
 ```python
 eta = params.get("eta", 0.87)   # missing key -> a wrong fit, not a failure
-model.kla_scale = 0.776         # measured where? by whom? against what?
+model.k_transfer = 0.412        # measured where? by whom? against what?
 ```
 
 `--keys` is required. A checker that guessed which numbers were physical would
@@ -61,7 +61,7 @@ paramguard names scripts/_refactor/configs/
 ```
 
 ```
-nsga2_rogdh_v15b_flask_5d.yaml: name says v15b but contents say v16.
+opt_model_v15b_5d.yaml: name says v15b but contents say v16.
 ```
 
 `--mode set` (default) also catches partial-overlap lies: a file named `v8_v3`
@@ -77,7 +77,7 @@ paramguard coverage --spec .claude/params_spec.yaml -- tests/
 ```
 
 ```
-nox_activity_scale: declared as a fitted/measured parameter, but it does not
+enzyme_activity_scale: declared as a fitted/measured parameter, but it does not
 appear anywhere in the test tree. Nothing checks it, and nothing will notice
 when it changes.
 ```
@@ -136,16 +136,15 @@ esac
   hooks:
     - id: paramguard-names
     - id: paramguard-literals
-      args: [--keys, "eta,kla_scale,xr_activity_scale"]
+      args: [--keys, "eta,k_transfer,enzyme_activity_scale"]
 ```
 
 > That repo is **not public yet** (see Install above), so this block does not
 > resolve for anyone else. Until it ships, wire it through a local hook script
 > as this lab does, below.
 
-In this lab both rules are already wired in `Kinetic-modeling-and-optimization`
-and `biosteam-tagatose` via `.git/hooks/pre-commit.local`, which the existing
-params-strict-guard hook chains to. Only **staged** files are checked, so
+Where this is in use, the rules are wired via `.git/hooks/pre-commit.local`,
+which an existing strict-params hook chains to before its own scan. Only **staged** files are checked, so
 pre-existing violations do not block unrelated work — a guard that fails on day
 one for reasons the committer did not cause gets bypassed permanently.
 
@@ -154,7 +153,7 @@ Bypass: `PARAMGUARD_SKIP=1 git commit ...`
 ## What it found here
 
 Running rule ① over 1,522 files with 49 declared keys surfaced
-`model.kla_scale = 0.776` hard-coded in two scripts while the canonical fit
+`model.k_transfer = 0.412` hard-coded in two scripts while the canonical fit
 carries `0.5074` — a 53% discrepancy on a fitted parameter, in code that had
 been read many times.
 
