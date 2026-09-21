@@ -1,11 +1,11 @@
-88bb5fcca1e67a3a6cbc823899dc225c7bba66f8089236e500d2f2782fe184ed *./.claude-plugin/plugin.json
+bd85b5ec960daa9410b6efe355e6d8b93d2af4252cdec36fb1bb7a94598f9f4c *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 78bbe260fac1652fd5a55f7d218d96aa4cb52f4f6d61822e11b77b5d1aa3261e *./.gitleaks.toml
 cbf7a6abddb9f3006346ed3881550dc512118ace1c7c816979ab878bf9bc4b61 *./AGENTS.md
-4b0ded7cdd7e53e94310fc81b7f160add97cdf44ee6292416b553587b4cdae58 *./CHANGELOG.md
+77a42d0abb38514513a62036848ad10352ed607d2ba51a14ce78814d4f419f4f *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 ad540fed46a17b6464d4cc527fbcd6a850a73c39f8c72d04c6fb9e7d2a52e6fc *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -274,6 +274,7 @@ fa0b93524bc00fbb8116ed72c3a1401eaf30c056aa637ebf86293dacae079d86 *./skills/opena
 84c2d5f8b0305e039bfc07a170e19868b23e0abf05172fb131696f452c3160eb *./skills/openalex-database/scripts/query_helpers.py
 c3420d69fb1932894d373762199dbf7a30767bbb073ff364a2cde756180ccf24 *./skills/paper-extract/SKILL.md
 89157edd1a0396cf7c317643fc7d6f494d61b393bda898adef7ba4227dd4cb03 *./skills/paper-extract/scripts/extract_paper_assets.py
+008ec1676b61ad612bfb58f981f016bc633939f4a4ccecb7f8472b0ffe5cda70 *./skills/paramguard/SKILL.md
 f3c6144bb0dcd36028627feec115f18f7cdea8965291ffcd73132a615d968c3c *./skills/patent-invention-disclosure/SKILL.md
 a65a8b698d3fa68b6464f4233f3fa25c2ad6f66f7456b96138aebf4b0b1a9f04 *./skills/patent-invention-disclosure/references/citation_repositioning.md
 648766521932e1e538e5e2c642db9a1024550bd1bc7974528eb78d4d38b4a93c *./skills/patent-invention-disclosure/references/numeric_verification_gate.md
