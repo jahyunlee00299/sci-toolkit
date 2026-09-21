@@ -39,13 +39,23 @@ Two things this catches that eyeballing `requirements.txt` does not:
 
 ## Usage
 
+The code is not in this folder — it ships as the `compat-check` package on
+PyPI, so the skill has to be installed once into the environment you want it
+to probe:
+
 ```bash
-# from this skill's scripts/ directory
-python -m compat_check.cli <github-url-or-pypi-package-name> [--python 3.11] [--no-cache] [--tree]
+python -m pip install compat-check
+```
+
+Then either entry point works:
+
+```bash
+compat-check <github-url-or-pypi-package-name> [--python 3.11] [--no-cache] [--tree]
+python -m compat_check.cli <github-url-or-pypi-package-name>   # same thing
 ```
 
 ```
-$ python -m compat_check.cli https://github.com/pallets/flask
+$ compat-check https://github.com/pallets/flask
 compat-check: https://github.com/pallets/flask
 backend: uv
 requirements checked: blinker>=1.9.0, click>=8.1.3, itsdangerous>=2.2.0, jinja2>=3.1.2, markupsafe>=2.1.1, werkzeug>=3.1.0
@@ -57,7 +67,7 @@ OK — 6 package(s) would install cleanly:
 ```
 
 ```
-$ python -m compat_check.cli some-package-with-a-real-conflict
+$ compat-check some-package-with-a-real-conflict
 PROBLEMS FOUND — 1 package(s) cannot be resolved:
 
   [numpy]
@@ -73,7 +83,7 @@ at all (bad URL, nonexistent package).
 equivalent — `uv tree` has no substitute in plain pip):
 
 ```
-$ python -m compat_check.cli https://github.com/pallets/flask --tree
+$ compat-check https://github.com/pallets/flask --tree
 ...
 https://github.com/pallets/flask
 ├── blinker v1.9.0
@@ -138,6 +148,9 @@ has to go through pip (no conda-forge build, or a GitHub source).
 ## Requirements
 
 - Python 3.10+
+- the `compat-check` package installed from PyPI (`python -m pip install
+  compat-check`) — this folder holds only the documentation; installing the
+  skill files alone leaves the import failing
 - `uv` (preferred backend) or nothing extra — falls back to the standard
   library `venv` + `pip` automatically if `uv` is not on PATH
 - Network access (to fetch requirement lists and probe real package
@@ -147,7 +160,9 @@ has to go through pip (no conda-forge build, or a GitHub source).
 
 `tests/` holds 8 modules / 30 tests, plain-`assert` style with a
 `if __name__ == "__main__":` runner (matches this repo's script-style test
-convention — not pytest-collected). Several tests hit the real network
+convention — not pytest-collected). They import the **installed** package, so
+`pip install compat-check` has to have happened first; run them with the
+interpreter of the environment you are checking. Several tests hit the real network
 (GitHub raw content, PyPI JSON API, actual `uv`/pip resolution) since the
 entire point of this tool is that dry-run results are ground truth, not a
 static prediction — run them when verifying a change here, not as part of

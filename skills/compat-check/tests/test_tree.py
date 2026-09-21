@@ -1,11 +1,8 @@
 """Tests for compat_check.tree — parses uv's text dependency tree into a
 nested structure. Real uv calls, no mocks (uv's output format is exactly
 what this module depends on being right)."""
-import sys
-from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.tree import build_tree
 

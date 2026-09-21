@@ -1,8 +1,5 @@
 """Integration tests for compat_check.fetcher — real network calls to GitHub raw + PyPI."""
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.fetcher import FetchError, fetch_requirements, parse_github_url
 

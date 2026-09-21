@@ -1,9 +1,6 @@
 """Tests for compat_check.render — ASCII tree rendering with optional ANSI color."""
-import sys
-from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.render import render_tree
 

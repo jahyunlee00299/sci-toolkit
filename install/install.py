@@ -328,6 +328,43 @@ def _catalog_flag(skill: str, flag: str) -> bool:
     return bool(_CATALOG_CACHE.get(skill, {}).get(flag))
 
 
+def _catalog_str(skill: str, field: str) -> str:
+    """Read a string field for a skill from the catalog ("" if absent)."""
+    _catalog_flag(skill, field)  # populates _CATALOG_CACHE
+    val = (_CATALOG_CACHE or {}).get(skill, {}).get(field)
+    return val if isinstance(val, str) else ""
+
+
+def _pip_notice(names: list[str], apply: bool) -> None:
+    """Report skills whose executable code ships from PyPI, not from this repo.
+
+    A skill with `pip_package` keeps its SKILL.md and docs here, but the code
+    it calls is a published package — so copying the folder is only half the
+    install. This used to be a silent gap: the skill folder landed, the skill
+    said `python -m compat_check.cli`, and that import failed because nothing
+    had installed it. The install is not finished until the package is there,
+    so name it at the one moment the user is watching the installer.
+
+    Not run automatically: this installer copies files into a skills folder
+    and has no business choosing which interpreter or environment a package
+    lands in (conda env, venv, --user). It prints the exact command instead.
+    """
+    pkgs = [(n, _catalog_str(n, "pip_package")) for n in names]
+    pkgs = [(n, pkg) for n, pkg in pkgs if pkg]
+    if not pkgs:
+        return
+    print("")
+    print("── Skills whose code installs from PyPI ──")
+    for name, pkg in pkgs:
+        print(f"  ! {name}  ->  pip install {pkg}")
+    print("  The skill folder alone is not enough — these call a published package.")
+    joined = " ".join(pkg for _, pkg in pkgs)
+    print("  Run this in the environment the skill should use:")
+    print(f"    python -m pip install {joined}")
+    if not apply:
+        print("  (shown in preview too, since it is a separate step either way)")
+
+
 def install(final: list[str], dest: Path, apply: bool, force: bool = False) -> None:
     """Install skills into the destination folder.
 
@@ -377,6 +414,8 @@ def install(final: list[str], dest: Path, apply: bool, force: bool = False) -> N
         print("  Claude Code uses them automatically when working with the matching file type; if you")
         print("  don't have them, get them from Anthropic's own distribution and place them in ~/.claude/skills/.")
         print("  Details: docs/12_문서스킬_직접_준비하기.md")
+
+    _pip_notice(final, apply)
 
     if not apply:
         print("\n* This is a preview. Re-run with --apply to actually install.")

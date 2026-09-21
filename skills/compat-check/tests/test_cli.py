@@ -1,12 +1,9 @@
 """End-to-end tests for the compat-check CLI — exercises the full
 fetcher -> cache/runner -> report pipeline, including exit codes."""
 import io
-import sys
 from contextlib import redirect_stdout, redirect_stderr
-from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.cli import main
 

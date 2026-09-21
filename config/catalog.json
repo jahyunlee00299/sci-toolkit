@@ -293,7 +293,8 @@
       "category": "data-stats",
       "role": "pre-install compatibility probe (real dry-run install in a disposable venv, uv preferred / pip fallback) for a GitHub repo or PyPI package, before installing it for real",
       "requires": [],
-      "size_kb": 84
+      "pip_package": "compat-check",
+      "size_kb": 21
     },
     "experiment-hub": {
       "category": "molbio",

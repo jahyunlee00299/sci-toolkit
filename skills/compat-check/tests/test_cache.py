@@ -1,10 +1,8 @@
 """Integration tests for compat_check.cache — real probe_all() calls, real SQLite file."""
-import sys
 import tempfile
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.cache import cached_probe_all, make_cache_key
 

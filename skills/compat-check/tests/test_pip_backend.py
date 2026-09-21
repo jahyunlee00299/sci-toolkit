@@ -1,10 +1,7 @@
 """Force the pip fallback backend (simulates a machine without uv) and re-run
 the same scenarios as test_runner.py — this is the actual robustness proof
 the user asked for, not just "it works when uv happens to be installed"."""
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.runner import probe_once, _PipBackend
 

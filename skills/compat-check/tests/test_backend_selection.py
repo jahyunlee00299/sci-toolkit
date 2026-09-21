@@ -1,10 +1,7 @@
 """Verify the uv/pip auto-selection actually switches when uv is unavailable —
 this is the core of the robustness fix (users' machines often lack uv)."""
-import sys
-from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.runner import _select_backend
 

@@ -1,8 +1,5 @@
 """Integration tests for compat_check.runner — these call real `uv` and hit PyPI."""
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from compat_check.runner import probe_all
 
