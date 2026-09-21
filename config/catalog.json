@@ -63,66 +63,24 @@
     }
   },
   "skills": {
-    "academic-term-rules": {
-      "category": "validation",
-      "role": "Academic term/notation rules SSOT (species-name italics, units, kinetics)",
-      "requires": [],
-      "size_kb": 34
+    "manuscript-pipeline": {
+      "category": "paper-writing",
+      "role": "Manuscript draft -> write -> self-review -> proof (IMRAD, journal-specific formats)",
+      "requires": [
+        "docx",
+        "academic-term-rules"
+      ],
+      "size_kb": 173
     },
-    "analysis-code-testing": {
-      "category": "data-stats",
-      "role": "pytest testing for analysis code (known-answer/golden-file regression, tolerance, seed reproducibility)",
-      "requires": [],
-      "size_kb": 9
-    },
-    "avoid-ai-writing": {
-      "category": "validation",
-      "role": "Detect/fix AI-writing tells (em-dash, cliches, template phrasing) -- final check for manuscripts, mail, reports. Korean-language tells (translationese, ending-rhythm patterns, bound nouns) are detected via the korean-tells.md supplementary catalog",
-      "requires": [],
-      "size_kb": 154
-    },
-    "biorxiv-database": {
-      "category": "literature",
-      "role": "Preprint search (bioRxiv, medRxiv, arXiv, no key required)",
-      "requires": [],
-      "size_kb": 51
-    },
-    "code-quality": {
-      "category": "validation",
-      "role": "SOLID principles, file-size limits, systematic refactoring gate (review split into Standards/Spec axes)",
-      "requires": [],
-      "size_kb": 5
-    },
-    "compat-check": {
-      "category": "data-stats",
-      "role": "pre-install compatibility probe (real dry-run install in a disposable venv, uv preferred / pip fallback) for a GitHub repo or PyPI package, before installing it for real",
-      "requires": [],
-      "size_kb": 84
-    },
-    "conda-env-manager": {
-      "category": "data-stats",
-      "role": "conda environment diagnosis, creation, repair, import scanning, version-conflict resolution",
-      "requires": [],
-      "size_kb": 24
-    },
-    "data-quality-checks": {
-      "category": "data-stats",
-      "role": "Pre-analysis raw-table structure check (6 axes: completeness, uniqueness, validity, consistency, accuracy, timeliness)",
-      "requires": [],
-      "size_kb": 7
-    },
-    "debugging-loop": {
-      "category": "validation",
-      "role": "Bug-diagnosis loop -- get a red-capable repro loop before forming a hypothesis (reproduce, minimize, falsifiable hypothesis, regression test)",
-      "requires": [],
-      "size_kb": 8
-    },
-    "docx": {
-      "category": "documents",
-      "role": "Word document creation/editing (structure validation, tracked changes, equations)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
-      "requires": [],
-      "size_kb": 0,
-      "external": true
+    "patent-invention-disclosure": {
+      "category": "paper-writing",
+      "role": "Manuscript -> Korean patent invention disclosure (발명내용설명서) for attorney review",
+      "requires": [
+        "docx",
+        "academic-term-rules",
+        "paper-extract"
+      ],
+      "size_kb": 64
     },
     "endnote-citation-injection": {
       "category": "paper-writing",
@@ -132,17 +90,216 @@
       ],
       "size_kb": 52
     },
-    "experiment-hub": {
-      "category": "molbio",
-      "role": "Experiment protocols, condition optimization, history logging, experiment comparison",
+    "academic-term-rules": {
+      "category": "validation",
+      "role": "Academic term/notation rules SSOT (species-name italics, units, kinetics)",
       "requires": [],
-      "size_kb": 27
+      "size_kb": 34
+    },
+    "scientific-validation": {
+      "category": "validation",
+      "role": "Scientific plausibility gate for fit/optimization results (5 axes)",
+      "requires": [],
+      "size_kb": 43
+    },
+    "literature-review": {
+      "category": "literature",
+      "role": "Systematic literature review document generation (PRISMA, verified citations, PDF)",
+      "requires": [],
+      "size_kb": 81
+    },
+    "research-search": {
+      "category": "literature",
+      "role": "Search meta-router (auto-selects the best backend)",
+      "requires": [],
+      "size_kb": 9
+    },
+    "research-lookup": {
+      "category": "literature",
+      "role": "Free API lookups (auto-routes between OpenAlex + PubMed)",
+      "requires": [],
+      "size_kb": 60
+    },
+    "biorxiv-database": {
+      "category": "literature",
+      "role": "Preprint search (bioRxiv, medRxiv, arXiv, no key required)",
+      "requires": [],
+      "size_kb": 51
+    },
+    "research-ideation": {
+      "category": "literature",
+      "role": "Brainstorming -> hypothesis -> experiment design",
+      "requires": [],
+      "size_kb": 4
+    },
+    "openalex-database": {
+      "category": "literature",
+      "role": "Query and bibliometric analysis over OpenAlex's 240M+ papers",
+      "requires": [],
+      "size_kb": 51
+    },
+    "pubmed-database": {
+      "category": "literature",
+      "role": "PubMed E-utilities (MeSH, Boolean, batch)",
+      "requires": [],
+      "size_kb": 45
+    },
+    "paramguard": {
+      "category": "validation",
+      "role": "static gate for numbers that claim to be measured: a declared fitted/measured key must not be a hard-coded literal or a silent default, a config file name must not contradict its own fields, and a declared parameter must have some test asserting something about it (needs the paramguard package; not on PyPI yet)",
+      "requires": [],
+      "size_kb": 7
+    },
+    "paper-extract": {
+      "category": "documents",
+      "role": "Extract tables/figures/body text from a paper PDF/docx",
+      "requires": [],
+      "size_kb": 16
+    },
+    "primer-design": {
+      "category": "molbio",
+      "role": "Primer design (iPCR, RE cloning, expression check, order sheets)",
+      "requires": [],
+      "size_kb": 639
+    },
+    "lab-data-analysis": {
+      "category": "data-stats",
+      "role": "Lab data EDA (kinetic, HPLC, gel, MSDS/GHS)",
+      "requires": [],
+      "size_kb": 3
+    },
+    "data-quality-checks": {
+      "category": "data-stats",
+      "role": "Pre-analysis raw-table structure check (6 axes: completeness, uniqueness, validity, consistency, accuracy, timeliness)",
+      "requires": [],
+      "size_kb": 7
+    },
+    "analysis-code-testing": {
+      "category": "data-stats",
+      "role": "pytest testing for analysis code (known-answer/golden-file regression, tolerance, seed reproducibility)",
+      "requires": [],
+      "size_kb": 9
+    },
+    "stats-workflow": {
+      "category": "data-stats",
+      "role": "3-stage statistics workflow (explore -> test + check assumptions -> APA reporting)",
+      "requires": [],
+      "size_kb": 20
+    },
+    "publication-figures": {
+      "category": "figures",
+      "role": "Paper figure/scheme router (figure_lint gate)",
+      "requires": [],
+      "size_kb": 228
+    },
+    "docx": {
+      "category": "documents",
+      "role": "Word document creation/editing (structure validation, tracked changes, equations)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "xlsx": {
+      "category": "documents",
+      "role": "Excel creation/editing (formulas, recalculation, error scanning)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "pdf": {
+      "category": "documents",
+      "role": "PDF manipulation (merge, split, forms, OCR)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "markitdown": {
+      "category": "documents",
+      "role": "File-to-markdown conversion (PDF/DOCX/PPTX/images, etc.)",
+      "requires": [],
+      "size_kb": 65
+    },
+    "pptx": {
+      "category": "documents",
+      "role": "Presentation (.pptx) creation/reading/editing -- slides/notes/templates  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
+      "requires": [],
+      "size_kb": 0,
+      "external": true
+    },
+    "journal-presentation-maker": {
+      "category": "documents",
+      "role": "Automated journal club / lab meeting presentation authoring and review",
+      "requires": [
+        "pptx",
+        "academic-term-rules"
+      ],
+      "size_kb": 101
+    },
+    "markdown-mermaid-writing": {
+      "category": "figures",
+      "role": "Mermaid diagram standard -- prefer structure/flow diagrams",
+      "requires": [],
+      "size_kb": 275
     },
     "generate-image": {
       "category": "figures",
       "role": "General-purpose image generation/editing (AI) -- photos, illustration, concept art",
       "requires": [],
       "size_kb": 16
+    },
+    "statsmodels": {
+      "category": "data-stats",
+      "role": "Statistical models (OLS/GLM/mixed models/ARIMA, etc.) + diagnostics",
+      "requires": [],
+      "size_kb": 99
+    },
+    "code-quality": {
+      "category": "validation",
+      "role": "SOLID principles, file-size limits, systematic refactoring gate (review split into Standards/Spec axes)",
+      "requires": [],
+      "size_kb": 5
+    },
+    "spec-first-development": {
+      "category": "validation",
+      "role": "Design/spec/implementation plan before code -- 3-path classification (spike/bounded/architectural), approval gate, no placeholders, self-review",
+      "requires": [],
+      "size_kb": 13
+    },
+    "test-first-development": {
+      "category": "validation",
+      "role": "Write a failing test first -- red-green-refactor, test kinds for numerical research code (known-answer, analytic limit, conservation, regression), blocks rationalization",
+      "requires": [],
+      "size_kb": 10
+    },
+    "spec-driven-research-dev": {
+      "category": "validation",
+      "role": "4-stage spec workflow for a new pipeline/module rewrite (specify -> plan -> tasks -> implement)",
+      "requires": [],
+      "size_kb": 22
+    },
+    "avoid-ai-writing": {
+      "category": "validation",
+      "role": "Detect/fix AI-writing tells (em-dash, cliches, template phrasing) -- final check for manuscripts, mail, reports. Korean-language tells (translationese, ending-rhythm patterns, bound nouns) are detected via the korean-tells.md supplementary catalog",
+      "requires": [],
+      "size_kb": 154
+    },
+    "conda-env-manager": {
+      "category": "data-stats",
+      "role": "conda environment diagnosis, creation, repair, import scanning, version-conflict resolution",
+      "requires": [],
+      "size_kb": 24
+    },
+    "compat-check": {
+      "category": "data-stats",
+      "role": "pre-install compatibility probe (real dry-run install in a disposable venv, uv preferred / pip fallback) for a GitHub repo or PyPI package, before installing it for real",
+      "requires": [],
+      "size_kb": 84
+    },
+    "experiment-hub": {
+      "category": "molbio",
+      "role": "Experiment protocols, condition optimization, history logging, experiment comparison",
+      "requires": [],
+      "size_kb": 27
     },
     "get-available-resources": {
       "category": "data-stats",
@@ -156,173 +313,11 @@
       "requires": [],
       "size_kb": 6
     },
-    "journal-presentation-maker": {
-      "category": "documents",
-      "role": "Automated journal club / lab meeting presentation authoring and review",
-      "requires": [
-        "pptx",
-        "academic-term-rules"
-      ],
-      "size_kb": 101
-    },
-    "lab-data-analysis": {
-      "category": "data-stats",
-      "role": "Lab data EDA (kinetic, HPLC, gel, MSDS/GHS)",
-      "requires": [],
-      "size_kb": 3
-    },
-    "literature-review": {
-      "category": "literature",
-      "role": "Systematic literature review document generation (PRISMA, verified citations, PDF)",
-      "requires": [],
-      "size_kb": 81
-    },
-    "manuscript-pipeline": {
-      "category": "paper-writing",
-      "role": "Manuscript draft -> write -> self-review -> proof (IMRAD, journal-specific formats)",
-      "requires": [
-        "docx",
-        "academic-term-rules"
-      ],
-      "size_kb": 173
-    },
-    "markdown-mermaid-writing": {
-      "category": "figures",
-      "role": "Mermaid diagram standard -- prefer structure/flow diagrams",
-      "requires": [],
-      "size_kb": 275
-    },
-    "markitdown": {
-      "category": "documents",
-      "role": "File-to-markdown conversion (PDF/DOCX/PPTX/images, etc.)",
-      "requires": [],
-      "size_kb": 65
-    },
-    "openalex-database": {
-      "category": "literature",
-      "role": "Query and bibliometric analysis over OpenAlex's 240M+ papers",
-      "requires": [],
-      "size_kb": 51
-    },
-    "paper-extract": {
-      "category": "documents",
-      "role": "Extract tables/figures/body text from a paper PDF/docx",
-      "requires": [],
-      "size_kb": 16
-    },
-    "paramguard": {
-      "category": "validation",
-      "role": "static gate for numbers that claim to be measured: a declared fitted/measured key must not be a hard-coded literal or a silent default, a config file name must not contradict its own fields, and a declared parameter must have some test asserting something about it (needs the paramguard package; not on PyPI yet)",
-      "requires": [],
-      "size_kb": 7
-    },
-    "patent-invention-disclosure": {
-      "category": "paper-writing",
-      "role": "Manuscript -> Korean patent invention disclosure (발명내용설명서) for attorney review",
-      "requires": [
-        "docx",
-        "academic-term-rules",
-        "paper-extract"
-      ],
-      "size_kb": 64
-    },
-    "pdf": {
-      "category": "documents",
-      "role": "PDF manipulation (merge, split, forms, OCR)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
-      "requires": [],
-      "size_kb": 0,
-      "external": true
-    },
-    "pptx": {
-      "category": "documents",
-      "role": "Presentation (.pptx) creation/reading/editing -- slides/notes/templates  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
-      "requires": [],
-      "size_kb": 0,
-      "external": true
-    },
-    "primer-design": {
-      "category": "molbio",
-      "role": "Primer design (iPCR, RE cloning, expression check, order sheets)",
-      "requires": [],
-      "size_kb": 639
-    },
-    "publication-figures": {
-      "category": "figures",
-      "role": "Paper figure/scheme router (figure_lint gate)",
-      "requires": [],
-      "size_kb": 228
-    },
-    "pubmed-database": {
-      "category": "literature",
-      "role": "PubMed E-utilities (MeSH, Boolean, batch)",
-      "requires": [],
-      "size_kb": 45
-    },
-    "research-ideation": {
-      "category": "literature",
-      "role": "Brainstorming -> hypothesis -> experiment design",
-      "requires": [],
-      "size_kb": 4
-    },
-    "research-lookup": {
-      "category": "literature",
-      "role": "Free API lookups (auto-routes between OpenAlex + PubMed)",
-      "requires": [],
-      "size_kb": 60
-    },
-    "research-search": {
-      "category": "literature",
-      "role": "Search meta-router (auto-selects the best backend)",
-      "requires": [],
-      "size_kb": 9
-    },
-    "scientific-validation": {
-      "category": "validation",
-      "role": "Scientific plausibility gate for fit/optimization results (5 axes)",
-      "requires": [],
-      "size_kb": 43
-    },
     "skill-developer": {
       "category": "validation",
       "role": "Guide for writing a new skill and setting up triggers",
       "requires": [],
       "size_kb": 5
-    },
-    "spec-driven-research-dev": {
-      "category": "validation",
-      "role": "4-stage spec workflow for a new pipeline/module rewrite (specify -> plan -> tasks -> implement)",
-      "requires": [],
-      "size_kb": 22
-    },
-    "spec-first-development": {
-      "category": "validation",
-      "role": "Design/spec/implementation plan before code -- 3-path classification (spike/bounded/architectural), approval gate, no placeholders, self-review",
-      "requires": [],
-      "size_kb": 13
-    },
-    "stats-workflow": {
-      "category": "data-stats",
-      "role": "3-stage statistics workflow (explore -> test + check assumptions -> APA reporting)",
-      "requires": [],
-      "size_kb": 20
-    },
-    "statsmodels": {
-      "category": "data-stats",
-      "role": "Statistical models (OLS/GLM/mixed models/ARIMA, etc.) + diagnostics",
-      "requires": [],
-      "size_kb": 99
-    },
-    "test-first-development": {
-      "category": "validation",
-      "role": "Write a failing test first -- red-green-refactor, test kinds for numerical research code (known-answer, analytic limit, conservation, regression), blocks rationalization",
-      "requires": [],
-      "size_kb": 10
-    },
-    "test-quality": {
-      "category": "validation",
-      "role": "Test quality -- 3 ways a passing test verifies nothing (recomputes the expected value the same way the implementation does, is coupled to internals, or was mass-written up front) plus seam selection",
-      "requires": [],
-      "size_kb": 7
     },
     "token-efficient-routing": {
       "category": "validation",
@@ -336,12 +331,17 @@
       "requires": [],
       "size_kb": 244
     },
-    "xlsx": {
-      "category": "documents",
-      "role": "Excel creation/editing (formulas, recalculation, error scanning)  * Anthropic-provided skill -- cannot be redistributed under license. Fetch and install it in your own Claude Code environment (see docs/12).",
+    "test-quality": {
+      "category": "validation",
+      "role": "Test quality -- 3 ways a passing test verifies nothing (recomputes the expected value the same way the implementation does, is coupled to internals, or was mass-written up front) plus seam selection",
       "requires": [],
-      "size_kb": 0,
-      "external": true
+      "size_kb": 7
+    },
+    "debugging-loop": {
+      "category": "validation",
+      "role": "Bug-diagnosis loop -- get a red-capable repro loop before forming a hypothesis (reproduce, minimize, falsifiable hypothesis, regression test)",
+      "requires": [],
+      "size_kb": 8
     }
   },
   "presets": {

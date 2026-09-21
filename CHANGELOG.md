@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.68] — 2026-09-21
+
+- catalog: keep the original category grouping when inserting paramguard
+
 ## [1.2.67] — 2026-09-21
 
 - skills: register paramguard in the catalog, and strip private research data from it

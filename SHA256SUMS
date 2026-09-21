@@ -1,11 +1,11 @@
-b6e522a5290c444eaf8252f9c34910eec9109df144025004c447d2e34eb776aa *./.claude-plugin/plugin.json
+1b88393b93f8e9ec622b9f219f3e5f55059f75a0f2be29502e23f28f74a8a10e *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 78bbe260fac1652fd5a55f7d218d96aa4cb52f4f6d61822e11b77b5d1aa3261e *./.gitleaks.toml
 cbf7a6abddb9f3006346ed3881550dc512118ace1c7c816979ab878bf9bc4b61 *./AGENTS.md
-8e415e6dfeb3833e9dea420994d9b8ffa2338bf85db1f3b9dafb3bec77e2c53c *./CHANGELOG.md
+e9166c9839b175b49e586983252c1f288dfbff3b6a599f727202d2a505484672 *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 ad540fed46a17b6464d4cc527fbcd6a850a73c39f8c72d04c6fb9e7d2a52e6fc *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -14,7 +14,7 @@ a5893c822bb3ac6a5dd3a8a7a23bf71dd628a60c0315c0fec7f0150a0965fa90 *./NOTICE.md
 056c73a7f6051677593226a27087589660c8140b69fca44d44a7766db9b6b8eb *./QUICKSTART.md
 c733c5f1d62793910d3ab342ab2691ee7dd7072e578580dfa058886186923846 *./README.md
 f2341cb7ab8a0570449fc8de076abc6076fc25a81970dda6c85cd33681d51cc3 *./config/automations.example.json
-4c898596ca0a575209a2e347148b94dacdbff8d6650ef69af425dec76ff4678e *./config/catalog.json
+de8b7fb3d9d39ed6ddec364af2e59023572dc2fc6b62757e2e3cdc34412a45c9 *./config/catalog.json
 4a00ecee8dc70d01eadf8960b50f0970f94abe00d485b80576f70f8e7a1b852c *./config/credentials.example.json
 c7a1cef8bb0352a84a3350d37573d555a8dc8625ffe3f15515845af3d8f91112 *./config/institutions.json
 18407dda6943dc4cd4dbcda004f27de6a0ec7419baa2c08a2648e91dd9e34dca *./config/skill-requirements.toml
