@@ -1,11 +1,11 @@
-22ed929886705f18ab47c78f0f9284dc7fa5145ba781667eb04915aa68e7c2b4 *./.claude-plugin/plugin.json
+64fb236368d1f821e7f5d679c6782d55a81b47674931372b3fd342f95d6c939e *./.claude-plugin/plugin.json
 8e075ab91420b7706729093bd8cd8c1f79fd10bc63afdba86c593cbaece27c3a *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 b62b0d78e7b2f43667e6e34e86b6b457fcdbe0cd2dee62be39426e83ae9998bb *./.gitignore
 78bbe260fac1652fd5a55f7d218d96aa4cb52f4f6d61822e11b77b5d1aa3261e *./.gitleaks.toml
 cbf7a6abddb9f3006346ed3881550dc512118ace1c7c816979ab878bf9bc4b61 *./AGENTS.md
-723f0004193b92bfe95b0f87397216d76cef5a6acfd243e53543e9215fe7b1db *./CHANGELOG.md
+45ef3b143ccb133d30a85130d290ff88986133627cdf41ce565598f845d739eb *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 ad540fed46a17b6464d4cc527fbcd6a850a73c39f8c72d04c6fb9e7d2a52e6fc *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -267,7 +267,7 @@ fa0b93524bc00fbb8116ed72c3a1401eaf30c056aa637ebf86293dacae079d86 *./skills/opena
 84c2d5f8b0305e039bfc07a170e19868b23e0abf05172fb131696f452c3160eb *./skills/openalex-database/scripts/query_helpers.py
 c3420d69fb1932894d373762199dbf7a30767bbb073ff364a2cde756180ccf24 *./skills/paper-extract/SKILL.md
 89157edd1a0396cf7c317643fc7d6f494d61b393bda898adef7ba4227dd4cb03 *./skills/paper-extract/scripts/extract_paper_assets.py
-1579c469b01bab4fcbf9ac32cfee79c9624de1435385c12e539730b9ddb04ac1 *./skills/paramguard/SKILL.md
+bcdee75f60b6b124a09b87590e4a9c081d3b5217457cdeab734ba15174dcf25f *./skills/paramguard/SKILL.md
 f3c6144bb0dcd36028627feec115f18f7cdea8965291ffcd73132a615d968c3c *./skills/patent-invention-disclosure/SKILL.md
 a65a8b698d3fa68b6464f4233f3fa25c2ad6f66f7456b96138aebf4b0b1a9f04 *./skills/patent-invention-disclosure/references/citation_repositioning.md
 648766521932e1e538e5e2c642db9a1024550bd1bc7974528eb78d4d38b4a93c *./skills/patent-invention-disclosure/references/numeric_verification_gate.md

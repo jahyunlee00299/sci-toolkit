@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.70] — 2026-09-22
+
+- paramguard: document rule (4), the document-vs-document gate
+
 ## [1.2.69] — 2026-09-21
 
 - skills: ship compat-check's code from PyPI instead of a vendored copy

@@ -1,6 +1,6 @@
 ---
 name: paramguard
-description: Check whether a number that claims to be measured is allowed to be where it is. Three static rules — (1) a parameter declared to be fitted/measured must not appear as a hard-coded literal or be fetched with a silent default; (2) a config file name carrying a version token must not contradict the versions its own fields declare; (3) a declared parameter must have some test asserting something about it, so a parameter that is plumbed in but gated by nobody is caught before it is trusted. Use before trusting a fit, when a constant appears in a script, when config lineage looks off, or as a pre-commit gate. 한국어 트리거 — "이 상수 출처가 뭐지", "하드코딩된 파라미터 찾아", "파일명이랑 내용이 안 맞아", "버전 꼬인 것 같아", "silent fallback 검사", "아무도 검사 안 하는 파라미터".
+description: Check whether a number that claims to be measured is allowed to be where it is. Four static rules — (1) a parameter declared to be fitted/measured must not appear as a hard-coded literal or be fetched with a silent default; (2) a config file name carrying a version token must not contradict the versions its own fields declare; (3) a declared parameter must have some test asserting something about it, so a parameter that is plumbed in but gated by nobody is caught before it is trusted; (4) a document repeating a number from another document must not contradict it — the drift no canonical-JSON gate sees, because it is between two documents. Use before trusting a fit, when a constant appears in a script, when config lineage looks off, when a PFD/spec/design note repeats numbers another document owns, or as a pre-commit gate. 한국어 트리거 — "이 상수 출처가 뭐지", "하드코딩된 파라미터 찾아", "파일명이랑 내용이 안 맞아", "버전 꼬인 것 같아", "silent fallback 검사", "아무도 검사 안 하는 파라미터", "문서끼리 값이 다르다", "PFD 수치가 SSOT랑 안 맞아", "어느 문서가 원본이야".
 ---
 
 # paramguard
@@ -29,7 +29,7 @@ source** — it calls the installed package. A second copy inside a skill folder
 has no `pyproject`, so it cannot be imported without `sys.path` surgery, and the
 two drift apart with nothing to detect it.
 
-## The three rules
+## The four rules
 
 ### rule ① — measured keys must not be hard-coded or silently defaulted
 
@@ -104,6 +104,55 @@ Deciding whether an assertion is actually sensitive to a parameter is mutation
 testing's question, and it answers it by running the suite. This rule does not
 attempt that and must not be read as having done so.
 
+### rule ④ — a document must not contradict the SSOT document it declares
+
+```bash
+paramguard docs docs/
+```
+
+```
+docs/process_draft.md:161: pH asserted as 5.0 but docs/PROCESS_CONDITIONS.md carries 10.0
+    | 중화 단계 | pH 5.0 |
+```
+
+Rules ①–③ all watch code and config. This one watches the layer where the same
+drift kept landing unwatched: the PFD, the design note, the spec summary that
+quietly carries last month's pH. It exists because a project with four SSOT
+gates already in CI still shipped that defect three times — every one of those
+gates compares a document against a **canonical JSON**, so two documents that
+disagree with each other are structurally invisible to all of them.
+
+The comparison is **declared, not inferred**. A derived document names its
+upstream in YAML front matter and lists what it is repeating rather than
+originating:
+
+```yaml
+---
+ssot:
+  source: docs/PROCESS_CONDITIONS.md
+  repeats:
+    pH: 10
+    반응 온도 as 운전 온도: 60        # the two documents use different words
+---
+```
+
+Only declared quantities are compared. Scanning every document for every number
+instead was tried on a 54-document research corpus and drowns — the same figure
+legitimately appears as prior art (`CN101904484A uses pH 5.0`), as a retracted
+value, and as a target distinct from an operating point. Citations, struck-out
+text, past-tense sentences and change arrows are therefore read as history, not
+as assertions; ranges (`pH 4~8`) are skipped, because a band is not an operating
+point.
+
+**🔴 What it does not tell you.** It checks that a copy matches its original,
+never that the original is right, and it reads one hop only. Two shapes are
+invisible: a column-oriented table (label in the header row, value several rows
+below) and a quantity stated without naming it. Both are cases where the rule
+stays *silent*, so "no findings" is not proof — which is why a quantity whose
+label is missing from either side is reported as a **gap** rather than counted
+clean, and `--strict-gaps` makes gaps block. A declaration that quietly checks
+nothing is this rule's real failure mode.
+
 ## Exit codes — an empty check is an error, not a pass
 
 ```
@@ -112,7 +161,8 @@ attempt that and must not be read as having done so.
 2  the check could not be performed
 ```
 
-Exit `2` covers an empty `--keys`, zero matched files, and unparseable source.
+Exit `2` covers an empty `--keys`, zero matched files, unparseable source, and
+— for rule ④ — a corpus where no document declares an SSOT at all.
 **Do not treat 2 as success.** This package exists because a scanner whose path
 globs had gone stale printed `OK — no violations across 0 file(s)` and exited 0
 for long enough that nobody questioned it.
