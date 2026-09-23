@@ -29,7 +29,7 @@ Figure request
  ├── Fine-grained control → [Route 4] low-level matplotlib customization
  ├── Rebuild existing figure from rawdata → [Route 5] reconstruction + verification
  └── Architecture / flowchart / timeline / swimlane / ER / quadrant
-     (editorial HTML+SVG, presentation/report quality) → [markdown-mermaid-writing or journal-presentation-maker]
+     (editorial HTML+SVG, presentation/report quality) → [markdown-mermaid-writing or journal-ppt]
 ```
 
 ---

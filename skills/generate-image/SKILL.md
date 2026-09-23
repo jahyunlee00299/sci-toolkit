@@ -178,5 +178,5 @@ If the script fails, read the error message and address the issue before retryin
 
 - **publication-figures**: Use for technical diagrams, flowcharts, circuits, pathways — and for posters, where it carries the layout and figure_lint rules
 - **generate-image**: Use for photos, illustrations, artwork, visual concepts
-- **journal-presentation-maker**: Slide decks — combine with generate-image for visually rich presentations
+- **journal-ppt**: Slide decks — combine with generate-image for visually rich presentations
 

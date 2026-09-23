@@ -226,14 +226,14 @@
       "size_kb": 0,
       "external": true
     },
-    "journal-presentation-maker": {
+    "journal-ppt": {
       "category": "documents",
-      "role": "Automated journal club / lab meeting presentation authoring and review",
+      "role": "Academic journal-club and research-seminar PowerPoint decks (DOI/manuscript -> deck) with a runnable QC gate",
       "requires": [
         "pptx",
         "academic-term-rules"
       ],
-      "size_kb": 101
+      "size_kb": 105
     },
     "markdown-mermaid-writing": {
       "category": "figures",

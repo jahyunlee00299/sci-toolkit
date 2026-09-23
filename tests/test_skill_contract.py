@@ -54,7 +54,7 @@ ALLOWED_KEYS = {"name", "description", "license", "allowed-tools", "metadata", "
 MAX_DESCRIPTION = 1024
 MAX_BODY_LINES = 500
 # Same files as tests/test_skill_sizes.py GRANDFATHERED: body length is advisory there.
-BODY_ADVISORY = {"avoid-ai-writing", "journal-presentation-maker", "literature-review"}
+BODY_ADVISORY = {"avoid-ai-writing", "literature-review"}
 
 _FM = re.compile(r"^---\r?\n(.*?)\r?\n---\r?\n", re.S)
 _TOP_KEY = re.compile(r"^([A-Za-z][\w-]*):", re.M)

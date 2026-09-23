@@ -4,7 +4,7 @@
 > Scope: the **layout / composition** rules for scientific figures — what to draw and
 > what NOT to draw inside the axes. This is the single source of truth for the R1–R4
 > rules that were previously scattered as post-hoc checklists across four skills
-> (publication-figures, cascade-scheme-renderer, journal-presentation-maker).
+> (publication-figures, cascade-scheme-renderer, journal-ppt).
 >
 > This file governs **graphic composition**. It is a separate axis from:
 > - **Color / font / axis-line / palette tokens** → `plot_style_tokens.json` +

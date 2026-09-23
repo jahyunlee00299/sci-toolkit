@@ -355,7 +355,7 @@ agent for what one or two direct reads would answer, and prefer a single
 verifier holding the whole artifact over parallel verifiers each holding a
 fragment.
 
-> Two skills in this package ask for delegation: `journal-presentation-maker`
+> Two skills in this package ask for delegation: `journal-ppt`
 > and `endnote-citation-injection`. Both are written against roles rather than a
 > vendor API, so under Codex they map onto `spawn_agent` directly. Neither needs
 > a team below its stated threshold — `endnote-citation-injection` says to run
@@ -462,7 +462,7 @@ route around it — see below.
 
 ### Making a scientific deck under Codex
 
-`journal-presentation-maker` assumes the Claude-side `pptx` skill, whose figure
+`journal-ppt` assumes the Claude-side `pptx` skill, whose figure
 pipeline (pull a figure out of a paper PDF, crop it, place it) has no
 counterpart here. Under Codex, split the work:
 

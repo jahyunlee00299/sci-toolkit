@@ -56,7 +56,6 @@ SOFT_MAX = 16 * 1024
 #   body untouched.
 GRANDFATHERED = {
     "avoid-ai-writing": 93653,
-    "journal-presentation-maker": 37863,
     "literature-review": 25273,
 }
 

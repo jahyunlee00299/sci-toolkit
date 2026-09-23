@@ -102,7 +102,7 @@ Document Skills Yourself").
 
 Use `markitdown` when a PDF/document needs to be read as text. It converts
 PDF/docx/pptx/xlsx/images (OCR) to Markdown, and `paper-extract` and
-`journal-presentation-maker` both go through this path when reading a paper
+`journal-ppt` both go through this path when reading a paper
 PDF.
 
 The 7 manuscript QC/editing tools were built in-house by the lab, so they're
