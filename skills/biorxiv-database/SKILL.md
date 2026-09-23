@@ -162,7 +162,7 @@ In JSON this is `published_doi` + `published_journal`, with `peer_reviewed` flip
 | **literature-review** | systematic review once the papers are gathered |
 | **paper-extract** | pull structured content out of a downloaded PDF |
 | **academic-term-rules** | citation and nomenclature conventions |
-| **journal-presentation-maker** | build slides from the preprints found here |
+| **journal-ppt** | build slides from the preprints found here |
 
 ---
 

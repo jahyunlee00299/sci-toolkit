@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.72] — 2026-09-24
+
+- toolkit: replace deprecated journal-presentation-maker with journal-ppt
+
 ## [1.2.71] — 2026-09-23
 
 - markitdown: point OpenRouter examples at current Claude models

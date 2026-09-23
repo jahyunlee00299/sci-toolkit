@@ -1,11 +1,11 @@
 ---
 name: academic-term-rules
-description: "Biotech/biochemistry nomenclature standards — species italic, gene/protein naming, coenzyme notation, unit formatting, kinetics symbols, figure captions, dash rules, American spelling, E-factor/green-metric notation, single-source-of-truth, TYPO_PATTERNS. SSOT layer skill referenced by manuscript-pipeline QC agents, journal-presentation-maker, and pptx reviewer."
+description: "Biotech/biochemistry nomenclature standards — species italic, gene/protein naming, coenzyme notation, unit formatting, kinetics symbols, figure captions, dash rules, American spelling, E-factor/green-metric notation, single-source-of-truth, TYPO_PATTERNS. SSOT layer skill referenced by manuscript-pipeline QC agents, journal-ppt, and pptx reviewer."
 ---
 
 # Academic Term Rules — Biotech/Biochemistry Nomenclature Standards
 
-> Layer skill: loaded by QC agents in manuscript-pipeline (Phase 3, P10) and journal-presentation-maker.
+> Layer skill: loaded by QC agents in manuscript-pipeline (Phase 3, P10) and journal-ppt.
 > Each rule is classified as [Auto-detectable] or [Manual review required].
 > Full per-rule tables live under `references/<topic>.md`, one file per category group below —
 > read the linked file for the actual rule content; this index only carries the one-line summary,

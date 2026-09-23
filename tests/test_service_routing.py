@@ -34,6 +34,7 @@ section whose heading names the service. A heading is the author declaring
 "this document covers this service," which is distinct from a passing
 mention.
 """
+import json
 import os
 import re
 import sys
@@ -172,6 +173,27 @@ print("\n[B] Does a document inside skills/ avoid pointing at a skill that isn't
 
 shipped = {d for d in os.listdir(SKILLS_DIR)
            if os.path.isdir(os.path.join(SKILLS_DIR, d))}
+
+# A skill can be legitimately referenced without having a directory here: the
+# Anthropic-provided document skills (docx/xlsx/pdf/pptx) cannot be redistributed
+# under their license, so the catalog carries them as `external: true` with
+# size_kb 0 and docs/12 tells the user to install them into their own Claude Code
+# environment. Those are "not bundled", not "does not exist" — pointing a document
+# at `pptx` skill is correct guidance, and flagging it as a dead reference would
+# push authors to delete accurate instructions. Measured 260923: journal-ppt's
+# style_spec.md cites the `pptx` skill's QA conventions in 5 places and every one
+# of them was reported dead. Read them from the catalog rather than hardcoding a
+# list, so a future external skill is covered without editing this test.
+try:
+    with open(os.path.join(ROOT, "config", "catalog.json"), encoding="utf-8") as fh:
+        _catalog = json.load(fh)
+    shipped |= {name for name, meta in _catalog.get("skills", {}).items()
+                if meta.get("external")}
+except (OSError, ValueError) as exc:          # missing/corrupt catalog
+    # Deliberately not silent: losing the catalog would silently re-flag every
+    # external-skill reference, and a test that fails for the wrong reason is
+    # worse than one that says why.
+    print(f"        [warn] catalog unreadable ({exc}) — external skills not exempted")
 
 # Don't grab every arbitrary kebab-case token — there are too many that
 # merely look like a skill name in shape (`x-axis`, `margin-top`,

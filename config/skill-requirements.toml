@@ -16,8 +16,8 @@ packages = []
 [get-available-resources]
 packages = []
 
-[journal-presentation-maker]
-packages = []
+[journal-ppt]
+packages = ["lxml", "pptx"]
 
 [literature-review]
 packages = ["requests"]
