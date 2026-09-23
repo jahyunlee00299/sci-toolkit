@@ -29,8 +29,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPT = os.path.join(ROOT, "scripts", "skill_drift.py")
 
 
-def run(*extra):
-    p = subprocess.run([sys.executable, SCRIPT, "--json", *extra],
+NO_DECLS = os.path.join(tempfile.gettempdir(), "skill_drift_no_such_declarations.json")
+
+
+def run(*extra, json_out=True):
+    # Fixtures must never see the repo's real declaration file.
+    if "--declarations" not in extra:
+        extra = ("--declarations", NO_DECLS, *extra)
+    p = subprocess.run([sys.executable, SCRIPT, *(("--json",) if json_out else ()), *extra],
                        capture_output=True, text=True, encoding="utf-8", errors="replace")
     return p.returncode, p.stdout, p.stderr
 
@@ -132,6 +138,118 @@ with tempfile.TemporaryDirectory() as tmp:
         [sys.executable, SCRIPT, "--toolkit", toolkit, "--runtime", runtime],
         capture_output=True, text=True, encoding="utf-8", errors="replace").stdout,
         "human table lists the drifting file")
+
+# 5. intended-difference declarations. Measured 2026-09-24: 24 of 27 drifting
+# skills were NOT ports (license, runtime-only paths, toolkit ahead). The
+# judgment must be recordable, and must not outlive the pair it was made on.
+REASON = "toolkit keeps the translated copy; runtime wording is maintainer-local"
+with tempfile.TemporaryDirectory() as tmp:
+    toolkit = os.path.join(tmp, "toolkit_skills")
+    runtime = os.path.join(tmp, "runtime_skills")
+    decls = os.path.join(tmp, "config", "intended.json")
+
+    def write(base, skill, rel, body):
+        p = os.path.join(base, skill, rel)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, "w", encoding="utf-8", newline="") as f:
+            f.write(body)
+
+    write(toolkit, "theta", "SKILL.md", "toolkit\n")
+    write(runtime, "theta", "SKILL.md", "runtime\n")
+    write(toolkit, "iota", "SKILL.md", "same\n")
+    write(runtime, "iota", "SKILL.md", "same\n")
+    D = ("--toolkit", toolkit, "--runtime", runtime, "--declarations", decls)
+
+    def rows_of():
+        rc, out, err = run(*D)
+        try:
+            data = json.loads(out)
+        except Exception as e:  # noqa: BLE001
+            check(False, f"json parses ({e}); stderr={err[:200]}")
+            return rc, {}, []
+        return rc, {r["skill"]: r for r in data["rows"]}, data.get("declaration_problems", [])
+
+    # refusals: short reason, identical pair, unknown skill -> exit 2, nothing written
+    rc, _, _ = run(*D, "--declare", "theta", "--reason", "intended", json_out=False)
+    check(rc == 2, f"--declare with a label-length reason is refused (got {rc})")
+    rc, _, _ = run(*D, "--declare", "iota", "--reason", REASON, json_out=False)
+    check(rc == 2, f"--declare on identical copies is refused (got {rc})")
+    rc, _, _ = run(*D, "--declare", "nosuch", "--reason", REASON, json_out=False)
+    check(rc == 2, f"--declare on a skill missing from a tree is refused (got {rc})")
+    check(not os.path.exists(decls), "refused declarations write nothing")
+
+    # declare -> INTENDED, exit 0, reason carried
+    rc, out, _ = run(*D, "--declare", "theta", "--reason", REASON, json_out=False)
+    check(rc == 0 and os.path.exists(decls), f"--declare writes the file (rc {rc})")
+    with open(decls, "rb") as f:
+        raw = f.read()
+    check(b"\r\n" not in raw, "declaration file is written LF-only")
+    rc, rows, probs = rows_of()
+    check(rows.get("theta", {}).get("status") == "INTENDED", f"declared pair -> INTENDED (got {rows.get('theta', {}).get('status')})")
+    check(rows.get("theta", {}).get("reason") == REASON, "reason is carried into the row")
+    check(rc == 0 and probs == [], f"current declaration: exit 0, no problems (rc {rc}, {probs})")
+    rc2, out2, _ = run(*D, json_out=False)
+    check("intended: " + REASON[:40] in out2, "human table shows the reason")
+
+    # runtime side changes -> stale, falls back to DRIFT, names the side
+    write(runtime, "theta", "SKILL.md", "runtime v2\n")
+    rc, rows, probs = rows_of()
+    th = rows.get("theta", {})
+    check(th.get("status") == "DRIFT" and th.get("declaration") == "stale",
+          f"runtime change -> stale declaration, status DRIFT (got {th.get('status')}/{th.get('declaration')})")
+    check(th.get("declaration_changed") == ["runtime"], f"stale names the changed side (got {th.get('declaration_changed')})")
+    rc2, out2, _ = run(*D, json_out=False)
+    check("declaration STALE (runtime changed since)" in out2, "human table flags the stale declaration")
+
+    # a runtime-only script added counts as a change too (fingerprint covers scripts/)
+    run(*D, "--declare", "theta", "--reason", REASON, json_out=False)
+    write(runtime, "theta", "scripts/new.py", "x = 1\n")
+    _, rows, _ = rows_of()
+    check(rows.get("theta", {}).get("declaration") == "stale", "a new runtime script makes the declaration stale")
+
+    # toolkit side changes -> stale too (the judgment was about the PAIR)
+    run(*D, "--declare", "theta", "--reason", REASON, json_out=False)
+    write(toolkit, "theta", "SKILL.md", "toolkit v2\n")
+    _, rows, _ = rows_of()
+    check(rows.get("theta", {}).get("declaration_changed") == ["toolkit"], "toolkit change -> stale, side named")
+
+    # CRLF-only change must NOT stale a declaration
+    run(*D, "--declare", "theta", "--reason", REASON, json_out=False)
+    with open(os.path.join(toolkit, "theta", "SKILL.md"), "wb") as f:
+        f.write(b"toolkit v2\r\n")
+    _, rows, _ = rows_of()
+    check(rows.get("theta", {}).get("status") == "INTENDED", "CRLF-only change keeps the declaration current")
+
+    # copies converge -> declaration unused -> exit 1 (prune it)
+    write(runtime, "theta", "SKILL.md", "toolkit v2\n")
+    os.remove(os.path.join(runtime, "theta", "scripts", "new.py"))
+    rc, rows, probs = rows_of()
+    check(rows.get("theta", {}).get("declaration") == "unused", "identical copies -> declaration unused")
+    check(rc == 1 and any("unused" in p for p in probs), f"unused declaration fails the run (rc {rc})")
+
+    # malformed file entries are caught even without a runtime tree (CI path)
+    with open(decls, "w", encoding="utf-8") as f:
+        json.dump({"skills": {"theta": {"reason": "x", "toolkit_fp": "zz", "runtime_fp": ""},
+                              "ghost": {"reason": REASON, "toolkit_fp": "0" * 16, "runtime_fp": "0" * 16}}}, f)
+    rc, out, _ = run("--toolkit", toolkit, "--runtime", os.path.join(tmp, "nope"), "--declarations", decls)
+    probs = json.loads(out).get("declaration_problems", [])
+    check(rc == 1, f"malformed declarations fail even with no runtime tree (got {rc})")
+    check(any("reason" in p for p in probs) and any("fingerprint" in p for p in probs)
+          and any("ghost" in p for p in probs), f"short reason, bad fingerprint, unknown skill all named ({probs})")
+
+    # unreadable file -> exit 1, not a crash
+    with open(decls, "w", encoding="utf-8") as f:
+        f.write("{not json")
+    rc, _, err = run(*D)
+    check(rc == 1 and "cannot read" in err, f"corrupt declaration file -> exit 1 with message (rc {rc})")
+
+# 6. the repo's own declaration file is well-formed (runs in CI, no runtime tree needed)
+REAL = os.path.join(ROOT, "config", "skill-drift-intended.json")
+if os.path.exists(REAL):
+    rc, out, err = run("--runtime", os.path.join(tempfile.gettempdir(), "skill_drift_no_runtime"),
+                       "--declarations", REAL)
+    probs = json.loads(out).get("declaration_problems", []) if out.strip() else [err]
+    check(rc == 0 and not probs, f"config/skill-drift-intended.json is well-formed ({probs})")
 
 print(f"\n{len(fails)} failure(s)")
 sys.exit(1 if fails else 0)

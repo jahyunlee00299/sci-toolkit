@@ -41,7 +41,11 @@ runtime first and are then ported (translated, sanitized) here; editing a shared
 skill here first is only for translation/sanitization. `python
 scripts/skill_drift.py` compares the two trees and exits 1 when a runtime copy
 changed after the toolkit copy was last touched (LAGGING); on a machine with no
-runtime tree it reports "nothing to compare" and exits 0. Skills that exist only
+runtime tree it reports "nothing to compare" and exits 0. A difference that is
+on purpose (license, toolkit ahead, environment-bound) is recorded in
+`config/skill-drift-intended.json` with `skill_drift.py --declare <skill>
+--reason "..."`; the entry is pinned to both copies' fingerprints, reports as
+INTENDED while they hold, and goes stale the moment either side changes. Skills that exist only
 here (`analysis-code-testing`, `biorxiv-database`, `data-quality-checks`,
 `debugging-loop`, `spec-*`, `test-*`) are authored here.
 

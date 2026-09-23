@@ -28,16 +28,42 @@ For every ``skills/<name>/SKILL.md`` that also exists as ``<runtime>/<name>/SKIL
   * asks git on both sides for the last commit date touching that skill
   * flags LAGGING when they differ and the runtime date is newer
 
+Intended differences
+--------------------
+Not every difference is a port waiting to happen. Measured 2026-09-24: of 27
+drifting skills only 3 were real ports; the rest were license terms, runtime-only
+paths, environment-bound scripts, or the toolkit being AHEAD. Without a place to
+record that judgment, every session re-reviews the same 27 and a bulk sync would
+break the distribution.
+
+``config/skill-drift-intended.json`` records it — one entry per skill, each with a
+``reason`` and the fingerprints of BOTH copies as they were when the judgment was
+made. The declaration covers exactly that pair: change either side and the entry
+goes stale, the skill falls back to DRIFT / LAGGING, and it has to be looked at
+again. A declaration therefore cannot silence a future runtime change — that is
+the difference between a recorded judgment and a rubber stamp (same rule as
+``BARE_SCRIPT_ALLOWLIST`` in tests/test_skill_references.py: an entry without a
+reason is not allowed).
+
+    python scripts/skill_drift.py --declare <skill> --reason "<why the copies differ on purpose>"
+
+writes the entry with the current fingerprints. A declaration on a skill that is
+now SAME, or on a skill the toolkit no longer ships, is reported as unused.
+
 Exit codes: 0 = no lagging skill (or no runtime tree found — a distribution user
-has none, and that is fine); 1 = at least one lagging skill; 2 = bad arguments.
+has none, and that is fine); 1 = at least one lagging skill, or a malformed /
+unused declaration; 2 = bad arguments.
 
 Usage
 -----
     python scripts/skill_drift.py                   # runtime = ~/.claude/skills
     python scripts/skill_drift.py --runtime <dir>   # another authoring tree
     python scripts/skill_drift.py --json            # machine-readable
+    python scripts/skill_drift.py --declare <skill> --reason "<text>"
 """
 import argparse
+import datetime
+import hashlib
 import json
 import os
 import subprocess
@@ -115,13 +141,55 @@ def compare_files(toolkit_dir: Path, runtime_dir: Path) -> dict:
     }
 
 
-def compare(toolkit_skills: Path, runtime: Path):
+DEFAULT_DECLARATIONS = ROOT / "config" / "skill-drift-intended.json"
+#: A reason shorter than this is a label, not a judgment ("intended", "license").
+MIN_REASON_CHARS = 30
+
+
+def fingerprint(skill_dir: Path) -> str:
+    """Hash of SKILL.md + every compared file, CRLF-insensitive, path-ordered."""
+    h = hashlib.sha256()
+    entries = {"SKILL.md": skill_dir / "SKILL.md", **_files(skill_dir)}
+    for rel in sorted(entries):
+        h.update(rel.encode("utf-8") + b"\0")
+        h.update(_norm(entries[rel]).encode("utf-8") + b"\0")
+    return h.hexdigest()[:16]
+
+
+def load_declarations(path: Path) -> dict:
+    if not path.is_file():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return data.get("skills", {})
+
+
+def declaration_problems(decls: dict, toolkit_skills: Path) -> list:
+    """Shape errors that need no runtime tree (checked in CI, too)."""
+    out = []
+    for name, d in sorted(decls.items()):
+        if not (toolkit_skills / name / "SKILL.md").is_file():
+            out.append(f"{name}: declared but the toolkit does not ship this skill")
+        reason = (d.get("reason") or "").strip()
+        if len(reason) < MIN_REASON_CHARS:
+            out.append(f"{name}: reason missing or shorter than {MIN_REASON_CHARS} chars")
+        for key in ("toolkit_fp", "runtime_fp"):
+            fp = d.get(key) or ""
+            if len(fp) != 16 or any(c not in "0123456789abcdef" for c in fp):
+                out.append(f"{name}: {key} is not a 16-hex fingerprint")
+    return out
+
+
+def compare(toolkit_skills: Path, runtime: Path, decls: dict = None):
+    decls = decls or {}
     rows = []
     for skill_md in sorted(toolkit_skills.glob("*/SKILL.md")):
         name = skill_md.parent.name
         rt = runtime / name / "SKILL.md"
         if not rt.exists():
-            rows.append({"skill": name, "status": "TOOLKIT-ONLY"})
+            row = {"skill": name, "status": "TOOLKIT-ONLY"}
+            if name in decls:
+                row["declaration"] = "unused"
+            rows.append(row)
             continue
         md_same = _norm(skill_md) == _norm(rt)
         files = compare_files(skill_md.parent, rt.parent)
@@ -133,9 +201,57 @@ def compare(toolkit_skills: Path, runtime: Path):
         lagging = (not same) and bool(t_date) and bool(r_date) and r_date > t_date
         if lagging:
             status = "LAGGING"
-        rows.append({"skill": name, "status": status, "skill_md_same": md_same,
-                     "toolkit_last": t_date, "runtime_last": r_date, **files})
+        row = {"skill": name, "status": status, "skill_md_same": md_same,
+               "toolkit_last": t_date, "runtime_last": r_date, **files}
+        d = decls.get(name)
+        if d is not None:
+            if same:
+                row["declaration"] = "unused"
+            else:
+                changed = [side for side, key, where in (("toolkit", "toolkit_fp", skill_md.parent),
+                                                         ("runtime", "runtime_fp", rt.parent))
+                           if d.get(key) != fingerprint(where)]
+                if changed:
+                    row["declaration"] = "stale"
+                    row["declaration_changed"] = changed
+                else:
+                    row["status"] = "INTENDED"
+                    row["declaration"] = "current"
+                row["reason"] = d.get("reason", "")
+        rows.append(row)
     return rows
+
+
+def declare(name: str, reason: str, toolkit: Path, runtime: Path, path: Path) -> int:
+    reason = (reason or "").strip()
+    if len(reason) < MIN_REASON_CHARS:
+        print(f"[skill_drift] --reason must say WHY the copies differ on purpose "
+              f"(>= {MIN_REASON_CHARS} chars)", file=sys.stderr)
+        return 2
+    t, r = toolkit / name, runtime / name
+    if not (t / "SKILL.md").is_file() or not (r / "SKILL.md").is_file():
+        print(f"[skill_drift] {name}: needs a SKILL.md in both trees to declare a difference",
+              file=sys.stderr)
+        return 2
+    t_fp, r_fp = fingerprint(t), fingerprint(r)
+    if _norm(t / "SKILL.md") == _norm(r / "SKILL.md") and not any(compare_files(t, r)[k] for k in
+                                                                    ("files_drift", "files_toolkit_only",
+                                                                     "files_runtime_only")):
+        print(f"[skill_drift] {name}: the copies are identical - nothing to declare", file=sys.stderr)
+        return 2
+    data = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+    data.setdefault("_comment", "Intended toolkit-vs-runtime skill differences. Written by "
+                                "`scripts/skill_drift.py --declare`; each entry is pinned to both "
+                                "copies' fingerprints and goes stale when either side changes.")
+    skills = data.setdefault("skills", {})
+    skills[name] = {"reason": reason, "toolkit_fp": t_fp, "runtime_fp": r_fp,
+                    "declared": datetime.date.today().isoformat()}
+    data["skills"] = dict(sorted(skills.items()))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+    print(f"[skill_drift] {name}: declared intended (toolkit {t_fp}, runtime {r_fp})")
+    return 0
 
 
 def main() -> int:
@@ -145,22 +261,46 @@ def main() -> int:
     ap.add_argument("--toolkit", default=str(ROOT / "skills"),
                     help="toolkit skills dir (default: <repo>/skills)")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--declarations", default=str(DEFAULT_DECLARATIONS),
+                    help="intended-difference file (default: config/skill-drift-intended.json)")
+    ap.add_argument("--declare", metavar="SKILL",
+                    help="record that SKILL's current difference is intended (needs --reason)")
+    ap.add_argument("--reason", help="why the two copies differ on purpose")
     args = ap.parse_args()
 
     runtime = Path(args.runtime).expanduser()
     toolkit = Path(args.toolkit).expanduser()
+    decl_path = Path(args.declarations).expanduser()
     if not toolkit.is_dir():
         print(f"[skill_drift] toolkit skills dir not found: {toolkit}", file=sys.stderr)
         return 2
+    if args.declare:
+        if not runtime.is_dir():
+            print(f"[skill_drift] --declare needs the authoring tree: {runtime}", file=sys.stderr)
+            return 2
+        return declare(args.declare, args.reason, toolkit, runtime, decl_path)
+    try:
+        decls = load_declarations(decl_path)
+    except (ValueError, OSError) as e:
+        print(f"[skill_drift] cannot read {decl_path}: {e}", file=sys.stderr)
+        return 1
+    problems = declaration_problems(decls, toolkit)
     if not runtime.is_dir():
-        msg = {"runtime": str(runtime), "note": "no authoring tree here (distribution install) - nothing to compare"}
+        msg = {"runtime": str(runtime), "note": "no authoring tree here (distribution install) - nothing to compare",
+               "declaration_problems": problems}
         print(json.dumps(msg) if args.json else f"[skill_drift] {msg['note']}: {runtime}")
-        return 0
+        for p in problems:
+            print(f"[skill_drift] declaration: {p}", file=sys.stderr)
+        return 1 if problems else 0
 
-    rows = compare(toolkit, runtime)
+    rows = compare(toolkit, runtime, decls)
     lag = [r for r in rows if r["status"] == "LAGGING"]
+    problems += [f"{r['skill']}: declaration unused (copies are now "
+                 f"{'identical' if r['status'] == 'SAME' else 'not both present'}) - remove it"
+                 for r in rows if r.get("declaration") == "unused"]
     if args.json:
-        print(json.dumps({"rows": rows, "lagging": len(lag)}, ensure_ascii=False, indent=1))
+        print(json.dumps({"rows": rows, "lagging": len(lag), "declaration_problems": problems},
+                         ensure_ascii=False, indent=1))
     else:
         print(f"{'skill':32} {'status':13} toolkit_last  runtime_last  files (drift / toolkit-only / runtime-only)")
         for r in rows:
@@ -172,18 +312,27 @@ def main() -> int:
                     files = "SKILL.md + " + files
             print(f"{r['skill']:32} {r['status']:13} {r.get('toolkit_last') or '-':12}  "
                   f"{r.get('runtime_last') or '-':12}  {files}")
+            if r.get("declaration") == "current":
+                print(f"{'':32} {'':13}   intended: {r['reason'][:100]}")
+                continue
+            if r.get("declaration") == "stale":
+                print(f"{'':32} {'':13}   declaration STALE ({' + '.join(r['declaration_changed'])} "
+                      f"changed since) - re-review, then --declare again or port")
             for f in r.get("files_drift", [])[:6]:
                 print(f"{'':32} {'':13}   drift: {f}")
             for f in r.get("files_runtime_only", [])[:6]:
                 print(f"{'':32} {'':13}   runtime-only: {f}")
             for f in r.get("files_toolkit_only", [])[:6]:
                 print(f"{'':32} {'':13}   toolkit-only: {f}")
-        n = {s: sum(1 for r in rows if r["status"] == s) for s in ("SAME", "DRIFT", "LAGGING", "TOOLKIT-ONLY")}
+        n = {s: sum(1 for r in rows if r["status"] == s)
+             for s in ("SAME", "INTENDED", "DRIFT", "LAGGING", "TOOLKIT-ONLY")}
         print(f"\nsummary: {n}")
         if lag:
             print("LAGGING = runtime copy changed after the toolkit copy; port the change into skills/ "
-                  "(runtime is the authoring SSOT).")
-    return 1 if lag else 0
+                  "(runtime is the authoring SSOT), or record why not with --declare.")
+        for p in problems:
+            print(f"declaration problem: {p}")
+    return 1 if (lag or problems) else 0
 
 
 if __name__ == "__main__":

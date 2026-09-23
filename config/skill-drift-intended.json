@@ -1,0 +1,23 @@
+{
+  "_comment": "Intended toolkit-vs-runtime skill differences. Written by `scripts/skill_drift.py --declare`; each entry is pinned to both copies' fingerprints and goes stale when either side changes.",
+  "skills": {
+    "experiment-hub": {
+      "reason": "License: the runtime copy is Proprietary and the toolkit ships MIT. No runtime content may be ported; the toolkit copy is maintained independently.",
+      "toolkit_fp": "01d0c2c9a5e96f67",
+      "runtime_fp": "2df311b0301b7ed9",
+      "declared": "2026-09-24"
+    },
+    "generate-image": {
+      "reason": "Toolkit is ahead: runtime Related Skills still names scientific-slides and latex-posters, which the toolkit does not ship (it routes to journal-ppt and publication-figures instead), and the toolkit script carries the Windows UTF-8 stdout fix the runtime lacks.",
+      "toolkit_fp": "719adfdac72e094e",
+      "runtime_fp": "067c65ee6c89ef5b",
+      "declared": "2026-09-24"
+    },
+    "primer-design": {
+      "reason": "License: the runtime copy is Proprietary and the toolkit ships MIT. No runtime content may be ported; the toolkit copy is maintained independently.",
+      "toolkit_fp": "1bb11c277ebd3117",
+      "runtime_fp": "c82c0f837e92c7b5",
+      "declared": "2026-09-24"
+    }
+  }
+}

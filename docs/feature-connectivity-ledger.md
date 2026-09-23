@@ -824,3 +824,48 @@ wired-by: config/catalog.json
 wired-by: config/skill-requirements.toml
 wired-by: tests/test_service_routing.py
 wired-by: tests/test_skill_references.py
+
+## 2026-09-24 — skill_drift intended-difference declarations (scripts/, sub-feature)
+
+**Why** — the 260924 drift pass classified 27 drifting skills and found only 3
+real ports; the rest were license terms, toolkit-ahead edits, environment-bound
+paths, or a size ratchet. `skill_drift.py` could not hold that judgment, so the
+report never shrank and every session would re-review the same 27.
+
+**Now** — `config/skill-drift-intended.json` (written only by `skill_drift.py
+--declare <skill> --reason "..."`). Each entry carries a reason (>= 30 chars) and
+the fingerprints of BOTH copies (SKILL.md + scripts/ + references/,
+CRLF-insensitive). While both match, the row is INTENDED and does not fail the
+run. Either side changing makes it stale (the changed side is named) and the row
+falls back to DRIFT / LAGGING. A declaration on identical copies or on a skill
+the toolkit does not ship is "unused" and fails the run, so the file cannot
+accumulate dead entries. Shape is validated with no runtime tree, so CI checks it.
+
+**Inputs / outputs** — reads both skill trees and the declaration file; writes
+the declaration file only on `--declare` (LF, sorted keys). Exit 1 now also
+means a malformed or unused declaration.
+
+**Evidence** — `tests/test_skill_drift.py` 36/36 (+22 cases: refusals x3 with
+nothing written, INTENDED + reason carried, runtime-side stale, new runtime
+script stale, toolkit-side stale, CRLF-only stays current, converged -> unused
+-> exit 1, malformed entries caught without a runtime tree, corrupt file -> exit
+1, real config well-formed). Mutation check: dropping scripts/ from the
+fingerprint, or unpinning the toolkit side, each fails exactly one case.
+
+**Refutation on the real tree** — of the 5 skills the 260924 card recorded as
+"do not port", only 3 held up on re-inspection: experiment-hub and primer-design
+(runtime Proprietary vs toolkit MIT) and generate-image (runtime names skills
+the toolkit does not ship; toolkit script is ahead). paper-extract and
+patent-invention-disclosure were NOT declared: besides the environment-bound
+lines, each carries a portable runtime change (a literature-review
+cross-reference; an avoid-ai-writing section in translation_register.md). A
+whole-skill declaration would have hidden those — the fingerprint pins the whole
+pair, so a declaration must only be made when the WHOLE diff is intended.
+Result on the real tree: LAGGING 14 -> 13, DRIFT 10 -> 8, INTENDED 3.
+
+**Deferred risk** — avoid-ai-writing (size ratchet) and statsmodels /
+conda-env-manager (toolkit ahead, to be pushed upstream) are pending actions, not
+intended differences, and were deliberately left undeclared.
+
+wired-by: scripts/skill_drift.py
+wired-by: tests/test_skill_drift.py
