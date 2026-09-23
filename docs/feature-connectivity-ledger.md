@@ -805,9 +805,12 @@ this paragraph would otherwise report itself.)
    the skill, not one the swap created. `authors_slide()` takes finished PNG
    paths, so the code works — only the instructions were wrong. Rewrote them to
    say what the builder actually does rather than allowlisting a phantom file.
-4. SENTINEL flagged unpublished enzyme markers (`ScGRE3`/`GRE3`, `BsGDH`) used
-   as *typography examples*. Replaced with textbook-safe labels of the same
-   shape; the italic-prefix rule they illustrate is unchanged.
+4. SENTINEL flagged two unpublished enzyme markers from this lab that the skill
+   used as *typography examples* (one in style_spec.md's italic-prefix rule, one
+   in a qc_deck.py comment). Replaced with textbook-safe labels of the same
+   shape; the rule they illustrate is unchanged. The names are deliberately not
+   repeated here -- this ledger ships with the package, so writing them down
+   would re-introduce exactly what the scan caught.
 5. Python's `write_text` emits CRLF on Windows, so every edit re-broke the LF
    policy pinned in `.gitattributes`. Normalized before each manifest rebuild.
 

@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.74] — 2026-09-24
+
+- ledger: describe the sanitized markers without naming them
+
 ## [1.2.73] — 2026-09-24
 
 - toolkit: fix what the journal-ppt swap surfaced (dead refs, markers, EOL)
