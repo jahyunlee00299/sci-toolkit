@@ -1,12 +1,15 @@
 ---
 name: pubmed-database
-description: Direct REST API access to PubMed. Advanced Boolean/MeSH queries, E-utilities API, batch processing, citation management. For Python workflows, the `Bio.Entrez` module (biopython package) is a lighter-weight alternative. Use this skill for direct HTTP/REST work or custom API implementations.
+description: "Direct REST API access to PubMed. Advanced Boolean/MeSH queries, E-utilities API, batch processing, citation management. For Python workflows, prefer biopython (Bio.Entrez). Use this for direct HTTP/REST work or custom API implementations. Entry point: research-search — prefer it unless this backend was named explicitly."
 license: Unknown
 metadata:
     skill-author: K-Dense Inc.
 ---
 
 # PubMed Database
+
+> Layer skill: called as a backend by `research-search` and `research-lookup` for biomedical
+> queries. Can also be used directly for a standalone PubMed lookup.
 
 ## Overview
 
