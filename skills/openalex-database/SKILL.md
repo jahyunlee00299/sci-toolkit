@@ -1,12 +1,15 @@
 ---
 name: openalex-database
-description: Query and analyze scholarly literature using the OpenAlex database. This skill should be used when searching for academic papers, analyzing research trends, finding works by authors or institutions, tracking citations, discovering open access publications, or conducting bibliometric analysis across 240M+ scholarly works. Use for literature searches, research output analysis, citation analysis, and academic database queries.
+description: "Query and analyze scholarly literature using the OpenAlex database. This skill should be used when searching for academic papers, analyzing research trends, finding works by authors or institutions, tracking citations, discovering open access publications, or conducting bibliometric analysis across 240M+ scholarly works. Use for literature searches, research output analysis, citation analysis, and academic database queries. Entry point: research-search — prefer it unless this backend was named explicitly."
 license: Unknown
 metadata:
     skill-author: K-Dense Inc.
 ---
 
 # OpenAlex Database
+
+> Layer skill: called as a backend by `research-search` and `research-lookup` for citation-graph
+> and bibliometric queries. Can also be used directly for a standalone OpenAlex lookup.
 
 ## Execution Method
 All tasks in this skill must be run as a subagent using the **Agent tool**.

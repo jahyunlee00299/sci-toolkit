@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.75] — 2026-09-24
+
+- skills: port three lagging SKILL.md files from the runtime tree
+
 ## [1.2.74] — 2026-09-24
 
 - ledger: describe the sanitized markers without naming them

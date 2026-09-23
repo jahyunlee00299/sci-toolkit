@@ -1,6 +1,6 @@
 ---
 name: lab-data-analysis
-description: Unified lab data analysis skill combining chemical safety lookup (MSDS/GHS via PubChem) with lab-specific EDA for kinetic, HPLC, clustering, tabular, gel, and sensitivity data, plus general scientific data across 200+ file formats. Use for any data file produced in the lab. For statistical hypothesis testing or APA-formatted reporting use stats-workflow; for making publication figures from analyzed data use publication-figures.
+description: Unified lab data analysis skill combining chemical safety lookup (MSDS/GHS via PubChem) with lab-specific EDA for kinetic, HPLC, clustering, tabular, gel, and sensitivity data, plus general scientific data across 200+ file formats. Use for any data file produced in the lab. For statistical hypothesis testing or APA-formatted reporting use stats-workflow; for making publication figures from analyzed data use publication-figures. 한국어 트리거 — rawdata 분석, 엑셀·xlsx·csv 정리, HPLC 데이터, 측정값 추출, 반복 평균·표준편차, 데이터 전처리·병합.
 ---
 
 # Lab Data Analysis — Meta-Skill
@@ -81,7 +81,9 @@ Always deliver:
 2. **Key findings** — top 3 observations in plain language
 3. **Quality flags** — anomalies, suspicious values
 4. **Visualization** — at minimum one diagnostic plot
-5. **Next step suggestion** — recommend stats test or further analysis
+5. **Next step suggestion** — recommend stats test or further analysis; if the
+   analysis is being logged as part of a tracked experiment, route to `experiment-hub`
+   (mode 6: pattern analysis / record-keeping) rather than ending the reply here
 
 ---
 
