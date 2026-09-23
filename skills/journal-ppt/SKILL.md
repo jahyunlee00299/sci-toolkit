@@ -37,10 +37,10 @@ going forward.
 4. **`~/.claude/skills/academic-term-rules/SKILL.md`** — nomenclature rules (species italics,
    gene/protein naming, units, sub/superscripts, dashes, American spelling) that apply to
    every string that lands on a slide.
-5. **`scripts/logo_fetch.py`** — institution/company logo download+rasterize helper for
-   `Deck.authors_slide()`. Resolve the source URL yourself (Wikimedia Commons "original file"
-   link first, official site as fallback), then call `fetch_institution_logo()` — do not
-   hand-roll a second download/SVG-to-PNG path.
+5. **Logos for `Deck.authors_slide()`** — it takes finished PNG paths, so fetch them
+   before the build: resolve the source URL yourself (Wikimedia Commons "original file"
+   link first, official site as fallback), rasterize SVG to PNG at the size you need, and
+   pass the paths in. Keep one download/convert path rather than repeating it per slide.
 
 Skipping this list is exactly how the 2026-08-23 decks shipped with 16-19 distinct font
 sizes, `line_spacing=None` everywhere, and Korean body text — the rules already existed in

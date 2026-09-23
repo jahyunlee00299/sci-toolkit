@@ -112,6 +112,37 @@ BARE_SCRIPT_ALLOWLIST = {
     "pack.py",                      # docx/pptx: OOXML repacking
     "unpack.py",                    # docx/pptx: OOXML unpacking
     "recalc.py",                    # xlsx: formula recalculation / error scan
+    # A citation of WHERE a rule came from, not a file to open. journal-ppt's
+    # style_spec.md source-inventory table records which authority set each value
+    # (and which ones were overruled) so a later reader can audit a conflict
+    # ruling. The values are already transcribed into that document, so nothing
+    # here needs the file to exist — rewriting these to drop the filename would
+    # destroy the audit trail just to silence the check.
+    "create_research_template.py",
+    "thumbnail.py",                 # pptx: slide->PNG render used by journal-ppt's
+                                    # QC-17 visual pass. The wording already says
+                                    # "from `pptx` skill QA" and offers PowerPoint
+                                    # COM as the alternative, so it degrades to the
+                                    # COM path when the external skill is absent.
+}
+
+# Paths that appear inside a code example as the slot the USER fills in — an
+# argument value, not a file this package ships. Listing the name alone would be
+# too broad (`assets/` may hold real bundled files), so these are matched as
+# full relative paths.
+EXAMPLE_PATH_ALLOWLIST = {
+    "assets/fig1.png",        # journal-ppt SKILL.md: figure_slide(fig_path=...) usage example
+    "assets/fig_p3_x12.png",  # journal-ppt pipeline.md: figure_path inside a sample JSON payload
+    # Written as a path but owned by an external skill (see EXTERNAL_SKILLS):
+    "scripts/thumbnail.py",   # pptx: journal-ppt QC-17 says "from `pptx` skill QA" and
+                              # offers PowerPoint COM as the alternative, so the
+                              # instruction still works without the external skill.
+    # A citation of WHERE a rule came from, not a file to open. style_spec.md's
+    # source-inventory table records which authority set each value so a later
+    # reader can audit a conflict ruling; the values themselves are already
+    # transcribed into that document. Rewriting these to remove the filename
+    # would destroy the audit trail to silence the check.
+    "create_research_template.py",
 }
 
 # External skills this package depends on but cannot redistribute (Anthropic-owned).
@@ -230,6 +261,8 @@ def main():
                         ref = m.group(1)
                         if "." not in os.path.basename(ref):
                             continue          # treat no-extension as a directory mention
+                        if ref in EXAMPLE_PATH_ALLOWLIST:
+                            continue          # the slot a user fills in, not a shipped file
                         checked += 1
                         if ref in have[s]:
                             continue

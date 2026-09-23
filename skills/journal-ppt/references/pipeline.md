@@ -118,8 +118,8 @@ Questions for Discussion -> References -> Thank You. 14-24 slides total, typical
 **Authors & Affiliations slide** (`Deck.authors_slide()`, added 260912): pull authors and
 their numbered affiliation footnotes from page 1 of the paper (the same PDF-first pass as
 Phase 1 already reads); group members under each institution rather than repeating a long
-numbered-superscript block verbatim. Fetch each institution's official logo via
-`logo_fetch.fetch_institution_logo()` -- Wikimedia Commons "original file" link first
+numbered-superscript block verbatim. Fetch each institution's official logo yourself and
+pass finished PNG paths to the builder -- Wikimedia Commons "original file" link first
 (stable URL, public-domain/below-threshold-of-originality for most crests and wordmarks),
 the institution's own official site as fallback only when no Commons entry exists. **Do not
 skip this slide silently when a logo can't be found** -- render the affiliation bullets
@@ -182,3 +182,4 @@ explicitly (never silently deliver a CRITICAL-failing deck).
        QC:  <qc_report.md path> -- VERDICT: <PASS|PASS WITH WARNINGS|FAIL>
        Slides: <N> | Figures inserted: <N>
 ```
+

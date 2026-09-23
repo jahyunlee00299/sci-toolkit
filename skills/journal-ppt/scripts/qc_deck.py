@@ -52,7 +52,7 @@ ALLOWED_HEX = {"1A355E", "E86A1A", "333333", "2E5E9B", "888888",
 # on ordinary all-caps tokens (IRED, RedAm alone, NADPH, RF). So this check is
 # heuristic and FLAG-ONLY (WARNING, never CRITICAL): it looks for a token of
 # the shape <2-4 lowercase-after-cap letters><CamelCase word starting with a
-# capital>, e.g. AspRedAm, EcAdh, BsGDH, and reports it as "confirm italic"
+# capital>, e.g. AspRedAm, EcAdh, TtKdh, and reports it as "confirm italic"
 # rather than asserting a verdict -- a human (or the Academic QC agent,
 # pipeline.md Phase 4) still has to judge whether it is really a genus-prefix
 # label and not a coincidental CamelCase token.

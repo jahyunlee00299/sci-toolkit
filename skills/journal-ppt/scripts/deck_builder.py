@@ -434,9 +434,9 @@ class Deck:
         logos: optional list of (png_path, caption_label) tuples, up to 4-6,
             laid out in an evenly-spaced row with a COMMON bounding band so
             very different aspect ratios (a square university crest next to
-            a wide wordmark) still read as one consistent row. Get logos via
-            `fetch_institution_logo()` in this module -- do not hand-roll a
-            second download path.
+            a wide wordmark) still read as one consistent row. Pass finished
+            PNG paths -- fetch and rasterize them before calling this, and
+            keep one download path rather than repeating it per slide.
         corresponding: optional "Name (email)" line, rendered dimmer below
             the affiliation bullets.
 

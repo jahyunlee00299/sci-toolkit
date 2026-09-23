@@ -198,7 +198,7 @@ Inches(0.16) below the band, `footer` role, center-aligned within that logo's sl
 
 - **Species names**: always italic — *Escherichia coli*, first mention full then *E. coli* thereafter. Never roman.
 - **Gene names**: italic lowercase — *xylA*, *gldA*. **Protein/enzyme names**: roman, capitalized/all-caps — XylA, GDH (no italics).
-- **Origin-prefix italics on engineered-enzyme labels**: only the 2-letter genus prefix is italic, the rest roman — *Ec*Adh, *Bs*Ldh, *Sc*GRE3 (single mathtext/run block, not two separate runs — matches the matplotlib `enz()` helper convention in `academic-term-rules` §20 and a project `FIGURE_STYLE.md` §4, kept consistent between figure and slide text). Do **not** italicize the whole token (`$Sc$GRE3` wrong) and do **not** bold the suffix.
+- **Origin-prefix italics on engineered-enzyme labels**: only the 2-letter genus prefix is italic, the rest roman — *Ec*Adh, *Bs*Ldh, *Tt*Kdh (single mathtext/run block, not two separate runs — matches the matplotlib `enz()` helper convention in `academic-term-rules` §20 and a project `FIGURE_STYLE.md` §4, kept consistent between figure and slide text). Do **not** italicize the whole token (`$Tt$Kdh` wrong) and do **not** bold the suffix.
 - **D-/L- sugar stereodescriptors are roman, never italic** — D-glucose, L-arabinose (common confusion with the genus-prefix italic rule above; these are a different category).
 - **Sub/superscripts**: NAD⁺, NADP⁺, H₂O₂, CO₂, Mg²⁺, Km (K subscript m, K itself italic), kcat (k subscript cat, k italic), Vmax (V subscript max, V italic). Never plain-text `NAD+`, `H2O2`, `Km`, `kcat`.
 - **Units**: always a space between number and unit — 5 μM not 5uM, 30 °C not 30°C (space before ° too), 50 mM not 50mM. μ not u/µ-lookalike ASCII.
