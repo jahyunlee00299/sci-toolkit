@@ -18,14 +18,17 @@ moment on.
   · 260628  OPENROUTER_API_KEY leaked in plaintext 15 times across 2 log
             files, stdout -> JSONL (get_keys.py echoed the value instead of
             a bool for whether it existed).
-  · 260706  Undisclosed tagatose E-factor research and mentees' real names
+  · 260706  Undisclosed E-factor research and mentees' real names
             were pushed tracked under research-lookup/sources/ in
             claude-scientific-skills. The same incident also surfaced
             undisclosed MPSP figures ($137.42/$84.09/88.3%).
-  · 260807  Distribution v1.2.0's docs claimed "RoGDH was removed," yet it
-            shipped with *Ro*GDH, *Rs*GDH, *Lp*NoxV, and the full cascade
-            ODE intact, because doctor.py's SENTINEL scan never looked for
-            that category in the first place.
+  · 260807  Distribution v1.2.0's docs claimed the species-prefixed enzyme
+            names were removed, yet it shipped with them and the full
+            cascade ODE intact, because doctor.py's SENTINEL scan never
+            looked for that category in the first place. Those cases name
+            the unpublished work, so since 260925 they live in the gitignored
+            config/research_markers.local.json ("feedback_must_flag") and
+            are reported as SKIP on a public clone that lacks it.
 
 MUST_NOT_FLAG runs the opposite direction. Over-blocking gets the scanner
 turned off, and a scanner that's off is the same as no scanner. In
@@ -47,6 +50,7 @@ for _s in (sys.stdout, sys.stderr):
             pass
 
 import importlib.util
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -126,20 +130,6 @@ MUST_FLAG = [
     ("phone number",
      "010-1234-5678 로 알림이 안 옵니다"),
 
-    # ── 260807 undisclosed enzyme/rate-equation family (reusing doctor.py's scanner) ──
-    ("enzyme abbreviation RsGDH",
-     "*Rs*GDH 활성 계산이 자꾸 틀립니다"),
-    ("enzyme abbreviation LpNoxV",
-     "LpNoxV 파라미터를 넣으면 수렴이 안 돼요"),
-    ("rate equation vXR",
-     "d[D-Gal]/dt = -vXR 부분에서 부호가 반대인 것 같아요"),
-    ("kLa correlation",
-     "kLa = α · N^β 식을 어디에 넣어야 하나요"),
-    ("undisclosed substrate name tagatose",
-     "tagatose 수율 계산 스크립트가 죽습니다"),
-    ("private repository name",
-     "UDH_Clustering 레포에서 import 가 안 됩니다"),
-
     # ── absolute path + username ─────────────────────────────────────────
     ("Windows absolute path + username",
      r"C:\Users\researcher01\OneDrive\연구\data.xlsx 를 못 읽어요"),
@@ -149,11 +139,17 @@ MUST_FLAG = [
     ("POSIX home path + username",
      "/home/researcher01/secret_project/run.py 에서 실패합니다"),
 
-    # ── combined (multiple axes in one sentence) ─────────────────────────
-    ("combined: number + enzyme name",
-     "RsGDH 로 12.4 g/L 나온 데이터에서 실패"),
 ]
 
+
+# ── 260807 undisclosed enzyme/rate-equation family (doctor.py's scanner) ──
+# Loaded from the local marker file: the strings name the unpublished work.
+_markers_file = ROOT / "config" / "research_markers.local.json"
+LOCAL_MUST_FLAG = (
+    [tuple(c) for c in json.loads(_markers_file.read_text(encoding="utf-8"))
+     .get("feedback_must_flag", [])]
+    if _markers_file.is_file() else None
+)
 
 # ── Normal inconvenience reports — all of these must pass through ────────
 # Block these and a student just gives up on reporting at all. The exact
@@ -271,6 +267,16 @@ def main() -> int:
     for label, text in MUST_FLAG:
         hits = scan(text)
         check(f"blocked: {label}", bool(hits), f"let it through -> {text[:52]!r}")
+
+    if LOCAL_MUST_FLAG is None:
+        print(f"\n[LOCAL MUST FLAG] SKIP — no {_markers_file.name} (public clone);"
+              " the research-marker leak cases did NOT run.")
+    else:
+        check("local research-marker cases present", bool(LOCAL_MUST_FLAG))
+        print(f"\n[LOCAL MUST FLAG] {len(LOCAL_MUST_FLAG)} research-marker leak(s) — all must be blocked")
+        for label, text in LOCAL_MUST_FLAG:
+            hits = scan(text)
+            check(f"blocked: {label}", bool(hits), f"let it through -> {text[:52]!r}")
 
     print(f"\n[MUST NOT FLAG] {len(MUST_NOT_FLAG)} normal report(s) — all must pass")
     for text in MUST_NOT_FLAG:

@@ -1,0 +1,47 @@
+{
+  "_comment": "Format + synthetic contract for the research-marker scan. Copy to config/research_markers.local.json (gitignored + distignored; hand it to lab members out-of-band, like credentials.json) and replace the patterns with your own unpublished identifiers. Every name below is invented.",
+  "markers": [
+    {
+      "label": "enzyme abbreviation",
+      "pattern": "\\*?\\bZq\\*?(?:ABC|Xyz)\\b",
+      "ignore_case": false
+    },
+    {
+      "label": "rate law with enzyme subscript",
+      "pattern": "\\bvABC\\b|\\b(?:Vmax|Km|kdeg)\\s*,\\s*ABC\\b",
+      "ignore_case": false
+    },
+    {
+      "label": "unpublished substrate",
+      "pattern": "\\bexamplose\\b",
+      "ignore_case": true
+    },
+    {
+      "label": "private repo name",
+      "pattern": "\\bsecret-project-repo\\b",
+      "ignore_case": false
+    }
+  ],
+  "must_flag": [
+    [
+      "species prefix italic: *Zq*ABC",
+      "ZqABC"
+    ],
+    [
+      "# d[S]/dt = -vABC",
+      "vABC"
+    ],
+    [
+      "Vmax,ABC -> sub(ri('V'), rp('max,ABC'))",
+      "Vmax,ABC"
+    ],
+    [
+      "Examplose production from glucose",
+      "examplose"
+    ],
+    [
+      "cloned from ~/secret-project-repo",
+      "secret-project-repo"
+    ]
+  ]
+}

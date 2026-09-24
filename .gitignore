@@ -10,6 +10,9 @@ venv/
 # The template lives at config/credentials.example.json; the filled-in copy
 # stays local. Anything matching these names is a real secret by convention.
 config/credentials.json
+# Real research-marker patterns name the unpublished work (doctor_lib/sentinel.py).
+# Also in .distignore; lab members receive it out-of-band, like credentials.json.
+config/research_markers.local.json
 secrets.json
 *.credentials.json
 google_token.json

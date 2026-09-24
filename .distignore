@@ -4,6 +4,7 @@
 **/secrets.json
 **/*.credentials.json
 config/credentials.json
+config/research_markers.local.json
 **/google_token.json
 **/dual*pc*
 **/delegate.sh

@@ -5,15 +5,23 @@ Two-directional regression test for the research-marker scanner.
 
 Background (measured, 2026-08-07):
   This distribution's docs claimed "unpublished research names have been
-  sanitized," while v1.2.0 actually shipped still carrying RoGDH / RsGDH /
-  LpNoxV / the full cascade ODE / scgre3 / private repo names. doctor.py's
+  sanitized," while v1.2.0 actually shipped still carrying species-prefixed
+  enzyme names / the full cascade ODE / an engineered-variant name / private
+  repo names. doctor.py's
   SENTINEL scan only ever looked at secrets.json, API keys, Tailscale IPs,
   and Korean personal names, so **this category was never in scope to begin
   with.** That's how the "sanitization complete" self-description diverged
   from what was actually on disk.
 
-Every string in MUST_FLAG was **actually found in the distribution**.
-Delete or weaken a case and the same leak passes right back through.
+Two MUST_FLAG contracts run here:
+  · synthetic — config/research_markers.example.json, always present, proves
+    the loader and the scan mechanics on invented names;
+  · real — the "must_flag" list in the local marker file
+    (config/research_markers.local.json, gitignored since 260925 because this
+    repo is public and the list names the unpublished work). Every string
+    there was **actually found in the distribution**. Delete or weaken a case
+    and the same leak passes right back through. Without the local file this
+    half is reported as SKIP, never as pass.
 
 MUST_NOT_FLAG runs the opposite direction — ordinary biochemistry notation
 (NADH, NADPH, Km, kcat) and explanations of taxonomic species-prefix
@@ -47,32 +55,15 @@ sys.modules["doctor"] = _doctor
 _spec.loader.exec_module(_doctor)
 
 scan_research_markers = _doctor.scan_research_markers
+_sentinel = sys.modules["doctor_lib.sentinel"]
 
-# ── Leaks actually found in the distribution (all must be blocked) ────────
-MUST_FLAG = [
-    # Enzyme species prefix + real abbreviation (domain_abbrev_registry.md:12,14, 4 files total)
-    ("species prefix italic: *Ro*GDH, *Rs*GDH", "RoGDH"),
-    ("| NADH oxidase | Nox | *Lp*NoxV (engineered variant) |", "LpNoxV"),
-    ("**enzyme prefix**: only the species prefix (e.g. *Ro*GDH) is italic", "RoGDH"),
-    ("R1 | enzyme name: only the 2-letter species prefix is italic (`*Ro*GDH`) |", "RoGDH"),
-    ("**enzyme abbreviation**: full name at first mention (BsGDH, PsFDH, etc.)", "BsGDH/PsFDH"),
-    # cascade ODE (docx/SKILL.md:1089-1143)
-    ("# d[D-Gal]/dt = -vXR", "vXR"),
-    ("# d[NAD+]/dt = -vGDH + vNOX", "vGDH/vNOX"),
-    ("# vFDH = (Vmax,FDH * [HCOO-]) / (Km,FDH + [HCOO-])", "vFDH"),
-    ("para = omath(ddt('D-Gal') + r(' = -') + vsub('XR'))", "vsub('XR')"),
-    ("# kLa = α · N^β  (Eq. S5)", "kLa correlation"),
-    ("Vmax,XR -> sub(ri('V'), rp('max,XR'))", "Vmax,XR"),
-    ("Km,FDH / KiA,XR / KmB,GDH / KiQ", "KiA,XR"),
-    ("kdeg,GDH must trip this — it carries a project enzyme subscript", "kdeg,GDH"),
-    # unpublished variant/repo names
-    ("reference example: `F_figS2_scgre3_activity/script.py`", "scgre3"),
-    ("all git repos (claude-scientific-skills, UDH_Clustering, Kinetic-modeling)", "UDH_Clustering"),
-    ("ported the algorithm from the PeakPicker repo (~/PeakPicker) to stdlib only", "PeakPicker"),
-    # research subject terms
-    ("tagatose production from D-galactose", "tagatose"),
-    ("L-ribose isomerase screening", "L-ribose"),
-]
+
+def _load_contract(path: Path):
+    """(markers, must_flag) from a marker file."""
+    import json
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return _sentinel.load_research_markers(path), [tuple(c) for c in data.get("must_flag", [])]
+
 
 # ── Legitimate teaching content (must never trip the scanner) ─────────────
 MUST_NOT_FLAG = [
@@ -94,7 +85,7 @@ MUST_NOT_FLAG = [
     # mapped onto a real Latin binomial)
     "only the species prefix is italic, the enzyme name itself is roman: `*Ec*XylA`",
     "variant notation: `*Ec*XylA(G171R/L172R)`",
-    "BsGDH (glucose dehydrogenase from *B. subtilis*)" .replace("BsGDH", "XxDH"),
+    "XxDH (glucose dehydrogenase from *B. subtilis*)",
     # Anonymized examples (the correct post-sanitization form — if this trips,
     # sanitization itself becomes impossible)
     "('MW: Enzyme1 (E1)', 37000.0, 'g/mol', 'SI Fig. S1 (example)')",
@@ -136,21 +127,40 @@ def check(name: str, cond: bool, detail: str = "") -> None:
         print(f"  FAIL  {name}" + (f"  — {detail}" if detail else ""))
 
 
+def run_contract(title: str, markers, must_flag) -> None:
+    print(f"\n[{title}] MUST FLAG {len(must_flag)} — all must be blocked")
+    for text, label in must_flag:
+        hits = scan_research_markers(text, markers)
+        check(f"{title} block: {label}", bool(hits),
+              f"let it through -> {text[:60]!r}")
+    print(f"[{title}] MUST NOT FLAG {len(MUST_NOT_FLAG)} legitimate items — all must pass")
+    for text in MUST_NOT_FLAG:
+        hits = scan_research_markers(text, markers)
+        check(f"{title} allow: {text[:45]}", not hits,
+              f"false positive {hits} -> {text[:60]!r}")
+
+
 def main() -> int:
     print("Research-marker scanner two-directional verification")
     print("=" * 60)
 
-    print(f"\n[MUST FLAG] {len(MUST_FLAG)} real leaks — all must be blocked")
-    for text, label in MUST_FLAG:
-        hits = scan_research_markers(text)
-        check(f"block: {label}", bool(hits),
-              f"let it through -> {text[:60]!r}")
+    markers, must_flag = _load_contract(_sentinel.RESEARCH_MARKERS_EXAMPLE)
+    check("synthetic contract is non-empty", bool(markers) and bool(must_flag))
+    run_contract("synthetic", markers, must_flag)
 
-    print(f"\n[MUST NOT FLAG] {len(MUST_NOT_FLAG)} legitimate items — all must pass")
-    for text in MUST_NOT_FLAG:
-        hits = scan_research_markers(text)
-        check(f"allow: {text[:45]}", not hits,
-              f"false positive {hits} -> {text[:60]!r}")
+    local = _sentinel.research_markers_path()
+    if local.is_file():
+        markers, must_flag = _load_contract(local)
+        check("real contract is non-empty", bool(markers) and bool(must_flag))
+        # The module-level default must be the same file, or doctor/feedback
+        # scan with something other than what was just verified.
+        check("default markers loaded from the local file",
+              len(_sentinel.RESEARCH_MARKERS) == len(markers)
+              and not _sentinel.RESEARCH_MARKERS_ERROR,
+              str(_sentinel.RESEARCH_MARKERS_ERROR))
+        run_contract("real", markers, must_flag)
+    else:
+        print(f"\n[real] SKIP — no {local} (public clone). The real leak contract did NOT run.")
 
     print("=" * 60)
     print(f"passed {_pass} / failed {_fail}")

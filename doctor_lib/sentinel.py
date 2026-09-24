@@ -8,6 +8,8 @@ check_sentinel_scan().
 
 from __future__ import annotations
 
+import json
+import os
 import re
 from pathlib import Path
 
@@ -53,57 +55,83 @@ SENTINEL_SELF_TEST_FILES = {
 SENTINEL_DETECTOR_FILES = {
     "doctor.py",
     "sentinel.py",
+    # The research-marker patterns moved out of sentinel.py into this format file.
+    "research_markers.example.json",
+}
+
+# Gitignored files that carry detector patterns on the builder's machine only.
+# Kept apart from the two sets above because those are mirrored one-to-one in
+# .gitleaks.toml, whose allowlist must name files that exist in the repo.
+SENTINEL_LOCAL_ONLY_FILES = {
+    "research_markers.local.json",
 }
 
 # ── research-marker scan ────────────────────────────────────────────────────
 # A SECOND, separate axis from the secret scan above. Secrets are credentials;
 # these are *unpublished research contents* — enzyme variants, rate laws,
-# private repo names. v1.2.0 shipped with RoGDH / LpNoxV / a full cascade ODE
-# still in it while claiming in writing that they had been removed, because the
-# SENTINEL scan only ever looked for credentials and Korean personal names.
-# This axis closes that hole. Contract + the actual leaked strings:
-# tests/test_research_marker_scan.py — do not delete those cases.
+# private repo names. v1.2.0 shipped with species-prefixed enzyme names and a
+# full cascade ODE still in it while claiming in writing that they had been
+# removed, because the SENTINEL scan only ever looked for credentials and Korean
+# personal names. This axis closes that hole.
 #
 # The hard part is separating a project-specific token from ordinary teaching
-# content: `Vmax,XR` must be caught while `Vmax` must not, `RoGDH` while
-# `*Ec*XylA` (a generic naming-rule example) must not. Every pattern below is
-# therefore anchored to a *specific* enzyme/substrate/repo identifier, never to
-# a bare biochemical symbol.
-RESEARCH_MARKERS = [
-    # Species-prefixed enzyme abbreviations actually used in the unpublished work.
-    # Two-letter genus prefix + a specific enzyme family, optionally italic-marked.
-    ("enzyme abbreviation",
-     re.compile(r"\*?\b(?:Ro|Rs|Bs|Lp|Ao|Go|Ps|Sc)\*?(?:GDH|Gdh|NoxV?|SucP|FDH|Fdh|GRE3)\b")),
-    # Engineered variant naming (scgre3, GRE3 variants)
-    ("engineered variant", re.compile(r"\b(?:sc)?gre3\b", re.IGNORECASE)),
-    # Rate-law symbols carrying a *project enzyme* subscript. The subscript set is
-    # deliberately limited to the unpublished cascade's enzymes — a generic
-    # cofactor subscript like `kdeg,NADH` (NADH degradation constant) appears in
-    # any redox system and must NOT trip this, or the scanner blocks its own
-    # sanitized replacement text.
-    ("rate law with enzyme subscript",
-     re.compile(r"\bv(?:XR|GDH|NOX|FDH)\b"
-                r"|\b(?:Vmax|Km|KmA|KmB|KiA|KiB|kdeg)\s*,\s*(?:XR|GDH|NOX|FDH)\b"
-                r"|\bvsub\(\s*['\"](?:XR|GDH|NOX|FDH)['\"]\s*\)")),
-    # The specific empirical correlation from the unpublished SI. `kLa` on its own
-    # is standard fermentation engineering and `Eq. S5` on its own is just an SI
-    # cross-reference style — neither is secret. What identifies the project is
-    # the *correlation itself* (kLa as a power law in stirrer speed).
-    ("SI correlation",
-     re.compile(r"\bkLa\s*=\s*(?:α|alpha)\s*[·*]\s*N|\bkLa\b[^\n]{0,40}\bN\s*\^\s*(?:β|beta)")),
-    # Substrate/product of the unpublished cascade. NOTE: D-galactose and D-Gal
-    # are NOT here — it is a commodity sugar used across the literature, and the
-    # skills legitimately use it to teach abbreviation consistency. What is
-    # unpublished is the *target rare sugar* and the specific conversions.
-    ("unpublished substrate",
-     re.compile(r"\btagatose\b|\b타가토스\b|\bL-ribose\b|\bgalactitol\b", re.IGNORECASE)),
-    # Private repository / project names.
-    ("private repo name",
-     re.compile(r"\bUDH_Clustering\b|\bKinetic-modeling\b|\bPeakPicker\b"
-                r"|\bbiosteam-tagatose\b|\bmanuscript-figures\b")),
-    # Real figure-folder naming from the manuscript repo (F_figS2_<name>_<measure>).
-    ("manuscript figure path", re.compile(r"\bF_fig[S]?\d+[a-z]?_\w+")),
-]
+# content: a rate symbol with a project enzyme subscript must be caught while
+# bare `Vmax` must not, and a real enzyme abbreviation while `*Ec*XylA` (a
+# generic naming-rule example) must not. Every pattern is therefore anchored to
+# a *specific* enzyme/substrate/repo identifier, never to a bare biochemical
+# symbol.
+#
+# The patterns themselves name the unpublished work, so they are NOT in git
+# (measured 260924: this repo is public, and the old inline list published every
+# marker it was meant to protect). They live in a local JSON file:
+#   $SCI_TOOLKIT_RESEARCH_MARKERS, else config/research_markers.local.json
+# Like config/credentials.json it is gitignored AND distignored (a distribution
+# is exactly the committed tree), so lab members get it out-of-band with their
+# credentials; without it the feedback gate skips this axis and doctor says so.
+# Format and a synthetic contract: config/research_markers.example.json.
+# Contract with the real leaked strings: the local file's "must_flag" list,
+# run by tests/test_research_marker_scan.py — do not delete those cases.
+RESEARCH_MARKERS_ENV = "SCI_TOOLKIT_RESEARCH_MARKERS"
+_CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
+RESEARCH_MARKERS_LOCAL = _CONFIG_DIR / "research_markers.local.json"
+RESEARCH_MARKERS_EXAMPLE = _CONFIG_DIR / "research_markers.example.json"
+
+ResearchMarkers = list[tuple[str, "re.Pattern[str]"]]
+
+
+def research_markers_path() -> Path:
+    """Where the project marker file is expected (env override first)."""
+    override = os.environ.get(RESEARCH_MARKERS_ENV)
+    return Path(override) if override else RESEARCH_MARKERS_LOCAL
+
+
+def load_research_markers(path: Path) -> ResearchMarkers:
+    """Compile the markers in `path`. Raises on a missing or malformed file.
+
+    A bad file must fail loudly: silently returning no patterns would turn the
+    scanner off while every check still reports OK.
+    """
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return [
+        (m["label"], re.compile(m["pattern"], re.IGNORECASE if m.get("ignore_case") else 0))
+        for m in data["markers"]
+    ]
+
+
+def _load_default_markers() -> tuple[ResearchMarkers, str | None]:
+    """Return (markers, error). Absent file = no markers and no error."""
+    path = research_markers_path()
+    if not path.is_file():
+        if path != RESEARCH_MARKERS_LOCAL:
+            return [], f"{RESEARCH_MARKERS_ENV} points to a missing file: {path}"
+        return [], None
+    try:
+        return load_research_markers(path), None
+    except (OSError, ValueError, KeyError, TypeError, re.error) as exc:
+        return [], f"unreadable research-marker file {path}: {exc}"
+
+
+RESEARCH_MARKERS, RESEARCH_MARKERS_ERROR = _load_default_markers()
 
 # Generic biochemistry that must never trip the scanner. Checked first: if the
 # match is one of these in its entirety, it is ordinary teaching content.
@@ -115,15 +143,15 @@ RESEARCH_MARKER_ALLOW = re.compile(
 )
 
 
-def scan_research_markers(text: str) -> list[str]:
+def scan_research_markers(text: str, markers: ResearchMarkers | None = None) -> list[str]:
     """Return labels of unpublished-research markers found in `text`.
 
     Empty list means clean. Used by the SENTINEL check and by the standalone
     sanitization sweep; kept as a plain function so tests can call it directly
-    with a single line of text.
+    with a single line of text. `markers` defaults to the local marker file.
     """
     found: list[str] = []
-    for label, rx in RESEARCH_MARKERS:
+    for label, rx in (RESEARCH_MARKERS if markers is None else markers):
         for m in rx.finditer(text):
             if RESEARCH_MARKER_ALLOW.match(m.group(0).strip()):
                 continue
@@ -296,6 +324,8 @@ def check_sentinel_scan(root: Path) -> CheckResult:
     """
     name = "SENTINEL scan (secrets / private data)"
     findings: list[str] = []
+    if RESEARCH_MARKERS_ERROR:
+        findings.append(RESEARCH_MARKERS_ERROR)
 
     for path in _walk_files(root):
         rel = path.relative_to(root)
@@ -307,7 +337,7 @@ def check_sentinel_scan(root: Path) -> CheckResult:
 
         # doctor.py and doctor_lib/sentinel.py carry the detection regexes
         # themselves as literals; never scan either.
-        if path.name in SENTINEL_DETECTOR_FILES:
+        if path.name in SENTINEL_DETECTOR_FILES or path.name in SENTINEL_LOCAL_ONLY_FILES:
             continue
         # This scanner's own regression fixtures deliberately contain fake
         # credentials so the must-block half of the test can assert on them.
@@ -354,4 +384,10 @@ def check_sentinel_scan(root: Path) -> CheckResult:
             f"{len(findings)} potential leak(s) found — review before distributing",
             findings[:30] + ([f"... and {len(findings) - 30} more"] if len(findings) > 30 else []),
         )
-    return CheckResult(name, STATUS_OK, "no secrets / Tailscale IPs / personal names detected")
+    msg = "no secrets / Tailscale IPs / personal names detected"
+    if not RESEARCH_MARKERS:
+        # Normal on a fresh public clone; the builder of a distribution must
+        # see it, because a scan with no markers catches no research content.
+        msg += (f"; research-marker scan inactive (no {research_markers_path().name}"
+                " — see config/research_markers.example.json)")
+    return CheckResult(name, STATUS_OK, msg)

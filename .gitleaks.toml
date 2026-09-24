@@ -30,6 +30,7 @@ paths = [
   '''(^|/)tests/test_gitleaks_layer\.py$''',
   '''(^|/)doctor_lib/sentinel\.py$''',
   '''(^|/)doctor\.py$''',
+  '''(^|/)config/research_markers\.example\.json$''',
   '''(^|/)SHA256SUMS$''',
 ]
 regexes = [

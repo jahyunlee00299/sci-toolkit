@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.83] — 2026-09-25
+
+- sentinel: move the research-marker patterns and their real leak cases out of git into
+  the gitignored + distignored `config/research_markers.local.json` (the public repo was
+  publishing every marker it protects); `config/research_markers.example.json` carries the
+  format and a synthetic contract. Without the local file the marker axis reports itself
+  inactive and the real-case tests print SKIP; a malformed file fails the SENTINEL check.
+
 ## [1.2.82] — 2026-09-24
 
 - skill_drift: declare markitdown, code-quality, token-efficient-routing intended
