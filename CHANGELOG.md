@@ -4,6 +4,16 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.81] — 2026-09-24
+
+- skill_drift: declare 5 more 260924 intended differences
+
+## [1.2.80] — 2026-09-24
+
+- skill_drift: declare 5 more intended differences (paper-extract, patent-invention-disclosure
+  env-dependent paths/hooks; avoid-ai-writing size/cross-reference; statsmodels, conda-env-manager
+  toolkit-ahead reverse-direction), bringing declared skills to 8 of 27 originally drifting
+
 ## [1.2.79] — 2026-09-24
 
 - compat-check: remove the stale skills/compat-check/tests/ copy (SSOT-20)

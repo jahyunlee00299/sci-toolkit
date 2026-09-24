@@ -1,6 +1,18 @@
 {
   "_comment": "Intended toolkit-vs-runtime skill differences. Written by `scripts/skill_drift.py --declare`; each entry is pinned to both copies' fingerprints and goes stale when either side changes.",
   "skills": {
+    "avoid-ai-writing": {
+      "reason": "Size racket: runtime's local-addition section cross-references ../manuscript-pipeline/writing_voice.md, a runtime-only sibling skill path; toolkit instead ships its own check-style.js tool. SKILL.md is grandfathered oversized per the 260903 user decision (memory: project_scitoolkit_shared_script_fork_260903) and not to be split.",
+      "toolkit_fp": "d4ae986c23b298e8",
+      "runtime_fp": "46697b97677a7d61",
+      "declared": "2026-09-24"
+    },
+    "conda-env-manager": {
+      "reason": "Reverse-direction: toolkit is ahead. Toolkit's Step 3.5 and Related-skill section reference skills/compat-check, a toolkit-only skill absent from the runtime tree, so the runtime copy cannot receive this content until compat-check itself is ported there.",
+      "toolkit_fp": "40348b1e33548f54",
+      "runtime_fp": "73df6adfeab7375f",
+      "declared": "2026-09-24"
+    },
     "experiment-hub": {
       "reason": "License: the runtime copy is Proprietary and the toolkit ships MIT. No runtime content may be ported; the toolkit copy is maintained independently.",
       "toolkit_fp": "01d0c2c9a5e96f67",
@@ -13,10 +25,28 @@
       "runtime_fp": "067c65ee6c89ef5b",
       "declared": "2026-09-24"
     },
+    "paper-extract": {
+      "reason": "Env-dependence: runtime SKILL.md points its Script Location at ~/.claude/scripts/extract_paper_assets.py (the maintainer's personal layout, 260904 audit), while the toolkit ships its own self-contained copy under skills/paper-extract/scripts/ so a distribution install works standalone.",
+      "toolkit_fp": "b8bc0044a5e01edc",
+      "runtime_fp": "0cb62d498ecd5aec",
+      "declared": "2026-09-24"
+    },
+    "patent-invention-disclosure": {
+      "reason": "Env-dependence: the runtime addition documents a Stop hook (hooks/patent_qc_gate_stop.sh wired into the maintainer's own stop_hook.sh, 260912) that only exists in that person's Claude Code settings.json wiring, not something a toolkit distribution install has or can port.",
+      "toolkit_fp": "6f8cf408a07bff43",
+      "runtime_fp": "694e160653daa6b8",
+      "declared": "2026-09-24"
+    },
     "primer-design": {
       "reason": "License: the runtime copy is Proprietary and the toolkit ships MIT. No runtime content may be ported; the toolkit copy is maintained independently.",
       "toolkit_fp": "1bb11c277ebd3117",
       "runtime_fp": "c82c0f837e92c7b5",
+      "declared": "2026-09-24"
+    },
+    "statsmodels": {
+      "reason": "Reverse-direction: toolkit is ahead here, not lagging. Toolkit added references/model_selection.md (AIC/BIC, R-style formulas, CV caveats) after the runtime copy was last touched; nothing to port from runtime, the addition should go the other way eventually.",
+      "toolkit_fp": "b0419c5c47494de8",
+      "runtime_fp": "752b59e3f7bf312c",
       "declared": "2026-09-24"
     }
   }
