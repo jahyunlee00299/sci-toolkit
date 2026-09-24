@@ -158,12 +158,14 @@ has to go through pip (no conda-forge build, or a GitHub source).
 
 ## Tests
 
-`tests/` holds 8 modules / 30 tests, plain-`assert` style with a
-`if __name__ == "__main__":` runner (matches this repo's script-style test
-convention — not pytest-collected). They import the **installed** package, so
-`pip install compat-check` has to have happened first; run them with the
-interpreter of the environment you are checking. Several tests hit the real network
-(GitHub raw content, PyPI JSON API, actual `uv`/pip resolution) since the
-entire point of this tool is that dry-run results are ground truth, not a
-static prediction — run them when verifying a change here, not as part of
-the toolkit's offline CI.
+This folder ships documentation only (see "Usage" above) — there is no local
+copy of the test suite to run here. The tests live with the code, in the
+`compat-check` package's own repository (15 files / 148 tests as of 0.6.0,
+pytest-collected). Run `python -m pip install compat-check[test]` (or clone
+the package repo) and `pytest` there to exercise them; several hit the real
+network (GitHub raw content, PyPI JSON API, actual `uv`/pip resolution) since
+the entire point of this tool is that dry-run results are ground truth, not a
+static prediction. A local copy of these tests was tried once and removed
+(SSOT-20, 2026-09-24) — it drifted from upstream with no sync mechanism, the
+same failure mode the source copy hit under SSOT-11; testing the installed
+package's own suite is the SSOT.

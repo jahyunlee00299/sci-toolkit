@@ -294,7 +294,7 @@
       "role": "pre-install compatibility probe (real dry-run install in a disposable venv, uv preferred / pip fallback) for a GitHub repo or PyPI package, before installing it for real",
       "requires": [],
       "pip_package": "compat-check",
-      "size_kb": 21
+      "size_kb": 8
     },
     "experiment-hub": {
       "category": "molbio",
