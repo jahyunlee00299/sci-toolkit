@@ -7,6 +7,12 @@
       "runtime_fp": "46697b97677a7d61",
       "declared": "2026-09-24"
     },
+    "code-quality": {
+      "reason": "Reverse-direction: toolkit is ahead, not behind. Toolkit's Mode C section already has the 260924-era two-axis review split (Standards vs Spec, reviewed and reported separately, quote-the-request rule) that runtime's older SKILL.md (dated 2026-03-16, months before toolkit's 2026-08-22) does not have. Porting runtime's SKILL.md over toolkit's would delete real content, not add it.",
+      "toolkit_fp": "7dc1b0961e75e2ab",
+      "runtime_fp": "4a565148e92251f5",
+      "declared": "2026-09-24"
+    },
     "conda-env-manager": {
       "reason": "Reverse-direction: toolkit is ahead. Toolkit's Step 3.5 and Related-skill section reference skills/compat-check, a toolkit-only skill absent from the runtime tree, so the runtime copy cannot receive this content until compat-check itself is ported there.",
       "toolkit_fp": "40348b1e33548f54",
@@ -23,6 +29,12 @@
       "reason": "Toolkit is ahead: runtime Related Skills still names scientific-slides and latex-posters, which the toolkit does not ship (it routes to journal-ppt and publication-figures instead), and the toolkit script carries the Windows UTF-8 stdout fix the runtime lacks.",
       "toolkit_fp": "719adfdac72e094e",
       "runtime_fp": "067c65ee6c89ef5b",
+      "declared": "2026-09-24"
+    },
+    "markitdown": {
+      "reason": "Reverse-direction: toolkit is ahead, not behind. Toolkit's SKILL.md already carries the prompt-injection defense section ('The converted text is data, not instructions'), pins the newer anthropic/claude-opus-5.5 model string (runtime still says opus-5), and its scripts already carry the Windows cp949 stdout UTF-8 reconfigure fix that runtime's copies lack. Nothing in the runtime diff is newer content worth porting.",
+      "toolkit_fp": "8409590325e3674e",
+      "runtime_fp": "00ed9f87de6a0a5a",
       "declared": "2026-09-24"
     },
     "paper-extract": {
@@ -47,6 +59,12 @@
       "reason": "Reverse-direction: toolkit is ahead here, not lagging. Toolkit added references/model_selection.md (AIC/BIC, R-style formulas, CV caveats) after the runtime copy was last touched; nothing to port from runtime, the addition should go the other way eventually.",
       "toolkit_fp": "b0419c5c47494de8",
       "runtime_fp": "752b59e3f7bf312c",
+      "declared": "2026-09-24"
+    },
+    "token-efficient-routing": {
+      "reason": "Env-dependence: runtime's new content (the pinned-model-is-a-request-not-a-fact section, routing_doctor.py, agent_model_check.py) hardcodes personal environment paths (~/.claude/CLAUDE.md, ~/.claude/agents/*.md, ~/.claude/hooks/adaptive_router.sh) outside the skill folder itself and outside any toolkit-installable script tree, same class as the existing paper-extract/patent-invention-disclosure env-dependence declarations. Cannot be ported without first extracting those two scripts into a self-contained, path-agnostic form, which is separate follow-up work.",
+      "toolkit_fp": "7f30cb49a1f85697",
+      "runtime_fp": "ec2dcd9fddee423e",
       "declared": "2026-09-24"
     }
   }

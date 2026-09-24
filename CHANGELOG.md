@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.82] — 2026-09-24
+
+- skill_drift: declare markitdown, code-quality, token-efficient-routing intended
+
 ## [1.2.81] — 2026-09-24
 
 - skill_drift: declare 5 more 260924 intended differences
