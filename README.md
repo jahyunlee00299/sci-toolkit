@@ -175,7 +175,7 @@ this order:
 | `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |
 | `scripts/connectivity_check.py` | Lists every shipped tool that nothing leads to (ORPHAN) or nothing tests (UNTESTED). `doctor.py` runs it |
 | `scripts/feedback_log.py` | Records inconveniences/errors (no account or token needed) — the 작업로그 tool |
-| `scripts/hplc_parser.py` | HPLC chromatogram `.ch`/`.txt`/`.csv`/`.arw` -> CSV/JSON with auto-detected, integrated peaks (stdlib only) |
+| `scripts/hplc_parser.py` | HPLC chromatogram `.ch`/`.txt`/`.csv`/`.arw` -> CSV/JSON with auto-detected, integrated peaks (stdlib only). For full quantification (baseline, deconvolution, calibration, batch) use [PeakPicker](https://github.com/jahyunlee00299/hplc-peak-analyzer-PeakPicker) — see `skills/lab-data-analysis` |
 | `scripts/primer_structure_check.py` | Hairpin / homodimer dG for a primer list (nearest-neighbor model), PASS/FAIL per primer |
 | `scripts/variant_filter.py` | Merges ddG, primer-QC and expression CSVs into one PASS/FAIL matrix per variant |
 | `scripts/fetch_public_vector.py` | Fetches a PUBLIC plasmid/vector by NCBI accession for the primer-design registry (network) |

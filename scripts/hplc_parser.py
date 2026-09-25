@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """HPLC chromatography data parser.
 
-Ports the peak detection/integration algorithm to stdlib-only:
+Ports PeakPicker's peak detection/integration algorithm to stdlib-only
+(https://github.com/jahyunlee00299/hplc-peak-analyzer-PeakPicker — use PeakPicker
+itself for baseline correction, deconvolution and calibration-curve quantification):
   - .ch binary: decodes Agilent ChemStation format 130/131 delta-compression
   - text formats: ChemStation tab export .txt, header CSV, .arw
   - peak detection: automatic detection based on MAD noise + prominence (valley boundary)

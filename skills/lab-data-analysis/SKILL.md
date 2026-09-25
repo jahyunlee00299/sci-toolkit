@@ -61,6 +61,21 @@ url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name}/JSON"
 - Area integration and relative quantification
 - Deconvolution for overlapping peaks (Gaussian fit)
 
+Pick the tool by how far the analysis has to go:
+
+| Need | Tool |
+|---|---|
+| Read a `.ch`/`.txt`/`.csv`/`.arw` trace, quick peak list, CSV/JSON out — no installs | `scripts/hplc_parser.py` (stdlib only) |
+| Real quantification: baseline correction (ArPLS/spline), EMG/Gaussian deconvolution, calibration curves with LLOQ/ULOQ, sequence QC, batch runs over `.D` folders, Excel/plot export | **PeakPicker** — https://github.com/jahyunlee00299/hplc-peak-analyzer-PeakPicker |
+
+PeakPicker setup: `git clone` the repo, `pip install -r requirements.txt`, run
+`pytest` to confirm. It is generic on purpose — a lab's own sample-name
+convention, quantification presets and method YAMLs are **plugins** kept
+outside the public repo (`PEAKPICKER_PLUGIN_PATH`, or a gitignored
+`plugins/` folder; method selection reads each YAML's `match:` block). See its
+`docs/PLUGINS.md` before adding lab-specific code, and never commit real
+calibration data or experiment names to the public repo.
+
 ### Gel / Western Blot
 - Band intensity extraction
 - Normalize to loading control

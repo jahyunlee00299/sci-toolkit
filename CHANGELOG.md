@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.84] — 2026-09-25
+
+- lab-data-analysis: route full HPLC quantification to PeakPicker
+
 ## [1.2.83] — 2026-09-25
 
 - sentinel: move the research-marker patterns and their real leak cases out of git into
