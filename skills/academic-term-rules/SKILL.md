@@ -1,6 +1,6 @@
 ---
 name: academic-term-rules
-description: "Biotech/biochemistry nomenclature standards — species italic, gene/protein naming, coenzyme notation, unit formatting, kinetics symbols, figure captions, dash rules, American spelling, E-factor/green-metric notation, single-source-of-truth, TYPO_PATTERNS. SSOT layer skill referenced by manuscript-pipeline QC agents, journal-ppt, and pptx reviewer."
+description: "Biotech/biochemistry nomenclature standards — species italic, gene/protein naming, coenzyme notation, unit formatting, kinetics symbols, figure captions, dash rules, American spelling, E-factor/green-metric notation, single-source-of-truth, TYPO_PATTERNS, OMML equations, Word COM structural QC (paragraph-move formatting leakage, font script-slot gaps, page-break duplication), WORKORDER write-time enforcement. SSOT layer skill referenced by manuscript-pipeline QC agents, journal-ppt, and pptx reviewer."
 ---
 
 # Academic Term Rules — Biotech/Biochemistry Nomenclature Standards
@@ -29,7 +29,8 @@ the relevant `references/<topic>.md` file for the full rule table.
 | 4 | Unit Notation [Auto-detectable] | µL/mL/µM, °C, rpm, number-unit spacing | `references/units_kinetics_stats.md` |
 | 5 | Enzyme Kinetics Notation | *K*m, *k*cat, *V*max, *k*cat/*K*m, *n*H italics | `references/units_kinetics_stats.md` |
 | 6 | Statistical Notation [Auto-detectable] | mean ± SD, `n = 3`, *p*-value, test-method naming | `references/units_kinetics_stats.md` |
-| 7 | Figure Caption Rules | Required caption components (number/title/panels/conditions/n/abbrev.) | `references/figures_captions.md` |
+| 6a | Derived numbers must reproduce from the PRINTED operands [Auto-detectable, FLAG-ONLY] | a stated ratio/fold-change/% must recompute from the values printed in the same document, not just the SSOT full-precision source; round with `ROUND_HALF_UP` | `references/green_metrics_ssot.md` |
+| 7 | Figure Caption Rules | Required caption components (number/title/panels/conditions/n/abbrev./no mathtext/no internal-facing content/no data restatement) | `references/figures_captions.md` |
 | 7c | Citation-order diagnosis (`manuscript_ref_order.py`) | "cited out of order" ≠ "move the caption" — diagnose against heading outline first | `references/figures_captions.md` |
 | 8 | Punctuation — Dash Distinction [Auto-detectable] | hyphen vs. en dash vs. em dash | `references/punctuation_citations.md` |
 | 8a | Citation Number Placement (numeric-superscript journals) [Auto-detectable] | citation number goes after terminal punctuation | `references/punctuation_citations.md` |
@@ -41,10 +42,16 @@ the relevant `references/<topic>.md` file for the full rule table.
 | 12a | PUNCT_SPACE_FLAGS [Auto-detectable, FLAG-ONLY] | missing space after `. , ; :` — flag-only, needs whitelist + human check | `references/typo_patterns.md` |
 | 12b | COFACTOR_SPACE_FLAGS [Auto-detectable, FLAG-ONLY] | missing space after cofactor charge symbol/token (`NAD⁺regeneration`) | `references/typo_patterns.md` |
 | 13 | Table Formatting Standards | Three-line (booktabs) rule, title/footnote placement, docx XML borders | `references/tables.md` |
+| 13a | Page Break Placement (SI/Supplementary Document) | SI section order, table/figure/heading `pageBreakBefore` placement rules | `references/tables.md` |
 | 14 | Reference Quality Standards | Journal tier classification, citation-count thresholds, red flags | `references/reference_quality.md` |
 | 15 | American Spelling [Auto-detectable] | British → American spelling table + `SPELLING_PATTERNS` regex | `references/spelling.md` |
 | 16 | Green-Chemistry Metric Notation | *E*-factor italic rule, sEF/cEF, PMI/AE/RME | `references/green_metrics_ssot.md` |
 | 17 | Single Source of Truth (numeric consistency) | one canonical rawdata file per labelled quantity; citation-cluster and arrow-symbol rules | `references/green_metrics_ssot.md` |
+| 18 | Displayed Equations — OMML Required [Auto-detectable] | rate laws/ODE mass balances must be `<m:oMath>`, never plain text | `references/equations.md` |
+| 18a | Word COM Structural QC [Auto-detectable] | paragraph-mark formatting leakage after cut/paste, font script-slot gaps (`NameFarEast`/`NameOther`/`NameBi`), page-break duplication | `references/docx_structural_qc.md` |
+| 18b | WORKORDER Write-Time Enforcement | apply em-dash/splice/italic/superscript checks to WORKORDER `new:` fields at write time, not at QC time | `references/workorder_writetime.md` |
+| 19 | Quantity and State Modifiers [Manual review required] | hedging-as-evasion (a favorable result framed as falling short of a self-chosen standard); other sub-topics are unwritten placeholders | `references/quantity_state_modifiers.md` |
+| 20 | matplotlib Figure Text Implementation Rules [Auto-detectable] | single-mathtext-block enzyme/plasmid labels, italic/bold table, `smart_legend()`-style helper usage | `references/matplotlib_figures.md` |
 
 ---
 
@@ -70,6 +77,12 @@ the relevant `references/<topic>.md` file for the full rule table.
   Scheme/equation/table figures are exempt (§17).
 - **Never** let body/table/figure values for the same labelled quantity drift apart — trace every
   occurrence back to one canonical rawdata file and fix the source, not each site individually (§17).
+- **Never** insert a displayed rate-law or ODE equation as plain text — always OMML (`<m:oMath>`);
+  plain text loses required subscripts, superscripts, and italics (§18).
+- **Never** leave an internal tracker ID, status emoji, or open-task language in a published
+  caption — a caption is reader-facing, not a place to log project state (§7, item 10).
+- **Never** apply a "fixed" font style at only `Font.Name`/`NameAscii` — also set `NameFarEast`/
+  `NameOther`/`NameBi`, or individual characters can silently render in the old font (§18a).
 
 ---
 

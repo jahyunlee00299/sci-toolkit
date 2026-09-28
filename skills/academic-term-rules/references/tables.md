@@ -67,3 +67,54 @@
 # </w:tcMar>
 ```
 
+---
+
+## 13a. Page Break Placement (SI/Supplementary Document)
+
+Applies whenever editing or building a supplementary information (SI) document.
+
+**SI section order (canonical):**
+Methods → Notes → **Figures** → **Tables** → References
+(Figures before Tables — readers follow main-text Figure citations before Table citations.)
+
+**A TEA/economic-analysis table goes last** among SI Tables. Rationale: that kind of table is a
+conclusion-level analysis; experimental and model-parameter tables precede it.
+
+### Table pageBreakBefore rule
+Page break position after a Table = **after the last footnote paragraph, at the next sibling
+paragraph**.
+- Scan body children after `<w:tbl>`: footnote paragraphs are those starting with lowercase or
+  "Abbreviations:" or containing only italic runs.
+- Insert `pageBreakBefore` on the first paragraph that is *not* a footnote (next Table caption, or
+  section heading).
+- If no footnote exists: `pageBreakBefore` goes on the very next `<w:p>` after `</w:tbl>`.
+
+```python
+# python-docx pattern
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+def set_page_break_before(paragraph):
+    pPr = paragraph._p.get_or_add_pPr()
+    # remove any existing pageBreakBefore first
+    for old in pPr.findall(qn('w:pageBreakBefore')):
+        pPr.remove(old)
+    pb = OxmlElement('w:pageBreakBefore')
+    pb.set(qn('w:val'), '1')
+    pStyle = pPr.find(qn('w:pStyle'))
+    if pStyle is not None:
+        pStyle.addnext(pb)
+    else:
+        pPr.insert(0, pb)
+```
+
+### Figure pageBreakBefore rule
+Each Figure caption block (one or multiple paragraphs per figure) is followed immediately by
+`pageBreakBefore` on the **next** paragraph (next Fig. S caption or section heading). Result: one
+Figure + its caption = one page.
+
+### Heading pageBreakBefore rule
+Every `Heading 1` and `Heading 2` paragraph gets `pageBreakBefore`, **except** the very first
+Heading 1 in the document (which follows the title block directly). Section labels like
+"Supplementary Figures" and "Supplementary Tables" follow the same rule.
+

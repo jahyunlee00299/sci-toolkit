@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.87] — 2026-09-28
+
+- academic-term-rules: sync 10 sections missing from the runtime skill
+
 ## [1.2.86] — 2026-09-28
 
 - dist: close .git/out/pytest_cache leak in raw USB copies
