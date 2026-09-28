@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.86] — 2026-09-28
+
+- dist: close .git/out/pytest_cache leak in raw USB copies
+
+## [1.2.85] — 2026-09-28
+
+- docs: reword 00_시작하기 beginner intro for clarity
+
 ## [1.2.84] — 2026-09-25
 
 - lab-data-analysis: route full HPLC quantification to PeakPicker

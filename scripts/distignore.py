@@ -29,7 +29,7 @@ from pathlib import Path
 # through even if a human forgets to add the rule.
 ALWAYS_EXCLUDE_DIRS = {
     ".git", "__pycache__", ".cache", ".pytest_cache",
-    "node_modules", ".ipynb_checkpoints",
+    "node_modules", ".ipynb_checkpoints", "out",
 }
 
 

@@ -7,6 +7,15 @@
 Base = **Claude Code + 구독(Pro/Max)을 우선 사용**. 대부분의 모듈은 별도 API
 키 없이 바로 동작합니다.
 
+> 🔴 **USB를 처음 준비하는 사람에게**: `~/sci-toolkit` 작업 폴더를 통째로 USB에
+> `cp -r`/드래그로 복사하지 마세요 — `.git`(전체 히스토리 + 작성자 실명),
+> `out/`(실제 실행 로그), `config/credentials.json`, `config/research_markers.local.json`
+> (미발표 연구 식별자)이 그대로 딸려갑니다. 대신 먼저
+> `python scripts/export_distribution.py --dest <USB경로> --apply`로
+> `.distignore` 규칙을 거친 배포용 사본을 만든 뒤, 그 사본을 USB에 두세요.
+> (아래 Step들의 `cp -r /Volumes/USB/sci-toolkit/...`은 그 배포용 사본을
+> 받은 사람이 개별 스킬을 설치하는 절차이므로 그대로입니다.)
+
 ---
 
 ## Step 0 — 전제 조건 확인 (30초)
