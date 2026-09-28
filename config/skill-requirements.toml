@@ -52,7 +52,7 @@ packages = []
 packages = []
 
 [sequence-verification]
-packages = ["biopython", "primer_design"]
+packages = ["biopython"]
 # biopython: import Bio
 
 [stats-workflow]
