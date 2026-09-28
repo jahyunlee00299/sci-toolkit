@@ -44,3 +44,10 @@ pypdf
 # 2026-09-03: TestEZproxyAutoLogin). Verified in a clean venv built from this
 # file: with requests added the suite is 128 passed / 4 skipped / 0 failed.
 requests
+# tests/test_sequence_verification.py builds GenBank fixtures and reads them
+# back through Bio.SeqIO; sequence-verification's own scripts use it for every
+# .gb path (the SnapGene .dna reader is hand-rolled and needs nothing). Measured
+# 2026-09-28: the first CI run after the test was registered exited 1 with
+# ModuleNotFoundError: No module named 'Bio' while the laptop passed. Installing
+# it here keeps the 20 checks RUNNING in CI rather than skipped.
+biopython

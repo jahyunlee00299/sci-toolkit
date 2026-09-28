@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.92] — 2026-09-28
+
+- ci: declare biopython for the sequence-verification test
+
 ## [1.2.91] — 2026-09-28
 
 - skill_requirements: a sibling skill's package is not a pip dependency
