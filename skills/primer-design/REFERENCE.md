@@ -278,6 +278,29 @@ from src.primer_design import parse_snapgene
 seq, is_circular, features = parse_snapgene(r"path\to\vector.dna")
 ```
 
+### Read the primers stored in a file
+
+```python
+from src.primer_design.snapgene_parser import parse_snapgene_primers
+for p in parse_snapgene_primers(r"path\to\map.dna"):
+    print(p["name"], p["sequence"])
+```
+
+Returns each primer's **own** sequence, which `parse_snapgene` above cannot give you. Feature
+parsing returns primer *binding sites* — coordinates on the template — so a mutagenesis primer
+reads back as the wild-type sequence it anneals to, and the mismatched bases that carry the
+intended mutation disappear. Biopython's snapgene reader has the same blind spot.
+
+That matters whenever a mutation was designed but the mutant map was never saved: the primer
+record is then the only on-disk evidence of what was intended. The `sequence-verification` skill
+builds on this to reconstruct the expected codons (`primer_codons.py`).
+
+Primer XML is not confined to one block type — files written by older SnapGene versions carry it
+inside alignment blocks and omit the primer block entirely — so this scans the whole file rather
+than walking the block table. Sequences keep SnapGene's casing, since authors conventionally
+upper-case the mismatched bases.
+
+
 ---
 
 ## Notes

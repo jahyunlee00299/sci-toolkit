@@ -1,6 +1,51 @@
 """SnapGene .dna binary file parser."""
 
+import re
 import xml.etree.ElementTree as ET
+
+_PRIMER_TAG = re.compile(r"<Primer\b[^>]*/?>")
+_ATTR = re.compile(r'(\w+)="([^"]*)"')
+
+
+def parse_snapgene_primers(filepath):
+    """Extract the primers stored in a SnapGene file, with their own sequences.
+
+    This is deliberately separate from :func:`parse_snapgene`. Feature parsing
+    returns primer BINDING SITES — coordinates on the template — so a
+    mutagenesis primer reads back as the wild-type template it anneals to. The
+    mismatched bases, which is precisely where the variant codon lives, only
+    exist in the primer record itself. Biopython's snapgene reader has the same
+    blind spot, so a stored iPCR primer is the only on-disk evidence of an
+    intended mutation until someone sequences the clone.
+
+    The primer XML is not confined to one block type (files written by older
+    SnapGene versions carry it inside alignment blocks and omit the primer block
+    entirely), so scan the whole file rather than walking the block table.
+
+    Returns
+    -------
+    list[dict] : [{"name", "sequence", ...}, ...] in file order, de-duplicated.
+        Extra XML attributes are preserved as-is. Sequences keep SnapGene's
+        own casing — authors conventionally upper-case the mismatched bases,
+        which makes the intended change readable.
+    """
+    with open(filepath, "rb") as fh:
+        blob = fh.read().decode("latin-1")
+
+    primers, seen = [], set()
+    for match in _PRIMER_TAG.finditer(blob):
+        attrs = dict(_ATTR.findall(match.group(0)))
+        name, seq = attrs.get("name"), attrs.get("sequence")
+        if not name or not seq:
+            continue
+        key = (name, seq)
+        if key in seen:
+            continue
+        seen.add(key)
+        primers.append({"name": name, "sequence": seq, **{
+            k: v for k, v in attrs.items() if k not in ("name", "sequence")
+        }})
+    return primers
 
 
 def parse_snapgene(filepath):
