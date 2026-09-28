@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.93] — 2026-09-29
+
+- Route sequence-verification in AGENTS.md section 0, README and QUICKSTART
+
 ## [1.2.92] — 2026-09-28
 
 - ci: declare biopython for the sequence-verification test

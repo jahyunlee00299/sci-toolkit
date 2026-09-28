@@ -43,6 +43,7 @@ USB를 꽂자마자 복사/설치하지 마세요. 먼저 이 순서로 훑어�
 | 논문 찾기/요약/리뷰, 원고 작성·다듬기 | 논문검색·작성 | `research-search`, `literature-review`, `manuscript-pipeline`, `academic-term-rules` |
 | 원고를 특허 명세서 초안으로 | 논문검색·작성 | `patent-invention-disclosure` |
 | primer/서열 설계 | 분자생물학 | `primer-design`, `experiment-hub` |
+| 변이가 들어간 서열 파일 찾기 / 시퀀싱 결과와 대조할 참조 맵 | 분자생물학 | `sequence-verification` |
 | 논문/발표용 figure 만들기 | figure | `publication-figures` |
 | 어떤 통계 검정을 써야 할지 모를 때 | 통계 | `stats-workflow`, `data-quality-checks` |
 | 설치된 도구/환경 상태 확인 | 포털 | `get-available-resources`, `doctor.py` |
