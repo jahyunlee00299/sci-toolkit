@@ -869,3 +869,64 @@ intended differences, and were deliberately left undeclared.
 
 wired-by: scripts/skill_drift.py
 wired-by: tests/test_skill_drift.py
+
+---
+
+## sequence-verification — does the variant exist, and what do reads get compared to (260928)
+
+**Scope / layer** — new skill (sub-feature, `molbio`), plus one function added to
+`primer-design`'s SnapGene parser. Answers a question that was previously done
+by hand: whether a plasmid variant exists in any saved map, and what a
+sequencing read should be aligned against.
+
+**Why it exists** — a filename, a folder name, and an annotated mutagenesis
+primer are all consistent with a map holding pure wild-type sequence. SnapGene
+stores a primer's *binding site*, which is template sequence, so a map can list
+`iPCR_E223A` in its primers and carry `E` at 223; biopython reads it the same
+way. In the audit that prompted this, 28 candidate files all belonged to a
+variant construction project and all 28 were wild type — the variant map had
+never been saved, and nothing in the file names said so.
+
+**Prior art / delta** — kept: `primer-design` owns the SnapGene binary format
+(`snapgene_parser`, `snapgene_writer`) and in-silico cloning, and is a hard
+dependency rather than being duplicated. Dropped: a ligation simulator of this
+skill's own — `write_cloning_construct` already exists and is tested. New: the
+primer-sequence reader (the feature table cannot express it), residue scanning
+across many files, reference-map construction by codon edit, and Sanger read
+coverage. `scientific-validation` was examined and deliberately NOT
+cross-linked: it gates whether a measured number is plausible, a different job
+from sequence identity, and a link there would be noise.
+
+**Inputs / outputs** — reads `.dna` / `.gb` maps plus a wild-type reference;
+writes one GenBank reference map, and only on success. State ownership: none —
+every script is a pure function of its inputs except `build_reference_map.py`,
+which writes the single `--out` path and unlinks it if the re-read disagrees.
+
+**Two failure modes are enforced, not documented.** Residue numbering comes from
+`--reference`, never a CDS annotation, whose bounds are routinely a base or two
+off the real frame (the fixture deliberately mis-annotates by one base). And the
+map is built by editing a construct that was really built, not by simulating a
+ligation: an insert cut for one vector carries that vector's frame, and in the
+measured case a pETDuet MCS1 insert dropped into pET-28a's BamHI site shifted
+the frame and died at 39 aa, against 352 aa for the lab's own map.
+
+**Evidence** — `tests/test_sequence_verification.py` 20/20 on synthesised
+constructs whose answer is known exactly: absence AND presence both asserted;
+the annotated-primer trap asserted directly (one file simultaneously yields
+`K8R:CGT` from its primer and reads wild type at residue 8); codon recovery
+correct despite a deliberately mis-annotated CDS. Refutation: wrong base residue,
+codon/residue disagreement, malformed token, missing path, empty directory,
+corrupt file, unreachable target — each returns a usage/failure exit code, and
+no output file is written on any of them. Verified on real data before the
+fixtures existed: 28 files scanned WT, three stored primers independently
+recovered (forward and reverse agreeing), reference map reproducing a
+hand-built one to the base (2 nt differ, fusion 352 aa unchanged).
+
+**Deferred risk** — `find_variant_maps.py` opens files, so on synced cloud
+storage it hydrates placeholders; the docs require a shortlist first, but
+nothing enforces it. `read_coverage.py`'s quality bands (600/850) are
+conventional Sanger numbers, not measured against this lab's provider.
+
+wired-by: skills/sequence-verification/SKILL.md
+wired-by: tests/test_sequence_verification.py
+wired-by: config/catalog.json

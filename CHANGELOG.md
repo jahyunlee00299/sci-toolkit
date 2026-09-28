@@ -4,6 +4,22 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.91] — 2026-09-28
+
+- skill_requirements: a sibling skill's package is not a pip dependency
+
+## [1.2.90] — 2026-09-28
+
+- sequence-verification: wire into the distribution gates
+
+## [1.2.89] — 2026-09-28
+
+- sequence-verification: new skill for checking a variant exists and building its reference map
+
+## [1.2.88] — 2026-09-28
+
+- primer-design: read primer sequences out of .dna files
+
 ## [1.2.87] — 2026-09-28
 
 - academic-term-rules: sync 10 sections missing from the runtime skill

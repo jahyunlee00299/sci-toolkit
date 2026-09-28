@@ -2,7 +2,7 @@
 
 from .subst_primer_mode import iPCRDesignerBase, iPCRSubstDesigner
 from .del_primer_mode import iPCRDelDesigner
-from .snapgene_parser import parse_snapgene
+from .snapgene_parser import parse_snapgene, parse_snapgene_primers
 from .vector_registry import (
     EXPRESSION_VECTORS, RESTRICTION_ENZYMES,
     get_vector, check_reading_frame, format_frame_report,

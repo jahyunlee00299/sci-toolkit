@@ -51,6 +51,10 @@ packages = []
 [scientific-validation]
 packages = []
 
+[sequence-verification]
+packages = ["biopython"]
+# biopython: import Bio
+
 [stats-workflow]
 packages = []
 

@@ -68,6 +68,22 @@ def _local_modules(skill_dir: Path) -> set[str]:
     return {p.stem for p in skill_dir.rglob("*.py")} | {p.name for p in skill_dir.rglob("*") if p.is_dir()}
 
 
+def _sibling_packages(root: Path) -> set[str]:
+    """Import names provided by other skills shipped in this repo.
+
+    One skill may import another's package — sequence-verification reuses
+    primer-design's SnapGene parser rather than carrying a second one — and the
+    installer pulls that dependency in from `config/catalog.json` "requires".
+    Such an import is satisfied by the toolkit itself, so reporting it as a
+    third-party package tells the user to `pip install` a name that is not on
+    PyPI and cannot succeed.
+
+    Only `skills/*/src/<pkg>/` is counted: a real importable package, not any
+    directory that happens to share a name with a module.
+    """
+    return {init.parent.name for init in root.glob("skills/*/src/*/__init__.py")}
+
+
 _OPTIONAL_HANDLERS = {"ImportError", "ModuleNotFoundError", "Exception", "BaseException"}
 
 
@@ -118,12 +134,13 @@ def _required_imports(py: Path) -> set[str]:
 def scan(root: Path) -> dict[str, dict]:
     """{skill: {"packages": [pip names], "imports": {pip: [import names]}}} for skills with scripts."""
     std = _stdlib()
+    siblings = _sibling_packages(root)
     out: dict[str, dict] = {}
     for skill_dir in sorted(p for p in (root / "skills").iterdir() if p.is_dir()):
         scripts = sorted(skill_dir.glob("scripts/*.py"))
         if not scripts:
             continue
-        local = _local_modules(skill_dir)
+        local = _local_modules(skill_dir) | (siblings - {skill_dir.name.replace("-", "_")})
         pip_to_imports: dict[str, set[str]] = {}
         for py in scripts:
             for mod in _required_imports(py):
