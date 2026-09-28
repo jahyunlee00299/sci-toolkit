@@ -163,6 +163,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
     ("tests/test_doc_counts.py", "documented counts match reality"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
+    ("tests/test_sequence_verification.py", "sequence-verification (variant presence/absence, primer codon recovery, reference-map refusals)"),
     ("tests/test_env_detect.py", "shell-env detection (Windows Git-Bash/WSL branches)"),
     ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
     ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),

@@ -411,7 +411,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 44 skills",
+      "desc": "All 45 skills",
       "skills": [
         "__ALL__"
       ]

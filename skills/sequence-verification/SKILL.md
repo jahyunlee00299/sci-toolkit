@@ -1,20 +1,19 @@
 ---
 name: sequence-verification
 description: >-
-  Find out whether a plasmid variant actually exists on disk, and build the expected-sequence
-  map to align sequencing reads against. Use when someone asks where a construct's sequence file
-  is, whether a mutation is in any saved map, what to compare a sequencing result to, or which
-  sequencing primer will actually reach the mutated position. Reads residues out of SnapGene
-  .dna / GenBank files instead of trusting filenames, recovers intended codons from stored
-  mutagenesis primers (whose own sequences biopython cannot see), builds a reference map by
-  editing only the named codons of a map that was really built in the lab, and checks Sanger
-  read distance before an order is placed. Triggers — "시퀀스 파일 찾아", "서열 파일 어디 있지",
-  "이 변이 들어간 파일 있나", "어느 파일에 변이 들어있나", "변이 확인용 맵", "시퀀싱 대조",
-  "시퀀싱 결과 확인", "참조 서열 만들어", "무슨 프라이머로 시퀀싱", "which file has the mutation",
+  Check whether a plasmid variant actually exists on disk, and build the expected-sequence
+  map to align sequencing reads against. Use when asked where a construct's sequence file is,
+  whether a mutation is saved in any map, what to compare a sequencing result to, or which
+  primer actually reaches the mutated position. Reads residues out of SnapGene .dna / GenBank
+  files instead of trusting filenames, recovers intended codons from stored mutagenesis primers
+  (whose own sequences biopython cannot see), builds a reference map by editing only the named
+  codons of a map really built in the lab, and checks Sanger read distance before ordering.
+  Triggers - "시퀀스 파일 찾아", "서열 파일 어디 있지", "이 변이 들어간 파일 있나",
+  "어느 파일에 변이 들어있나", "변이 확인용 맵", "시퀀싱 대조", "시퀀싱 결과 확인",
+  "참조 서열 만들어", "무슨 프라이머로 시퀀싱", "which file has the mutation",
   "reference map for sequencing", "expected sequence", "sequencing primer coverage",
-  "variant map", "is this variant saved anywhere". Not for designing mutagenesis or cloning
-  primers (primer-design), and not for judging whether a measured number is plausible
-  (scientific-validation).
+  "variant map". Not for designing primers (primer-design) or judging whether a measured
+  number is plausible (scientific-validation).
 license: Proprietary
 ---
 
