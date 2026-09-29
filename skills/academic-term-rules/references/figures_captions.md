@@ -4,7 +4,17 @@
 
 **Required components**:
 1. **Number**: "Figure 1." — "Figure." without number forbidden
-2. **Title**: Bold, sentence case
+2. **Title**: Bold, sentence case, AND a declarative noun phrase that names what is shown
+   [Auto-detectable, `caption_style.check_title_form`]. Forbidden in the title sentence: a
+   question word at the start (Why / How / What / Where / When / Whether / Which), a trailing
+   "?", a colon subtitle ("X: Y"), and rhetorical framing or a clause that makes a claim
+   ("... interact rather than acting independently"). The title says WHAT the figure is; why
+   the data look that way belongs in the body.
+   - Before: `Fig. S3. Why the optimum sits outside the tested range: one-at-a-time
+     sensitivity of the five process variables.`
+   - After: `Fig. S3. One-at-a-time sensitivity of product yield to the five process variables.`
+   A colon inside a ratio ("1:1") or a math span is not a subtitle. Colon-subtitle and
+   question titles are HIGH in `publication-figures/scripts/figure_lint.py`.
 3. **Panel description**: (a), (b) or (A), (B) — case consistency
 4. **Experimental conditions**: Substrate concentration, temperature, pH, time, rpm
 5. **Normalization basis**: When using "Relative amount", specify reference
@@ -36,19 +46,11 @@
     limitation that changes how the data should be read stays; a record of what is not yet finished
     goes.
 
-    ```python
-    # FLAG-ONLY. Each hit is a candidate for deletion, not an automatic edit --
-    # read the sentence and apply the test above before removing anything.
-    CAPTION_INTERNAL_FLAGS = [
-        r'(?:Notion|Asana|Jira)\s+[0-9a-f]{6,}',        # tracker IDs
-        r'[\U0001F534⚠✅]',                              # status emoji
-        r'\bstill open\b|\bnot yet correct\b',           # open-task language
-        r'\breported as shipped\b',                      # defending our own choice
-        r'\brather than re-optimi[sz]ed\b',
-        r'\bnot comparable point-for-point\b',           # versus an earlier draft
-        r'\b(?:DIFFERENT|SAME|NOT|ONLY)\b(?![-\w])',     # shouted emphasis
-    ]
-    ```
+    The FLAG-ONLY regex list for this item (`CAPTION_INTERNAL_FLAGS`: tracker IDs, status emoji,
+    open-task language, "reported as shipped", "not comparable point-for-point", shouted
+    DIFFERENT/SAME/NOT/ONLY) lives in `skills/publication-figures/scripts/caption_style.py`
+    so every checker shares ONE copy. Each hit is a candidate for deletion, not an automatic
+    edit - read the sentence and apply the test above first.
 
     > These rules govern the caption's TEXT. Two adjacent failures they do not catch: whether the
     > picture above the caption is the right picture, and whether it still sits on the same page as
@@ -70,15 +72,34 @@
       either the item is absent from the figure (say nothing) or its absence matters to
       interpretation (state the scope directly, without the "was not performed" framing).
 
-    🔴 **Caption edits made directly in the manuscript must also be applied to the figure's caption
-    sidecar file** (`<name>.caption.txt` in the figure-generation repo) if one exists — otherwise the
-    next routine image re-sync (image swap, DPI fix, aspect-ratio correction) silently restores the
-    deleted text from the stale sidecar. Measured case: a figure caption had two sentences deleted
-    under this rule, then the manuscript-only fix was silently reverted twice by later image
-    re-syncs before the stale sidecar itself was found and fixed — three separate figures hit by the
-    same mechanism in one audit pass. Before promoting any integer version, diff the caption text
-    against its sidecar for every figure the promotion touched.
+    **Detector (FLAG-ONLY, `caption_style.INTERPRETIVE_FLAGS`, MED)** - interpretive or
+    rhetorical connectives that explain the data instead of describing it. Each hit is a
+    candidate for a human decision (keep only if the reader needs it to read the panel), never
+    an auto-edit:
 
+    ```python
+    INTERPRETIVE_FLAGS = [
+        r'\bso that\b', r'\btherefore\b', r'\bhence\b', r'\bthus\b',
+        r'\brather than being\b',                       # bare "rather than" is too broad
+        r'\bnot (?:a )?preferences?\b', r'\bequally good\b', r'\bnow also\b',
+        r'\b(?:was|were) not (?:performed|computed|run|done|measured)\b',
+        r'\bdominates?\b', r'\bis the axis that\b', r'\bcost-free\b', r'\bacts? the same way\b',
+    ]
+    ```
+    Example of a caption that trips several at once: "... so that parallel lines mean the
+    variable acts the same way everywhere ... rather than being cost-free ... the reference
+    values are equally good ... was not computed."
+
+    🔴 **A caption sidecar is GENERATOR OUTPUT, not a source** (`<name>.caption.txt` in the
+    figure-generation repo is written by the render script's caption function or f-string). A
+    caption fix therefore goes into the render script's caption generator; then re-run the script
+    and require `git diff -- <sidecar>` to show the intended text and nothing else. A
+    manuscript-only or sidecar-only edit regresses on the next re-sync or re-render. Measured
+    case: several caption fixes were applied to sidecars only; re-running the scripts later
+    regenerated the deleted sentences because the generators still emitted the old text. Before
+    promoting any integer version, diff the manuscript caption text against its sidecar for every
+    figure the promotion touched, and lint the sidecar (`figure_lint.py <render script>` reads
+    the committed sidecar).
 
 ---
 

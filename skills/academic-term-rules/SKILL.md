@@ -30,7 +30,7 @@ the relevant `references/<topic>.md` file for the full rule table.
 | 5 | Enzyme Kinetics Notation | *K*m, *k*cat, *V*max, *k*cat/*K*m, *n*H italics | `references/units_kinetics_stats.md` |
 | 6 | Statistical Notation [Auto-detectable] | mean ± SD, `n = 3`, *p*-value, test-method naming | `references/units_kinetics_stats.md` |
 | 6a | Derived numbers must reproduce from the PRINTED operands [Auto-detectable, FLAG-ONLY] | a stated ratio/fold-change/% must recompute from the values printed in the same document, not just the SSOT full-precision source; round with `ROUND_HALF_UP` | `references/green_metrics_ssot.md` |
-| 7 | Figure Caption Rules | Required caption components (number/title/panels/conditions/n/abbrev./no mathtext/no internal-facing content/no data restatement) | `references/figures_captions.md` |
+| 7 | Figure Caption Rules | Required caption components (number/title/panels/conditions/n/abbrev./no mathtext/no internal-facing content/no data restatement); title must be a declarative noun phrase (no Why/How title, no colon subtitle); interpretive-wording flags; sidecar = generator output | `references/figures_captions.md` |
 | 7c | Citation-order diagnosis (`manuscript_ref_order.py`) | "cited out of order" ≠ "move the caption" — diagnose against heading outline first | `references/figures_captions.md` |
 | 8 | Punctuation — Dash Distinction [Auto-detectable] | hyphen vs. en dash vs. em dash | `references/punctuation_citations.md` |
 | 8a | Citation Number Placement (numeric-superscript journals) [Auto-detectable] | citation number goes after terminal punctuation | `references/punctuation_citations.md` |

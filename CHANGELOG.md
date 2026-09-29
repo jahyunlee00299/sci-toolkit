@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.96] — 2026-09-29
+
+- Caption title-form and interpretive-language checks (caption_style.py)
+
 ## [1.2.95] — 2026-09-29
 
 - Add construct_mw.py: expressed fusion/native MW, pI and e280 from a plasmid map

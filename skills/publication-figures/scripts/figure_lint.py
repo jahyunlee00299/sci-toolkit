@@ -13,6 +13,16 @@ Scans a render script (text + light AST) and reports rule violations as JSON:
   set_title_descriptive  : ax.set_title with >3-char non-panel text      (R2: no title)
   layout_manager         : constrained_layout / tight_layout present?    (R4)
   savefig_ok             : every savefig has dpi(=300) + bbox_inches='tight'
+  caption_style          : the `<stem>.caption.txt` sidecar the script writes, linted with
+                           caption_style.py (same folder; academic-term-rules section 7 items
+                           2/10/11): HIGH = question-word or "X: Y" colon title; MED =
+                           interpretive/rhetorical wording, clause-style title, internal-facing
+                           content. Sidecars are located from the literal "*.caption.txt" names
+                           in the script, searched under <script dir>/out/** and <repo root>/out/**.
+                           The COMMITTED sidecar is read: re-run the script first, and require
+                           `git diff -- <sidecar>` to be empty against the intended text
+                           (a caption fixed only in the sidecar or the manuscript is regenerated
+                           away). Dynamic file names (f-strings) are not resolved.
   external_legend        : bbox_to_anchor outside axes / loc contains 'center'
 
 Exit code: 0 if no HIGH-severity findings, 1 otherwise. Use as a pre-"figure done" gate.
@@ -39,6 +49,66 @@ import sys
 import re
 import json
 from pathlib import Path
+
+SIDECAR_NAME_RE = re.compile(r"""['"](?:[^'"\n]*[/\\])?([\w][\w\-. ]*\.caption\.txt)['"]""")
+
+
+def _load_caption_style():
+    """Import caption_style.py (same folder) by path; None if unavailable."""
+    import importlib.util
+    cand = Path(__file__).resolve().parent / "caption_style.py"
+    if not cand.exists():
+        return None
+    try:
+        spec = importlib.util.spec_from_file_location("caption_style", cand)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["caption_style"] = mod
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception:
+        return None
+
+
+def _repo_root(start: Path) -> Path:
+    for d in [start, *start.parents]:
+        if (d / ".git").exists():
+            return d
+    return start
+
+
+def find_sidecars(script: Path, text: str) -> list[Path]:
+    """Sidecar files a render script writes, resolved from literal names in its source."""
+    names = sorted(set(SIDECAR_NAME_RE.findall(text)))
+    if not names:
+        return []
+    script = script.resolve()
+    roots = [script.parent / "out", _repo_root(script.parent) / "out"]
+    found: list[Path] = []
+    for nm in names:
+        for r in roots:
+            if not r.is_dir():
+                continue
+            hits = sorted(r.rglob(nm))
+            if hits:
+                found.extend(h for h in hits if h not in found)
+                break
+    return found
+
+
+def lint_sidecar_style(script: Path, text: str) -> list[dict]:
+    """caption_style findings for every resolvable sidecar: [{file, sev, code, msg}]."""
+    cs = _load_caption_style()
+    if cs is None:
+        return []
+    out = []
+    for sc in find_sidecars(script, text):
+        try:
+            cap = sc.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for f in cs.analyze(cap, include_internal=True):
+            out.append({"file": sc.name, "sev": f["sev"], "code": f["code"], "msg": f["msg"]})
+    return out
 
 HEX_RE = re.compile(r"#[0-9A-Fa-f]{6}\b")
 # Whether the line is a color-SSOT definition (allowed): literals inside a
@@ -95,6 +165,7 @@ def lint_script(path: Path) -> dict:
         "raw_legend_calls": [], "hardcoded_hex": [], "hardcoded_fontsize": [],
         "set_title_descriptive": [], "external_legend": [],
         "suptitle": [], "condition_label": [],
+        "caption_style": [],
     }
     is_theme_module = path.name in ("theme.py", "aesthetic_helpers.py")
     # A schematic/construct diagram (SBOL glyph artwork) is not a data plot,
@@ -168,12 +239,17 @@ def lint_script(path: Path) -> dict:
         if not (has_dpi and has_bbox):
             savefig_issues.append({"line": ln_no, "has_dpi300": has_dpi, "has_bbox_tight": has_bbox})
 
+    findings["caption_style"] = lint_sidecar_style(path, text)
+    style_high = sum(1 for f in findings["caption_style"] if f["sev"] == "HIGH")
+    style_med = len(findings["caption_style"]) - style_high
+
     # tally severity
     high = (len(findings["raw_legend_calls"]) + len(findings["external_legend"])
+            + style_high
             + len(findings["hardcoded_hex"]) + len(findings["set_title_descriptive"])
             + len(findings["suptitle"]) + len(findings["condition_label"])
             + (0 if layout_manager else 1) + len(savefig_issues))
-    med = len(findings["hardcoded_fontsize"])
+    med = len(findings["hardcoded_fontsize"]) + style_med
 
     return {
         "file": str(path.name),
@@ -188,6 +264,7 @@ def lint_script(path: Path) -> dict:
             "external_legend": len(findings["external_legend"]),
             "suptitle": len(findings["suptitle"]),
             "condition_label": len(findings["condition_label"]),
+            "caption_style": len(findings["caption_style"]),
             "savefig_issues": len(savefig_issues),
         },
         "high_severity": high,
@@ -230,6 +307,8 @@ def _print_human(r: dict):
         print(f"  [HIGH] savefig missing dpi=300/bbox_inches='tight' x{len(r['savefig_issues'])}")
         for f in r["savefig_issues"]:
             print(f"         L{f['line']}: dpi300={f['has_dpi300']} bbox_tight={f['has_bbox_tight']}")
+    for f in r["findings"].get("caption_style", []):
+        print(f"  [{f['sev']}] caption sidecar {f['file']}: {f['code']} - {f['msg']}")
     if c["hardcoded_fontsize"]:
         print(f"  [MED]  hardcoded fontsize x{c['hardcoded_fontsize']} — use theme.FS_*")
         for f in r["findings"]["hardcoded_fontsize"][:8]:
