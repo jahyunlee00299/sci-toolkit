@@ -930,3 +930,47 @@ conventional Sanger numbers, not measured against this lab's provider.
 wired-by: skills/sequence-verification/SKILL.md
 wired-by: tests/test_sequence_verification.py
 wired-by: config/catalog.json
+
+## sequence-verification / construct_mw.py — what protein does the map express, and how heavy is it (260929)
+
+**Scope / layer** — sub-feature of `sequence-verification` (one new script, no new skill).
+Trigger: a task quoted molecular weights that were native-only, while the band on the gel is the
+whole vector-encoded fusion (pET-28a leader, 34 aa, about 3.5 kDa).
+
+**Prior art** — `primer-design/src/primer_design/expression_analyzer.py` also reports a MW, but
+from a protein string the caller supplies: no map, no leader, no mutation handling, and a
+hand-rolled residue table. Kept as is. Its `REFERENCE.md` table now points to `construct_mw.py`
+for the mass of what a plasmid really expresses. Not duplicated: translation and feature lookup
+reuse `_seqcommon`; the masses come from Biopython ProtParam.
+
+**Inputs / outputs** — reads one `.dna` / `.gb` map, prints fusion / native / thrombin-cleaved
+MW, pI and e280 (text or `--json`); with `--mutate` also the mutant and wild-type pairs. State
+ownership: none, writes nothing. Exit 0 computed, 1 unresolved, 2 usage.
+
+**Failure modes enforced, not documented** — the ORF is anchored at the T7 promoter and takes the
+first downstream ATG, because the longest ORF in a pET-28a map is `lacI` (360 aa), not the insert.
+With no anchor and no `--start-pos` the script refuses. Mutation numbering is checked against the
+residue actually present, so an off-by-two numbering (Met1-based vs a numbering offset by two) fails
+loudly instead of mutating the wrong residue. SnapGene labels carry their description appended
+("T7 promoter promoter for bacteriophage T7 RNA p"): exact match first, then a unique prefix, and
+an ambiguous prefix raises.
+
+**Evidence** — `tests/test_sequence_verification.py` 38/38 (18 new checks) on synthetic constructs
+with exactly known answers. Independent cross-check: the ProtParam mass equals a residue sum
+(`IUPACData.protein_weights` minus 18.0153 Da per peptide bond). On real maps it reproduced the
+old native-only records (35.923 and 29.047 kDa) and gave the fusion figures 3.5 kDa higher.
+Refutation: no anchor, no ATG, no stop, ambiguous base, motif absent or ambiguous, wrong base
+residue, residue out of range, malformed token, missing file. One test failed at first (1 Da
+resolution from rounding kDa to 3 decimals); fixed by exposing `mw_da` at 2 decimals, the
+tolerance was not loosened.
+
+**Deferred risk** — masses are computed, not measured, and the initiator Met is always kept; Met
+removal, signal peptides, cofactors and PTMs are not modelled. A map with a C-terminal tag read
+through a missing stop is reported as an unresolved construct, not guessed. In the motivating case the
+mutant plasmid file was never located, so its figures rest on the wild-type map plus the
+substitutions.
+
+wired-by: skills/sequence-verification/SKILL.md
+wired-by: AGENTS.md
+wired-by: tests/test_sequence_verification.py
+wired-by: config/catalog.json

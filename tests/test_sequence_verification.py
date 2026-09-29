@@ -34,7 +34,7 @@ SKILL = ROOT / "skills" / "sequence-verification" / "scripts"
 # and so an import-time error fails here rather than in front of a user.
 _MODULES = {}
 for _name in ("_seqcommon", "find_variant_maps", "primer_codons",
-              "build_reference_map", "read_coverage"):
+              "build_reference_map", "read_coverage", "construct_mw"):
     _spec = importlib.util.spec_from_file_location(_name, str(SKILL / f"{_name}.py"))
     _mod = importlib.util.module_from_spec(_spec)
     sys.modules[_name] = _mod
@@ -46,6 +46,7 @@ find_variant_maps = _MODULES["find_variant_maps"]
 primer_codons = _MODULES["primer_codons"]
 build_reference_map = _MODULES["build_reference_map"]
 read_coverage = _MODULES["read_coverage"]
+construct_mw = _MODULES["construct_mw"]
 
 for _s in (sys.stdout, sys.stderr):
     try:
@@ -251,6 +252,124 @@ check(read_coverage.verdict(10).startswith("TOO CLOSE"), "verdict: dye blob")
 check(read_coverage.verdict(300) == "OK", "verdict: good band")
 check(read_coverage.verdict(700) == "marginal", "verdict: marginal band")
 check(read_coverage.verdict(2000) == "OUT OF REACH", "verdict: beyond a read")
+
+# --- 6. construct_mw: expressed fusion, native split, mass -----------------
+import json
+
+from Bio.Data.IUPACData import protein_weights as _AA_W
+
+
+def indep_mass_kda(protein: str) -> float:
+    """Mass from free amino-acid masses minus one water per bond; no ProtParam."""
+    return (sum(_AA_W[a] for a in protein) - 18.0153 * (len(protein) - 1)) / 1000
+
+
+LEAD_AA = "M" + "H" * 6 + "A"
+FUSION = LEAD_AA + PROTEIN
+r = run("construct_mw.py", str(WT_MAP), "--native-start", "MKTAYI", "--json")
+j = json.loads(r.stdout) if r.returncode == 0 else {}
+check(r.returncode == 0 and j.get("fusion", {}).get("aa") == len(FUSION)
+      and j.get("stop_codon") == "TAA",
+      "construct_mw: anchored ORF is the tagged fusion, not the bare CDS",
+      f"exit {r.returncode} aa={j.get('fusion', {}).get('aa')}")
+check(j and abs(j["fusion"]["mw_kda"] - indep_mass_kda(FUSION)) < 0.005
+      and abs(j["native"]["mw_kda"] - indep_mass_kda(PROTEIN)) < 0.005,
+      "construct_mw: fusion and native masses match an independent residue sum",
+      f"{j.get('fusion', {}).get('mw_kda')} vs {indep_mass_kda(FUSION):.3f}")
+check(j and j["leader_seq"] == LEAD_AA and j["n_terminal_his"] and not j["c_terminal_his"],
+      "construct_mw: leader split and tag detection")
+
+r = run("construct_mw.py", str(WT_MAP), "--native-start", "MKTAYI",
+        f"--mutate", f"C{TARGET_RESIDUE}A", "--json")
+j = json.loads(r.stdout) if r.returncode == 0 else {}
+delta = j["native_mutant"]["mw_da"] - j["native"]["mw_da"] if j else 0
+check(r.returncode == 0 and abs(delta - (_AA_W["A"] - _AA_W["C"])) < 0.02,
+      "construct_mw: C->A shifts the mass by the residue difference (-32.07 Da)",
+      f"delta {delta:.3f} Da")
+r = run("construct_mw.py", str(WT_MAP), "--native-start", "MKTAYI",
+        "--mutate", f"K{TARGET_RESIDUE}A")
+check(r.returncode == 1 and "not 'K'" in r.stderr,
+      "construct_mw: refuses a substitution whose base residue is wrong",
+      f"exit {r.returncode}")
+r = run("construct_mw.py", str(WT_MAP), "--mutate", f"C{TARGET_RESIDUE}A")
+check(r.returncode == 1, "construct_mw: --mutate without --native-start is refused",
+      f"exit {r.returncode}")
+r = run("construct_mw.py", str(WT_MAP), "--native-start", "WWWWWW")
+check(r.returncode == 1 and "not found" in r.stderr,
+      "construct_mw: an absent native motif is refused, not guessed",
+      f"exit {r.returncode}")
+r = run("construct_mw.py", str(WT_MAP), "--mutate", "not-a-token")
+check(r.returncode == 2, "construct_mw: malformed --mutate is a usage error",
+      f"exit {r.returncode}")
+r = run("construct_mw.py", str(tmp / "no_such.gb"))
+check(r.returncode == 2, "construct_mw: missing map is a usage error", f"exit {r.returncode}")
+BAD = tmp / "corrupt.gb"
+BAD.write_text("not a genbank file\n", encoding="utf-8")
+r = run("construct_mw.py", str(BAD))
+check(r.returncode == 1, "construct_mw: corrupt map fails cleanly (exit 1)", f"exit {r.returncode}")
+
+# no anchor feature: refuse, and --start-pos is the explicit alternative
+r = run("construct_mw.py", str(MUT_MAP))
+check(r.returncode == 1 and "no feature labelled" in r.stderr,
+      "construct_mw: map without the anchor is refused, not guessed",
+      f"exit {r.returncode}")
+r = run("construct_mw.py", str(MUT_MAP), "--start-pos", "61", "--json")
+check(r.returncode == 0 and json.loads(r.stdout)["fusion"]["aa"] == len(FUSION),
+      "construct_mw: --start-pos reads the same fusion without an anchor",
+      f"exit {r.returncode}")
+
+# a real SnapGene label carries its description after the name
+LONG = tmp / "long_label.gb"
+LONG.write_text(gb_text("LONG", WT_PLASMID, [
+    ("promoter", "T7 promoter promoter for bacteriophage T7 RNA p", 10, 30, 1)]),
+    encoding="utf-8")
+r = run("construct_mw.py", str(LONG), "--json")
+check(r.returncode == 0 and json.loads(r.stdout)["fusion"]["aa"] == len(FUSION),
+      "construct_mw: anchor matches a label with a description appended",
+      f"exit {r.returncode}")
+
+# the promoter on the reverse strand of the file (a map stored the other way round)
+RC = tmp / "reverse.gb"
+_n = len(WT_PLASMID)
+RC.write_text(gb_text("RC", seqcommon.revcomp(WT_PLASMID), [
+    ("promoter", "T7 promoter", _n - 30, _n - 10, -1)]), encoding="utf-8")
+r = run("construct_mw.py", str(RC), "--json")
+check(r.returncode == 0 and json.loads(r.stdout)["fusion_seq"] == FUSION
+      and json.loads(r.stdout)["orf_strand"] == -1,
+      "construct_mw: a map stored reverse-complement yields the same fusion",
+      f"exit {r.returncode}")
+
+# trap: 'longest ORF' picks a decoy; the anchor must not
+DECOY = "ATG" + "GCT" * 150 + "TAA"
+DEC = tmp / "decoy.gb"
+DEC.write_text(gb_text("DEC", "GGCC" * 15 + "ATG" + HIS6 + "GCT" + WT_CDS + DECOY, [
+    ("promoter", "T7 promoter", 10, 30, 1)]), encoding="utf-8")
+r = run("construct_mw.py", str(DEC), "--json")
+check(r.returncode == 0 and json.loads(r.stdout)["fusion"]["aa"] == len(FUSION),
+      "construct_mw: a longer decoy ORF elsewhere does not displace the anchored one",
+      f"exit {r.returncode}")
+
+# no stop codon before the map ends
+NOSTOP = tmp / "nostop.gb"
+NOSTOP.write_text(gb_text("NOSTOP", build_plasmid(WT_CDS[:-3] + "GCT"), [
+    ("promoter", "T7 promoter", 10, 30, 1)]), encoding="utf-8")
+r = run("construct_mw.py", str(NOSTOP))
+check(r.returncode == 1 and "no stop codon" in r.stderr,
+      "construct_mw: an ORF with no stop is refused", f"exit {r.returncode}")
+
+# C-terminal His6 before the stop is reported; thrombin site is cut at LVPR|GS
+CT = tmp / "ctag.gb"
+_thr = "CTGGTGCCGCGTGGTAGC"   # LVPRGS
+CT.write_text(gb_text("CT", "GGCC" * 15 + "ATG" + HIS6 + _thr + WT_CDS[:-3] + HIS6 + "TAA"
+                      + "TTAC" * 60, [("promoter", "T7 promoter", 10, 30, 1)]),
+              encoding="utf-8")
+r = run("construct_mw.py", str(CT), "--json")
+j = json.loads(r.stdout) if r.returncode == 0 else {}
+check(j and j["c_terminal_his"] and j["n_terminal_his"],
+      "construct_mw: C-terminal His6 is detected when present")
+check(j and j["thrombin_cleaved"]["aa"] == j["fusion"]["aa"] - len("MHHHHHHLVPR"),
+      "construct_mw: thrombin cleavage removes through LVPR",
+      f"{j.get('thrombin_cleaved', {}).get('aa')} vs {j.get('fusion', {}).get('aa')}")
 
 # --------------------------------------------------------------------------
 n_fail = sum(1 for ok, _, _ in results if not ok)

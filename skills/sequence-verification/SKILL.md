@@ -1,19 +1,18 @@
 ---
 name: sequence-verification
 description: >-
-  Check whether a plasmid variant actually exists on disk, and build the expected-sequence
-  map to align sequencing reads against. Use when asked where a construct's sequence file is,
-  whether a mutation is saved in any map, what to compare a sequencing result to, or which
-  primer actually reaches the mutated position. Reads residues out of SnapGene .dna / GenBank
-  files instead of trusting filenames, recovers intended codons from stored mutagenesis primers
-  (whose own sequences biopython cannot see), builds a reference map by editing only the named
-  codons of a map really built in the lab, and checks Sanger read distance before ordering.
-  Triggers - "시퀀스 파일 찾아", "서열 파일 어디 있지", "이 변이 들어간 파일 있나",
-  "어느 파일에 변이 들어있나", "변이 확인용 맵", "시퀀싱 대조", "시퀀싱 결과 확인",
-  "참조 서열 만들어", "무슨 프라이머로 시퀀싱", "which file has the mutation",
-  "reference map for sequencing", "expected sequence", "sequencing primer coverage",
-  "variant map". Not for designing primers (primer-design) or judging whether a measured
-  number is plausible (scientific-validation).
+  Check whether a plasmid variant exists on disk, build the expected-sequence map to align
+  sequencing reads against, and compute the mass of the protein a construct really expresses.
+  Use when asked where a construct's sequence file is, whether a mutation is saved in any map,
+  what to compare a sequencing result to, which primer reaches the mutated position, or how
+  many kDa the tagged protein is. Reads residues from SnapGene .dna / GenBank files instead of
+  trusting filenames, recovers codons from stored mutagenesis primers, edits only named codons
+  of a lab-built map, checks Sanger read distance, and translates the anchored ORF for fusion
+  vs native MW, pI, e280. Triggers - "시퀀스 파일 찾아", "서열 파일 어디 있지", "이 변이 들어간 파일 있나", "변이 확인용 맵",
+  "시퀀싱 대조", "무슨 프라이머로 시퀀싱", "분자량 계산", "몇 kDa", "밴드 크기", "which file has the mutation",
+  "reference map for sequencing", "protein molecular weight from plasmid". Not for designing
+  primers (primer-design) or judging whether a measured number is plausible (scientific-
+  validation).
 license: Proprietary
 ---
 
@@ -106,7 +105,30 @@ A variant 900 bases out often reads as wild type and the result looks clean. Thi
 distance from each primer to each target and names the primer to use; exit 1 means no primer
 reaches some target and the order as planned cannot answer the question.
 
-### 6. Record the result honestly
+### 6. What protein does the construct express, and how heavy is it?
+
+```bash
+python scripts/construct_mw.py MAP.dna --native-start MPSIKL --mutate E223A --mutate S271A
+```
+
+Reads the ORF downstream of the T7 promoter (`--anchor` to change it, `--start-pos` to give the
+start codon), translates it, and prints the **fusion** (what runs on the gel), the **native**
+protein, and the thrombin-cleaved product, each with MW, pI and e280. `--native-start` is the first
+residues of the native protein; it splits the vector leader off and fixes the numbering `--mutate`
+uses (Met1 of the native). Both the wild-type and the mutant figures are printed. Exit 1 means the
+construct could not be resolved: no anchor feature, no stop codon, motif absent or ambiguous, or
+the base residue is not what the substitution assumes.
+
+🔴 **Quote the fusion for a gel, the native for a stoichiometry.** A native-only figure leaves out
+the vector leader: for pET-28a it is 34 aa (~3.5 kDa), so a 35.9 kDa enzyme runs near 39 kDa. In
+one measured case (2026-09-29) the lab's recorded molecular weights were native-only, and the band
+expected on the gel was 3.5 kDa higher than the number in the task. The reading frame is anchored
+at the promoter on purpose: the longest ORF in a pET-28a map is often `lacI` (360 aa), not the insert.
+
+Masses are average masses computed from sequence. They are not measurements, the initiator Met is
+kept, and processing or PTMs are not modelled -- say "computed" wherever the number is filed.
+
+### 7. Record the result honestly
 
 A map from step 4 is an **expected** sequence, not a record of a verified clone. Say so wherever
 it is filed or shared, and store the confirmed sequence separately once reads come back.
@@ -119,6 +141,7 @@ it is filed or shared, and store the confirmed sequence separately once reads co
 | `primer_codons.py` | Recover intended codons from stored mutagenesis primers |
 | `build_reference_map.py` | Measured map + named codons -> verified expected map |
 | `read_coverage.py` | Primer-to-target distance; can this read answer the question |
+| `construct_mw.py` | Expressed fusion vs native protein from a map: MW, pI, e280, tags, mutations |
 | `_seqcommon.py` | Shared `.dna`/`.gb` loading, translation, frame anchoring |
 
 SnapGene binary parsing is borrowed from `primer-design` (`snapgene_parser`), not reimplemented.
@@ -130,6 +153,8 @@ invisible to every feature-table reader including biopython.
 - **`primer-design`** — designs the mutagenesis/cloning primers this skill later reads back, owns
   the SnapGene binary format (`snapgene_parser`, `snapgene_writer`) and in-silico cloning. Go
   there to *create* a construct or primer; come here to *check* one. Required dependency.
+  Its `expression_analyzer` also reports a MW, but from a protein sequence you hand it; `construct_mw.py`
+  reads the construct from the map, so the vector leader and the mutation are included.
 - **`experiment-hub`** — surrounding experiment planning; routes to `primer-design` when an
   experiment needs primers, and here when a result needs checking against an expected sequence.
 - **`scientific-validation`** — the gate for whether a measured *number* is plausible. Different

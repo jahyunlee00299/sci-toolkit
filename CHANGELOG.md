@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.95] — 2026-09-29
+
+- Add construct_mw.py: expressed fusion/native MW, pI and e280 from a plasmid map
+
+## [1.2.94] — 2026-09-29
+
+- Add construct_mw.py: expressed fusion/native MW, pI and e280 from a plasmid map
+
 ## [1.2.93] — 2026-09-29
 
 - Route sequence-verification in AGENTS.md section 0, README and QUICKSTART

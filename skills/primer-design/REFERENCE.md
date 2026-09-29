@@ -146,7 +146,7 @@ Returns: F/R primer name and sequence, Tm, expected band size, recommended annea
 
 | Item | Description |
 |------|------|
-| `basic_info` | Protein length (aa), MW (kDa), GC% |
+| `basic_info` | Protein length (aa), MW (kDa), GC% — of the sequence you pass in; for the mass of the fusion a plasmid map really expresses (vector leader, mutations) use `sequence-verification/scripts/construct_mw.py` |
 | `cai` | Codon Adaptation Index (0-1, E. coli K-12 based) |
 | `rare_codons` | Rare codon frequency (%), cluster positions |
 | `signal_peptide` | Signal peptide prediction |

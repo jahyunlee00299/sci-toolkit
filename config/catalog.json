@@ -285,7 +285,7 @@
     },
     "sequence-verification": {
       "category": "molbio",
-      "role": "Verify a plasmid variant exists on disk; build the expected-sequence map and check sequencing read coverage",
+      "role": "Verify a plasmid variant exists on disk; build the expected-sequence map and check sequencing read coverage; compute expressed fusion/native MW from a map",
       "requires": [
         "primer-design"
       ],
