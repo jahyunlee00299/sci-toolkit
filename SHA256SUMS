@@ -1,11 +1,11 @@
-37f90453d740343547651ad480105afbe35de85c80202bddc482213c125b9bcc *./.claude-plugin/plugin.json
+8a0cf5288634687c59f1cfb085fc3180ffa5181f2ffe384752b89b525c2a6de4 *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 2e4e75bafd8e5ecf1b873f63ab713a141fdeb3ea5f50e2053fdbe51409680b36 *./AGENTS.md
-70bd8ca96624076f34cd9158de7e3a64702d745f7896d8aba28b837a3fba84c3 *./CHANGELOG.md
+715ee315613c0b7880d37f0f9a17f3c14dc6d8c089ecaf8938cea8cc3d1f08c8 *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -157,7 +157,7 @@ c2103ea960e7399969a2c01bb06ab54e24d8c5cb3738d66936de5771c1639c2a *./skills/endno
 0066e20c2cdf8abb44ea52b0e1853867a4d67c9d42edc4dafe5e3a72466a7031 *./skills/endnote-citation-injection/references/phase1-extraction-code.md
 ca07bd909f0c3aab685803ee39480bb58b08958772fbcb2173e545fee4c7b4fe *./skills/endnote-citation-injection/references/phase2-verification-findings.md
 7a35041f4fbd6abb88aa4374cdeafb47a335caa3aeb3c10fc4bec15a482a73f4 *./skills/endnote-citation-injection/references/phase8-integrity-check-code.md
-67fc0e5f533da3f4596669e6ef56c9d607d267e332b068c26e36726fc228f3a0 *./skills/experiment-hub/SKILL.md
+c6f9a5b2dedbaacba0c1439bc6de4f92f0da84abbe9bac6384f67eb64315b6c1 *./skills/experiment-hub/SKILL.md
 14cbad455441a8260f9a6dfa5a5a6d2775ba17c24049adde3f9043207a57fd6b *./skills/experiment-hub/reaction_matrix.py
 91319bacba8db19885f862cf8e60f89f17e2ab1136aa4f0e007fbb5d92b1937f *./skills/generate-image/SKILL.md
 662a4fe4f1f7d763916a8260ac0d3377f16d217dfda469621f16dc87810cf946 *./skills/generate-image/scripts/generate_image.py

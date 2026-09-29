@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.97] — 2026-09-30
+
+- experiment-hub: pipetting workbook convention (master premix, enzyme cocktail last, total-volume-driven formulas)
+
 ## [1.2.96] — 2026-09-29
 
 - Caption title-form and interpretive-language checks (caption_style.py)

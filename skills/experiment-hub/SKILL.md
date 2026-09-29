@@ -101,6 +101,13 @@ Causality strength: 5 stars (dose-response + mechanism + reproducibility) to 1 s
 - **Multi-enzyme cascade**: Optimal condition matrix per enzyme
 - **Whole-cell catalysis**: Includes OD, permeabilization, aeration conditions
 
+### Pipetting workbook convention (reaction_matrix.py)
+
+- Put every component that has the same final concentration in all tubes (buffer, MgCl2, CoCl2, ATP, and any fixed-dose cofactor such as a priming sugar-bisphosphate) into ONE master premix: mark them `"type": "buffer"` in the config, not `"cofactor"`. Only the substrates (and any per-tube variable cofactor, e.g. the ATP-regeneration donor) vary per tube; water is the per-tube residual.
+- Enzymes go in as one stock-only cocktail (n tubes x 1.2 surplus), kept on ice and added LAST in a fixed, staggered order, so the start time of every tube is known; sample later in the same order and interval. A solid, poorly soluble substrate is weighed per tube and added first.
+- Default to the smallest total volume at which every tube still closes (all-stock designs can go to 50 uL); check the tightest tube's water residual.
+- Every downstream formula must reference the total-volume cell, never a literal such as 100. After editing, recalculate in Excel and compare with an independent Python calculation.
+
 ## Notes
 
 - Optimization proposals are statistical suggestions; experimental validation is mandatory
