@@ -62,3 +62,39 @@ parts = [tool_input[f] for f in fields if isinstance(tool_input.get(f), str)]
 sys.stdout.write(" ".join(parts).replace("\n", " "))
 '
 }
+
+# kw_init <subject> / kw <glob>...  — fork-free keyword gate for a rule's grep.
+#
+# Every rule in the guards is a grep over one single-line string (the command).
+# A rule can only match if some plain keyword occurs in that string, so testing
+# the keyword with `case` first (a shell builtin, no child process) lets the
+# common "nothing dangerous here" command skip every grep. On Windows each grep
+# is a 40-160 ms spawn; a typical command used to pay for 6-10 of them.
+#
+#   kw_init "$CMD"          remember the subject; decide whether gating is safe
+#   if kw '*rm*' && printf '%s' "$CMD" | grep -Eq '<the real rule>'; then ...
+#
+# kw succeeds when ANY of its globs matches, so it answers "might the rule
+# match?" — never "does it?". The real grep still decides. The gate is only used
+# for printable ASCII: for anything else (Korean text, broken bytes, control
+# characters) grep's answer depends on the locale and on byte validity, so kw
+# always says "might" and the grep runs exactly as it did before.
+kw_init() {
+    _kw_subject=$1
+    case $1 in
+        *[!\ -\~]*) _kw_on=0 ;;
+        *) _kw_on=1 ;;
+    esac
+}
+
+kw() {
+    if [ "$_kw_on" = "0" ]; then
+        return 0
+    fi
+    for _kw_glob in "$@"; do
+        case $_kw_subject in
+            $_kw_glob) return 0 ;;
+        esac
+    done
+    return 1
+}

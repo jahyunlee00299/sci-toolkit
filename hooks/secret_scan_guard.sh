@@ -18,6 +18,20 @@ set -eu
 
 INPUT="$(cat)"
 
+# Fast exit. Every rule below needs one of these substrings: a credential file
+# name (rule 1), a token prefix (rule 2), or the word key / token / secret in
+# any case (rule 3). When none is present nothing can match, so skip the tr and
+# the greps (each a child process; 40-160 ms apiece on Windows). Only for
+# printable ASCII: anything else (Korean text, broken bytes, control characters)
+# takes the full path, where grep's case folding and byte handling apply.
+case $INPUT in
+    *[!\ -\~]*) ;;
+    *secrets.json*|*.credentials.json*|*.git-credentials*|*id_rsa*|*id_ed25519*) ;;
+    *sk-*|*ghp_*|*gho_*|*github_pat_*|*xox*|*AKIA*|*AIzaSy*) ;;
+    *[kK][eE][yY]*|*[tT][oO][kK][eE][nN]*|*[sS][eE][cC][rR][eE][tT]*) ;;
+    *) exit 0 ;;
+esac
+
 # Fold to a single line for simpler grep -E matching, keep original case.
 FLAT="$(printf '%s' "$INPUT" | tr '\n' ' ')"
 

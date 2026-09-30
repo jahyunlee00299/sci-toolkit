@@ -7,7 +7,7 @@ workflow ends in a **verification gate** — it doesn't stop at "it ran," it
 stops after "confirmed the result is correct."
 
 ```
-41 skills · 41 regression tests · 7 safety guards
+41 skills · 42 regression tests · 7 safety guards
 python doctor.py   ->   15 checks · 0 FAIL
 ```
 
@@ -169,7 +169,7 @@ this order:
 | `hooks/` | 7 safety guards — secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
 | `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
 | `docs/` | 15 초심자 docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
-| `tests/` | 41 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer, patent numeric-claim arithmetic gate). `doctor.py` runs all of them automatically |
+| `tests/` | 42 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer, patent numeric-claim arithmetic gate). `doctor.py` runs all of them automatically |
 | `doctor.py` | Integrity/environment check (`doctor_lib/` holds the checks). `PASS` means it's ready; `--offline` keeps every self-test off the network |
 | `evals/` | Headless measurement of whether routing **actually fires** (slow, costs money — run manually) |
 | `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |

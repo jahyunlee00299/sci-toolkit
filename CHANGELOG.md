@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.99] — 2026-09-30
+
+- hooks: prefilter guards and parse the payload once (per-call latency)
+
+## [1.2.98] — 2026-09-30
+
+- hooks: prefilter guards and parse the payload once (per-call latency)
+
 ## [1.2.97] — 2026-09-30
 
 - experiment-hub: pipetting workbook convention (master premix, enzyme cocktail last, total-volume-driven formulas)
