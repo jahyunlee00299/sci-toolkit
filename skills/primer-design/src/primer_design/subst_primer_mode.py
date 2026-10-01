@@ -35,7 +35,6 @@ for _s in (_sys.stdout, _sys.stderr):
             pass
 
 import os
-from pathlib import Path
 
 from Bio.Seq import Seq
 from Bio.SeqUtils.MeltingTemp import Tm_NN
@@ -383,93 +382,3 @@ class iPCRSubstDesigner(iPCRDesignerBase):
             "f_qc": f_qc, "r_qc": r_qc, "het": het,
             "warnings": warnings,
         }
-
-
-# ── Tests ─────────────────────────────────────────────────────────────────
-
-def _run_tests():
-    """Tests for iPCRSubstDesigner."""
-    import os
-
-    sep = "=" * 70
-    designer = iPCRSubstDesigner()
-
-    # SnapGene parser (minimal)
-    def parse_snapgene(filepath):
-        with open(filepath, "rb") as fh:
-            data = fh.read()
-        sequence = None
-        i = 0
-        while i < len(data) - 5:
-            btype = data[i]
-            blen = int.from_bytes(data[i + 1:i + 5], "big")
-            if i + 5 + blen > len(data):
-                break
-            if btype == 0:
-                sequence = data[i + 6:i + 5 + blen].decode("ascii")
-            i += 5 + blen
-        return sequence
-
-    dna_file = str(
-        Path.home() / "your_project" / "Genes"
-        / "parent_construct.dna"
-    )
-
-    if not os.path.exists(dna_file):
-        template = (
-            "ATGCGTAACCTGGCGATCAAGCTGTTCGACGGTACC"
-            "GATATCCTGCAGAAATTTGCGCCGGATCTGAACGAA"
-            "TGGCTGCACATCGGTCCTGCGATTGGCACCGATTTC"
-            "AATCGCCTGATGCAG"
-        )
-    else:
-        template = parse_snapgene(dna_file)
-        print(f"Template loaded: {len(template)} bp")
-
-    # Test 1: 1 bp substitution
-    print(f"\n{sep}\n  Test 1: 1 bp substitution at pos 100\n{sep}")
-    pos = 100
-    old_base = template[pos]
-    new_base = {"A": "C", "T": "G", "G": "T", "C": "A"}[old_base.upper()]
-    r = designer.design(seq=template, subst_pos=pos, old_seq=old_base, new_seq=new_base)
-    print(f"  F: 5'-{r['f_full']}-3'  ({r['f_len']} nt, Tm={r['f_tm']}C)")
-    print(f"     eff_bind: {r['f_eff_bind']}  ({len(r['f_eff_bind'])} bp)")
-    print(f"     QC: {r['f_qc']['verdict']}  "
-          f"hairpin Tm={r['f_qc'].get('hairpin_tm','N/A')}C  "
-          f"homodimer Tm={r['f_qc'].get('homodimer_tm','N/A')}C")
-    print(f"  R: 5'-{r['r_full']}-3'  ({r['r_len']} nt, Tm={r['r_tm']}C)")
-    print(f"     QC: {r['r_qc']['verdict']}  "
-          f"hairpin Tm={r['r_qc'].get('hairpin_tm','N/A')}C  "
-          f"homodimer Tm={r['r_qc'].get('homodimer_tm','N/A')}C")
-    print(f"  Anneal temp: {r['anneal_temp']}C")
-    print(f"  Overlap verified: {'YES' if r['overlap_verified'] else 'NO'}")
-    if r['warnings']:
-        for w in r['warnings']:
-            print(f"  WARNING: {w}")
-    assert r['overlap_verified'], "Test 1 FAILED"
-    print("  -> Test 1 PASSED")
-
-    # Test 2: 3 bp substitution
-    print(f"\n{sep}\n  Test 2: 3 bp substitution at pos 50\n{sep}")
-    old_3 = template[50:53]
-    new_3 = str(Seq(old_3).complement())
-    r2 = designer.design(seq=template, subst_pos=50, old_seq=old_3, new_seq=new_3, overlap_len=20)
-    print(f"  F: 5'-{r2['f_full']}-3'  ({r2['f_len']} nt)")
-    print(f"  Overlap verified: {'YES' if r2['overlap_verified'] else 'NO'}")
-    assert r2['overlap_verified'], "Test 2 FAILED"
-    print("  -> Test 2 PASSED")
-
-    # Test 3: validation error
-    print(f"\n{sep}\n  Test 3: Validation error\n{sep}")
-    try:
-        designer.design(seq=template, subst_pos=100, old_seq="X", new_seq="A")
-        print("  -> Test 3 FAILED")
-    except ValueError as e:
-        print(f"  Caught: {e}")
-        print("  -> Test 3 PASSED")
-
-    print(f"\n{sep}\n  All tests PASSED\n{sep}")
-
-
-if __name__ == "__main__":
-    _run_tests()

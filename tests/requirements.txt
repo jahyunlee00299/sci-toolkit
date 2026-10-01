@@ -56,3 +56,10 @@ biopython
 # registration failed with ModuleNotFoundError: No module named 'openpyxl' while the
 # laptop passed.
 openpyxl
+# skills/primer-design/tests (registered in doctor 2026-10-02) imports primer_design
+# modules that need biopython, pandas and openpyxl (all above); the order-sheet
+# Macrogen .xls export writes with xlwt and its test reads back with xlrd (the
+# test importorskips both, so a missing one skips instead of failing; listing
+# them here keeps that case RUNNING in CI).
+xlwt
+xlrd

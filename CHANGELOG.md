@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.110] — 2026-10-02
+
+- primer-design: move inline _run_tests into a pytest suite (175 assertions preserved, 72 tests), register it in doctor
+
 ## [1.2.109] — 2026-10-02
 
 - skills: rename paramguard to fiducial (repo deleted 260930; install via PyPI fiducial-check, five rules incl. pointers)

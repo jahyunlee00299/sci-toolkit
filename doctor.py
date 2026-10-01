@@ -191,6 +191,7 @@ SELF_TEST_SCRIPTS = [
     ("skills/lab-record/tests", "lab-record pytest suite (ID allocation, lint rules 1-7, trace/impact/open)"),
     ("skills/experiment-hub/tests", "experiment-hub pytest suite (pipetting checks, Excel COM guard)"),
     ("skills/web-scraping/tests", "web-scraping pytest suite (EZproxy scope, PDF pipeline, target safety, GitHub failure surfacing)"),
+    ("skills/primer-design/tests", "primer-design pytest suite (iPCR subst/del, RE cloning, colony PCR, expression analysis, order sheet, vector registry)"),
 ]
 
 
