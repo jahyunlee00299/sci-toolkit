@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.104] — 2026-10-02
+
+- ci: install openpyxl for the experiment-hub test suite
+
 ## [1.2.103] — 2026-10-02
 
 - skills: sanitize lab-record/experiment-hub/research-ideation for distribution (generic examples, MIT license, dead refs fixed)

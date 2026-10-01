@@ -51,3 +51,8 @@ requests
 # ModuleNotFoundError: No module named 'Bio' while the laptop passed. Installing
 # it here keeps the 20 checks RUNNING in CI rather than skipped.
 biopython
+# skills/experiment-hub/tests (registered in doctor 2026-10-02) imports pipetting_checks,
+# which reads workbooks with openpyxl. Measured 2026-10-02: the first CI run after
+# registration failed with ModuleNotFoundError: No module named 'openpyxl' while the
+# laptop passed.
+openpyxl
