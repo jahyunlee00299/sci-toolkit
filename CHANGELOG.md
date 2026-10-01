@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.107] — 2026-10-02
+
+- lab-record tests: short fake gid (gitleaks asana-client-id false positive)
+
 ## [1.2.106] — 2026-10-02
 
 - skills/lab-record: shared config, @/ project paths, material catalog, RULE8/RULE9, review hardening

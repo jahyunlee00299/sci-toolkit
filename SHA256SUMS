@@ -1,11 +1,11 @@
-4e6a581feb3d4108e15aa4e20d23c24837a99e3f833d1b3d0b0dd5e7a3315f60 *./.claude-plugin/plugin.json
+3a8f98dda238b8a9c95304b4716654cc9faddee3a5ed90f08f1004f63c62666c *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 2e4e75bafd8e5ecf1b873f63ab713a141fdeb3ea5f50e2053fdbe51409680b36 *./AGENTS.md
-3dbdde7471623b0631effa3cc4766e89210e21114b74e8d7e29e7959f0a149b9 *./CHANGELOG.md
+2dd0c68085f347b07299fc5cb2972f2177109fb314082e7526a816aefa05d9ec *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -204,7 +204,7 @@ a586942efc96aabcba2d496a26818ce904d4a3a8954f68461d5f5532487413c5 *./skills/lab-r
 2685ae97b0c34ef5a3e0b916be92bc8f02446801c550da3e1da7d6962db5f209 *./skills/lab-record/tests/test_lab_record.py
 0dc8325e63bf3480fa61e80d8b4805f2d1e9221aa488035a750f5b0d1287ec72 *./skills/lab-record/tests/test_lab_record_catalog.py
 1f7672b85bcc7c9b181541ddc40b9ba6c0d2e3c93f4999ebff5b4a318b4ac91e *./skills/lab-record/tests/test_lab_record_hardening.py
-7431ea08c65dceabe539562d5fd67e6d00b1390cf68b3069ed8bd134cdd4d1bc *./skills/lab-record/tests/test_lab_record_shared.py
+04f6d56fdd8f1d3719706ffa7cf56f6bdf153127ccde5cbd1e5db47a531c8290 *./skills/lab-record/tests/test_lab_record_shared.py
 47b802f73ff6333a4e6c428279f3cfc664eaf05b1234de138ca29a1cb32842fc *./skills/literature-review/SKILL.md
 e9db0f8e00f894fc55c474ca0355a86fd72eb9bb5456e1253e740d3c06e74208 *./skills/literature-review/assets/review_template.md
 a62f97c9f1c50da0627033187da5632f9fec00679fc5e8c0e97b217210c0c79b *./skills/literature-review/references/citation_styles.md

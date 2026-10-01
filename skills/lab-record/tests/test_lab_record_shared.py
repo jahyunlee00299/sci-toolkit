@@ -118,8 +118,8 @@ def test_asana_project_digits_and_null_ok(tmp_path):
     root = tmp_path / "root"
     root.mkdir()
     local = wjson(tmp_path / "l.json", {"root": str(root), "projects": {
-        "a": {"asana_project": "1200000000000001"}, "b": {"asana_project": None}}})
-    assert model.resolve_config(None, str(local)).projects["a"]["asana_project"] == "1200000000000001"
+        "a": {"asana_project": "424242"}, "b": {"asana_project": None}}})
+    assert model.resolve_config(None, str(local)).projects["a"]["asana_project"] == "424242"
 
 
 def test_bad_folder_exit_2(tmp_path):
@@ -294,7 +294,7 @@ def links(root, items):
 
 def test_asana_links_valid(chain, capsys):
     root, cfg = chain
-    links(root, [{"rel": "asana", "task": "1200000000000001"}, {"rel": "asana", "project": "99"},
+    links(root, [{"rel": "asana", "task": "424242"}, {"rel": "asana", "project": "99"},
                  {"rel": "asana", "task": 1234}])
     assert lint(cfg, capsys)[0] == 0
 
