@@ -6,6 +6,7 @@ Run: python -m pytest tests/test_pipetting_checks.py -v
 from __future__ import annotations
 
 import sys
+import re
 import zipfile
 from pathlib import Path
 
@@ -69,9 +70,13 @@ def _make_leading_equals_workbook(tmp_path: Path) -> Path:
     with zipfile.ZipFile(tmp_path) as zin:
         data = {n: zin.read(n) for n in zin.namelist()}
     sheet_xml = data["xl/worksheets/sheet1.xml"].decode("utf-8")
-    patched = sheet_xml.replace(
-        "<c r=\"A2\"><f>B2*2</f><v></v></c>",
-        "<c r=\"A2\" t=\"str\"><v>=B2*2</v></c>",
+    # Match the whole A2 cell element: openpyxl serialises it differently with and
+    # without lxml installed, so a literal-string patch passed on a machine with
+    # lxml and failed on CI without it (measured 2026-10-02, openpyxl 3.1.5 both).
+    patched = re.sub(
+        r'<c r="A2"[^>]*>.*?</c>|<c r="A2"[^>]*/>',
+        '<c r="A2" t="str"><v>=B2*2</v></c>',
+        sheet_xml, count=1, flags=re.S,
     )
     assert patched != sheet_xml, "fixture XML shape changed -- update this patch string"
     data["xl/worksheets/sheet1.xml"] = patched.encode("utf-8")

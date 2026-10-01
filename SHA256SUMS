@@ -1,11 +1,11 @@
-fff0782141b5882c07268e2474349953a0e395939e408d830a5ab4da1dee9c15 *./.claude-plugin/plugin.json
+a3738209363c92276d93f1e71a606d923222c2a2ea3993879580effab78a3fa3 *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 2e4e75bafd8e5ecf1b873f63ab713a141fdeb3ea5f50e2053fdbe51409680b36 *./AGENTS.md
-2d1febf476ba3383c005eb593dc2d72e8c4da05f396d4f7ffe1e6c3bd5a16d06 *./CHANGELOG.md
+192f766cc55ee3c408b1ccf5ee1c7004a22fe2bb09530371097b18521b11ca40 *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -162,7 +162,7 @@ ca07bd909f0c3aab685803ee39480bb58b08958772fbcb2173e545fee4c7b4fe *./skills/endno
 433898a30f401bb4f0f3a20962ddeafd7dcfb159ef8a6c2887fc7d27974fd6a5 *./skills/experiment-hub/pipetting_checks.py
 6e2cc6134f032d0acf03f2d93cd83c71bebd59530bfdea5c927feee6507d4f27 *./skills/experiment-hub/reaction_matrix.py
 ada4be842ae5f700d4bf4053332102ad2edf8f729e1ae4457e866f088b4f95bb *./skills/experiment-hub/tests/test_excel_com_guard.py
-704bab328f4424722e34045a23e6f2e730939d1f3779e2d24fffe55c146bf5f0 *./skills/experiment-hub/tests/test_pipetting_checks.py
+0bba667755d3f3a2ecc4f92a6041da7502d0eacf09a298a0f7df94b03d641fab *./skills/experiment-hub/tests/test_pipetting_checks.py
 45f1ced584147577e4ce917bdd9848fb5e884097b331d693c69322e5714af407 *./skills/experiment-hub/verify_pipetting_workbook.py
 91319bacba8db19885f862cf8e60f89f17e2ab1136aa4f0e007fbb5d92b1937f *./skills/generate-image/SKILL.md
 662a4fe4f1f7d763916a8260ac0d3377f16d217dfda469621f16dc87810cf946 *./skills/generate-image/scripts/generate_image.py
