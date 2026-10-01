@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.112] — 2026-10-02
+
+- ledger: record refactor batch 1 (structure list gate, fiducial rename, primer-design pytest suite, shared sha256 helper)
+
 ## [1.2.111] — 2026-10-02
 
 - checksums: one shared sha256 helper (doctor_lib.filehash) for manifest writer and verifier; skill-local hashers stay separate

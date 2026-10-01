@@ -974,3 +974,176 @@ wired-by: skills/sequence-verification/SKILL.md
 wired-by: AGENTS.md
 wired-by: tests/test_sequence_verification.py
 wired-by: config/catalog.json
+
+## Refactor batch 1 (2026-10-02) — four units on one branch
+
+Branch `scitoolkit/fix/refactor-batch1-261002`. Each unit went through implement,
+prove, refute, connect, regress. Baseline before any change: `pytest -q` = 60
+passed (testpaths `tests/`; skill-local suites run through doctor, not through
+that command).
+
+### Unit 1 — PROJECT_STRUCTURE.md skills list is checked against `skills/`
+
+**Scope** — the layout table's `skills/` row named 26 of the 42 skill folders.
+Sixteen had no entry (the 13 reported at the start plus `analysis-code-testing`,
+`data-quality-checks`, `debugging-loop`, with `research-lookup`/`research-search`
+only present in an abbreviated "research-ideation/-lookup/-search" spelling no
+tool could match).
+
+**Layer** — doc-vs-reality gate (same family as the count checks).
+
+| | |
+|---|---|
+| Input | `PROJECT_STRUCTURE.md` layout row, folder names under `skills/` |
+| Output | list of defects; any entry makes `tests/test_doc_counts.py` exit 1 |
+| SSOT | the `skills/` folders (already pinned to `config/catalog.json` by check 0 of the same test) |
+
+**Evidence** — the row now lists every folder as a backticked name;
+`test_doc_counts.py` passes. Run against the pre-change document, the new check
+names the folders it was missing.
+
+**Refutation** — a fake folder (fake-skill) added to the disk set fails; a
+documented name with no folder fails; a table with no `skills/` row fails;
+removing one backticked name (`web-scraping`) fails. Three of these run on every
+execution as negative controls inside the test, so a parser that stops matching
+cannot leave the gate silently green.
+
+**Deferred risk** — only the `skills/` row is parsed; other prose that lists
+skills (README tables, catalog roles) is not cross-checked here.
+
+wired-by: tests/test_doc_counts.py
+wired-by: PROJECT_STRUCTURE.md
+wired-by: doctor.py
+
+### Unit 2 — `paramguard` skill redirected to `fiducial`
+
+**Scope** — the paramguard repo was deleted on 2026-09-30 and replaced by
+`fiducial` (public GitHub repo, PyPI fiducial-check 0.1.0).
+`skills/paramguard/SKILL.md` still said "not published yet" and pointed at the
+dead repo.
+
+**Layer** — skill documentation + catalog entry (no code in the folder).
+
+**Decision** — same tool, so the folder was renamed (`git mv`) to
+`skills/fiducial`. Install is `pip install fiducial-check` (command and import
+name `fiducial`); the pre-commit block points at the `fiducial` repo `v0.1.0`
+hooks (fiducial-names, fiducial-literals, both defined in the upstream
+`.pre-commit-hooks.yaml`). The fifth rule (`pointers`), `--conflicts`,
+`fiducial check` and `--format=json` were added from the upstream README. A
+"Formerly paramguard" line stays for people searching the old name. The
+`PARAMGUARD_SKIP` bypass was dropped because upstream has no such switch.
+`catalog.json` carries `fiducial` (`pip_package: fiducial-check`) instead of
+`paramguard`.
+
+**Evidence** — `gh repo view` (public, default branch main), PyPI JSON
+(fiducial-check 0.1.0, Python >=3.10), upstream README read in full, every
+flag used in the skill found in the upstream `cli.py`. `test_skill_contract`
+(name = folder, description <= 1024 chars), `test_skill_requirements`,
+`test_skill_references`, `test_doc_counts` pass. `git grep paramguard` outside
+CHANGELOG history now finds only the deliberate "formerly" mentions and the
+catalog role text.
+
+**Refutation** — the first rewrite left the description at 1123 characters and
+`test_skill_contract` failed it; it was shortened without touching the Korean
+triggers. Nothing was written into the skill that the upstream CLI does not
+define.
+
+**Deferred risk** — the skill has no runtime counterpart under the maintainer's
+skills tree (TOOLKIT-ONLY in `skill_drift.py`), so there is nothing to port
+back. It describes upstream behaviour at v0.1.0 and will drift if upstream
+changes; no automated check compares it to the PyPI release.
+
+wired-by: config/catalog.json
+wired-by: skills/fiducial/SKILL.md
+wired-by: tests/test_skill_contract.py
+
+### Unit 3 — primer-design inline `_run_tests()` moved to a pytest suite
+
+**Scope** — seven modules under `skills/primer-design/src/primer_design/` each
+carried an inline `_run_tests()` plus an `if __name__ == "__main__"` hook. None
+of it ran under doctor or CI.
+
+**Layer** — test infrastructure for a skill (a skill-local suite registered as a
+directory entry in `SELF_TEST_SCRIPTS`, like lab-record, experiment-hub and
+web-scraping).
+
+| | |
+|---|---|
+| Input | the seven modules; `skills/primer-design/tests/` (`conftest.py` puts `../src` on `sys.path`) |
+| Output | 72 pytest tests across seven `test_<module>.py` files |
+| Removed | 1,328 lines: the seven `_run_tests` bodies and hooks, plus the `Path` import only the test used |
+
+**Evidence** — assertion count by AST (assert statements and `check()` calls)
+plus the dynamic cases an AST cannot see (a 12-name loop and two
+expected-exception cases): colony 19, del 6, expression 24, order_sheet 58,
+restriction 25, subst 3, vector 40 = 175 before, 175 after. All seven inline
+suites passed before the move, so no `xfail` was needed. No document,
+`SKILL.md` or script invoked `python module.py` as a self-test (grep over docs,
+scripts, tests, doctor_lib), so no reference needed updating. The suite also
+passes with `primer3` blocked, so CI needs no extra package; `xlwt` and `xlrd`
+were added to `tests/requirements.txt` for the Macrogen `.xls` case.
+
+**Refutation** — in a scratch copy, changing the frame rule in
+`vector_registry` (`in_frame_5prime = (frame_at_insert_start == 1)`) fails 8
+tests across vector_registry and restriction_cloning, and corrupting a primer-map
+key fails 5 colony tests. Limits found and carried over unchanged from the inline
+version: raising the 5,000 KRW minimum primer cost is NOT caught (every test
+primer is long enough that the minimum never binds), and altering the first
+`AGG` literal in the expression analyzer is not caught either.
+
+**Behaviour changes in the tests** — the subst test's optional load of a private
+SnapGene template from a hard-coded home path is dropped (environment-dependent,
+and a personal path in a public repo); the fixed built-in template is always
+used. `register_primer_pair` mutates module state, so the colony tests restore it
+through a fixture. The subst "validation error" case used to print FAILED
+without failing when no exception came; it is now `pytest.raises`.
+
+**Deferred risk** — `_frame()` in the vector test adds one assertion the
+original did not have (the report renders). `tests/stress_test_genes.py` is
+untouched and still network-bound.
+
+wired-by: doctor.py
+wired-by: skills/primer-design/tests/conftest.py
+wired-by: tests/requirements.txt
+
+### Unit 4 — one sha256 helper for the manifest writer and verifier
+
+**Scope** — five places hash bytes: `scripts/make_checksums.py`,
+`doctor_lib/checks_repo.py`, `skills/manuscript-pipeline/scripts/figure_provenance.py`,
+`skills/scientific-validation/scripts/check_raw.py`, and `scripts/skill_drift.py`
+(the last hashes the normalized text of a whole skill, a different job).
+
+**Layer** — repo-root tooling (doctor and the checksum script ship together with
+the repo, and `install.py` already imports from `scripts/` the same way).
+
+**Decision** — consolidate only the two root-level copies into
+`doctor_lib/filehash.py` (`sha256_file`); `make_checksums.py` and
+`checks_repo.py` import it. The skill-local hashers stay duplicated on purpose:
+skills are installed individually (`install.py --skills <name>`), so a skill
+script importing from the repo root would break as soon as the root is absent,
+and a shared module inside one skill would add a hard `requires` edge between
+skills for a four-line loop. They differ anyway (a 12-character prefix with an
+"ERR" sentinel; a 16-character display form). The ~95 stdout-setup blocks were
+not touched.
+
+**Evidence** — `tests/test_checksums_manifest.py` has a fourth check: identity
+of both callers with the shared function, and digests equal to `hashlib` for an
+empty file, `abc` (published SHA-256 test vector), exactly one chunk, one chunk
+plus one byte, and two chunks. `doctor.py --offline`: 14 OK, 2 WARN (gitleaks
+absent; 47 untested tools, pre-existing), 0 FAIL.
+
+**Refutation** — a hasher that drops the last byte of every full chunk fails
+three digest cases; a local copy of the loop put back into `make_checksums.py`
+fails the identity check; a one-bit flip on the chunk boundary must change the
+digest; a missing path must raise `OSError`.
+
+**Deferred risk** — stdout setup (`reconfigure(encoding="utf-8")` blocks):
+recommendation is not to mass-edit. Skill scripts duplicate the block for the
+same reason as the hashers (standalone copy), and a root-level helper cannot be
+imported from them. If it is ever reduced, collapse only the copies under
+`scripts/`, `doctor_lib/` and `tests/`, which all live at the repo root, and
+leave the skill scripts alone.
+
+wired-by: doctor_lib/filehash.py
+wired-by: scripts/make_checksums.py
+wired-by: tests/test_checksums_manifest.py
