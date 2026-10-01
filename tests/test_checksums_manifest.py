@@ -122,12 +122,75 @@ def check_manifest_is_current() -> None:
             break
 
 
+def check_single_sha256_implementation() -> None:
+    """The manifest writer and the manifest verifier must hash with ONE function.
+
+    Both used to carry their own copy of the loop (make_checksums.sha256,
+    doctor_lib.checks_repo._sha256_of). They now import doctor_lib.filehash.
+    Checked three ways: identity (no second implementation crept back), known
+    vectors + chunk-boundary files against hashlib, and the adverse cases (one
+    flipped byte changes the digest; an unreadable path raises instead of
+    returning a digest of nothing).
+    """
+    global checks
+    import hashlib
+    import importlib.util
+    import tempfile
+
+    checks += 1
+
+    sys.path.insert(0, str(ROOT))
+    from doctor_lib import checks_repo
+    from doctor_lib.filehash import sha256_file
+
+    spec = importlib.util.spec_from_file_location(
+        "make_checksums_under_test", ROOT / "scripts" / "make_checksums.py")
+    mc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mc)
+    if mc.sha256 is not sha256_file:
+        failures.append("scripts/make_checksums.py hashes with its own function, not doctor_lib.filehash.sha256_file")
+    if checks_repo._sha256_of is not sha256_file:
+        failures.append("doctor_lib/checks_repo.py verifies with its own function, not doctor_lib.filehash.sha256_file")
+
+    chunk = 1 << 20
+    with tempfile.TemporaryDirectory() as d:
+        base = Path(d)
+        cases = {"empty": b"", "abc": b"abc", "one-chunk": b"x" * chunk,
+                 "chunk+1": b"y" * (chunk + 1), "two-chunks": bytes(range(256)) * (2 * chunk // 256)}
+        for label, data in cases.items():
+            f = base / label
+            f.write_bytes(data)
+            if sha256_file(f) != hashlib.sha256(data).hexdigest():
+                failures.append(f"sha256_file({label}) disagrees with hashlib")
+        if sha256_file(base / "abc") != "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad":
+            failures.append("sha256_file(b'abc') is not the published SHA-256 test vector")
+        # Adverse: flip the byte that sits exactly on the chunk boundary.
+        flipped = bytearray(cases["chunk+1"])
+        flipped[chunk] ^= 0x01
+        g = base / "flipped"
+        g.write_bytes(bytes(flipped))
+        if sha256_file(g) == sha256_file(base / "chunk+1"):
+            failures.append("a one-bit change at the chunk boundary did not change the digest")
+        # Adverse: unreadable path must raise, not hash nothing.
+        try:
+            sha256_file(base / "does-not-exist")
+        except OSError:
+            pass
+        else:
+            failures.append("sha256_file on a missing path returned instead of raising OSError")
+
+
 def main() -> int:
-    if not MANIFEST.exists():
-        print("SKIP — no SHA256SUMS present")
-        return 0
-    if not in_git_repo():
-        print("SKIP — not a git repository (treating this as a distributed copy)")
+    check_single_sha256_implementation()
+    if not MANIFEST.exists() or not in_git_repo():
+        why = ("no SHA256SUMS present" if not MANIFEST.exists()
+               else "not a git repository (treating this as a distributed copy)")
+        if failures:  # the hasher check above does not need git
+            print(f"FAIL — {len(failures)} issue(s)")
+            for f in failures:
+                print(f"  - {f}")
+            return 1
+        print(f"SKIP — {why}")
         return 0
 
     check_no_untracked_entries()
@@ -139,7 +202,7 @@ def main() -> int:
         for f in failures:
             print(f"  - {f}")
         return 1
-    print(f"ALL PASS — {checks} manifest check(s) (untracked / line-endings / freshness)")
+    print(f"ALL PASS — {checks} manifest check(s) (hasher / untracked / line-endings / freshness)")
     return 0
 
 

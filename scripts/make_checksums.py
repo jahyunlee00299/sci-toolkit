@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
-import hashlib
 import io
 import subprocess
 import sys
@@ -36,6 +35,11 @@ for _s in (sys.stdout, sys.stderr):
             pass
 
 ROOT = Path(__file__).resolve().parent.parent
+# Run as a script, sys.path[0] is scripts/; the shared hasher lives in doctor_lib/.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from doctor_lib.filehash import sha256_file as sha256  # noqa: E402  (one hash loop, shared with doctor)
+
 MANIFEST = ROOT / "SHA256SUMS"
 DISTIGNORE = ROOT / ".distignore"
 
@@ -106,14 +110,6 @@ def iter_files(patterns: list[str]):
         entries.append((rel, p))
     for rel, p in sorted(entries):
         yield p, rel
-
-
-def sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def tracked_files() -> set[str] | None:

@@ -3,11 +3,11 @@ skill/agent reference resolution, and tool connectivity."""
 
 from __future__ import annotations
 
-import hashlib
 import json
 import subprocess
 from pathlib import Path
 
+from doctor_lib.filehash import sha256_file as _sha256_of  # re-exported by doctor.py
 from doctor_lib.result import CheckResult, STATUS_FAIL, STATUS_OK, STATUS_WARN, _run_python
 
 
@@ -80,14 +80,6 @@ def check_sha256sums(root: Path) -> CheckResult:
             details,
         )
     return CheckResult(name, STATUS_OK, f"{checked} file(s) verified against SHA256SUMS")
-
-
-def _sha256_of(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def check_credentials_divergence(root: Path) -> CheckResult:

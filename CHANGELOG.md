@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.111] — 2026-10-02
+
+- checksums: one shared sha256 helper (doctor_lib.filehash) for manifest writer and verifier; skill-local hashers stay separate
+
 ## [1.2.110] — 2026-10-02
 
 - primer-design: move inline _run_tests into a pytest suite (175 assertions preserved, 72 tests), register it in doctor
