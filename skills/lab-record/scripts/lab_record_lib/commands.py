@@ -9,7 +9,7 @@ from string import Template
 from urllib.parse import quote
 
 from . import model
-from .baseline import HashBaseline, is_git_root
+from .baseline import HashBaseline
 from .model import DIRS, TYPES, Config, Index, Record, iter_refs, scan_strict
 from .parse import LabRecordError, compose, parse, read_text, set_scalar, write_text
 
@@ -70,6 +70,11 @@ def new_record(cfg: Config, typ: str, title: str, *, protocol=None, about=(), fr
     for _ in range(MAX_ATTEMPTS):
         rid = _next_id(typ, model.scan_ids(cfg.root), yymmdd)  # re-scan right before every write
         path = _target(cfg.root, typ, rid, version)
+        key = f"{rid}@{version}" if typ == "prot" else rid
+        if not path.exists():  # a taken path is the race case below (bump); other claimants are fatal
+            others = model.files_claiming(cfg.root, key)
+            if others:
+                raise LabRecordError(f"id {key} already exists: {', '.join(p.name for p in others)}")
         text = _render(typ, {
             "id": rid, "title": _j(title), "title_plain": title, "owner": _j(owner),
             "project": _j(project), "created": day.isoformat(), "supersedes": "null",
@@ -125,9 +130,8 @@ def close_record(cfg: Config, ref: str, day: dt.date | None = None) -> Path:
         text = set_scalar(read_text(rec.path), "status", "closed")
         text = set_scalar(text, "updated", day.isoformat())
         write_text(rec.path, text)
-    if not is_git_root(cfg.root):
-        fresh = next(r for r in scan_strict(cfg.root) if r.key == rec.key)
-        HashBaseline(cfg.root).store(fresh)
+    fresh = next(r for r in scan_strict(cfg.root) if r.key == rec.key)
+    HashBaseline(cfg.root).store(fresh)  # always, also in git mode (fallback when HEAD has no copy)
     return rec.path
 
 

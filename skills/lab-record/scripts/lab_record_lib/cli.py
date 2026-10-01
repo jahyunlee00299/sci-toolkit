@@ -5,7 +5,9 @@ import argparse
 import datetime as dt
 import sys
 
+from . import catalog as catmod
 from . import commands, queries
+from .config import announce_root
 from .model import Index, TYPES, resolve_config, scan, scan_strict
 from .parse import LabRecordError
 from .rules import Context, run_all
@@ -19,8 +21,11 @@ def _stdio() -> None:
             pass
 
 
-def _cfg(args):
-    return resolve_config(args.root, args.config)
+def _cfg(args, announce: bool = False):
+    cfg = resolve_config(args.root, args.config)
+    if announce:
+        announce_root(cfg)
+    return cfg
 
 
 def _day(args):
@@ -33,7 +38,7 @@ def _day(args):
 
 
 def cmd_new(args) -> int:
-    cfg = _cfg(args)
+    cfg = _cfg(args, True)
     if args.from_prot:
         if args.type != "prot":
             raise LabRecordError("--from-prot only applies to `new prot`")
@@ -51,11 +56,12 @@ def cmd_new(args) -> int:
 
 
 def cmd_lint(args) -> int:
-    cfg = _cfg(args)
+    cfg = _cfg(args, True)
     records, errors = scan(cfg.root)
     for e in errors:
         print(f"ERROR {e}", file=sys.stderr)
-    violations = run_all(Context(cfg.root, cfg.people, Index(records)))
+    violations = run_all(Context(cfg.root, cfg.people, Index(records), cfg.projects,
+                                  catmod.load_catalog(cfg)))
     for v in violations:
         print(v)
     if errors:
@@ -69,7 +75,7 @@ def cmd_close(args) -> int:
 
 
 def cmd_index(args) -> int:
-    print(commands.write_index(_cfg(args)))
+    print(commands.write_index(_cfg(args, True)))
     return 0
 
 
@@ -81,7 +87,7 @@ def _index(args):
 def cmd_trace(args) -> int:
     cfg, index = _index(args)
     try:
-        print("\n".join(queries.trace(index, args.id, cfg.root)))
+        print("\n".join(queries.trace(index, args.id, cfg.root, cfg.projects)))
     except KeyError:
         print(f"not found: {args.id}", file=sys.stderr)
         return 1
@@ -95,6 +101,22 @@ def cmd_impact(args) -> int:
     except KeyError:
         print(f"not found or not a pinned PROT id (PROT-007@v3): {args.id}", file=sys.stderr)
         return 1
+    return 0
+
+
+def cmd_uses(args) -> int:
+    cfg, index = _index(args)
+    try:
+        print("\n".join(queries.uses(index, catmod.load_catalog(cfg), args.name)))
+    except KeyError:
+        print(f"not in the catalog: {args.name}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_catalog(args) -> int:
+    cfg, index = _index(args)
+    print("\n".join(queries.catalog_table(index, catmod.load_catalog(cfg), args.kind)))
     return 0
 
 
@@ -132,7 +154,7 @@ def build_parser() -> argparse.ArgumentParser:
     n.add_argument("--date", help="YYMMDD override for ids/created (default today)")
     n.set_defaults(func=cmd_new)
 
-    for name, fn, hlp in (("lint", cmd_lint, "check integrity rules 1-7"),
+    for name, fn, hlp in (("lint", cmd_lint, "check integrity rules 1-9"),
                           ("index", cmd_index, "regenerate INDEX.md"),
                           ("open", cmd_open, "list loose ends")):
         sub.add_parser(name, parents=[common], help=hlp).set_defaults(func=fn)
@@ -142,6 +164,12 @@ def build_parser() -> argparse.ArgumentParser:
         s = sub.add_parser(name, parents=[common], help=hlp)
         s.add_argument("id")
         s.set_defaults(func=fn)
+    u = sub.add_parser("uses", parents=[common], help="records using a catalog entry (name or alias)")
+    u.add_argument("name")
+    u.set_defaults(func=cmd_uses)
+    c = sub.add_parser("catalog", parents=[common], help="list catalog entries")
+    c.add_argument("--kind", choices=catmod.KINDS)
+    c.set_defaults(func=cmd_catalog)
     return p
 
 

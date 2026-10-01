@@ -1,6 +1,10 @@
 {
   "root": "<absolute path to the record root>",
   "people": {"person1": "<local display name>", "person2": "<local display name>"},
-  "projects": {"project-tag": {"notion_project": "<optional page id>"}},
-  "notify": {"telegram": false, "notion_log": false}
+  "projects": {
+    "project-tag": {
+      "folder": "../<PROJECT_FOLDER>",
+      "asana_project": null
+    }
+  }
 }

@@ -274,7 +274,7 @@ def test_rule1_git_mode(chain, capsys):
     root, cfg = chain
     git(root, "init", "-q")
     assert run(cfg, "close", "EXP-261001-01", capsys=capsys)[0] == 0
-    assert not (root / ".lab_record").exists()  # git root -> no hash file
+    assert (root / ".lab_record" / "hashes.json").is_file()  # close ALWAYS writes the hash baseline too
     git(root, "add", "-A")
     git(root, "commit", "-q", "-m", "baseline")
     assert lint(cfg, capsys)[0] == 0

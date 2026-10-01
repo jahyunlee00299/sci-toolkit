@@ -1,12 +1,11 @@
 """Domain model: record types, ids, config, scanning, reference index."""
 from __future__ import annotations
 
-import json
-import os
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
+from .config import DEFAULT_CONFIG, Config, load_config, resolve_config  # noqa: F401  (re-exported)
 from .parse import LabRecordError, parse, read_text
 
 TYPES = {"prot": "PROT", "exp": "EXP", "disc": "DISC", "dec": "DEC"}
@@ -21,7 +20,6 @@ ID_RES = {
 BARE_PROT = re.compile(r"^PROT-\d+$")
 PINNED_PROT = re.compile(r"^PROT-\d+@v\d+$")
 VERSION_RE = re.compile(r"^v(\d+)$")
-DEFAULT_CONFIG = Path.home() / ".config" / "lab-record" / "config.json"
 
 
 @dataclass
@@ -42,48 +40,15 @@ class Record:
     def status(self) -> str:
         return self.fm.get("status")
 
-
-@dataclass
-class Config:
-    root: Path
-    people: dict = field(default_factory=dict)
+    @property
+    def canonical_stem(self) -> str:
+        return f"{self.id}_{self.version}" if self.type == "prot" else self.id
 
 
 def as_list(value) -> list:
     if value is None:
         return []
     return list(value) if isinstance(value, (list, tuple)) else [value]
-
-
-def load_config(config_arg: str | None) -> dict:
-    explicit = config_arg is not None
-    path = Path(config_arg).expanduser() if explicit else DEFAULT_CONFIG
-    if not path.is_file():
-        if explicit:
-            raise LabRecordError(f"config not found: {path}")
-        return {}
-    try:
-        data = json.loads(read_text(path))
-    except ValueError as exc:
-        raise LabRecordError(f"{path}: invalid JSON ({exc})") from exc
-    if not isinstance(data, dict):
-        raise LabRecordError(f"{path}: config must be a JSON object")
-    return data
-
-
-def resolve_config(root_arg: str | None, config_arg: str | None) -> Config:
-    """Root precedence: --root > env LAB_RECORD_ROOT > config file `root`."""
-    data = load_config(config_arg)
-    root = root_arg or os.environ.get("LAB_RECORD_ROOT") or data.get("root")
-    if not root:
-        raise LabRecordError("no root: pass --root, set LAB_RECORD_ROOT or provide a config with `root`")
-    root = Path(root).expanduser()
-    if not root.is_dir():
-        raise LabRecordError(f"root is not a directory: {root}")
-    people = data.get("people") or {}
-    if not isinstance(people, dict):
-        raise LabRecordError("config `people` must be an object")
-    return Config(root=root, people=people)
 
 
 def _load_record(root: Path, path: Path) -> Record:
@@ -125,16 +90,37 @@ def scan_strict(root: Path) -> list[Record]:
     return records
 
 
+_PROT_NAME = re.compile(r"^(PROT-\d+)_(v\d+)(?!\d)")
+_OTHER_NAME = re.compile(r"^((?:EXP|DISC|DEC)-\d{6}-\d{2})(?!\d)")
+
+
+def key_from_stem(stem: str) -> str:
+    """Record key a file name claims: canonical or conflict-copy name -> id (PROT -> 'PROT-007@v3')."""
+    m = _PROT_NAME.match(stem)
+    if m:
+        return f"{m.group(1)}@{m.group(2)}"
+    m = _OTHER_NAME.match(stem)
+    return m.group(1) if m else stem
+
+
 def scan_ids(root: Path) -> set[str]:
-    """Cheap filename-based id scan (robust to malformed files). PROT -> 'PROT-007@v3'."""
+    """Cheap filename-based id scan (robust to malformed files and sync-conflict copies)."""
     found = set()
     for d in DIRS.values():
         base = root / d
         if base.is_dir():
-            for p in base.rglob("*.md"):
-                m = re.match(r"^(PROT-\d+)_(v\d+)$", p.stem)
-                found.add(f"{m.group(1)}@{m.group(2)}" if m else p.stem)
+            found.update(key_from_stem(p.stem) for p in base.rglob("*.md"))
     return found
+
+
+def files_claiming(root: Path, key: str) -> list[Path]:
+    """Every .md under the record dirs whose name claims `key` (canonical or conflict copy)."""
+    out = []
+    for d in DIRS.values():
+        base = root / d
+        if base.is_dir():
+            out += [p for p in sorted(base.rglob("*.md")) if key_from_stem(p.stem) == key]
+    return out
 
 
 class Index:
@@ -143,10 +129,14 @@ class Index:
         self.by_key: dict[str, Record] = {}
         self.duplicates: list[Record] = []
         for r in records:
-            if r.key in self.by_key:
-                self.duplicates.append(r)
-            else:
+            first = self.by_key.get(r.key)
+            if first is None:
                 self.by_key[r.key] = r
+            elif r.path.stem == r.canonical_stem and first.path.stem != first.canonical_stem:
+                self.by_key[r.key] = r  # the canonically named file is the keeper
+                self.duplicates.append(first)
+            else:
+                self.duplicates.append(r)
 
     def get(self, ref, latest_ok: bool = False) -> Record | None:
         ref = str(ref)

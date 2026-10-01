@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from . import catalog as catmod
+from . import paths
 from .model import Index, Record, as_list
 
 
@@ -20,7 +22,7 @@ def _label(rec: Record) -> str:
     return f"{rec.key} [{rec.status}] {rec.fm.get('title', '')}"
 
 
-def trace(index: Index, ref: str, root: Path) -> list[str]:
+def trace(index: Index, ref: str, root: Path, projects: dict | None = None) -> list[str]:
     rec = index.get(ref, latest_ok=True)
     if rec is None:
         raise KeyError(ref)
@@ -31,7 +33,9 @@ def trace(index: Index, ref: str, root: Path) -> list[str]:
         lines.append(pad + _label(r))
         if r.type == "exp":
             for p in as_list(r.fm.get("raw_data")):
-                lines.append("  " * (depth + 1) + f"raw_data: {(root / str(p)).as_posix() if not Path(str(p)).is_absolute() else p}")
+                full, _ = paths.resolve(root, projects or {}, r.fm.get("project"), p)
+                shown = (full.as_posix() if full is not None else str(p))
+                lines.append("  " * (depth + 1) + f"raw_data: {shown}")
         for up in _upstream_refs(r):
             target = index.get(up)
             if target is None:
@@ -73,4 +77,49 @@ def open_items(index: Index) -> list[str]:
     for r in index.of_type("exp"):
         if r.key not in discussed:
             out.append(f"EXP {r.key} not discussed: {r.fm.get('title', '')}")
+    return out
+
+
+def uses(index: Index, cat: catmod.Catalog, name: str) -> list[str]:
+    """Records linking a catalog entry (aliases resolve) + PROT -> its EXPs, EXP -> its DISCs."""
+    entries = cat.find(name)
+    if not entries:
+        raise KeyError(name)
+    out: list[str] = []
+    for e in entries:
+        direct = catmod.users_of(index.records, cat, e)
+        seen = {r.key for r in direct}
+        via: list[tuple[Record, Record]] = []
+        queue = list(direct)
+        while queue:
+            src = queue.pop(0)
+            if src.type == "prot":
+                nxt = [r for r in index.of_type("exp") if str(r.fm.get("protocol")) == src.key]
+            elif src.type == "exp":
+                nxt = [r for r in index.of_type("disc")
+                       if src.key in {str(a) for a in as_list(r.fm.get("about"))}]
+            else:
+                nxt = []
+            for r in nxt:
+                if r.key not in seen:
+                    seen.add(r.key)
+                    via.append((r, src))
+                    queue.append(r)
+        out.append(f"uses {e.label}: {len(direct)} direct, {len(via)} via lineage")
+        out += [f"DIRECT {_label(r)}" for r in direct]
+        out += [f"VIA {_label(r)} (through {src.key})" for r, src in via]
+    return out
+
+
+def catalog_table(index: Index, cat: catmod.Catalog, kind: str | None = None) -> list[str]:
+    rows = [e for e in cat.entries if kind in (None, e.kind)]
+    if not rows:
+        return ["catalog is empty" + (f" for kind {kind}" if kind else "")]
+    out = ["kind\tname\tproject\tpath\texists\tused_by"]
+    for e in rows:
+        full, problem = cat.full_path(e)
+        shown = full.as_posix() if full is not None else f"(unresolved: {problem})"
+        ok = "yes" if cat.path_problem(e) is None else "no"
+        out.append("\t".join([e.kind, e.name, e.project or "-", shown, ok,
+                              str(len(catmod.users_of(index.records, cat, e)))]))
     return out

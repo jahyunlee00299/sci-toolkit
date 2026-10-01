@@ -59,14 +59,34 @@ def _git(root: Path, *args: str):
 
 
 def is_git_root(root: Path) -> bool:
-    r = _git(root, "rev-parse", "--is-inside-work-tree")
-    return bool(r and r.returncode == 0 and r.stdout.strip() == "true")
+    """Git mode only when `root` IS the work-tree top level (not merely nested inside one)."""
+    r = _git(root, "rev-parse", "--show-toplevel")
+    if not (r and r.returncode == 0 and r.stdout.strip()):
+        return False
+    try:
+        return Path(r.stdout.strip()).resolve() == Path(root).resolve()
+    except OSError:
+        return False
 
 
 class GitBaseline:
     def __init__(self, root: Path):
         self.root = root
         self._changed: set[str] | None = None
+        self._head: set[str] | None = None
+        self._hash = HashBaseline(root)
+
+    def _head_paths(self) -> set[str]:
+        """Paths (relative to root = repo top) present in HEAD; empty if there is no HEAD."""
+        if self._head is None:
+            r = _git(self.root, "-c", "core.quotepath=off", "ls-tree", "-r", "-z", "--name-only", "HEAD")
+            self._head = {p for p in r.stdout.split(chr(0)) if p} if r and r.returncode == 0 else set()
+        return self._head
+
+    def _fallback(self, rec: Record) -> list[str]:
+        """No HEAD copy: use the stored hash baseline if `close` wrote one, else nothing to compare."""
+        snap = self._hash._load().get(rec.key)
+        return compare(snap, rec) if snap is not None else []
 
     def _changed_paths(self) -> set[str] | None:
         """Paths (relative to root) that differ from HEAD; None if git cannot tell."""
@@ -78,16 +98,18 @@ class GitBaseline:
         return self._changed
 
     def check(self, rec: Record) -> list[str]:
+        if rec.rel not in self._head_paths():
+            return self._fallback(rec)  # untracked / not yet committed
         changed = self._changed_paths()
         if changed is not None and rec.rel not in changed:
             return []  # identical to HEAD: cannot violate append-only
         r = _git(self.root, "show", f"HEAD:./{rec.rel}")
         if not r or r.returncode != 0:
-            return []  # not committed yet: no baseline to compare against
+            return self._fallback(rec)
         try:
             fm, body = parse(r.stdout)
         except LabRecordError:
-            return []
+            return self._fallback(rec)
         if fm.get("status") != "closed":
             return []
         return compare(snapshot(fm, body), rec)
