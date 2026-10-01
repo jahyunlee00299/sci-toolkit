@@ -137,7 +137,7 @@
       "category": "molbio",
       "role": "Experiment protocols, condition optimization, history logging, experiment comparison",
       "requires": [],
-      "size_kb": 27
+      "size_kb": 77
     },
     "generate-image": {
       "category": "figures",
@@ -351,6 +351,12 @@
       "requires": [],
       "size_kb": 0,
       "external": true
+    },
+    "lab-record": {
+      "category": "molbio",
+      "role": "Protocol versions, run logs, discussion and decision records linked into one traceable chain",
+      "requires": [],
+      "size_kb": 71
     }
   },
   "presets": {
@@ -381,7 +387,9 @@
       "desc": "Primer design, sequence analysis, bioinformatics databases",
       "skills": [
         "primer-design",
-        "sequence-verification"
+        "sequence-verification",
+        "experiment-hub",
+        "lab-record"
       ]
     },
     "data-figures": {
@@ -411,7 +419,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 45 skills",
+      "desc": "All 46 skills",
       "skills": [
         "__ALL__"
       ]

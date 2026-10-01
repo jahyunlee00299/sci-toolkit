@@ -1,11 +1,13 @@
 ---
 name: research-ideation
-description: Unified research ideation skill covering brainstorming, critical evaluation, hypothesis formulation, and result discussion. Use when brainstorming ideas, evaluating evidence quality, formulating testable hypotheses, or discussing experimental results against literature. For finding and retrieving papers use research-search; for writing a full literature review document use literature-review; for formal peer-review writing use manuscript-pipeline.
+description: Unified research ideation skill covering brainstorming, critical evaluation, hypothesis formulation, and result discussion. Use when brainstorming ideas, evaluating evidence quality, formulating testable hypotheses, or discussing experimental results against literature in an open-ended way. To interpret a specific run, record a discussion or lab meeting, or log a decision use lab-record. For finding and retrieving papers use research-search; for writing a full literature review document use literature-review; for formal peer-review writing use manuscript-pipeline.
 ---
 
 # Research Ideation — Meta-Skill
 
-Integrates: `scientific-brainstorming` + `scientific-critical-thinking` + `hypothesis-generation` + `research-discussion` + `research-commons`
+Integrates: `scientific-brainstorming` + `scientific-critical-thinking` + `hypothesis-generation` 
+
+Recorded result interpretation, literature comparison, Discussion structuring and decision logs moved to `lab-record` (DISC/DEC records, 261001). Phase 4 here is exploratory; once a discussion is about a concrete EXP run, write it as a `lab-record` DISC.
 
 ## Trigger
 
@@ -105,5 +107,5 @@ For each accepted hypothesis:
 - `deprecated/scientific-brainstorming` — open-ended ideation
 - `deprecated/scientific-critical-thinking` — evidence evaluation, bias detection
 - `deprecated/hypothesis-generation` — structured hypothesis formulation
-- `deprecated/research-discussion` — result interpretation and literature comparison
-- `deprecated/research-commons` — shared citation and storage conventions
+- `research-discussion` (command) — superseded by `lab-record` (DISC M1/M2/M3, meeting, DEC)
+- `research-commons` — citation convention now in `lab-record` §Citations (APA 7th + DOI); storage conventions in `lab-record/references/schema.md`

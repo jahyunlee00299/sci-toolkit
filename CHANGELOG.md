@@ -4,6 +4,18 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.102] — 2026-10-02
+
+- skills: add lab-record (methods+discussion records), refresh experiment-hub and research-ideation
+
+## [1.2.101] — 2026-10-02
+
+- skills: add lab-record (methods+discussion records), refresh experiment-hub and research-ideation
+
+## [1.2.100] — 2026-10-02
+
+- skills: add lab-record (methods+discussion records), refresh experiment-hub and research-ideation
+
 ## [1.2.99] — 2026-09-30
 
 - hooks: prefilter guards and parse the payload once (per-call latency)

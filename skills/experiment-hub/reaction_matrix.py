@@ -44,18 +44,6 @@ Config JSON format:
 }
 """
 
-# Windows' default console is cp949 and dies on Korean/symbol output. Force UTF-8.
-# Use reconfigure: wrapping in TextIOWrapper would take ownership of the
-# underlying stream, so once this module is imported and the wrapper gets
-# GC'd, it closes the caller's stdout too (measured).
-import sys as _sys
-for _s in (_sys.stdout, _sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
-
 import json
 import sys
 from pathlib import Path
@@ -137,6 +125,150 @@ def analyze_master_mixes(config):
             sub_mixes.append({'components': dict(key), 'conditions': nums, 'count': len(nums)})
 
     return mm_a, sub_mixes, groups
+
+
+def validate_config(config):
+    """Independent, from-scratch re-verification of a reaction-matrix config, run BEFORE
+    generate_excel(). Recomputes every volume in plain Python from the config's own stock/final
+    values (never trusts a formula string or a previously-cached result), so it catches config
+    errors that would otherwise only surface as a subtly wrong number in the finished xlsx.
+
+    Historical motivation (260928): a hand-built pipetting xlsx (not made with this script) had a
+    formula edited during an unrelated fix, which silently changed the reference volume used for
+    four reagents and put every one of 90 planned samples ~4% off target. This script exists so
+    that class of error is caught automatically, every time, rather than only when someone
+    separately asks for an adversarial review.
+
+    Returns (ok: bool, report: list[str]) — 'ok' is False if ANY hard check fails. Print report
+    lines regardless of ok, so a passing run still shows what was checked.
+    """
+    report = []
+    ok = True
+    vol = config['total_volume_uL']
+    stocks = config['stocks']
+    enzymes = config['enzymes']
+    conditions = config['conditions']
+    buffer_stocks = {k: v for k, v in stocks.items() if v['type'] == 'buffer'}
+
+    # ---- Check 1: per-condition volume closure (would DW go negative?) ----
+    # DW = vol - sum(all component uL). generate_excel() defines DW as this exact residual, so the
+    # printed "Total" column always equals vol by construction -- the real failure mode is DW < 0,
+    # which Excel will happily print as a negative pipetting volume unless caught here first.
+    for cond in conditions:
+        used = 0.0
+        detail = []
+        for sname, sconc in cond['substrates'].items():
+            stock_mM = stocks[sname]['conc_mM']
+            if stock_mM <= 0:
+                report.append(f"FAIL cond#{cond['num']}: {sname} stock_mM={stock_mM} <= 0 (div-by-zero / not set)")
+                ok = False
+                continue
+            v = sconc * vol / stock_mM
+            used += v
+            detail.append(f'{sname}={v:.3f}uL')
+        for bname, binfo in buffer_stocks.items():
+            stock_mM = binfo['conc_mM']
+            final_mM = binfo['final_mM']
+            if stock_mM <= 0:
+                report.append(f"FAIL cond#{cond['num']}: {bname} stock_mM={stock_mM} <= 0")
+                ok = False
+                continue
+            v = final_mM * vol / stock_mM
+            used += v
+            detail.append(f'{bname}={v:.3f}uL')
+        for ename, level in cond['enzymes'].items():
+            einfo = enzymes[ename]
+            stock_gL = einfo['stock_gL']
+            rxn_gL = einfo['rxn_gL'].get(level)
+            if rxn_gL is None:
+                report.append(f"FAIL cond#{cond['num']}: enzyme {ename} has no rxn_gL entry for level '{level}'")
+                ok = False
+                continue
+            if stock_gL <= 0:
+                report.append(f"FAIL cond#{cond['num']}: {ename} stock_gL={stock_gL} <= 0")
+                ok = False
+                continue
+            v = rxn_gL * vol / stock_gL
+            used += v
+            detail.append(f'{ename}={v:.3f}uL')
+
+        dw = vol - used
+        if dw < -1e-9:
+            report.append(f"FAIL cond#{cond['num']}: components sum to {used:.3f} uL > total {vol} uL "
+                           f"(DW would be negative: {dw:.3f} uL) -- {', '.join(detail)}")
+            ok = False
+        elif dw < 0.5:
+            report.append(f"WARN cond#{cond['num']}: DW={dw:.3f} uL, almost no dilution headroom left "
+                           f"-- {', '.join(detail)}")
+        else:
+            report.append(f"PASS cond#{cond['num']}: components={used:.3f}uL, DW={dw:.3f}uL, "
+                           f"total={used+dw:.3f}uL (target {vol}uL)")
+
+    # ---- Check 2: concentration re-derivation (independent of the volume formula) ----
+    # For this script's construction, achieved_conc = stock * (target*vol/stock) / vol = target
+    # algebraically -- so this check is really "did the config typo a stock/final pair such that
+    # division blows up or produces something absurd", not a live formula-vs-formula comparison.
+    # A hand-built workbook (formulas written cell-by-cell, e.g. a stock-blend design like
+    # PROT-002's) does NOT get this guarantee for free -- see SKILL.md Mode 1 note: for anything
+    # that doesn't fit this script's config shape, the same recomputation must be done manually,
+    # in a throwaway script, against every sheet/condition, not just spot-checked.
+    for sname, sinfo in stocks.items():
+        if sinfo['type'] == 'buffer':
+            achieved = sinfo['conc_mM'] * (sinfo['final_mM'] * vol / sinfo['conc_mM']) / vol
+            if abs(achieved - sinfo['final_mM']) > 1e-6:
+                report.append(f"FAIL {sname}: recomputed achieved conc {achieved} != declared final_mM {sinfo['final_mM']}")
+                ok = False
+
+    # ---- Check 3: sampling / dead-volume headroom (the check that did not exist before) ----
+    sampling = config.get('sampling', {})
+    timepoints = config.get('timepoints', [])
+    if sampling and timepoints:
+        n_tp = len(timepoints)
+        sample_vol = sampling.get('volume_uL', 0)
+        dead_vol = sampling.get('dead_volume_uL', max(0.1 * vol, 5))
+        withdrawn = n_tp * sample_vol
+        headroom = vol - withdrawn - dead_vol
+        if withdrawn > vol:
+            report.append(f"FAIL sampling: {n_tp} timepoints x {sample_vol} uL = {withdrawn} uL "
+                           f"withdrawn > {vol} uL prepared -- physically impossible")
+            ok = False
+        elif headroom < 0:
+            report.append(f"FAIL sampling: {n_tp} timepoints x {sample_vol} uL = {withdrawn} uL withdrawn, "
+                           f"+ dead-volume margin {dead_vol} uL exceeds prepared {vol} uL "
+                           f"(short by {-headroom:.2f} uL) -- reduce timepoints/aliquot or scale up volume")
+            ok = False
+        else:
+            report.append(f"PASS sampling: {n_tp} timepoints x {sample_vol} uL = {withdrawn} uL withdrawn, "
+                           f"{headroom:.2f} uL headroom left after {dead_vol} uL dead-volume margin (of {vol} uL)")
+
+        # Fed-diagnosis draws from a source condition's REMAINING volume after its own timepoints --
+        # check that too, since it is a second, easy-to-miss overdraw point.
+        fed = config.get('fed_diagnosis')
+        if fed:
+            src_num = fed['source_condition']
+            src_cond = next((c for c in conditions if c['num'] == src_num), None)
+            if src_cond is None:
+                report.append(f"FAIL fed_diagnosis: source_condition #{src_num} not found in conditions")
+                ok = False
+            else:
+                remaining_after_main_tp = vol - withdrawn
+                n_feeds = len(fed.get('feeds', []))
+                # each feed tube needs at least the fed-sampling aliquot volume(s) available
+                fed_tp = len(fed.get('timepoints', []))
+                per_feed_need = fed_tp * sample_vol if fed_tp else sample_vol
+                total_fed_need = n_feeds * per_feed_need
+                if total_fed_need > remaining_after_main_tp:
+                    report.append(f"FAIL fed_diagnosis: {n_feeds} feeds x {per_feed_need} uL sampling need "
+                                   f"= {total_fed_need} uL > {remaining_after_main_tp:.2f} uL remaining in "
+                                   f"source condition #{src_num} after its own {n_tp} main timepoints")
+                    ok = False
+                else:
+                    report.append(f"PASS fed_diagnosis: {total_fed_need} uL needed <= "
+                                   f"{remaining_after_main_tp:.2f} uL remaining in source condition #{src_num}")
+    elif timepoints and not sampling:
+        report.append("WARN: timepoints declared but no 'sampling' block -- cannot check dead-volume headroom")
+
+    return ok, report
 
 
 def generate_excel(config, output_path):
@@ -586,6 +718,16 @@ def main():
         config = json.load(f)
 
     output = sys.argv[2] if len(sys.argv) > 2 else str(config_path.with_suffix('.xlsx'))
+
+    ok, report = validate_config(config)
+    print('=== validate_config ===')
+    for line in report:
+        print(line)
+    if not ok:
+        print('=== validate_config: FAILED -- xlsx NOT generated. Fix the config and re-run. ===')
+        sys.exit(1)
+    print('=== validate_config: all hard checks passed ===')
+
     generate_excel(config, output)
 
 

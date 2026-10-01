@@ -188,6 +188,8 @@ SELF_TEST_SCRIPTS = [
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.
+    ("skills/lab-record/tests", "lab-record pytest suite (ID allocation, lint rules 1-7, trace/impact/open)"),
+    ("skills/experiment-hub/tests", "experiment-hub pytest suite (pipetting checks, Excel COM guard)"),
     ("skills/web-scraping/tests", "web-scraping pytest suite (EZproxy scope, PDF pipeline, target safety, GitHub failure surfacing)"),
 ]
 
