@@ -1,40 +1,35 @@
 ---
-name: paramguard
-description: Check whether a number that claims to be measured is allowed to be where it is. Four static rules — (1) a parameter declared to be fitted/measured must not appear as a hard-coded literal or be fetched with a silent default; (2) a config file name carrying a version token must not contradict the versions its own fields declare; (3) a declared parameter must have some test asserting something about it, so a parameter that is plumbed in but gated by nobody is caught before it is trusted; (4) a document repeating a number from another document must not contradict it — the drift no canonical-JSON gate sees, because it is between two documents. Use before trusting a fit, when a constant appears in a script, when config lineage looks off, when a PFD/spec/design note repeats numbers another document owns, or as a pre-commit gate. 한국어 트리거 — "이 상수 출처가 뭐지", "하드코딩된 파라미터 찾아", "파일명이랑 내용이 안 맞아", "버전 꼬인 것 같아", "silent fallback 검사", "아무도 검사 안 하는 파라미터", "문서끼리 값이 다르다", "PFD 수치가 SSOT랑 안 맞아", "어느 문서가 원본이야".
+name: fiducial
+description: Check whether a number that claims to be measured is allowed to be where it is. Five static rules — (1) a declared fitted/measured parameter must not be a hard-coded literal or a silent default; (2) a config file name carrying a version token must not contradict the versions its own fields declare; (3) a declared parameter must have some test asserting something about it; (4) a document repeating a number from another document must not contradict it; (5) an index that registers artefacts must not point at files that are gone. Use before trusting a fit, when a constant appears in a script, when config lineage looks off, when a design note repeats numbers another document owns, or as a pre-commit gate. 한국어 트리거 — "이 상수 출처가 뭐지", "하드코딩된 파라미터 찾아", "파일명이랑 내용이 안 맞아", "버전 꼬인 것 같아", "silent fallback 검사", "아무도 검사 안 하는 파라미터", "문서끼리 값이 다르다", "PFD 수치가 SSOT랑 안 맞아", "어느 문서가 원본이야".
 ---
 
-# paramguard
+# fiducial
+
+*Formerly `paramguard` (renamed 2026-09-30; the old repo is deleted).*
 
 Asks one question that dependency checkers, dataframe validators and regression
 baselines all leave open: **is this number allowed to be here at all?**
 
 ## Install
 
-> **Status (260921): not published yet.** `paramguard` is not on PyPI and the
-> GitHub repo below is not public, so the commands in this section do not work
-> for anyone but the author yet. Install from a local clone until it ships:
->
-> ```bash
-> pip install /path/to/paramguard
-> ```
-
-Once published:
-
 ```bash
-pip install paramguard
+pip install fiducial-check
 ```
 
-Stdlib only, no dependencies, Python ≥3.10. This skill carries **no copy of the
-source** — it calls the installed package. A second copy inside a skill folder
-has no `pyproject`, so it cannot be imported without `sys.path` surgery, and the
-two drift apart with nothing to detect it.
+The PyPI distribution is `fiducial-check`; the command and import name are
+`fiducial` (`python -m fiducial` also works from a checkout). Source:
+<https://github.com/jahyunlee00299/fiducial>. Stdlib only, no dependencies,
+Python >=3.10. This skill carries **no copy of the source** — it calls the
+installed package. A second copy inside a skill folder has no `pyproject`, so it
+cannot be imported without `sys.path` surgery, and the two drift apart with
+nothing to detect it.
 
-## The four rules
+## The five rules
 
 ### rule ① — measured keys must not be hard-coded or silently defaulted
 
 ```bash
-paramguard literals --keys eta,k_transfer,kcat_enzyme scripts/
+fiducial literals --keys eta,k_transfer,kcat_enzyme scripts/
 ```
 
 Flags two shapes, for keys **you declare** as measured:
@@ -57,7 +52,7 @@ measurement — and reporting them buried the 115 that mattered.
 ### rule ② — a file name must not contradict its own contents
 
 ```bash
-paramguard names scripts/_refactor/configs/
+fiducial names scripts/_refactor/configs/
 ```
 
 ```
@@ -73,7 +68,7 @@ describe or point elsewhere, they do not declare what the file *is*.
 ### rule ③ — a declared parameter must be gated by some test
 
 ```bash
-paramguard coverage --spec .claude/params_spec.yaml -- tests/
+fiducial coverage --spec .claude/params_spec.yaml -- tests/
 ```
 
 ```
@@ -107,7 +102,7 @@ attempt that and must not be read as having done so.
 ### rule ④ — a document must not contradict the SSOT document it declares
 
 ```bash
-paramguard docs docs/
+fiducial docs docs/
 ```
 
 ```
@@ -153,6 +148,32 @@ label is missing from either side is reported as a **gap** rather than counted
 clean, and `--strict-gaps` makes gaps block. A declaration that quietly checks
 nothing is this rule's real failure mode.
 
+### rule ⑤ — an index must not name artefacts that are gone
+
+```bash
+fiducial pointers models/params/param_registry.json
+```
+
+An index (`.json`, `.yaml`, `.yml`) that registers artefacts must not carry a
+`file` pointer to a missing path, or a `parent_id` naming no other entry. The
+report separates *relocatable* (exactly one candidate: the file moved),
+*gone* (no candidate) and *ambiguous* (several candidates: no proposal is made,
+because picking one would point the index at the wrong artefact).
+
+### Optional: conflicts, project config, machine-readable output
+
+- `fiducial literals --keys 'k_*,*titer*' --conflicts src/` also reports one
+  declared key bound to two different values across code and tests. A finding
+  there is always `needs_review`; it never carries a fix.
+- A project can declare its rules once under `[tool.fiducial]` in
+  `pyproject.toml` (or a standalone `.fiducial.toml`) and run `fiducial check`.
+  `check` combines verdicts pessimistically: any rule that could not run makes
+  the whole command exit `2`.
+- Every rule takes `--format=json`; each finding carries a `confidence` and an
+  optional `fix` (`applicability`, `apply`) so an agent knows whether it may
+  repair the finding alone. Read the upstream README for the exact schema:
+  <https://github.com/jahyunlee00299/fiducial#when-the-caller-is-an-agent>.
+
 ## Exit codes — an empty check is an error, not a pass
 
 ```
@@ -170,7 +191,7 @@ for long enough that nobody questioned it.
 When scripting it, branch on all three:
 
 ```bash
-paramguard names configs/; rc=$?
+fiducial names configs/; rc=$?
 case $rc in
   0) echo "clean" ;;
   1) echo "violations — read them" ;;
@@ -181,28 +202,23 @@ esac
 ## As a pre-commit gate
 
 ```yaml
-- repo: https://github.com/jahyunlee00299/paramguard
+- repo: https://github.com/jahyunlee00299/fiducial
   rev: v0.1.0
   hooks:
-    - id: paramguard-names
-    - id: paramguard-literals
+    - id: fiducial-names
+    - id: fiducial-literals
       args: [--keys, "eta,k_transfer,enzyme_activity_scale"]
 ```
 
-> That repo is **not public yet** (see Install above), so this block does not
-> resolve for anyone else. Until it ships, wire it through a local hook script
-> as this lab does, below.
-
-Where this is in use, the rules are wired via `.git/hooks/pre-commit.local`,
-which an existing strict-params hook chains to before its own scan. Only **staged** files are checked, so
-pre-existing violations do not block unrelated work — a guard that fails on day
-one for reasons the committer did not cause gets bypassed permanently.
-
-Bypass: `PARAMGUARD_SKIP=1 git commit ...`
+The hooks use `language: python`, so pre-commit builds an isolated environment
+from the upstream `pyproject` and does not depend on whichever interpreter is on
+`PATH`. Pre-existing violations should not block unrelated work: a guard that
+fails on day one for reasons the committer did not cause gets bypassed
+permanently (for rule ③, freeze the gaps with `--baseline`).
 
 ## What it found here
 
-Running rule ① over 1,522 files with 49 declared keys surfaced
+Running rule ① (as `paramguard`, the tool's earlier name) over 1,522 files with 49 declared keys surfaced
 `model.k_transfer = 0.412` hard-coded in two scripts while the canonical fit
 carries `0.5074` — a 53% discrepancy on a fitted parameter, in code that had
 been read many times.

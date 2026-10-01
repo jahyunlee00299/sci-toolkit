@@ -139,6 +139,13 @@
       "requires": [],
       "size_kb": 77
     },
+    "fiducial": {
+      "category": "validation",
+      "role": "static gate for numbers that claim to be measured: a declared fitted/measured key must not be a hard-coded literal or a silent default, a config file name must not contradict its own fields, a declared parameter must have some test asserting something about it, a document must not contradict the SSOT it repeats, and an index must not point at missing files (needs the fiducial-check package; formerly paramguard)",
+      "requires": [],
+      "pip_package": "fiducial-check",
+      "size_kb": 9
+    },
     "generate-image": {
       "category": "figures",
       "role": "General-purpose image generation/editing (AI) -- photos, illustration, concept art",
@@ -210,12 +217,6 @@
       "role": "Extract tables/figures/body text from a paper PDF/docx",
       "requires": [],
       "size_kb": 16
-    },
-    "paramguard": {
-      "category": "validation",
-      "role": "static gate for numbers that claim to be measured: a declared fitted/measured key must not be a hard-coded literal or a silent default, a config file name must not contradict its own fields, and a declared parameter must have some test asserting something about it (needs the paramguard package; not on PyPI yet)",
-      "requires": [],
-      "size_kb": 7
     },
     "patent-invention-disclosure": {
       "category": "paper-writing",
