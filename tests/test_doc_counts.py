@@ -16,6 +16,9 @@ SSOT for each number:
   N regression tests   = number of tests/test_*.py files
   N safety guards      = hooks/*.sh minus the runner (_run_hooks_chained.sh)
   N beginner docs      = numbered docs in docs/ (00_ through 12_)
+  skills list          = the `skills/` row of PROJECT_STRUCTURE.md names exactly the
+                          folders in skills/ (both directions: a missing folder and a
+                          stale name each fail)
 
 Whenever a count is written into a doc, add a check for it here too. A
 count with no check is guaranteed to go stale.
@@ -57,6 +60,30 @@ def actual_counts() -> dict[str, int]:
         "_bundled_set": bundled,
         "_disk_set": on_disk,
     }
+
+
+def structure_skill_names(text: str) -> set[str] | None:
+    """Backticked names on the `skills/` row of PROJECT_STRUCTURE.md's layout table."""
+    for line in text.splitlines():
+        if line.startswith("| `skills/` |"):
+            # drop the leading path cell, keep the description cell's backticked tokens
+            return set(re.findall(r"`([a-z0-9][a-z0-9-]*)`", line.split("|", 3)[2]))
+    return None
+
+
+def structure_skill_drift(text: str, disk: set[str]) -> list[str]:
+    """Human-readable defects between the documented skills list and the folders."""
+    documented = structure_skill_names(text)
+    if documented is None:
+        return ["PROJECT_STRUCTURE.md has no `| `skills/` |` row in its layout table"]
+    out = []
+    missing = sorted(disk - documented)
+    stale = sorted(documented - disk)
+    if missing:
+        out.append(f"skill folder(s) missing from PROJECT_STRUCTURE.md: {missing}")
+    if stale:
+        out.append(f"PROJECT_STRUCTURE.md names skill(s) with no folder: {stale}")
+    return out
 
 
 def find_counts(path: Path, pattern: str) -> list[tuple[int, int, str]]:
@@ -122,6 +149,20 @@ def main() -> int:
             f"{len(unreached)} test(s) doctor never runs: {unreached}"
             " — add them to doctor.py's SELF_TEST_SCRIPTS. CI only calls doctor,"
             " so an unregistered test never runs, ever")
+
+    # 0.7) PROJECT_STRUCTURE.md skills list == skills/ folders (negative controls below)
+    checked += 1
+    structure_text = (ROOT / "PROJECT_STRUCTURE.md").read_text(encoding="utf-8")
+    failures.extend(structure_skill_drift(structure_text, a["_disk_set"]))
+    # Negative controls: prove the check can fail, so a regex that silently
+    # stops matching cannot leave this gate green (CLAUDE.md "checks that go quiet").
+    checked += 1
+    if not structure_skill_drift(structure_text, a["_disk_set"] | {"zz-fake-skill"}):
+        failures.append("structure-list check is blind: an extra skill folder was not flagged")
+    if not structure_skill_drift(structure_text, a["_disk_set"] - {sorted(a["_disk_set"])[0]}):
+        failures.append("structure-list check is blind: a stale documented name was not flagged")
+    if not structure_skill_drift("no table here", a["_disk_set"]):
+        failures.append("structure-list check is blind: a missing `skills/` row was not flagged")
 
     # 1) counts written into the docs
     specs = [

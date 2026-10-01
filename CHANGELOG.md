@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.108] — 2026-10-02
+
+- PROJECT_STRUCTURE: list all 42 skill folders; fail CI when the skills list drifts from skills/
+
 ## [1.2.107] — 2026-10-02
 
 - lab-record tests: short fake gid (gitleaks asana-client-id false positive)
