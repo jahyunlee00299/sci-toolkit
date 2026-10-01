@@ -23,7 +23,7 @@ Determine the mode from the user request and execute the corresponding procedure
 | **5. Visualization** | "Draw a graph" | Data -> generate graph / Image -> extract data + auto-fit trendline |
 | **6. Pattern Analysis** | "Why these results?" | Variable-result mapping -> Pattern classification -> Quantitative trendline analysis -> Per-variable interpretation -> Causality assessment |
 | **7. Comparison** | "Compare with previous experiment" | Identify changed variables -> Result comparison table -> Calculate delta values -> Trend graph -> Analyze cause of difference |
-| **10. Reaction Matrix** | "Generate a pipetting sheet/workbook", "reaction matrix 만들어줘", multi-condition stock/final/volume table needed | Config JSON (stocks+enzymes+conditions+sampling+timepoints) -> `scripts/reaction_matrix.py` -> `validate_config()` (volume closure + concentration + sampling/dead-volume, blocks on FAIL) -> 4-sheet xlsx (Reaction Matrix, Pipetting Guide, Sampling & Fed, Data). See Mode 1a below — this is the default path for ANY pipetting-calculation workbook; do not hand-write openpyxl formulas for this. |
+| **10. Reaction Matrix** | "Generate a pipetting sheet/workbook", "reaction matrix 만들어줘", multi-condition stock/final/volume table needed | Config JSON (stocks+enzymes+conditions+sampling+timepoints) -> `reaction_matrix.py` -> `validate_config()` (volume closure + concentration + sampling/dead-volume, blocks on FAIL) -> 4-sheet xlsx (Reaction Matrix, Pipetting Guide, Sampling & Fed, Data). See Mode 1a below — this is the default path for ANY pipetting-calculation workbook; do not hand-write openpyxl formulas for this. |
 
 **Auto-chain**: Record(4) -> Comparison(7) -> Pattern Analysis(6) -> Visualization(5) -> Optimization(2)
 
@@ -52,7 +52,7 @@ Protocol format: ID (PROT-{N}), version, reference methods, materials, methods (
 ### Mode 1a: Generating a pipetting-calculation workbook -- mandatory verification (260928)
 
 🔴 **Do not hand-write openpyxl formulas for a multi-component reaction matrix from scratch.** Use
-`scripts/reaction_matrix.py` (Mode-10-style config JSON -> xlsx) as the default generator for any
+`reaction_matrix.py` (Mode-10-style config JSON -> xlsx) as the default generator for any
 protocol whose deliverable includes a stock/final/volume pipetting table. It computes every
 component's volume from ONE consistent basis (the declared total reaction volume) and defines DW
 as the residual, which makes the "wrong reference volume" bug class structurally impossible.
@@ -60,7 +60,7 @@ as the residual, which makes the "wrong reference volume" bug class structurally
 **Why this exists**: on 260928, a pipetting xlsx was hand-built with openpyxl instead of using this
 script. A later "fix" pass for an unrelated issue accidentally changed the reference volume in a
 buffer-component formula, silently putting 4 reagents ~4% off target across all 90 planned samples.
-It was caught only because the user separately asked for an adversarial-verifier agent pass — not
+It was caught only because someone separately asked for an independent verification pass — not
 because anything in this skill checked it. `reaction_matrix.py` now calls `validate_config()`
 automatically before writing any file, and refuses to generate (exit 1, no xlsx written) if a hard
 check fails — so the class of error that happened is no longer possible to ship silently:
@@ -79,11 +79,11 @@ check fails — so the class of error that happened is no longer possible to shi
    source condition's *remaining* volume after its own timepoints (a second, easy-to-miss overdraw
    point).
 
-Run it directly: `python scripts/reaction_matrix.py config.json output.xlsx` — validation output
+Run it directly: `python reaction_matrix.py config.json output.xlsx` — validation output
 prints before generation; a FAIL blocks the file from being written at all.
 
 **When the design does not fit `reaction_matrix.py`'s config shape** (e.g., a saturated-stock-blend
-design like splitting a common mix into "TCA-saturated" and "plain" halves and recombining at
+design like splitting a common mix into "additive-saturated" and "plain" halves and recombining at
 different ratios — `reaction_matrix.py` has no concept of that) — hand-building formulas is still
 sometimes necessary, but the same three checks are then **mandatory to run manually** in a
 throwaway Python script before presenting the workbook as done: read every literal Params value
@@ -91,13 +91,12 @@ with openpyxl, independently recompute (in plain Python, not by re-reading the f
 every derived cell *should* evaluate to, and diff against what the workbook's formula claims. Do not
 declare a hand-built pipetting workbook finished on the strength of "the formula looks right" —
 that is exactly the self-review that missed the 260928 bug. For anything that will actually be
-pipetted at the bench (not just discussed), treat it as C-40-verification-worthy and additionally
-route it through `Agent(adversarial-verifier)` — self-review by the same reasoning that produced
-the bug does not reliably catch that bug (feature-build doctrine: "self-review alone is not
-refutation").
+pipetted at the bench (not just discussed), additionally have it checked independently (a labmate, or a fresh agent session given only
+the config and the workbook) — self-review by the same reasoning that produced the bug does not
+reliably catch that bug.
 
 
-**Standing workbook convention (user, 260930)**: put every fixed-concentration component (buffer, MgCl2, CoCl2, ATP and G1,6BP) into ONE MM-A premix: mark them `"type":"buffer"` in the config, never `cofactor`. Only substrate(s) and AcP vary per tube; DW is the per-tube residual. Enzymes = one stock-only cocktail (n x 1.2), added LAST in a fixed staggered order; TCA solid is weighed per tube and added first. Default total volume 50 uL (use 100 only if a tube cannot close). Every downstream formula must reference the total-volume cell, never a literal 100. After editing, recalculate with the timeout-guarded `excel_com_guard.py` (see "Pipetting Workbook Verification" below; never a bare win32com call that can hang on a dialog) and compare with an independent Python calculation.
+**Suggested workbook convention**: put every fixed-concentration component (buffer, salts, fixed cofactors) into ONE premix: mark them `"type":"buffer"` in the config, never `cofactor`. Only the varied reagents change per tube; DW is the per-tube residual. Enzymes = one stock-only cocktail (n x 1.2), added LAST in a fixed staggered order; solids weighed per tube go in first. Every downstream formula must reference the total-volume cell, never a literal volume. After editing, recalculate with the timeout-guarded `excel_com_guard.py` (see "Pipetting Workbook Verification" below; never a bare win32com call that can hang on a dialog) and compare with an independent Python calculation.
 
 ---
 
@@ -141,8 +140,8 @@ Causality strength: 5 stars (dose-response + mechanism + reproducibility) to 1 s
 
 ## Pipetting Workbook Verification (win32com-hang-safe)
 
-For repeated validation/editing of pipetting-protocol xlsx files (e.g. the
-a numbered workbook series), do NOT re-open Excel via win32com for every check — a COM
+For repeated validation/editing of pipetting-protocol xlsx files (e.g. one
+numbered workbook series), do NOT re-open Excel via win32com for every check — a COM
 call that hits a modal dialog blocks forever with no in-process timeout
 (measured: 44+ min Not-Responding, required manual taskkill, which also
 rolled the file back to its last save). Use the two-stage split instead:
@@ -162,7 +161,7 @@ docstring for the CONFIG.json shape. Tests: `tests/test_pipetting_checks.py`,
 
 For general xlsx formula recalculation outside this pipetting-specific use
 case (LibreOffice-based, cross-platform, no COM), use `Skill(xlsx)`'s
-`scripts/recalc.py` instead — this module's COM path exists specifically
+recalc script instead — this module's COM path exists specifically
 because the pipetting workbooks are edited live in Windows Excel and need
 Excel's own calculation engine, not LibreOffice's.
 
@@ -174,7 +173,7 @@ Excel's own calculation engine, not LibreOffice's.
 - exp:pattern -> `lab-record` DISC M2 comparison
 - `lab-record` DEC.next kind protocol -> protocol generation (Mode 1)
 - experiment proposal (M3) -> research-search for literature (M1)
-- exp:result/viz -> manuscript-writer Results/Figure
+- exp:result/viz -> manuscript-pipeline Results/Figure
 - ms:revision -> additional experiment protocol (M1) trigger
 - cloning/mutagenesis needed -> primer-design (design the primers)
 - sequencing result came back, or "is this variant saved anywhere" -> sequence-verification

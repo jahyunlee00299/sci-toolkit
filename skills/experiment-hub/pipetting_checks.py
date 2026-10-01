@@ -75,7 +75,7 @@ def leading_equals_guard(path: Path, sheet_names: list[str] | None = None) -> Ch
     at a glance and will NOT show up as a #VALUE!/#REF! error during a COM
     recalculation pass, because Excel never treats it as a formula to
     recalculate in the first place. This is exactly the defect class the
-    Those sessions needed a manual eyeball pass to catch before this
+    earlier verification sessions needed a manual eyeball pass to catch before this
     guard existed.
     """
     report = CheckReport()
@@ -165,7 +165,7 @@ def concentration_rederivation_check(
 ) -> CheckReport:
     """Independently re-derive final concentration from stock_conc * volume_uL
     / total_volume_uL and compare against the sheet's stated final
-    concentration cell — the check this project calls "concentration
+    concentration cell — the check called "concentration
     re-derivation": trust nothing the workbook computed for itself, redo the
     dilution arithmetic in plain Python from the same three inputs the sheet
     used, and flag any mismatch beyond tolerance_rel (relative).

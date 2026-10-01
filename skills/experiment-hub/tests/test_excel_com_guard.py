@@ -1,13 +1,13 @@
 """Prove + Refute for excel_com_guard.recalc_and_scan's timeout plumbing.
 
-win32com/Excel do not exist on this Linux/WSL session, so these tests replace
+win32com/Excel may not exist on the test machine, so these tests replace
 the worker subprocess with plain Python scripts that simulate the two
 behaviours that actually matter: (1) a hang that must be killed after
 timeout_sec, exactly like a modal-dialog-blocked EXCEL.EXE, and (2) a process
 that finishes normally, which the timeout wrapper must NOT interfere with.
 The actual win32com call sequence (_com_worker_main) cannot be exercised here
--- it requires a live Windows Excel install -- and is deferred to a laptop
-verification pass; see the ledger entry for this unit.
+-- it requires a live Windows Excel install -- and is checked manually on a
+Windows machine with Excel.
 """
 from __future__ import annotations
 

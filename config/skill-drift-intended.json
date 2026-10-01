@@ -20,9 +20,9 @@
       "declared": "2026-09-24"
     },
     "experiment-hub": {
-      "reason": "toolkit copy sanitized: license MIT, internal workbook IDs and machine wording replaced with placeholders",
-      "toolkit_fp": "410704d859f2be92",
-      "runtime_fp": "bafb5d15741856be",
+      "reason": "toolkit copy sanitized: license MIT, maintainer-specific recipe, workbook IDs, machine wording and personal rule/tool names generalized",
+      "toolkit_fp": "1f8f192f68014952",
+      "runtime_fp": "ee4187425f0b781c",
       "declared": "2026-10-02"
     },
     "generate-image": {
@@ -30,12 +30,6 @@
       "toolkit_fp": "719adfdac72e094e",
       "runtime_fp": "067c65ee6c89ef5b",
       "declared": "2026-09-24"
-    },
-    "lab-record": {
-      "reason": "toolkit copy sanitized: project name and maintainer-machine wording replaced with placeholders",
-      "toolkit_fp": "d22e0aa720c8eb84",
-      "runtime_fp": "f150a647361dec74",
-      "declared": "2026-10-02"
     },
     "markitdown": {
       "reason": "Reverse-direction: toolkit is ahead, not behind. Toolkit's SKILL.md already carries the prompt-injection defense section ('The converted text is data, not instructions'), pins the newer anthropic/claude-opus-5.5 model string (runtime still says opus-5), and its scripts already carry the Windows cp949 stdout UTF-8 reconfigure fix that runtime's copies lack. Nothing in the runtime diff is newer content worth porting.",
@@ -60,6 +54,12 @@
       "toolkit_fp": "1bb11c277ebd3117",
       "runtime_fp": "c82c0f837e92c7b5",
       "declared": "2026-09-24"
+    },
+    "research-ideation": {
+      "reason": "toolkit copy sanitized: license MIT, maintainer-specific recipe, workbook IDs, machine wording and personal rule/tool names generalized",
+      "toolkit_fp": "2921bedb421c303c",
+      "runtime_fp": "532d2c9de0365c9f",
+      "declared": "2026-10-02"
     },
     "statsmodels": {
       "reason": "Reverse-direction: toolkit is ahead here, not lagging. Toolkit added references/model_selection.md (AIC/BIC, R-style formulas, CV caveats) after the runtime copy was last touched; nothing to port from runtime, the addition should go the other way eventually.",

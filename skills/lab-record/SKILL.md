@@ -18,7 +18,7 @@ thinking that goes into DISC; the script does the bookkeeping.
 
 1. Copy `config.example.json` to `~/.config/lab-record/config.json` (or pass `--config`).
 2. Set `root` to the folder that holds the records; fill `people` with short keys
-   (`"jh": "..."`). Real names live ONLY in this local file — shared records carry the keys.
+   (`"person1": "..."`). Real names live ONLY in this local file — shared records carry the keys.
 3. `python scripts/lab_record.py lint` → exit 0 on an empty root.
 
 Root resolution: `--root` > env `LAB_RECORD_ROOT` > config file. Notifications are off by design:

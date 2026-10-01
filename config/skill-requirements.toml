@@ -19,6 +19,9 @@ packages = []
 [journal-ppt]
 packages = ["lxml", "pptx"]
 
+[lab-record]
+packages = []
+
 [literature-review]
 packages = ["requests"]
 

@@ -1,4 +1,4 @@
-"""Tests for lab-record. Run: python -m pytest scientific-skills/active/lab-record/tests -q"""
+"""Tests for lab-record. Run from the skill directory: python -m pytest tests -q"""
 from __future__ import annotations
 
 import datetime as dt
@@ -22,7 +22,7 @@ needs_git = pytest.mark.skipif(shutil.which("git") is None, reason="git not inst
 
 # ---------------------------------------------------------------- helpers
 def rec(root: Path, rel: str, fm: dict, body: str = "Body text.\n") -> Path:
-    base = {"status": "draft", "owner": "jh", "project": "t", "created": "2026-10-01",
+    base = {"status": "draft", "owner": "person1", "project": "t", "created": "2026-10-01",
             "updated": "2026-10-01", "aliases": [], "supersedes": None, "links": []}
     base.update(fm)
     path = root / rel
@@ -46,7 +46,7 @@ def build_chain(root: Path) -> None:
         {"id": "EXP-261001-02", "type": "exp", "title": "run two", "protocol": "PROT-001@v2"})
     rec(root, "discussions/2026/DISC-261002-01.md",
         {"id": "DISC-261002-01", "type": "disc", "title": "talk", "about": ["EXP-261001-01"],
-         "participants": ["jh"], "context_checklist": {"T": "ok", "pH": "unknown", "E": "n/a"},
+         "participants": ["person1"], "context_checklist": {"T": "ok", "pH": "unknown", "E": "n/a"},
          "open_questions": ["why plateau?"]})
     rec(root, "decisions/2026/DEC-261003-01.md",
         {"id": "DEC-261003-01", "type": "dec", "title": "decide", "from": ["DISC-261002-01"],
@@ -58,7 +58,7 @@ def lab(tmp_path):
     root = tmp_path / "root"
     root.mkdir()
     cfg = tmp_path / "cfg.json"
-    cfg.write_text(json.dumps({"root": str(root), "people": {"jh": "J"}}), encoding="utf-8")
+    cfg.write_text(json.dumps({"root": str(root), "people": {"person1": "J"}}), encoding="utf-8")
     return root, cfg
 
 
@@ -141,7 +141,7 @@ def test_id_collision_retry(lab, monkeypatch):
 def test_new_prot_version_and_supersede(lab, capsys):
     root, cfg = lab
     run(cfg, "new", "prot", "--title", "Method", capsys=capsys)
-    code, _ = run(cfg, "new", "prot", "--from-prot", "PROT-001", "--reason", "AcP moved", capsys=capsys)
+    code, _ = run(cfg, "new", "prot", "--from-prot", "PROT-001", "--reason", "additive moved", capsys=capsys)
     assert code == 0
     v2 = read_text(root / "protocols/PROT-001_v2.md")
     assert "version: v2" in v2 and "changed_from: v1" in v2 and "supersedes: PROT-001@v1" in v2
@@ -218,7 +218,7 @@ def test_rule6_people_keys(chain, capsys):
     root, cfg = chain
     edit(root / "experiments/2026/EXP-261001-01.md", lambda fm, b: ({**fm, "owner": "Real Name"}, b))
     edit(root / "discussions/2026/DISC-261002-01.md",
-         lambda fm, b: ({**fm, "participants": ["jh", "who@example.org"]}, b))
+         lambda fm, b: ({**fm, "participants": ["person1", "who@example.org"]}, b))
     _, lines, _ = lint(cfg, capsys)
     assert any(l.startswith("RULE6 EXP-261001-01") for l in lines)
     assert any(l.startswith("RULE6 DISC-261002-01") and "who@example.org" in l for l in lines)
@@ -351,7 +351,7 @@ def test_index_generated(chain, capsys):
 # ---------------------------------------------------------------- Korean, errors, root resolution
 def test_korean_title_roundtrip(lab, capsys):
     root, cfg = lab
-    title = "TCA 포화 cascade, 50 uL: AcP 스윕 \"테스트\""
+    title = "포화 cascade, 50 uL: 첨가제 스윕 \"테스트\""
     run(cfg, "new", "prot", "--title", title, capsys=capsys)
     run(cfg, "new", "exp", "--title", title, "--protocol", "PROT-001@v1", capsys=capsys)
     recs, errors = model.scan(root)
@@ -402,13 +402,13 @@ def test_root_precedence(tmp_path, monkeypatch):
     for d in (a, b, c):
         d.mkdir()
     cfg = tmp_path / "c.json"
-    cfg.write_text(json.dumps({"root": str(c), "people": {"jh": "x"}}), encoding="utf-8")
+    cfg.write_text(json.dumps({"root": str(c), "people": {"person1": "x"}}), encoding="utf-8")
     monkeypatch.setenv("LAB_RECORD_ROOT", str(b))
     assert model.resolve_config(str(a), str(cfg)).root == a
     assert model.resolve_config(None, str(cfg)).root == b
     monkeypatch.delenv("LAB_RECORD_ROOT")
     cfgd = model.resolve_config(None, str(cfg))
-    assert cfgd.root == c and cfgd.people == {"jh": "x"}
+    assert cfgd.root == c and cfgd.people == {"person1": "x"}
 
 
 def test_entry_script_subprocess(lab):

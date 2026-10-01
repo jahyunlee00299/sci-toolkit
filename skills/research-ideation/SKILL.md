@@ -1,6 +1,7 @@
 ---
 name: research-ideation
 description: Unified research ideation skill covering brainstorming, critical evaluation, hypothesis formulation, and result discussion. Use when brainstorming ideas, evaluating evidence quality, formulating testable hypotheses, or discussing experimental results against literature in an open-ended way. To interpret a specific run, record a discussion or lab meeting, or log a decision use lab-record. For finding and retrieving papers use research-search; for writing a full literature review document use literature-review; for formal peer-review writing use manuscript-pipeline.
+license: MIT
 ---
 
 # Research Ideation — Meta-Skill

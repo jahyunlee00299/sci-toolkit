@@ -5,7 +5,7 @@ WHY THIS EXISTS: an in-process win32com call that hits a modal dialog (e.g. a
 DisplayAlerts=False, or a leftover dialog from a prior crashed instance) blocks
 forever — there is no COM-level timeout, because the call is synchronous and
 the dialog is waiting on user input that will never come from an unattended
-script. Measured this session: EXCEL.EXE sat Not-Responding for 44+ minutes
+script. Measured once: EXCEL.EXE sat Not-Responding for 44+ minutes
 until it was taskkill'd by hand, and the forced kill rolled the workbook back
 to its last saved state (unsaved edits since then were lost).
 
@@ -21,7 +21,7 @@ timeout for a hung STA COM call) rather than requiring a human to eyeball
 This module only runs on Windows (win32com.client is imported lazily inside
 the worker function, never at module import time) so pure-logic pieces
 (timeout plumbing, exit-code contract) can be unit-tested with a mocked
-subprocess on any platform, including this Linux/WSL session where win32com
+subprocess on any platform, including Linux/WSL where win32com
 is not installed and Excel does not exist.
 
 ENTRY POINTS:
