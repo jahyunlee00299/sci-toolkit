@@ -359,7 +359,9 @@ ff113f748f61c6748671d3d2d64bd2f846f3eb9eac1746812d2d1f3f294db4a5 *./skills/prime
 0f2d035c41c8cb310170e1f14986a007fb20e5af5b7ecde96a186116f3560eb3 *./skills/primer-design/tests/characterization.py
 0658cbe239c1f5f0a29b1352476c1cd8f3c712b733b7ec8cc54fce6d5aa29592 *./skills/primer-design/tests/characterization_mcp.py
 3cac55375d1f35b0c1aefe4f31ad6cdea7c974cbdc2bfc041d78ea076cdb3e0a *./skills/primer-design/tests/characterization_re_pair.py
+f85397b333bd36dd6b3f36813e94c7829e416bf56249eb9a5164d678181ecea7 *./skills/primer-design/tests/characterization_report.py
 74615ac351fad4a478c1f41b187c3b75cd341f5591c06cfde9c45c090e43ff01 *./skills/primer-design/tests/conftest.py
+707eb6fbdca3337de4a5064a12485e5e7bf0efb63fc981f63f61ef5b7364e990 *./skills/primer-design/tests/golden/cloning_report.json
 40cb00528f93901faf8409cb8d944358f5634c7933c44a7f95cb6a53ed79107b *./skills/primer-design/tests/golden/construct_maps.json
 03ee723b6166545ec3b71936b65927a7ac10bac98357c3cdb2bf9e7226baf594 *./skills/primer-design/tests/golden/mcp_server.json
 022eaa41f4364baecc0bf1a24e3e2ec20ec92cc96eb4a4ce8b018aa367a7c7c0 *./skills/primer-design/tests/golden/order_sheet.json
@@ -367,6 +369,7 @@ c1b95c0c3c095874067ee62495da6f8e2bc776eb2b05e5161b176559c361c817 *./skills/prime
 595372f91a97665e6eebc852ae7467498ff41119d210cfe2676309bfa0a20c6d *./skills/primer-design/tests/golden/regen_golden.py
 9fb530f2df4f20204c2ac6182300c38cb53a0acdbf92f730d2eb17509aeb03bc *./skills/primer-design/tests/golden/regen_mcp_golden.py
 3d7366fb1206d2f8be6d39c67c89cf1cf96a2b6b7548b151fbe70882837b7047 *./skills/primer-design/tests/golden/regen_re_pair_golden.py
+3b8ee8488135148cc1c7586f217e27d37f8a8fa68bd15808b0e5ffe70b5471bb *./skills/primer-design/tests/golden/regen_report_golden.py
 690369c507169da5788aaf966964388ccdb4e2f41f9071695a0e7db7b8c5795a *./skills/primer-design/tests/golden/restriction_design.json
 2eb6ad5d08fd8564cc612b0a731b6b163f9dd8176ad08bbf58e84c884a6656ff *./skills/primer-design/tests/stress_test_genes.py
 ae302472c9e55620e450c65cb8da3805bc8ed0a285079e6c4c9ebd2928c51b0f *./skills/primer-design/tests/stress_test_results.json
@@ -377,6 +380,7 @@ ae302472c9e55620e450c65cb8da3805bc8ed0a285079e6c4c9ebd2928c51b0f *./skills/prime
 f0b77df41ec93abae26a5b912da7f426c040f3bfdb7f50305ce1a5f3a7780938 *./skills/primer-design/tests/test_mcp_characterization.py
 79acfa81c5604ae9e643c4602dbcf877f90275c688fa7f38c234c38c2cca6e4d *./skills/primer-design/tests/test_order_sheet.py
 94ee21c8ea41a83b0504f0f98ccd65e91f526cbb8bd364378f7b8ecbbd9c8a39 *./skills/primer-design/tests/test_re_pair_characterization.py
+a341e4bed53fe73135aa21fb9c2b76fbaed60398a5587848055240b62c6e5088 *./skills/primer-design/tests/test_report_characterization.py
 898c378f237fa295bb767a6ad3ac471da657e5a9e3727a97a827a3cddbf03e54 *./skills/primer-design/tests/test_restriction_cloning_mode.py
 efb56daad3286db0cf2bdb019a8838f97ca931b70aa8de045d939be308553108 *./skills/primer-design/tests/test_subst_primer_mode.py
 04141b7708425d4b44defc6d496b572a9504e51f68a0e06bbb2c81e144ffb2a3 *./skills/primer-design/tests/test_vector_registry.py
