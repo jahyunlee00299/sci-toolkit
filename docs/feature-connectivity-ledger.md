@@ -1147,3 +1147,135 @@ leave the skill scripts alone.
 wired-by: doctor_lib/filehash.py
 wired-by: scripts/make_checksums.py
 wired-by: tests/test_checksums_manifest.py
+
+
+## Refactor batch 2 (2026-10-02) — stdout helper, HTTP consolidation, primer-design decomposition
+
+Same constraint as batch 1: skills install individually, so nothing under
+`skills/` may import from the repo root. Units 1 and 2 touch repo-root code only;
+unit 3 stays inside one skill package.
+
+### Unit 1 — one UTF-8 stdout helper for root-level code
+
+**Scope** — about 60 files (`doctor.py`, `scripts/`, `scripts/connectors/`, `install/`,
+`evals/`, `tests/`) each carried a private `reconfigure(encoding="utf-8")` block,
+in four spellings with different exception lists; four connectors even reconfigured
+twice, the second time without `errors="replace"` (which silently reset it to strict).
+
+**Decision** — `scripts/_stdio.py::force_utf8(streams=None)`, next to `sci_http.py`.
+Every consumer adds the scripts folder to `sys.path` (append, never insert, so it
+cannot shadow anything) and calls it. `skills/**` is untouched on purpose: a skill
+script cannot import it once installed alone.
+
+**Behaviour changes** — the helper reconfigures on every platform (nine files were
+`win32`-only; on Linux the call is a no-op in practice) and always uses
+`errors="replace"`. `install.py` also reconfigures stdin, as before, now with
+`errors="replace"`.
+
+**Evidence** — `tests/test_stdio.py` (7 tests): idempotent on `io.StringIO`, `None`
+and a stream whose `reconfigure` raises; the control (`PYTHONIOENCODING=cp949`, a
+print of an emoji + em dash + Hangul) dies with `UnicodeEncodeError` without the
+helper and prints valid UTF-8 with it; a converted entry point survives the same
+environment; a ratchet fails if any root file grows its own `.reconfigure(` call.
+Every script, connector and probe was run with `--help` under
+`PYTHONIOENCODING=cp949`; the only two that fail do so identically on the base commit (an argparse `%` in a help string,
+and a script with no `--help`).
+
+**Refutation** — the cp949 control proves the test can fail; removing the helper
+call from a converted script makes the ratchet and the cp949 run fail.
+
+wired-by: scripts/_stdio.py
+wired-by: tests/test_stdio.py
+wired-by: doctor.py
+
+### Unit 2 — connectors, `_google_auth` and `ref_fetch` go through `sci_http`
+
+**Scope** — re-measured: the only root-level callers of `urllib.request` outside
+`sci_http` were the four REST connectors (asana, github, notion, notion_db),
+`connectors/_google_auth.py` (three call sites) and `scripts/ref_fetch.py`
+(`_download_pdf`, `fetch_bibtex`). The other files named in the diagnosis do not
+exist at root level. Skills were not touched.
+
+**Decision** — `sci_http.request` gained `method=` and `data=`, `HttpError.body`
+(the error response, for the connectors' "detail" excerpt), `NetworkError.detail`
+(the raw reason, so the connectors' "Check your network connection: ..." text is
+unchanged), `Response.header()` (case-insensitive, for the PDF content-type test)
+and `http.client.HTTPException` in the retried network errors (truncated bodies).
+`retries=None` means 3 for GET/HEAD and exactly **1 for every other method**, and
+the connectors pass `retries=1` explicitly: a write is never replayed.
+
+**Behaviour changes** — `ref_fetch` no longer retries a 4xx other than 404/429
+(a blocked publisher answered 403 three times before); 5xx and network errors keep
+the full retry budget; error strings are unchanged. A read timeout in a connector
+is now a clean `[Error] Check your network connection: ...` exit instead of a
+traceback. `SCI_TOOLKIT_OFFLINE` was never read by any of these callers (it only
+gates the tests' network probes), so there is no offline behaviour to preserve or
+change; `test_offline_env_does_not_change_caller_behaviour` pins that.
+
+**Evidence** — `tests/test_http_callers.py` (29 tests) runs every caller against a
+throw-away server on 127.0.0.1: success and empty body, 401/403/404/400 messages
+with the token masked, a 503 on POST/PATCH/DELETE hits the server exactly once,
+refused connection and timeout end in the caller's own message, `ref_fetch` hits a
+5xx three times and a 403 once, 404 stays `not_found` / `HTTP 404`, a mixed-case
+`Application/PDF` header is accepted, an HTML landing page is rejected. `tests/
+test_sci_http.py` gained 11 tests for the new surface. A test fails if any root file
+calls `urlopen(` outside `sci_http.py`.
+
+**Deferred risk** — the connectors now import `sci_http.py` and `_stdio.py` from the
+parent folder. `config/catalog.json` and `scripts/connectors/README.md` say so
+("copy `scripts/connectors/` together with those two files"), but nothing enforces
+it; a user who copies only the folder gets an `ImportError`.
+
+wired-by: scripts/sci_http.py
+wired-by: scripts/connectors/_google_auth.py
+wired-by: scripts/ref_fetch.py
+wired-by: tests/test_http_callers.py
+wired-by: tests/test_sci_http.py
+
+### Unit 3 — primer-design: three oversized units split behind golden tests
+
+**Scope** — `PrimerOrderSheet` (628-line class), `generate_vector_construct_map`
+(286 lines) and `RestrictionCloningDesigner.design` (320 lines), all inside
+`skills/primer-design/src/primer_design/`. Pure extraction, no signature change;
+`order_sheet.PrimerOrderSheet.to_*`, `cloning_report.generate_vector_construct_map`
+and `design()` keep their import paths and results.
+
+**Before the split** — the 72 existing tests did not pin any output cell, drawn
+artist or design field, so `tests/characterization.py` + `tests/golden/*.json`
+(generated from the pre-split code, deterministic across two runs, LF line endings)
+snapshot: every sheet of the order workbooks (values, bold/fill/font, alignment,
+column widths; hashes for the 1000 numbered blank rows), the xls via xlrd, CSV,
+Markdown, the circular map's lines/patches/texts for seven maps, and 19 design
+scenarios plus 8 error cases. Scenarios were chosen by coverage: `design()` was
+92% covered after them, the only unreachable line being the "> 60 nt" warning
+(primer3 rejects a longer primer first — recorded as a scenario that raises).
+
+**Sizes** — `PrimerOrderSheet` 628 -> 328 lines (`order_sheet.py` 705 -> 404, the
+writers moved to `order_sheet_writers.py`, largest function 54); `to_xlsx` 117 -> 8,
+`to_macrogen_seq` 112 -> 35. `generate_vector_construct_map` 286 -> 77 in the new
+`vector_construct_map.py` (largest helper 40; `cloning_report.py` 1045 -> 681,
+re-exporting the function and the two data tables; shared fonts in
+`_plot_style.py`). `design` 320 -> 171 (about 70 of those are the docstring and the
+result dict); new helpers `_validate_design_inputs`, `_enzyme_pair_warnings`,
+`_design_end_annealing` (the forward/reverse fallback ladder was written twice),
+`_retry_for_hairpin`, `_primer_level_warnings`, `_check_frame`.
+
+**Evidence / refutation** — golden tests pass unchanged after each split; the
+rendered PNGs of the circular map and of `generate_cloning_report` are
+byte-identical to the pre-split ones. Three mutations were each caught (a column
+width, a warning string, a label offset). One dead assignment (`c5`/`c3` colours in
+the frame-status block, never used) was dropped.
+
+**Deferred** — `design()` is still the longest function in the package;
+`recommend_re_pair` (130 lines), `generate_cloning_report` and
+`mcp_server.py` (1073 lines) were out of scope.
+
+wired-by: skills/primer-design/src/primer_design/order_sheet_writers.py
+wired-by: skills/primer-design/src/primer_design/vector_construct_map.py
+wired-by: skills/primer-design/tests/test_characterization.py
+
+### Unit 4 — docs
+
+`PROJECT_STRUCTURE.md` (scripts row), `scripts/connectors/README.md`,
+`config/catalog.json` (connector install note), `skills/primer-design/REFERENCE.md`
+(file list) and the README test count (42 -> 44) name the new helpers and files.

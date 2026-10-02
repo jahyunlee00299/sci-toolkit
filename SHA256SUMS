@@ -1,11 +1,11 @@
-4814cff0f86ac8b6d4ab7902cfec55109f058aefafec0ca4cab502b271d630ed *./.claude-plugin/plugin.json
+80ed2955cdfa802f0d9e571a7f5bfb9d2423a7dad014d653085d0cfa897f372d *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 2e4e75bafd8e5ecf1b873f63ab713a141fdeb3ea5f50e2053fdbe51409680b36 *./AGENTS.md
-46fed22142c82b5aca49f1b9222cf892a190fcb8d799184dd1a5a700aafea44f *./CHANGELOG.md
+755a0ed3ae0cde10582296485fd2c843ab746288af18a0476c07f2d33344342f *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -41,7 +41,7 @@ e3dc811241c710ffe2092473ea52794fd6fe8786987e6742d0699834f67399ac *./docs/agents/
 2689d1bf99046aaa4ffd13a20a4313c032f07ab8e25a9088d8406346e6fd9f56 *./docs/agents/08-verification-routes.md
 6c424913ead689ad4e2bc5ea673156085204b5c93135386b1fafcf8b27bb3ce8 *./docs/agents/09-external-services.md
 e8f69c386883b52f3fe48fd9d8ab296a947a5e7f3a94ca61c9bf85dc56b53dc3 *./docs/agents/10-recording-friction.md
-6e5a459ea9c80af81a5d1ef0dd44d0891e5f62a68cf97154c234676b7a8b64ed *./docs/feature-connectivity-ledger.md
+d0f4c07c2da69c8fd1fac7b7fb979039bc96a5a399be908a8d28cc353056d9ba *./docs/feature-connectivity-ledger.md
 77ab0f7dfa903cb620c00663920bd02de9d8872ed3c1b2e75018691d1d987086 *./doctor.ps1
 4ae3cff8300f61200125f2e562d58c9c832dd6e220eae173364776db79313a42 *./doctor.py
 dfc3a5a03d3d14d7912ecefe06b49c44a0464c53495e6d4ef0f87ca6b0d2d616 *./doctor_lib/__init__.py

@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.119] — 2026-10-02
+
+- ledger: record refactor batch 2 (shared stdout helper, sci_http consolidation, primer-design decomposition)
+
 ## [1.2.118] — 2026-10-02
 
 - primer-design: split RestrictionCloningDesigner.design into validation, enzyme-pair warnings, annealing fallback, hairpin retry and frame-check steps; results pinned by golden tests
