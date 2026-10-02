@@ -189,6 +189,7 @@ SELF_TEST_SCRIPTS = [
     ("skills/experiment-hub/tests", "experiment-hub pytest suite (pipetting checks, Excel COM guard)"),
     ("skills/web-scraping/tests", "web-scraping pytest suite (EZproxy scope, PDF pipeline, target safety, GitHub failure surfacing)"),
     ("skills/primer-design/tests", "primer-design pytest suite (iPCR subst/del, RE cloning, colony PCR, expression analysis, order sheet, vector registry)"),
+    ("skills/get-available-resources/tests", "get-available-resources pytest suite (golden snapshots of detect_resources over fake hosts, CLI contract)"),
 ]
 
 

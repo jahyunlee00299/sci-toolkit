@@ -1353,3 +1353,51 @@ wired-by: skills/primer-design/src/primer_design/mcp_analysis_tools.py
 wired-by: skills/primer-design/src/primer_design/mcp_gene_tools.py
 wired-by: skills/primer-design/src/primer_design/expression_viability.py
 wired-by: skills/primer-design/tests/test_mcp_characterization.py
+
+### Unit 3 — get-available-resources `detect_resources.py` split
+
+**Scope** — `skills/get-available-resources/scripts/detect_resources.py`
+(1767 lines, no tests of its own). The refactor-batch-1 note said the toolkit copy
+had forked from the runtime copy; the split stays inside the skill folder and keeps
+the CLI path, flags and JSON schema.
+
+**Change** — `detect_resources.py` is now the CLI entry (135 lines: argparse, `main`,
+and re-exports of every name the old script defined, private helpers included). The
+probes moved to the `scripts/resource_probes/` package (relative imports; `_common`
+stays the shared top-level helper): `core.py` (82), `commands.py` (119), `cpu.py`
+(266), `cgroup.py` (171), `scheduler.py` (184), `memory.py` (231), `disk.py` (70),
+`accelerator_parsers.py` (289), `accelerators.py` (270), `snapshot.py` (221). Longest
+function: `_detect_memory` 154 -> 68 (new `_psutil_memory`,
+`_platform_memory_fallbacks`, `_effective_memory`), `collect_snapshot` 151 -> 125,
+`_detect_accelerators` 151 -> 55 (`_probe_nvidia`, `_probe_amd`, `_probe_apple`,
+`_apple_silicon_inferred_device`), `detect_cgroup_v2` 120 -> 52 (`_cgroup_chain`,
+`_chain_limits`, `_limit_or_none`, `_cgroup_not_detected`), `detect_scheduler` 105 -> 75
+(`_no_scheduler`, `_slurm_memory`).
+
+**Evidence** — new `skills/get-available-resources/tests/` (8 tests, registered in
+`doctor.py SELF_TEST_SCRIPTS`): `host_probe_snapshots.py` builds fake hosts (psutil, /proc
+and cgroup files, nvidia-smi / amd-smi / rocm-smi / system_profiler output, patched
+`platform` / `os` / `shutil`; the container marker default is patched too) and dumps 19
+`collect_snapshot` scenarios (Linux container + Slurm + 2 GPUs, bare Linux via /proc,
+Apple silicon and Intel Mac with failing probes, Windows with AMD fallbacks, skipped
+accelerators, nvidia fallback, garbage and truncated output, 300 GPUs hitting the device
+bound, sysconf fallback, three cgroup edge cases, empty platform / bad disk values), every
+pure parser, `detect_scheduler` records for 11 environments, the real bounded command
+runner (python as the fixed argv: ok, non-zero, timeout, truncation, not found, bad argv),
+and the CLI as a subprocess (help flags, exit codes, `--output` / `--force`, key shape of
+the live JSON). `tests/golden/detect_resources.json` was generated from the unsplit
+script (twice, byte-identical) and the split passes it unchanged.
+
+**Refutation** — five mutations over the split modules; the first round exposed three
+gaps in the scenarios themselves (amd-smi `start_error` fallback, Slurm
+`tasks_per_node` boundary, psutil total of 0), so those cases were added and the golden
+regenerated from the ORIGINAL script before re-running. All five (cgroup memory-limit
+skip, scope inversion, `or` vs `is not None` on host memory, amd fallback status set,
+the Slurm shared-memory threshold) were then caught.
+
+**Deferred** — `collect_snapshot` is still the longest function (125 lines, mostly the
+sequential assembly and the result dict).
+
+wired-by: skills/get-available-resources/scripts/resource_probes/snapshot.py
+wired-by: skills/get-available-resources/scripts/resource_probes/cgroup.py
+wired-by: skills/get-available-resources/tests/test_detect_resources_characterization.py

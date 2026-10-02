@@ -244,7 +244,8 @@ because they can contain identifiers or paths.
 
 ## Bundled files
 
-- `scripts/detect_resources.py` — redacted snapshot collector.
+- `scripts/detect_resources.py` — redacted snapshot collector (CLI entry; probes in
+  `scripts/resource_probes/`).
 - `scripts/plan_workload.py` — deterministic worker/memory planner.
 - `scripts/snapshot_tools.py` — schema validator and bounded structural diff.
 - `scripts/accelerator_diagnostics.py` — non-executing read-only diagnostic
