@@ -8,21 +8,11 @@ Confirms the check wasn't loosened just to make it pass.
 import importlib.util, sys
 from pathlib import Path
 
-# The default Windows console is cp949, which crashes on Korean/symbol output.
-# Force UTF-8. Use reconfigure rather than TextIOWrapper — a wrapper owns the
-# underlying stream, so once this module is imported and then garbage
-# collected, it closes the caller's stdout along with it. While this file
-# used a wrapper, `pytest tests/` died outright during collection
-# (ValueError: I/O operation on closed file — measured 2026-08-08). doctor.py
-# runs each test as a subprocess, so this failure never showed up there — it
-# only surfaced on the very first command a fresh clone runs. Every other
-# test file was already using reconfigure.
-for _s in (sys.stdout, sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parents[1] / "scripts"))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 spec = importlib.util.spec_from_file_location(
     "doctor", str(Path(__file__).resolve().parent.parent / "doctor.py"))

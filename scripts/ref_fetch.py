@@ -61,17 +61,11 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Optional
 
-# The default Windows console is cp949, which crashes on Korean/symbol
-# output. Force UTF-8. Use reconfigure rather than TextIOWrapper — a wrapper
-# owns the underlying stream, so once this module is imported and the
-# wrapper is later garbage collected, it closes the caller's stdout too
-# (measured).
-for _s in (sys.stdout, sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parent))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 # Reuse ref_cache_manager.py (same scripts/ folder)
 sys.path.insert(0, str(Path(__file__).resolve().parent))

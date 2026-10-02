@@ -29,16 +29,11 @@ import os
 import re
 import sys
 
-# Windows' default console is cp949, which dies on Korean/symbol output. Force UTF-8.
-# reconfigure instead of TextIOWrapper — a wrapper takes ownership of the
-# underlying stream, so once it's GC'd after import it closes the caller's
-# stdout too (measured).
-for _s in (sys.stdout, sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parents[1] / "scripts"))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILLS_DIR = os.path.join(ROOT, "skills")

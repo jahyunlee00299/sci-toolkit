@@ -22,17 +22,11 @@ Examples:
 """
 from __future__ import annotations
 
-# Windows' default console is cp949, which dies on Korean/symbol output. Force UTF-8.
-# Use reconfigure(): wrapping in a TextIOWrapper would take ownership of the
-# underlying stream, so once the wrapper is GC'd after this module is imported,
-# it closes the caller's stdout too (measured).
 import sys as _sys
-for _s in (_sys.stdout, _sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parents[1] / "scripts"))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8((_sys.stdout, _sys.stdin, _sys.stderr))  # stdin too: Korean input on a cp949 console
 
 import argparse
 import json
@@ -40,13 +34,6 @@ import os
 import shutil
 import sys
 from pathlib import Path
-
-# Force stdout/stdin to UTF-8 so Korean text isn't corrupted on a Windows console (cp949)
-for _stream in (sys.stdout, sys.stdin, sys.stderr):
-    try:
-        _stream.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
-    except (AttributeError, ValueError):
-        pass
 
 ROOT = Path(__file__).resolve().parent.parent          # toolkit root
 CATALOG_PATH = ROOT / "config" / "catalog.json"

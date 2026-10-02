@@ -17,17 +17,11 @@ Usage:
 """
 from __future__ import annotations
 
-# Windows' default console is cp949 and dies on Korean/symbol output. Force UTF-8.
-# Use reconfigure: wrapping in TextIOWrapper would take ownership of the
-# underlying stream, so once this module is imported and the wrapper gets
-# GC'd, it closes the caller's stdout too (measured).
 import sys as _sys
-for _s in (_sys.stdout, _sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parents[1]))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 import json
 import os

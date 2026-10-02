@@ -28,16 +28,11 @@ mod = importlib.util.module_from_spec(spec)
 sys.modules["assumption_check"] = mod
 spec.loader.exec_module(mod)
 
-# The default Windows console is cp949, which crashes on Korean/symbol
-# output. Force UTF-8. Use reconfigure rather than TextIOWrapper — a wrapper
-# owns the underlying stream, so once garbage collected after import it
-# closes the caller's stdout along with it (measured).
-for _s in (sys.stdout, sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parents[1] / "scripts"))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 
 def _normal_quantiles(mean: float, sd: float, n: int) -> list[float]:

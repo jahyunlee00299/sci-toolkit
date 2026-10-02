@@ -19,7 +19,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parents[1] / "scripts"))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 import shutil
 

@@ -21,29 +21,23 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import io
 import json
 import os
 import sys
 from pathlib import Path
-
-# Windows consoles often default stdout/stderr to a legacy codepage (cp949,
-# cp1252, ...) that cannot encode en/em-dashes or other punctuation used
-# below. Force UTF-8 output so this script behaves the same on every
-# platform instead of crashing with UnicodeEncodeError mid-report.
-for _stream_name in ("stdout", "stderr"):
-    _stream = getattr(sys, _stream_name)
-    if hasattr(_stream, "reconfigure"):
-        try:
-            _stream.reconfigure(encoding="utf-8", errors="replace")
-        except (AttributeError, ValueError, io.UnsupportedOperation):
-            pass
 
 # Make the doctor_lib package importable when doctor.py is loaded by path
 # (tests use importlib.util.spec_from_file_location on doctor.py and set
 # sys.modules["doctor"] before exec, which does not add this file's own
 # directory to sys.path the way a normal `python doctor.py` invocation does).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parent / "scripts"))
+
+# Windows consoles default stdout/stderr to a legacy codepage (cp949, cp1252, ...)
+# that cannot encode the dashes used in the report; see scripts/_stdio.py.
+from _stdio import force_utf8  # noqa: E402
+
+force_utf8()
 
 from doctor_lib.result import (  # noqa: E402
     CheckResult,
@@ -166,6 +160,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_doc_counts.py", "documented counts match reality"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
     ("tests/test_sequence_verification.py", "sequence-verification (variant presence/absence, primer codon recovery, reference-map refusals, construct MW)"),
+    ("tests/test_stdio.py", "shared UTF-8 stdout helper (cp949 control vs fixed, non-reconfigurable streams, no private reconfigure blocks left)"),
     ("tests/test_env_detect.py", "shell-env detection (Windows Git-Bash/WSL branches)"),
     ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
     ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),

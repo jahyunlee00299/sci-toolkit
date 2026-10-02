@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.113] — 2026-10-02
+
+- stdio: one shared force_utf8 helper (scripts/_stdio.py) replaces ~60 copies of the reconfigure block in root-level code
+
 ## [1.2.112] — 2026-10-02
 
 - ledger: record refactor batch 1 (structure list gate, fiducial rename, primer-design pytest suite, shared sha256 helper)

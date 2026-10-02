@@ -65,12 +65,11 @@ import sys
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 
-if sys.platform == "win32":
-    for _s in (sys.stdout, sys.stderr):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except (AttributeError, ValueError):
-            pass
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parent))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 # --------------------------------------------------------------------------
 # What counts as a tool, a reader, an invoker, and a test

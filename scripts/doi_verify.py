@@ -105,18 +105,11 @@ from ref_fetch import (  # noqa: E402
 )
 import urllib.parse  # noqa: E402
 
-# Windows' default console is cp949, which dies on Korean/symbol output. Force
-# UTF-8. reconfigure instead of TextIOWrapper — a wrapper owns the underlying
-# stream, so if this module is later GC'd or another module wraps it again,
-# the shared buffer gets closed and it dies with "I/O operation on closed
-# file" (measured). reconfigure mutates the same object in place, so it's
-# safe no matter how many times it's called or in what import order.
-for _s in (sys.stdout, sys.stderr):
-    if hasattr(_s, "reconfigure"):
-        try:
-            _s.reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            pass
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.append(str(_Path(__file__).resolve().parent))  # shared helper: scripts/_stdio.py
+from _stdio import force_utf8  # noqa: E402
+force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 
 _DOI_RE = re.compile(r"^10\.\d{4,9}/\S+$")
 

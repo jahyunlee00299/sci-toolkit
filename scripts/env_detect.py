@@ -119,12 +119,9 @@ if __name__ == "__main__":
     import json
     import sys
 
-    for _s in (sys.stdout, sys.stderr):
-        if hasattr(_s, "reconfigure"):
-            try:
-                _s.reconfigure(encoding="utf-8", errors="replace")
-            except Exception:
-                pass
+    from _stdio import force_utf8
+
+    force_utf8()
 
     r = detect()
     status = "OK" if r["shell_ok"] else "FAIL"
