@@ -155,15 +155,26 @@ def test_ezproxy_download_accepts_expected_record():
     )
 
 
+def _fetch_academic_trees():
+    """AST of every module that makes up fetch_academic (entry script + academic_sources/).
+
+    The single-file script was split into a package; scanning only the entry file
+    would make the two source-level checks below pass or fail vacuously.
+    """
+    import ast
+
+    scripts = Path(__file__).resolve().parent.parent / "scripts"
+    files = [scripts / "fetch_academic.py", *sorted((scripts / "academic_sources").glob("*.py"))]
+    assert len(files) > 1, "academic_sources package not found"
+    return [ast.parse(f.read_text(encoding="utf-8")) for f in files]
+
+
 def test_pdf_downloader_passes_expected_to_ezproxy():
     """AST check on the call site — the audit finding was an unpassed argument."""
     import ast
 
-    source = Path(__file__).resolve().parent.parent / "scripts" / "fetch_academic.py"
-    tree = ast.parse(source.read_text(encoding="utf-8"))
-
     calls = [
-        node for node in ast.walk(tree)
+        node for tree in _fetch_academic_trees() for node in ast.walk(tree)
         if isinstance(node, ast.Call)
         and isinstance(node.func, ast.Attribute)
         and node.func.attr == "download"
@@ -183,14 +194,11 @@ def test_filenames_are_sanitized_at_every_source():
     """first_author / year are as untrusted as the DOI, which was sanitized."""
     import ast
 
-    source = Path(__file__).resolve().parent.parent / "scripts" / "fetch_academic.py"
-    tree = ast.parse(source.read_text(encoding="utf-8"))
-
     # Every f-string that builds a *.pdf filename must be wrapped in
     # sanitize_filename(...). Find bare assignments of the form
     # `<name>_filename = f"..."` which is how the unsanitized versions read.
     offenders = []
-    for node in ast.walk(tree):
+    for node in (n for tree in _fetch_academic_trees() for n in ast.walk(tree)):
         if not isinstance(node, ast.Assign):
             continue
         for target in node.targets:

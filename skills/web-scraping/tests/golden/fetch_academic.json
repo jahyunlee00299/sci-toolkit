@@ -1,0 +1,4638 @@
+{
+ "arxiv": {
+  "calls": [
+   [
+    "results",
+    "enzyme cascade",
+    5,
+    "submittedDate"
+   ]
+  ],
+  "empty": {
+   "result": [],
+   "warnings": []
+  },
+  "error": {
+   "raised": [
+    "ScrapeError",
+    "arXiv search failed for 'x': 503"
+   ],
+   "warnings": []
+  },
+  "missing_package": {
+   "raised": [
+    "ScrapeError",
+    "the 'arxiv' package is required for the arxiv source. Install: pip install arxiv"
+   ],
+   "warnings": []
+  },
+  "name": "arxiv",
+  "ok": {
+   "result": [
+    {
+     "arxiv_id": "2401.0001v1",
+     "authors": [
+      "A. One",
+      "B. Two"
+     ],
+     "categories": [
+      "cs.LG",
+      "q-bio.QM"
+     ],
+     "doi": null,
+     "pdf_links": [
+      "http://arxiv.org/pdf/2401.0001"
+     ],
+     "summary": "sum",
+     "title": "Paper 1",
+     "url": "http://arxiv.org/abs/2401.0001",
+     "year": 2024
+    },
+    {
+     "arxiv_id": "2401.0002v1",
+     "authors": [
+      "A. One",
+      "B. Two"
+     ],
+     "categories": [
+      "cs.LG",
+      "q-bio.QM"
+     ],
+     "doi": "10.48550/arXiv.2401.0001",
+     "pdf_links": [],
+     "summary": "sum",
+     "title": "Paper 2",
+     "url": "http://arxiv.org/abs/2401.0002",
+     "year": null
+    }
+   ],
+   "warnings": []
+  }
+ },
+ "auth": {
+  "cache_bad_cookies": {
+   "result": null,
+   "warnings": []
+  },
+  "cache_bad_date": {
+   "result": null,
+   "warnings": [
+    "UserWarning: Cookie cache read faile"
+   ]
+  },
+  "cache_corrupt": {
+   "result": null,
+   "warnings": [
+    "UserWarning: Cookie cache read faile"
+   ]
+  },
+  "cache_dirs_created": true,
+  "cache_fresh": {
+   "result": {
+    "b": "2",
+    "sid": "한글"
+   },
+   "warnings": []
+  },
+  "cache_just_fresh": {
+   "result": {
+    "a": "1"
+   },
+   "warnings": []
+  },
+  "cache_missing": {
+   "result": null,
+   "warnings": []
+  },
+  "cache_no_saved_at": {
+   "result": null,
+   "warnings": []
+  },
+  "cache_save": {
+   "result": null,
+   "warnings": []
+  },
+  "cache_save_creates_dirs": {
+   "result": null,
+   "warnings": []
+  },
+  "cache_save_fails": {
+   "result": null,
+   "warnings": [
+    "UserWarning: Failed to sav"
+   ]
+  },
+  "cache_saved_shape": {
+   "cookies": {
+    "b": "2",
+    "sid": "한글"
+   },
+   "keys": [
+    "cookies",
+    "saved_at"
+   ]
+  },
+  "cache_stale": {
+   "result": null,
+   "warnings": []
+  },
+  "get_session_cached": {
+   "cookies": {
+    "sid": "cached"
+   },
+   "ua_prefix": "Mozilla/5.0 (Windows"
+  },
+  "get_session_no_requests": {
+   "raised": [
+    "ScrapeError",
+    "requests is required for InstitutionalLibraryAuth. Install: pip install requests"
+   ],
+   "warnings": []
+  },
+  "get_session_relogin": {
+   "cache": {
+    "sid": "fresh"
+   },
+   "cookies": {
+    "sid": "fresh"
+   }
+  },
+  "refresh_expired": {
+   "cache_cookies": {
+    "new": "2"
+   },
+   "cleared": true,
+   "cookies": {
+    "new": "2"
+   },
+   "warnings": [
+    "UserWarning: InstitutionalLibraryAuth: session expired, re-logging in via Selenium"
+   ]
+  },
+  "refresh_valid": {
+   "call": {
+    "result": true,
+    "warnings": []
+   },
+   "cookies": {
+    "old": "1"
+   }
+  },
+  "valid_korean": {
+   "result": true,
+   "warnings": []
+  },
+  "valid_login": {
+   "result": false,
+   "warnings": []
+  },
+  "valid_logout": {
+   "result": true,
+   "warnings": []
+  },
+  "valid_raises": {
+   "result": false,
+   "warnings": [
+    "UserWarning: Session validity check failed: down"
+   ]
+  }
+ },
+ "biorxiv": {
+  "biorxiv": {
+   "calls": [
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/biorxiv/10.1101/x",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/biorxiv/30",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/biorxiv/bad",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/biorxiv/7",
+     true
+    ]
+   ],
+   "doi": {
+    "result": {
+     "messages": [
+      {
+       "count": 2,
+       "status": "ok"
+      }
+     ],
+     "records": [
+      {
+       "authors": "A; B",
+       "category": "genomics",
+       "doi": "10.1101/2024.03.05.1",
+       "pdf_links": [
+        "https://www.biorxiv.org/content/10.1101/2024.03.05.1.full.pdf"
+       ],
+       "title": "T1",
+       "url": "https://www.biorxiv.org/content/10.1101/2024.03.05.1",
+       "year": "2024"
+      },
+      {
+       "authors": null,
+       "category": null,
+       "doi": null,
+       "pdf_links": [],
+       "title": "T2",
+       "url": "https://www.biorxiv.org/content/None",
+       "year": null
+      },
+      {
+       "authors": null,
+       "category": null,
+       "doi": null,
+       "pdf_links": [],
+       "title": null,
+       "url": "https://www.biorxiv.org/content/None",
+       "year": null
+      }
+     ]
+    },
+    "warnings": []
+   },
+   "no_fixture": {
+    "raised": [
+     "ScrapeError",
+     "no fixture for https://api.biorxiv.org/details/biorxiv/7"
+    ],
+    "warnings": []
+   },
+   "non_json": {
+    "raised": [
+     "ScrapeError",
+     "bioRxiv API returned non-JSON: https://api.biorxiv.org/details/biorxiv/bad"
+    ],
+    "warnings": []
+   },
+   "recent": {
+    "result": {
+     "messages": null,
+     "records": []
+    },
+    "warnings": []
+   },
+   "server": "biorxiv"
+  },
+  "medrxiv": {
+   "calls": [
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/medrxiv/10.1101/x",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/medrxiv/30",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/medrxiv/bad",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.biorxiv.org/details/medrxiv/7",
+     true
+    ]
+   ],
+   "doi": {
+    "result": {
+     "messages": [
+      {
+       "count": 2,
+       "status": "ok"
+      }
+     ],
+     "records": [
+      {
+       "authors": "A; B",
+       "category": "genomics",
+       "doi": "10.1101/2024.03.05.1",
+       "pdf_links": [
+        "https://www.medrxiv.org/content/10.1101/2024.03.05.1.full.pdf"
+       ],
+       "title": "T1",
+       "url": "https://www.medrxiv.org/content/10.1101/2024.03.05.1",
+       "year": "2024"
+      },
+      {
+       "authors": null,
+       "category": null,
+       "doi": null,
+       "pdf_links": [],
+       "title": "T2",
+       "url": "https://www.medrxiv.org/content/None",
+       "year": null
+      },
+      {
+       "authors": null,
+       "category": null,
+       "doi": null,
+       "pdf_links": [],
+       "title": null,
+       "url": "https://www.medrxiv.org/content/None",
+       "year": null
+      }
+     ]
+    },
+    "warnings": []
+   },
+   "no_fixture": {
+    "raised": [
+     "ScrapeError",
+     "no fixture for https://api.biorxiv.org/details/medrxiv/7"
+    ],
+    "warnings": []
+   },
+   "non_json": {
+    "raised": [
+     "ScrapeError",
+     "bioRxiv API returned non-JSON: https://api.biorxiv.org/details/medrxiv/bad"
+    ],
+    "warnings": []
+   },
+   "recent": {
+    "result": {
+     "messages": null,
+     "records": []
+    },
+    "warnings": []
+   },
+   "server": "medrxiv"
+  },
+  "name": "biorxiv"
+ },
+ "cli": {
+  "arxiv_nothing": {
+   "code": 1,
+   "stderr": [
+    "ERROR: arxiv needs --query"
+   ],
+   "stdout": "",
+   "warnings": []
+  },
+  "arxiv_query": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "results": [
+      {
+       "arxiv_id": "2401.0001v1",
+       "authors": [
+        "A. One",
+        "B. Two"
+       ],
+       "categories": [
+        "cs.LG",
+        "q-bio.QM"
+       ],
+       "doi": null,
+       "pdf_links": [
+        "http://arxiv.org/pdf/2401.0001"
+       ],
+       "summary": "sum",
+       "title": "Paper 1",
+       "url": "http://arxiv.org/abs/2401.0001",
+       "year": 2024
+      }
+     ]
+    },
+    "provenance": {
+     "method": "fetch_academic:arxiv",
+     "retrieved_at": "<TS>",
+     "source_url": "http://export.arxiv.org/api/query",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": []
+  },
+  "bad_source": {
+   "code": 2,
+   "stderr": [
+    "fetch_academic.py: error: argument --source: invalid choice: 'pubmed' (choose from crossref, arxiv, biorxiv)"
+   ],
+   "stdout": "",
+   "warnings": []
+  },
+  "biorxiv_doi": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "record": {
+      "messages": [
+       {
+        "count": 2,
+        "status": "ok"
+       }
+      ],
+      "records": [
+       {
+        "authors": "A; B",
+        "category": "genomics",
+        "doi": "10.1101/2024.03.05.1",
+        "pdf_links": [
+         "https://www.biorxiv.org/content/10.1101/2024.03.05.1.full.pdf"
+        ],
+        "title": "T1",
+        "url": "https://www.biorxiv.org/content/10.1101/2024.03.05.1",
+        "year": "2024"
+       },
+       {
+        "authors": null,
+        "category": null,
+        "doi": null,
+        "pdf_links": [],
+        "title": "T2",
+        "url": "https://www.biorxiv.org/content/None",
+        "year": null
+       },
+       {
+        "authors": null,
+        "category": null,
+        "doi": null,
+        "pdf_links": [],
+        "title": null,
+        "url": "https://www.biorxiv.org/content/None",
+        "year": null
+       }
+      ]
+     }
+    },
+    "provenance": {
+     "method": "fetch_academic:biorxiv",
+     "retrieved_at": "<TS>",
+     "source_url": "https://api.biorxiv.org",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": []
+  },
+  "biorxiv_missing_fixture": {
+   "code": 1,
+   "stderr": [
+    "ERROR: no fixture: https://api.biorxiv.org/details/biorxiv/99"
+   ],
+   "stdout": "",
+   "warnings": []
+  },
+  "biorxiv_nothing": {
+   "code": 1,
+   "stderr": [
+    "ERROR: biorxiv needs either --doi or --recent"
+   ],
+   "stdout": "",
+   "warnings": []
+  },
+  "biorxiv_recent_medrxiv": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "recent": {
+      "messages": [],
+      "records": [
+       {
+        "authors": "A; B",
+        "category": "genomics",
+        "doi": "10.1101/2024.03.05.1",
+        "pdf_links": [
+         "https://www.medrxiv.org/content/10.1101/2024.03.05.1.full.pdf"
+        ],
+        "title": "T1",
+        "url": "https://www.medrxiv.org/content/10.1101/2024.03.05.1",
+        "year": "2024"
+       }
+      ]
+     }
+    },
+    "provenance": {
+     "method": "fetch_academic:biorxiv",
+     "retrieved_at": "<TS>",
+     "source_url": "https://api.biorxiv.org",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": []
+  },
+  "crossref_doi": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "record": {
+      "authors": [
+       "Jane Doe",
+       "Smith",
+       "Only"
+      ],
+      "doi": "10.1234/test",
+      "is_referenced_by_count": 7,
+      "journal": "Journal of Chemistry",
+      "pdf_links": [
+       "https://x.example.com/a.pdf"
+      ],
+      "title": "Target Product Synthesis",
+      "type": "journal-article",
+      "url": "https://doi.org/10.1234/test",
+      "year": 2020
+     }
+    },
+    "provenance": {
+     "method": "fetch_academic:crossref",
+     "retrieved_at": "<TS>",
+     "source_url": "https://api.crossref.org/works",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": []
+  },
+  "crossref_download_auto_login": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "record": {
+      "authors": [
+       "Jane Doe",
+       "Smith",
+       "Only"
+      ],
+      "doi": "10.1234/test",
+      "download_source": null,
+      "download_status": "PDF not found via Crossref/Unpaywall/PMC/EZproxy for DOI '10.1234/test'",
+      "downloaded_path": null,
+      "is_referenced_by_count": 7,
+      "journal": "Journal of Chemistry",
+      "pdf_links": [
+       "https://x.example.com/missing.pdf"
+      ],
+      "title": "Target Product Synthesis",
+      "type": "journal-article",
+      "url": "https://doi.org/10.1234/test",
+      "year": 2020
+     }
+    },
+    "provenance": {
+     "method": "fetch_academic:crossref",
+     "retrieved_at": "<TS>",
+     "source_url": "https://api.crossref.org/works",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": [
+    "Download failed from crossref_direct (https://x.example.com/missing.pdf): no stream: https://x.example.com/missing.pdf",
+    "EZproxy is not configured: PROXY_BASE is still the placeholder (ezproxy.your-institution.edu). Set the EZPROXY_BASE environment variable to your institution's link-resolver base, or leave the EZproxy path unused (LibKey is the recommended route per SKILL.md).",
+    "PDF not found via Crossref/Unpaywall/PMC/EZproxy for DOI '10.1234/test'"
+   ]
+  },
+  "crossref_download_ezproxy_unconfigured": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "record": {
+      "authors": [
+       "Jane Doe",
+       "Smith",
+       "Only"
+      ],
+      "doi": "10.1234/test",
+      "download_source": null,
+      "download_status": "PDF not found via Crossref/Unpaywall/PMC/LibKey/EZproxy for DOI '10.1234/test'",
+      "downloaded_path": null,
+      "is_referenced_by_count": 7,
+      "journal": "Journal of Chemistry",
+      "pdf_links": [
+       "https://x.example.com/missing.pdf"
+      ],
+      "title": "Target Product Synthesis",
+      "type": "journal-article",
+      "url": "https://doi.org/10.1234/test",
+      "year": 2020
+     }
+    },
+    "provenance": {
+     "method": "fetch_academic:crossref",
+     "retrieved_at": "<TS>",
+     "source_url": "https://api.crossref.org/works",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": [
+    "Download failed from crossref_direct (https://x.example.com/missing.pdf): no stream: https://x.example.com/missing.pdf",
+    "EZproxy is not configured: PROXY_BASE is still the placeholder (ezproxy.your-institution.edu). Set the EZPROXY_BASE environment variable to your institution's link-resolver base, or leave the EZproxy path unused (LibKey is the recommended route per SKILL.md).",
+    "PDF not found via Crossref/Unpaywall/PMC/LibKey/EZproxy for DOI '10.1234/test'"
+   ]
+  },
+  "crossref_download_files": [
+   "Doe_2020_10.1234_test.pdf"
+  ],
+  "crossref_download_ok": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "record": {
+      "authors": [
+       "Jane Doe",
+       "Smith",
+       "Only"
+      ],
+      "doi": "10.1234/test",
+      "download_source": "crossref_direct",
+      "download_status": "ok",
+      "downloaded_path": "<TMP>/dl_ok/Doe_2020_10.1234_test.pdf",
+      "identity": {
+       "reasons": [
+        "DOI present in body (+3)",
+        "title token overlap 100%",
+        "first author 'doe' confirmed (+2)",
+        "journal name matches (+1)",
+        "year 2020 confirmed (+1)"
+       ],
+       "score": 10,
+       "verdict": "ok"
+      },
+      "is_referenced_by_count": 7,
+      "journal": "Journal of Chemistry",
+      "pdf_links": [
+       "https://x.example.com/a.pdf"
+      ],
+      "size_bytes": "<N>",
+      "title": "Target Product Synthesis",
+      "type": "journal-article",
+      "url": "https://doi.org/10.1234/test",
+      "year": 2020
+     }
+    },
+    "provenance": {
+     "method": "fetch_academic:crossref",
+     "retrieved_at": "<TS>",
+     "source_url": "https://api.crossref.org/works",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": []
+  },
+  "crossref_lookup_error": {
+   "code": 1,
+   "stderr": [
+    "ERROR: Crossref DOI lookup failed for '10.1/none': 404"
+   ],
+   "stdout": "",
+   "warnings": []
+  },
+  "crossref_nothing": {
+   "code": 1,
+   "stderr": [
+    "ERROR: crossref needs either --doi or --query"
+   ],
+   "stdout": "",
+   "warnings": []
+  },
+  "crossref_output_content": {
+   "data": {
+    "record": {
+     "authors": [
+      "Jane Doe",
+      "Smith",
+      "Only"
+     ],
+     "doi": "10.1234/test",
+     "is_referenced_by_count": 7,
+     "journal": "Journal of Chemistry",
+     "pdf_links": [
+      "https://x.example.com/a.pdf"
+     ],
+     "title": "Target Product Synthesis",
+     "type": "journal-article",
+     "url": "https://doi.org/10.1234/test",
+     "year": 2020
+    }
+   },
+   "provenance": {
+    "method": "fetch_academic:crossref",
+    "retrieved_at": "<TS>",
+    "source_url": "https://api.crossref.org/works",
+    "tool": "web-scraping-skill/1.0"
+   }
+  },
+  "crossref_output_file": {
+   "code": 0,
+   "stderr": [],
+   "stdout": "Wrote <TMP>/o/r.json\n",
+   "warnings": []
+  },
+  "crossref_query": {
+   "code": 0,
+   "stderr": [],
+   "stdout": {
+    "data": {
+     "results": [
+      {
+       "authors": [
+        "Jane Doe",
+        "Smith",
+        "Only"
+       ],
+       "doi": "10.1234/test",
+       "is_referenced_by_count": 7,
+       "journal": "Journal of Chemistry",
+       "pdf_links": [
+        "https://x.example.com/a.pdf"
+       ],
+       "title": "Target Product Synthesis",
+       "type": "journal-article",
+       "url": "https://doi.org/10.1234/test",
+       "year": 2020
+      },
+      {
+       "authors": [],
+       "doi": null,
+       "is_referenced_by_count": null,
+       "journal": null,
+       "pdf_links": [],
+       "title": null,
+       "type": null,
+       "url": null,
+       "year": null
+      }
+     ]
+    },
+    "provenance": {
+     "method": "fetch_academic:crossref",
+     "retrieved_at": "<TS>",
+     "source_url": "https://api.crossref.org/works",
+     "tool": "web-scraping-skill/1.0"
+    }
+   },
+   "warnings": []
+  },
+  "no_args": {
+   "code": 2,
+   "stderr": [
+    "fetch_academic.py: error: the following arguments are required: --source"
+   ],
+   "stdout": "",
+   "warnings": []
+  },
+  "parser": {
+   "auto_login": {
+    "choices": null,
+    "default": false,
+    "flags": [
+     "--auto-login"
+    ],
+    "nargs": 0,
+    "required": false,
+    "type": null
+   },
+   "cookie_file": {
+    "choices": null,
+    "default": "<HOME>/.claude/institution_cookies.txt",
+    "flags": [
+     "--cookie-file"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": null
+   },
+   "delay": {
+    "choices": null,
+    "default": 1.0,
+    "flags": [
+     "--delay"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": "float"
+   },
+   "doi": {
+    "choices": null,
+    "default": null,
+    "flags": [
+     "--doi"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": null
+   },
+   "download": {
+    "choices": null,
+    "default": false,
+    "flags": [
+     "--download"
+    ],
+    "nargs": 0,
+    "required": false,
+    "type": null
+   },
+   "download_dir": {
+    "choices": null,
+    "default": "./downloads",
+    "flags": [
+     "--download-dir"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": null
+   },
+   "ezproxy": {
+    "choices": null,
+    "default": false,
+    "flags": [
+     "--ezproxy"
+    ],
+    "nargs": 0,
+    "required": false,
+    "type": null
+   },
+   "help": {
+    "choices": null,
+    "default": "==SUPPRESS==",
+    "flags": [
+     "-h",
+     "--help"
+    ],
+    "nargs": 0,
+    "required": false,
+    "type": null
+   },
+   "ignore_robots": {
+    "choices": null,
+    "default": false,
+    "flags": [
+     "--ignore-robots"
+    ],
+    "nargs": 0,
+    "required": false,
+    "type": null
+   },
+   "libkey": {
+    "choices": null,
+    "default": false,
+    "flags": [
+     "--libkey"
+    ],
+    "nargs": 0,
+    "required": false,
+    "type": null
+   },
+   "limit": {
+    "choices": null,
+    "default": 10,
+    "flags": [
+     "-n",
+     "--limit"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": "int"
+   },
+   "no_cache": {
+    "choices": null,
+    "default": false,
+    "flags": [
+     "--no-cache"
+    ],
+    "nargs": 0,
+    "required": false,
+    "type": null
+   },
+   "output": {
+    "choices": null,
+    "default": null,
+    "flags": [
+     "-o",
+     "--output"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": null
+   },
+   "query": {
+    "choices": null,
+    "default": null,
+    "flags": [
+     "--query"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": null
+   },
+   "recent": {
+    "choices": null,
+    "default": null,
+    "flags": [
+     "--recent"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": null
+   },
+   "retries": {
+    "choices": null,
+    "default": 3,
+    "flags": [
+     "--retries"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": "int"
+   },
+   "server": {
+    "choices": [
+     "biorxiv",
+     "medrxiv"
+    ],
+    "default": "biorxiv",
+    "flags": [
+     "--server"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": null
+   },
+   "source": {
+    "choices": [
+     "crossref",
+     "arxiv",
+     "biorxiv"
+    ],
+    "default": null,
+    "flags": [
+     "--source"
+    ],
+    "nargs": null,
+    "required": true,
+    "type": null
+   },
+   "timeout": {
+    "choices": null,
+    "default": 30.0,
+    "flags": [
+     "--timeout"
+    ],
+    "nargs": null,
+    "required": false,
+    "type": "float"
+   }
+  },
+  "parser_description": "Retrieve scholarly metadata + full-text links from Crossref / arXiv / bioRxiv."
+ },
+ "crossref": {
+  "calls_boom": [
+   [
+    "init",
+    "me@example.org"
+   ],
+   [
+    "works",
+    {
+     "ids": "10.1234/test"
+    }
+   ],
+   [
+    "works",
+    {
+     "limit": 3,
+     "query": "enzyme cascade"
+    }
+   ]
+  ],
+  "calls_empty_message": [
+   [
+    "init",
+    "me@example.org"
+   ],
+   [
+    "works",
+    {
+     "ids": "10.1234/test"
+    }
+   ],
+   [
+    "works",
+    {
+     "limit": 3,
+     "query": "enzyme cascade"
+    }
+   ]
+  ],
+  "calls_ok": [
+   [
+    "init",
+    "me@example.org"
+   ],
+   [
+    "works",
+    {
+     "ids": "10.1234/test"
+    }
+   ],
+   [
+    "works",
+    {
+     "limit": 3,
+     "query": "enzyme cascade"
+    }
+   ]
+  ],
+  "calls_ok_search": [
+   [
+    "init",
+    "me@example.org"
+   ],
+   [
+    "works",
+    {
+     "ids": "10.1234/test"
+    }
+   ],
+   [
+    "works",
+    {
+     "limit": 3,
+     "query": "enzyme cascade"
+    }
+   ]
+  ],
+  "habanero_missing": {
+   "raised": [
+    "ScrapeError",
+    "habanero is required for the crossref source. Install: pip install habanero"
+   ],
+   "warnings": []
+  },
+  "lookup_boom": {
+   "raised": [
+    "ScrapeError",
+    "Crossref DOI lookup failed for '10.1234/test': 404 Not Found"
+   ],
+   "warnings": []
+  },
+  "lookup_empty_message": {
+   "result": {
+    "authors": [],
+    "doi": null,
+    "is_referenced_by_count": null,
+    "journal": null,
+    "pdf_links": [],
+    "title": null,
+    "type": null,
+    "url": null,
+    "year": null
+   },
+   "warnings": []
+  },
+  "lookup_ok": {
+   "result": {
+    "authors": [
+     "Jane Doe",
+     "Smith",
+     "Only"
+    ],
+    "doi": "10.1234/test",
+    "is_referenced_by_count": 7,
+    "journal": "Journal of Chemistry",
+    "pdf_links": [
+     "https://x.example.com/a.pdf"
+    ],
+    "title": "Target Product Synthesis",
+    "type": "journal-article",
+    "url": "https://doi.org/10.1234/test",
+    "year": 2020
+   },
+   "warnings": []
+  },
+  "lookup_ok_search": {
+   "result": {
+    "authors": [],
+    "doi": null,
+    "is_referenced_by_count": null,
+    "journal": null,
+    "pdf_links": [],
+    "title": null,
+    "type": null,
+    "url": null,
+    "year": null
+   },
+   "warnings": []
+  },
+  "normalize": {
+   "empty": {
+    "result": {
+     "authors": [],
+     "doi": null,
+     "is_referenced_by_count": null,
+     "journal": null,
+     "pdf_links": [],
+     "title": null,
+     "type": null,
+     "url": null,
+     "year": null
+    },
+    "warnings": []
+   },
+   "empty_date_parts": {
+    "result": {
+     "authors": [],
+     "doi": null,
+     "is_referenced_by_count": null,
+     "journal": null,
+     "pdf_links": [],
+     "title": null,
+     "type": null,
+     "url": null,
+     "year": null
+    },
+    "warnings": []
+   },
+   "full": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "Smith",
+      "Only"
+     ],
+     "doi": "10.1234/test",
+     "is_referenced_by_count": 7,
+     "journal": "Journal of Chemistry",
+     "pdf_links": [
+      "https://x.example.com/a.pdf"
+     ],
+     "title": "Target Product Synthesis",
+     "type": "journal-article",
+     "url": "https://doi.org/10.1234/test",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "no_container": {
+    "result": {
+     "authors": [],
+     "doi": null,
+     "is_referenced_by_count": null,
+     "journal": null,
+     "pdf_links": [],
+     "title": null,
+     "type": null,
+     "url": null,
+     "year": null
+    },
+    "warnings": []
+   },
+   "no_date": {
+    "result": {
+     "authors": [],
+     "doi": null,
+     "is_referenced_by_count": null,
+     "journal": null,
+     "pdf_links": [],
+     "title": null,
+     "type": null,
+     "url": null,
+     "year": null
+    },
+    "warnings": []
+   },
+   "no_title_list": {
+    "result": {
+     "authors": [],
+     "doi": null,
+     "is_referenced_by_count": null,
+     "journal": null,
+     "pdf_links": [],
+     "title": null,
+     "type": null,
+     "url": null,
+     "year": null
+    },
+    "warnings": []
+   },
+   "only_doi": {
+    "result": {
+     "authors": [],
+     "doi": "10.1/x",
+     "is_referenced_by_count": null,
+     "journal": null,
+     "pdf_links": [],
+     "title": null,
+     "type": null,
+     "url": null,
+     "year": null
+    },
+    "warnings": []
+   }
+  },
+  "search_boom": {
+   "raised": [
+    "ScrapeError",
+    "Crossref search failed for 'enzyme cascade': 404 Not Found"
+   ],
+   "warnings": []
+  },
+  "search_empty_message": {
+   "result": [],
+   "warnings": []
+  },
+  "search_ok": {
+   "result": [],
+   "warnings": []
+  },
+  "search_ok_search": {
+   "result": [
+    {
+     "authors": [
+      "Jane Doe",
+      "Smith",
+      "Only"
+     ],
+     "doi": "10.1234/test",
+     "is_referenced_by_count": 7,
+     "journal": "Journal of Chemistry",
+     "pdf_links": [
+      "https://x.example.com/a.pdf"
+     ],
+     "title": "Target Product Synthesis",
+     "type": "journal-article",
+     "url": "https://doi.org/10.1234/test",
+     "year": 2020
+    },
+    {
+     "authors": [],
+     "doi": null,
+     "is_referenced_by_count": null,
+     "journal": null,
+     "pdf_links": [],
+     "title": null,
+     "type": null,
+     "url": null,
+     "year": null
+    }
+   ],
+   "warnings": []
+  }
+ },
+ "downloader": {
+  "all_fail_flags": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC/LibKey/EZproxy for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf",
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC/LibKey/EZproxy for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": [
+    [
+     "10.1234/test",
+     "Doe_2020_10.1234_test_ezproxy.pdf",
+     {
+      "first_author": "Doe",
+      "journal": "Journal of Chemistry Catalysis",
+      "title": "Target Product Synthesis Enzymatic Cascades",
+      "year": 2020
+     }
+    ]
+   ],
+   "files": [],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "all_fail_plain": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf",
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "crossref_first_link": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "crossref_direct",
+     "download_status": "ok",
+     "downloaded_path": "<TMP>/crossref_first_link/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI present in body (+3)",
+       "title token overlap 100%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 10,
+      "verdict": "ok"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf"
+   ],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": []
+  },
+  "crossref_mismatch_then_unpaywall": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "unpaywall",
+     "download_status": "ok",
+     "downloaded_path": "<TMP>/crossref_mismatch_then_unpaywall/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI present in body (+3)",
+       "title token overlap 100%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 10,
+      "verdict": "ok"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://oa.example.com/p.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf",
+    "Doe_2020_10.1234_test.pdf.REJECTED"
+   ],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "crossref_second_link": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "crossref_direct",
+     "download_status": "ok",
+     "downloaded_path": "<TMP>/crossref_second_link/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI present in body (+3)",
+       "title token overlap 100%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 10,
+      "verdict": "ok"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf"
+   ],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": []
+  },
+  "crossref_suspect": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "crossref_direct",
+     "download_status": "ok (identity suspect, score=3)",
+     "downloaded_path": "<TMP>/crossref_suspect/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI not present in body",
+       "title token overlap 0%",
+       "first author 'doe' confirmed (+2)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 3,
+      "verdict": "suspect"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf"
+   ],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": []
+  },
+  "ezproxy_fail": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC/EZproxy for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf",
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC/EZproxy for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": [
+    [
+     "10.1234/test",
+     "Doe_2020_10.1234_test_ezproxy.pdf",
+     {
+      "first_author": "Doe",
+      "journal": "Journal of Chemistry Catalysis",
+      "title": "Target Product Synthesis Enzymatic Cascades",
+      "year": 2020
+     }
+    ]
+   ],
+   "files": [],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "ezproxy_not_enabled": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf",
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": [],
+   "files": [],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "ezproxy_ok": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "ezproxy",
+     "download_status": "ok",
+     "downloaded_path": "x",
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": [
+    [
+     "10.1234/test",
+     "Doe_2020_10.1234_test_ezproxy.pdf",
+     {
+      "first_author": "Doe",
+      "journal": "Journal of Chemistry Catalysis",
+      "title": "Target Product Synthesis Enzymatic Cascades",
+      "year": 2020
+     }
+    ]
+   ],
+   "files": [],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "html_page": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf.REJECTED"
+   ],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "init_defaults": {
+   "dest_created": true,
+   "ezproxy_default_class": "EZproxyPdfDownloader",
+   "ezproxy_none": true,
+   "libkey_default_class": "LibKeyNomadProvider"
+  },
+  "libkey": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "libkey_nomad",
+     "download_status": "ok",
+     "downloaded_path": "<TMP>/libkey/Doe_2020_10.1234_test_libkey.pdf",
+     "identity": {
+      "reasons": [
+       "DOI present in body (+3)",
+       "title token overlap 100%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 10,
+      "verdict": "ok"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://libkey.example.com/p.pdf",
+     "Doe_2020_10.1234_test_libkey.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test_libkey.pdf"
+   ],
+   "libkey": [
+    "10.1234/test"
+   ],
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "libkey_disabled": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf",
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [],
+   "libkey": [],
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "pmc": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "pmc",
+     "download_status": "ok",
+     "downloaded_path": "<TMP>/pmc/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI present in body (+3)",
+       "title token overlap 100%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 10,
+      "verdict": "ok"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pmc.example.com/p.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf"
+   ],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "score4_crossref": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "crossref_direct",
+     "download_status": "ok (identity suspect, score=4)",
+     "downloaded_path": "<TMP>/score4_crossref/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI not present in body",
+       "title token overlap 0%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 4,
+      "verdict": "suspect"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf"
+   ],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": []
+  },
+  "score5_crossref": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "crossref_direct",
+     "download_status": "ok",
+     "downloaded_path": "<TMP>/score5_crossref/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI not present in body",
+       "title token overlap 20%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 5,
+      "verdict": "ok"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf"
+   ],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": []
+  },
+  "size_700_single_link": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "size_700_then_unpaywall": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": "unpaywall",
+     "download_status": "ok",
+     "downloaded_path": "<TMP>/size_700_then_unpaywall/Doe_2020_10.1234_test.pdf",
+     "identity": {
+      "reasons": [
+       "DOI present in body (+3)",
+       "title token overlap 100%",
+       "first author 'doe' confirmed (+2)",
+       "journal name matches (+1)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 10,
+      "verdict": "ok"
+     },
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "size_bytes": "<N>",
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://oa.example.com/p.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [
+    "Doe_2020_10.1234_test.pdf",
+    "Doe_2020_10.1234_test.pdf.REJECTED"
+   ],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "stream_errors": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe",
+      "John Smith"
+     ],
+     "doi": "10.1234/test",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'",
+     "downloaded_path": null,
+     "journal": "Journal of Chemistry Catalysis",
+     "pdf_links": [
+      "https://pub.example.com/a.pdf",
+      "https://pub.example.com/b.pdf"
+     ],
+     "title": "Target Product Synthesis Enzymatic Cascades",
+     "year": 2020
+    },
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): reset",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): 403",
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1234/test'"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [],
+   "libkey": null,
+   "pmc": [
+    "10.1234/test"
+   ],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "unpaywall_raises": {
+   "call": {
+    "raised": [
+     "RuntimeError",
+     "unpaywall down"
+    ],
+    "warnings": [
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/a.pdf): no stream fixture for https://pub.example.com/a.pdf",
+     "UserWarning: Download failed from crossref_direct (https://pub.example.com/b.pdf): no stream fixture for https://pub.example.com/b.pdf"
+    ]
+   },
+   "client": [
+    [
+     "stream",
+     "https://pub.example.com/a.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ],
+    [
+     "stream",
+     "https://pub.example.com/b.pdf",
+     "Doe_2020_10.1234_test.pdf"
+    ]
+   ],
+   "ez": null,
+   "files": [],
+   "libkey": null,
+   "pmc": [],
+   "unpaywall": [
+    "10.1234/test"
+   ]
+  },
+  "variant_empty_author_string": {
+   "call": {
+    "raised": [
+     "IndexError",
+     "list index out of range"
+    ],
+    "warnings": []
+   },
+   "escaped": [],
+   "files": []
+  },
+  "variant_empty_record": {
+   "call": {
+    "result": {
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI ''",
+     "downloaded_path": null
+    },
+    "warnings": [
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI ''"
+    ]
+   },
+   "escaped": [],
+   "files": []
+  },
+  "variant_hostile": {
+   "call": {
+    "result": {
+     "authors": [
+      "Eve ../../Evil"
+     ],
+     "doi": "10.1/../../etc:passwd",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1/../../etc:passwd'",
+     "downloaded_path": null,
+     "pdf_links": [
+      "https://pub.example.com/a.pdf"
+     ],
+     "year": "20/20"
+    },
+    "warnings": [
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1/../../etc:passwd'"
+    ]
+   },
+   "escaped": [],
+   "files": [
+    "variant_hostile/20_10.1_.._.._etc_passwd.pdf.REJECTED"
+   ]
+  },
+  "variant_no_authors_no_year": {
+   "call": {
+    "result": {
+     "doi": "10.1/x",
+     "download_source": null,
+     "download_status": "PDF not found via Crossref/Unpaywall/PMC for DOI '10.1/x'",
+     "downloaded_path": null,
+     "pdf_links": [
+      "https://pub.example.com/a.pdf"
+     ]
+    },
+    "warnings": [
+     "UserWarning: PDF not found via Crossref/Unpaywall/PMC for DOI '10.1/x'"
+    ]
+   },
+   "escaped": [],
+   "files": [
+    "variant_no_authors_no_year/unknown_unknownyear_10.1_x.pdf.REJECTED"
+   ]
+  },
+  "variant_no_doi": {
+   "call": {
+    "result": {
+     "authors": [
+      "Jane Doe"
+     ],
+     "download_source": "crossref_direct",
+     "download_status": "ok (identity suspect, score=3)",
+     "downloaded_path": "<TMP>/variant_no_doi/Doe_2020_nodoi.pdf",
+     "identity": {
+      "reasons": [
+       "first author 'doe' confirmed (+2)",
+       "year 2020 confirmed (+1)"
+      ],
+      "score": 3,
+      "verdict": "suspect"
+     },
+     "pdf_links": [
+      "https://pub.example.com/a.pdf"
+     ],
+     "size_bytes": "<N>",
+     "year": 2020
+    },
+    "warnings": []
+   },
+   "escaped": [],
+   "files": [
+    "variant_no_doi/Doe_2020_nodoi.pdf"
+   ]
+  }
+ },
+ "ezproxy": {
+  "accept": {
+   "": {
+    "result": null,
+    "warnings": []
+   },
+   "None": {
+    "result": null,
+    "warnings": []
+   },
+   "file:///etc/passwd": {
+    "result": null,
+    "warnings": [
+     "UserWarning: EZproxy: refusing extracted PDF link — URL scheme 'file' is not allowed: file:///etc/passwd\n(only http/https are fetchable; a local or non-web scheme would read this machine, not the web)"
+    ]
+   },
+   "http://127.0.0.1:8777/x.pdf": {
+    "result": null,
+    "warnings": [
+     "UserWarning: EZproxy: refusing extracted PDF link — refusing to fetch a non-public address (127.0.0.1): http://127.0.0.1:8777/x.pdf"
+    ]
+   },
+   "http://169.254.169.254/latest": {
+    "result": null,
+    "warnings": [
+     "UserWarning: EZproxy: refusing extracted PDF link — refusing to fetch a non-public address (169.254.169.254): http://169.254.169.254/latest"
+    ]
+   },
+   "https://EZPROXY.example.edu./pdf": {
+    "result": "https://EZPROXY.example.edu./pdf",
+    "warnings": []
+   },
+   "https://evil.example.net/x.pdf": {
+    "result": null,
+    "warnings": [
+     "UserWarning: EZproxy: extracted PDF link points at an unrecognized host (evil.example.net); not following it with institutional cookies. Add it to SUBSCRIBED_DOMAINS if it is genuinely subscribed."
+    ]
+   },
+   "https://ezproxy.example.edu.evil.net/x.pdf": {
+    "result": null,
+    "warnings": [
+     "UserWarning: EZproxy: extracted PDF link points at an unrecognized host (ezproxy.example.edu.evil.net); not following it with institutional cookies. Add it to SUBSCRIBED_DOMAINS if it is genuinely subscribed."
+    ]
+   },
+   "https://ezproxy.example.edu/pdf/x": {
+    "result": "https://ezproxy.example.edu/pdf/x",
+    "warnings": []
+   },
+   "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x": {
+    "result": "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+    "warnings": []
+   },
+   "https://www.nature.com/articles/x.pdf": {
+    "result": "https://www.nature.com/articles/x.pdf",
+    "warnings": []
+   }
+  },
+  "auth_calls": [
+   "get_session",
+   "refresh"
+  ],
+  "auth_first": {
+   "result": {
+    "sid": "A"
+   },
+   "warnings": []
+  },
+  "auth_second": {
+   "result": {
+    "sid": "A"
+   },
+   "warnings": []
+  },
+  "configured": {
+   "result": "ezproxy.example.edu",
+   "warnings": []
+  },
+  "cookie_dict_legacy": {
+   "result": {
+    "EZPROXY": "SECRET"
+   },
+   "warnings": []
+  },
+  "cookie_dict_missing_file": {
+   "raised": [
+    "CookieNotFoundError",
+    "An institutional library session cookie is required for EZproxy downloads.\n\n[Recommended] Auto-login method (--auto-login flag):\n  1. Save your institutional library site credentials as auto-fill in Chrome\n  2. Run with the --download --auto-login flags (no secrets.json needed)\n\n[Legacy] Manual cookie file:\n  1. Log in to the institutional library site in Chrome\n  2. Use a browser extension (e.g. \"Get cookies.txt LOCALLY\") to save the\n     EZproxy domain cookie in Netscape format to <TMP>/absent.txt\n  3. Run with the --download --ezproxy flags\nThen run it again."
+   ],
+   "warnings": []
+  },
+  "cookie_jar_scope": {
+   "https://evil.example.net/x": null,
+   "https://ezproxy.example.edu.evil.net/x": null,
+   "https://ezproxy.example.edu/x": "EZPROXY=SECRET",
+   "https://pubs-acs-org-ssl.ezproxy.example.edu/y": "EZPROXY=SECRET"
+  },
+  "download": {
+   "html_instead": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "identity not_pdf (score=0): magic bytes are not %PDF- (b'<html') — possibly an error/login page -> quarantined: paper.pdf.REJECTED",
+      "downloaded_path": null,
+      "identity": {
+       "reasons": [
+        "magic bytes are not %PDF- (b'<html') — possibly an error/login page"
+       ],
+       "score": 0,
+       "verdict": "not_pdf"
+      }
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf.REJECTED"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "mismatch": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "identity mismatch (score=0): DOI not present in body; title token overlap 0%; first author 'doe' not present in body -> quarantined: paper.pdf.REJECTED",
+      "downloaded_path": null,
+      "identity": {
+       "reasons": [
+        "DOI not present in body",
+        "title token overlap 0%",
+        "first author 'doe' not present in body"
+       ],
+       "score": 0,
+       "verdict": "mismatch"
+      }
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf.REJECTED"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "ok": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "ok",
+      "downloaded_path": "<TMP>/dl/ok/paper.pdf",
+      "identity": {
+       "reasons": [
+        "DOI present in body (+3)",
+        "title token overlap 100%",
+        "first author 'doe' confirmed (+2)",
+        "journal name matches (+1)",
+        "year 2020 confirmed (+1)"
+       ],
+       "score": 10,
+       "verdict": "ok"
+      },
+      "size_bytes": "<N>"
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "ok_no_expected": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "ok",
+      "downloaded_path": "<TMP>/dl/ok_no_expected/paper.pdf",
+      "identity": {
+       "reasons": [
+        "no expected metadata — only magic bytes/structure checked (weak verification)"
+       ],
+       "score": 0,
+       "verdict": "ok"
+      },
+      "size_bytes": "<N>"
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "score4": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "ok (identity suspect, score=4)",
+      "downloaded_path": "<TMP>/dl/score4/paper.pdf",
+      "identity": {
+       "reasons": [
+        "DOI not present in body",
+        "title token overlap 0%",
+        "first author 'doe' confirmed (+2)",
+        "journal name matches (+1)",
+        "year 2020 confirmed (+1)"
+       ],
+       "score": 4,
+       "verdict": "suspect"
+      },
+      "size_bytes": "<N>"
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "score5": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "ok",
+      "downloaded_path": "<TMP>/dl/score5/paper.pdf",
+      "identity": {
+       "reasons": [
+        "DOI not present in body",
+        "title token overlap 20%",
+        "first author 'doe' confirmed (+2)",
+        "journal name matches (+1)",
+        "year 2020 confirmed (+1)"
+       ],
+       "score": 5,
+       "verdict": "ok"
+      },
+      "size_bytes": "<N>"
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "size_1024": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "identity not_pdf (score=0): PDF parsing failed: <E> — corrupted file -> quarantined: paper.pdf.REJECTED",
+      "downloaded_path": null,
+      "identity": {
+       "reasons": [
+        "PDF parsing failed: <E> — corrupted file"
+       ],
+       "score": 0,
+       "verdict": "not_pdf"
+      }
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf.REJECTED"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "size_700": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "EZproxy response too small (700 B), likely not a PDF",
+      "downloaded_path": null
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "stream_http_error": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "EZproxy download failed: Client error '403 Forbidden' for url 'https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x'",
+      "downloaded_path": null
+     },
+     "warnings": [
+      "UserWarning: EZproxy download failed for '10.1234/test': Client error '403 Forbidden' for url 'https://pubs-ac"
+     ]
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "suspect": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "ok (identity suspect, score=3)",
+      "downloaded_path": "<TMP>/dl/suspect/paper.pdf",
+      "identity": {
+       "reasons": [
+        "DOI not present in body",
+        "title token overlap 0%",
+        "first author 'doe' confirmed (+2)",
+        "year 2020 confirmed (+1)"
+       ],
+       "score": 3,
+       "verdict": "suspect"
+      },
+      "size_bytes": "<N>"
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [
+     "paper.pdf"
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "too_small": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "EZproxy response too small (5 B), likely not a PDF",
+      "downloaded_path": null
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     },
+     {
+      "follow_redirects": true,
+      "headers": [
+       "User-Agent"
+      ],
+      "timeout": 60.0
+     }
+    ],
+    "files": [],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ],
+     [
+      "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+      2.0
+     ]
+    ]
+   },
+   "unresolved": {
+    "call": {
+     "result": {
+      "download_source": "ezproxy",
+      "download_status": "EZproxy: PDF URL not resolved",
+      "downloaded_path": null
+     },
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "files": null,
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1234/test",
+      2.0
+     ]
+    ]
+   }
+  },
+  "download_cookie_missing": {
+   "result": {
+    "download_source": "ezproxy",
+    "download_status": "cookie file not found: <TMP>/absent.txt",
+    "downloaded_path": null
+   },
+   "warnings": [
+    "UserWarning: An institutional library session cookie is required for EZproxy downloads.\n\n[Recommended] Auto-login method (--auto-login flag):\n  1. Save your institutional library site credentials as auto-fill in Chrome\n  2. Run with the --download --auto-login flags (no secrets.json needed)\n\n[Legacy] Manual cookie file:\n  1. Log in to the institutional library site in Chrome\n  2. Use a browser extension (e.g. \"Get cookies.txt LOCALLY\") to save the\n     EZproxy domain cookie in Netscape format to <TMP>/absent.txt\n  3. Run with the --download --ezproxy flags\nThen run it again."
+   ]
+  },
+  "extract": {
+   "case_insensitive": "https://ezproxy.example.edu/DOWNLOAD/Paper",
+   "dot_pdf": "https://ezproxy.example.edu/files/paper.pdf",
+   "download_word": "https://pubs.acs.org/doi/download/10.1/x",
+   "ftp_ignored": null,
+   "none": null,
+   "query_pdf": null,
+   "relative_base": "https://ezproxy.example.edu/a/b/paper.pdf",
+   "skips_fragment": "https://ezproxy.example.edu/real/pdf/view"
+  },
+  "get_pdf_url": {
+   "html_evil_link": {
+    "call": {
+     "result": null,
+     "warnings": [
+      "UserWarning: EZproxy: extracted PDF link points at an unrecognized host (evil.example.net)"
+     ]
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     }
+    ]
+   },
+   "html_no_link": {
+    "call": {
+     "result": null,
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     }
+    ]
+   },
+   "html_with_link": {
+    "call": {
+     "result": "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     }
+    ]
+   },
+   "http_404": {
+    "call": {
+     "result": null,
+     "warnings": [
+      "UserWarning: EZproxy lookup failed for DOI '10.1/x': Client error '404 Not Found' for url "
+     ]
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     }
+    ]
+   },
+   "other_content_type": {
+    "call": {
+     "result": null,
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     }
+    ]
+   },
+   "pdf_content_type": {
+    "call": {
+     "result": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     }
+    ]
+   },
+   "redirect_to_proxy_subdomain": {
+    "call": {
+     "result": "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x",
+     "warnings": []
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     },
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://pubs-acs-org-ssl.ezproxy.example.edu/doi/pdf/10.1/x"
+     }
+    ]
+   },
+   "transport_error": {
+    "call": {
+     "result": null,
+     "warnings": [
+      "UserWarning: EZproxy lookup failed for DOI '10.1/x': connection reset"
+     ]
+    },
+    "clients": [
+     {
+      "follow_redirects": true,
+      "headers": [
+       "Accept",
+       "User-Agent"
+      ],
+      "timeout": 30.0
+     }
+    ],
+    "limiter": [
+     [
+      "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x",
+      2.0
+     ]
+    ],
+    "requests": [
+     {
+      "cookie": "EZPROXY=SECRET",
+      "ua": "Mozilla/5.0 ",
+      "url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1/x"
+     }
+    ]
+   }
+  },
+  "guidance": "An institutional library session cookie is required for EZproxy downloads.\n\n[Recommended] Auto-login method (--auto-login flag):\n  1. Save your institutional library site credentials as auto-fill in Chrome\n  2. Run with the --download --auto-login flags (no secrets.json needed)\n\n[Legacy] Manual cookie file:\n  1. Log in to the institutional library site in Chrome\n  2. Use a browser extension (e.g. \"Get cookies.txt LOCALLY\") to save the\n     EZproxy domain cookie in Netscape format to <F>\n  3. Run with the --download --ezproxy flags\nThen run it again.",
+  "load_bad": {
+   "raised": [
+    "LoadError",
+    " look like a Netscape format cookies file"
+   ],
+   "warnings": []
+  },
+  "load_good": [
+   [
+    "EZPROXY",
+    "SECRET",
+    ".ezproxy.example.edu"
+   ]
+  ],
+  "load_missing": {
+   "raised": [
+    "CookieNotFoundError",
+    "An institutional library session cookie is required for EZproxy downloads.\n\n[Recommended] Auto-login method (--auto-login flag):\n  1. Save your institutional library site credentials as auto-fill in Chrome\n  2. Run with the --download --auto-login flags (no secrets.json needed)\n\n[Legacy] Manual cookie file:\n  1. Log in to the institutional library site in Chrome\n  2. Use a browser extension (e.g. \"Get cookies.txt LOCALLY\") to save the\n     EZproxy domain cookie in Netscape format to <TMP>/none.txt\n  3. Run with the --download --ezproxy flags\nThen run it again."
+   ],
+   "warnings": []
+  },
+  "placeholder_download": {
+   "result": {
+    "download_source": "ezproxy",
+    "download_status": "EZproxy auth failed: EZproxy is not configured: PROXY_BASE is still the placeholder (ezproxy.your-institution.edu). Set the EZPROXY_BASE environment variable to your institution's link-resolver base, or leave the EZproxy path unused (LibKey is the recommended route per SKILL.md).",
+    "downloaded_path": null
+   },
+   "warnings": [
+    "UserWarning: EZproxy is not configured: PROXY_BASE is still the placeholder (ezproxy.your-institution.edu). Set the EZPROXY_BASE environment variable to your institution's link-resolver base, or leave the EZproxy path unused (LibKey is the recommended route per SKILL.md)."
+   ]
+  },
+  "placeholder_get_pdf_url": {
+   "raised": [
+    "ScrapeError",
+    "EZproxy is not configured: PROXY_BASE is still the placeholder (ezproxy.your-institution.edu). Set the EZPROXY_BASE environment variable to your institution's link-resolver base, or leave the EZproxy path unused (LibKey is the recommended route per SKILL.md)."
+   ],
+   "warnings": []
+  },
+  "placeholder_required": {
+   "raised": [
+    "ScrapeError",
+    "EZproxy is not configured: PROXY_BASE is still the placeholder (ezproxy.your-institution.edu). Set the EZPROXY_BASE environment variable to your institution's link-resolver base, or leave the EZproxy path unused (LibKey is the recommended route per SKILL.md)."
+   ],
+   "warnings": []
+  },
+  "proxy_url": "https://ezproxy.example.edu/link.n2s?url=https://doi.org/10.1021/abc"
+ },
+ "helpers": {
+  "doi_safe": {
+   "": "",
+   "10.1/a:b\\c": "10.1_a_b_c",
+   "10.1039/D0GC03729A": "10.1039_D0GC03729A"
+  },
+  "stopwords": [
+   "a",
+   "an",
+   "analysis",
+   "and",
+   "approach",
+   "are",
+   "as",
+   "at",
+   "be",
+   "by",
+   "effect",
+   "effects",
+   "for",
+   "from",
+   "in",
+   "into",
+   "is",
+   "its",
+   "new",
+   "novel",
+   "of",
+   "on",
+   "role",
+   "study",
+   "the",
+   "to",
+   "using",
+   "via",
+   "with"
+  ],
+  "title_tokens": {
+   "": [],
+   "None": [],
+   "The new Role of Enzymes": [
+    "enzymes"
+   ],
+   "a bc defg": [
+    "defg"
+   ]
+  }
+ },
+ "identity": {
+  "broken": {
+   "score": 0,
+   "verdict": "not_pdf"
+  },
+  "good|expected": {
+   "result": {
+    "reasons": [
+     "DOI present in body (+3)",
+     "title token overlap 100%",
+     "first author 'doe' confirmed (+2)",
+     "journal name matches (+1)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 10,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "good|no_doi": {
+   "result": {
+    "reasons": [
+     "title token overlap 100%",
+     "first author 'doe' confirmed (+2)",
+     "journal name matches (+1)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 7,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "good|no_expected": {
+   "result": {
+    "reasons": [
+     "no expected metadata — only magic bytes/structure checked (weak verification)"
+    ],
+    "score": 0,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "html": {
+   "result": {
+    "reasons": [
+     "magic bytes are not %PDF- (b'<html') — possibly an error/login page"
+    ],
+    "score": 0,
+    "verdict": "not_pdf"
+   },
+   "warnings": []
+  },
+  "mismatch|expected": {
+   "result": {
+    "reasons": [
+     "DOI not present in body",
+     "title token overlap 0%",
+     "first author 'doe' not present in body"
+    ],
+    "score": 0,
+    "verdict": "mismatch"
+   },
+   "warnings": []
+  },
+  "mismatch|no_doi": {
+   "result": {
+    "reasons": [
+     "title token overlap 0%",
+     "first author 'doe' not present in body"
+    ],
+    "score": 0,
+    "verdict": "mismatch"
+   },
+   "warnings": []
+  },
+  "mismatch|no_expected": {
+   "result": {
+    "reasons": [
+     "no expected metadata — only magic bytes/structure checked (weak verification)"
+    ],
+    "score": 0,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "missing_file": {
+   "result": {
+    "reasons": [
+     "could not open: FileNotFoundError"
+    ],
+    "score": 0,
+    "verdict": "not_pdf"
+   },
+   "warnings": []
+  },
+  "score4|expected": {
+   "result": {
+    "reasons": [
+     "DOI not present in body",
+     "title token overlap 0%",
+     "first author 'doe' confirmed (+2)",
+     "journal name matches (+1)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 4,
+    "verdict": "suspect"
+   },
+   "warnings": []
+  },
+  "score4|no_doi": {
+   "result": {
+    "reasons": [
+     "title token overlap 0%",
+     "first author 'doe' confirmed (+2)",
+     "journal name matches (+1)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 4,
+    "verdict": "suspect"
+   },
+   "warnings": []
+  },
+  "score4|no_expected": {
+   "result": {
+    "reasons": [
+     "no expected metadata — only magic bytes/structure checked (weak verification)"
+    ],
+    "score": 0,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "score5|expected": {
+   "result": {
+    "reasons": [
+     "DOI not present in body",
+     "title token overlap 20%",
+     "first author 'doe' confirmed (+2)",
+     "journal name matches (+1)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 5,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "score5|no_doi": {
+   "result": {
+    "reasons": [
+     "title token overlap 20%",
+     "first author 'doe' confirmed (+2)",
+     "journal name matches (+1)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 5,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "score5|no_expected": {
+   "result": {
+    "reasons": [
+     "no expected metadata — only magic bytes/structure checked (weak verification)"
+    ],
+    "score": 0,
+    "verdict": "ok"
+   },
+   "warnings": []
+  },
+  "short_author_year_variants": {
+   "author_short": {
+    "result": {
+     "reasons": [],
+     "score": 0,
+     "verdict": "mismatch"
+    },
+    "warnings": []
+   },
+   "title_only": {
+    "result": {
+     "reasons": [
+      "title token overlap 100%"
+     ],
+     "score": 3,
+     "verdict": "suspect"
+    },
+    "warnings": []
+   },
+   "year_none": {
+    "result": {
+     "reasons": [],
+     "score": 0,
+     "verdict": "mismatch"
+    },
+    "warnings": []
+   }
+  },
+  "short|expected": {
+   "result": {
+    "reasons": [
+     "almost no body text (likely a scanned copy) — needs visual check"
+    ],
+    "score": 0,
+    "verdict": "no_text"
+   },
+   "warnings": []
+  },
+  "short|no_doi": {
+   "result": {
+    "reasons": [
+     "almost no body text (likely a scanned copy) — needs visual check"
+    ],
+    "score": 0,
+    "verdict": "no_text"
+   },
+   "warnings": []
+  },
+  "short|no_expected": {
+   "result": {
+    "reasons": [
+     "almost no body text (likely a scanned copy) — needs visual check"
+    ],
+    "score": 0,
+    "verdict": "no_text"
+   },
+   "warnings": []
+  },
+  "suspect|expected": {
+   "result": {
+    "reasons": [
+     "DOI not present in body",
+     "title token overlap 0%",
+     "first author 'doe' confirmed (+2)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 3,
+    "verdict": "suspect"
+   },
+   "warnings": []
+  },
+  "suspect|no_doi": {
+   "result": {
+    "reasons": [
+     "title token overlap 0%",
+     "first author 'doe' confirmed (+2)",
+     "year 2020 confirmed (+1)"
+    ],
+    "score": 3,
+    "verdict": "suspect"
+   },
+   "warnings": []
+  },
+  "suspect|no_expected": {
+   "result": {
+    "reasons": [
+     "no expected metadata — only magic bytes/structure checked (weak verification)"
+    ],
+    "score": 0,
+    "verdict": "ok"
+   },
+   "warnings": []
+  }
+ },
+ "libkey": {
+  "available": true,
+  "bases": [
+   "https://pubmed.ncbi.nlm.nih.gov",
+   "https://doi.org"
+  ],
+  "check": true,
+  "url": null
+ },
+ "pmc": {
+  "bad_json": {
+   "client": [
+    [
+     "wait",
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     0.0
+    ]
+   ],
+   "http": [
+    [
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     20
+    ]
+   ],
+   "pdf_url": {
+    "result": null,
+    "warnings": [
+     "UserWarning: PMC ID lookup failed for '10.1234/a b': Expecting value: line 1 column 1 (char 0)"
+    ]
+   }
+  },
+  "found": {
+   "client": [
+    [
+     "wait",
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     0.0
+    ]
+   ],
+   "http": [
+    [
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     20
+    ]
+   ],
+   "pdf_url": {
+    "result": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2772430/pdf/",
+    "warnings": []
+   }
+  },
+  "get_raises": {
+   "client": [
+    [
+     "wait",
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     0.0
+    ]
+   ],
+   "http": [
+    [
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     20
+    ]
+   ],
+   "pdf_url": {
+    "result": null,
+    "warnings": [
+     "UserWarning: PMC ID lookup failed for '10.1234/a b': net down"
+    ]
+   }
+  },
+  "http_error": {
+   "client": [
+    [
+     "wait",
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     0.0
+    ]
+   ],
+   "http": [
+    [
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     20
+    ]
+   ],
+   "pdf_url": {
+    "result": null,
+    "warnings": [
+     "UserWarning: PMC ID lookup failed for '10.1234/a b': 500"
+    ]
+   }
+  },
+  "no_result_key": {
+   "client": [
+    [
+     "wait",
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     0.0
+    ]
+   ],
+   "http": [
+    [
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     20
+    ]
+   ],
+   "pdf_url": {
+    "result": null,
+    "warnings": []
+   }
+  },
+  "not_found": {
+   "client": [
+    [
+     "wait",
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     0.0
+    ]
+   ],
+   "http": [
+    [
+     "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1234%2Fa+b%5Bdoi%5D&retmode=json&tool=web-scraping-skill&email=me%40example.org",
+     20
+    ]
+   ],
+   "pdf_url": {
+    "result": null,
+    "warnings": []
+   }
+  }
+ },
+ "selenium": {
+  "both_locked": {
+   "call": {
+    "raised": [
+     "ScrapeError",
+     "Failed to launch Chrome with profile 'Profile 1': session not created: user data directory is already in use\nMake sure Google Chrome and ChromeDriver are installed.\nInstall ChromeDriver manager: pip install webdriver-manager"
+    ],
+    "warnings": [
+     "UserWarning: Chrome Default profile locked (session not created: user data directory is already in use); retrying with 'Profile 1'"
+    ]
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Profile 1",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ]
+   ]
+  },
+  "button_never_appears": {
+   "call": {
+    "raised": [
+     "ScrapeError",
+     "Institutional library login failed: timed out waiting\nEnsure Chrome has saved credentials for the library login page so the auto-fill can populate the login form."
+    ],
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "default_locked_profile1_ok": {
+   "call": {
+    "result": {
+     "sid": "abc",
+     "x": "y"
+    },
+    "warnings": [
+     "UserWarning: Chrome Default profile locked (session not created: user data directory is already in use); retrying with 'Profile 1'"
+    ]
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Profile 1",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "default_locked_profile1_other": {
+   "call": {
+    "raised": [
+     "ScrapeError",
+     "Failed to launch Chrome with profile 'Profile 1': nope\nMake sure Google Chrome and ChromeDriver are installed.\nInstall ChromeDriver manager: pip install webdriver-manager"
+    ],
+    "warnings": [
+     "UserWarning: Chrome Default profile locked (session not created: user data directory is already in use); retrying with 'Profile 1'"
+    ]
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Profile 1",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ]
+   ]
+  },
+  "default_other_error": {
+   "call": {
+    "raised": [
+     "ScrapeError",
+     "Failed to launch Chrome: chromedriver mismatch\nMake sure Google Chrome and ChromeDriver are installed.\nInstall ChromeDriver manager: pip install webdriver-manager"
+    ],
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ]
+   ]
+  },
+  "korean_logout_marker": {
+   "call": {
+    "result": {
+     "sid": "abc",
+     "x": "y"
+    },
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "manager_fails": {
+   "call": {
+    "result": {
+     "sid": "abc",
+     "x": "y"
+    },
+    "warnings": [
+     "UserWarning: webdriver-manager failed (no network for driver); falling back to system ChromeDriver"
+    ]
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     false
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "manager_missing": {
+   "call": {
+    "result": {
+     "sid": "abc",
+     "x": "y"
+    },
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     false
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "no_cookies": {
+   "call": {
+    "result": {},
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "no_logout_marker": {
+   "call": {
+    "raised": [
+     "ScrapeError",
+     "Institutional library login failed: timed out waiting\nEnsure Chrome has saved credentials for the library login page so the auto-fill can populate the login form."
+    ],
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "ok_default_manager": {
+   "call": {
+    "result": {
+     "sid": "abc",
+     "x": "y"
+    },
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "ok_linux": {
+   "call": {
+    "result": {
+     "sid": "abc",
+     "x": "y"
+    },
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<TMP>/fakehome/.config/google-chrome",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "redirect_never_happens": {
+   "call": {
+    "raised": [
+     "ScrapeError",
+     "Institutional library login failed: timed out waiting\nEnsure Chrome has saved credentials for the library login page so the auto-fill can populate the login form."
+    ],
+    "warnings": []
+   },
+   "events": [
+    [
+     "launch",
+     [
+      "--user-data-dir=<WIN>",
+      "--profile-directory=Default",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--window-position=-2000,0",
+      "--window-size=800,600"
+     ],
+     true
+    ],
+    [
+     "get",
+     "https://library.example.edu/login/"
+    ],
+    [
+     "locator",
+     [
+      "css selector",
+      "input[type='submit'], button[type='submit'], .btn-login, input.btn"
+     ]
+    ],
+    [
+     "click"
+    ],
+    [
+     "url_contains",
+     "library.example.edu"
+    ],
+    [
+     "quit"
+    ]
+   ]
+  },
+  "selenium_missing": {
+   "raised": [
+    "ScrapeError",
+    "selenium is required for --auto-login. Install: pip install selenium webdriver-manager"
+   ],
+   "warnings": []
+  }
+ },
+ "surface": {
+  "classes": {
+   "ArxivProvider": {
+    "__init__": "(self) -> 'None'",
+    "name": "'arxiv'",
+    "search": "(self, query: 'str', limit: 'int' = 10) -> 'list[dict]'"
+   },
+   "BiorxivProvider": {
+    "API_ROOT": "'https://api.biorxiv.org'",
+    "__init__": "(self, client: 'PoliteHttpClient', server: 'str' = 'biorxiv') -> 'None'",
+    "_fetch": "(self, url: 'str') -> 'dict'",
+    "lookup_doi": "(self, doi: 'str') -> 'dict'",
+    "name": "'biorxiv'",
+    "recent": "(self, interval: 'str' = '30') -> 'dict'"
+   },
+   "CookieNotFoundError": {},
+   "CrossrefProvider": {
+    "__init__": "(self, contact: 'str' = 'your-email@example.com') -> 'None'",
+    "_normalize": "(item: 'dict') -> 'dict'",
+    "lookup_doi": "(self, doi: 'str') -> 'dict'",
+    "name": "'crossref'",
+    "search": "(self, query: 'str', limit: 'int' = 10) -> 'list[dict]'"
+   },
+   "EZproxyPdfDownloader": {
+    "DEFAULT_COOKIE_FILE": "'<HOME>/.claude/institution_cookies.txt'",
+    "PLACEHOLDER_PROXY_HOST": "'ezproxy.your-institution.edu'",
+    "PROXY_BASE": "'https://ezproxy.your-institution.edu/link.n2s?url='",
+    "SUBSCRIBED_DOMAINS": "['academic.oup.com', 'link.springer.com', 'linkinghub.elsevier.com', 'onlinelibrary.wiley.com', 'pubs.acs.org', 'pubs.rsc.org', 'www.cambridge.org', 'www.nature.com', 'www.sciencedirect.com', 'www.tandfonline.com']",
+    "__init__": "(self, cookie_file: 'Optional[str]' = None, auth: \"Optional['InstitutionalLibraryAuth']\" = None) -> 'None'",
+    "_accept_pdf_url": "(self, url: 'Optional[str]', proxy_host: 'str') -> 'Optional[str]'",
+    "_build_proxy_url": "(self, doi: 'str') -> 'str'",
+    "_cookie_jar": "(self, host: 'str') -> \"'httpx.Cookies'\"",
+    "_ensure_cookies": "(self) -> 'http.cookiejar.MozillaCookieJar'",
+    "_extract_pdf_link": "(self, html: 'str', base_url: 'str') -> 'Optional[str]'",
+    "_get_cookie_dict": "(self) -> 'dict'",
+    "_require_configured": "(self) -> 'str'",
+    "download": "(self, doi: 'str', dest: 'Path', rate_limiter=None, expected: 'Optional[dict]' = None) -> 'dict'",
+    "get_pdf_url": "(self, doi: 'str', rate_limiter=None) -> 'Optional[str]'"
+   },
+   "InstitutionalLibraryAuth": {
+    "COOKIE_CACHE_FILE": "'<HOME>/.claude/institution_cookies.json'",
+    "COOKIE_MAX_AGE_HOURS": "6",
+    "LOGIN_URL": "'https://library.your-institution.edu/login/'",
+    "SECRETS_FILE": "'<HOME>/.secrets/secrets.json'",
+    "SESSION_CHECK_URL": "'https://library.your-institution.edu/'",
+    "__init__": "(self, user_id: 'Optional[str]' = None, password: 'Optional[str]' = None) -> 'None'",
+    "_load_cached_cookies": "(self) -> 'Optional[dict]'",
+    "_save_cookie_cache": "(self, cookies: 'dict') -> 'None'",
+    "_selenium_login": "(self) -> 'dict'",
+    "get_session": "(self) -> \"'requests.Session'\"",
+    "is_session_valid": "(self, session: \"'requests.Session'\") -> 'bool'",
+    "refresh_if_expired": "(self, session: \"'requests.Session'\") -> \"'requests.Session'\""
+   },
+   "LibKeyNomadProvider": {
+    "DOI_BASE": "'https://doi.org'",
+    "PUBMED_BASE": "'https://pubmed.ncbi.nlm.nih.gov'",
+    "__init__": "(self) -> 'None'",
+    "_check_chrome_mcp": "() -> 'bool'",
+    "get_pdf_url": "(self, doi: 'str') -> 'Optional[str]'",
+    "is_available": "(self) -> 'bool'"
+   },
+   "PdfDownloader": {
+    "__init__": "(self, client: 'PoliteHttpClient', unpaywall: 'UnpaywallProvider', pmc: 'PmcPdfLocator', dest_dir: 'Path', use_ezproxy: 'bool' = False, ezproxy: 'Optional[EZproxyPdfDownloader]' = None, use_libkey: 'bool' = False, libkey: 'Optional[LibKeyNomadProvider]' = None) -> 'None'",
+    "_try_download": "(self, url: 'str', dest: 'Path', source: 'str', doi: 'str' = '', expected: 'Optional[dict]' = None) -> 'dict'",
+    "download": "(self, record: 'dict') -> 'dict'"
+   },
+   "PmcPdfLocator": {
+    "ESEARCH_URL": "'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi'",
+    "PMC_PDF_TEMPLATE": "'https://www.ncbi.nlm.nih.gov/pmc/articles/{pmcid}/pdf/'",
+    "__init__": "(self, client: 'PoliteHttpClient', contact: 'str' = 'your-email@example.com') -> 'None'",
+    "_doi_to_pmcid": "(self, doi: 'str') -> 'Optional[str]'",
+    "get_pmc_pdf_url": "(self, doi: 'str') -> 'Optional[str]'"
+   },
+   "UnpaywallProvider": {
+    "API_ROOT": "'https://api.unpaywall.org/v2'",
+    "__init__": "(self, client: 'PoliteHttpClient', contact: 'str' = 'your-email@example.com') -> 'None'",
+    "get_full_record": "(self, doi: 'str') -> 'Optional[dict]'",
+    "get_oa_pdf_url": "(self, doi: 'str') -> 'Optional[str]'"
+   }
+  },
+  "functions": {
+   "_build_parser": "() -> 'argparse.ArgumentParser'",
+   "_doi_to_safe_filename": "(doi: 'str') -> 'str'",
+   "_download_pdf_for_record": "(record: 'dict', client: 'PoliteHttpClient', args) -> 'dict'",
+   "_run_arxiv": "(args) -> 'tuple[dict, str]'",
+   "_run_biorxiv": "(args, client: 'PoliteHttpClient') -> 'tuple[dict, str]'",
+   "_run_crossref": "(args, client: 'Optional[PoliteHttpClient]' = None) -> 'tuple[dict, str]'",
+   "_title_tokens": "(text: 'str') -> 'set'",
+   "add_common_cli_args": "(parser) -> 'None'",
+   "build_client_from_args": "(args) -> 'PoliteHttpClient'",
+   "ensure_utf8_stdout": "() -> 'None'",
+   "load_netscape_cookies": "(cookie_file: 'str') -> \"'http.cookiejar.MozillaCookieJar'\"",
+   "main": "(argv: 'Optional[list[str]]' = None) -> 'int'",
+   "resolve_within": "(base_dir: 'Path', name: 'str', *, fallback: 'str' = 'download') -> 'Path'",
+   "sanitize_filename": "(name: 'str', *, fallback: 'str' = 'download', max_length: 'int' = 128) -> 'str'",
+   "urlparse": "(url, scheme='', allow_fragments=True)",
+   "validate_url": "(url: 'str', *, resolve: 'bool' = True) -> 'str'",
+   "verify_pdf_identity": "(path: \"'Path'\", doi: 'str' = '', expected: 'Optional[dict]' = None) -> 'dict'",
+   "write_json_output": "(data: 'dict', output_path: 'Optional[str]', provenance: 'Provenance') -> 'str'"
+  },
+  "names": [
+   "ArxivProvider",
+   "BiorxivProvider",
+   "CookieNotFoundError",
+   "CrossrefProvider",
+   "DEFAULT_CONTACT",
+   "EZPROXY_COOKIE_GUIDANCE",
+   "EZproxyPdfDownloader",
+   "HttpClientConfig",
+   "InstitutionalLibraryAuth",
+   "LibKeyNomadProvider",
+   "Optional",
+   "Path",
+   "PdfDownloader",
+   "PmcPdfLocator",
+   "PoliteHttpClient",
+   "Provenance",
+   "ScrapeError",
+   "UnpaywallProvider",
+   "UnsafeTargetError",
+   "_PDF_STOPWORDS",
+   "_build_parser",
+   "_doi_to_safe_filename",
+   "_download_pdf_for_record",
+   "_run_arxiv",
+   "_run_biorxiv",
+   "_run_crossref",
+   "_title_tokens",
+   "add_common_cli_args",
+   "annotations",
+   "argparse",
+   "build_client_from_args",
+   "datetime",
+   "ensure_utf8_stdout",
+   "http",
+   "json",
+   "load_netscape_cookies",
+   "main",
+   "os",
+   "re",
+   "resolve_within",
+   "sanitize_filename",
+   "sys",
+   "time",
+   "urlparse",
+   "validate_url",
+   "verify_pdf_identity",
+   "warnings",
+   "write_json_output"
+  ]
+ },
+ "unpaywall": {
+  "best": {
+   "calls": [
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ]
+   ],
+   "full": {
+    "result": {
+     "best_oa_location": {
+      "url_for_pdf": "https://oa.example.com/p.pdf"
+     }
+    },
+    "warnings": []
+   },
+   "url": {
+    "result": "https://oa.example.com/p.pdf",
+    "warnings": []
+   }
+  },
+  "closed": {
+   "calls": [
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ]
+   ],
+   "full": {
+    "result": {
+     "best_oa_location": null,
+     "oa_locations": []
+    },
+    "warnings": []
+   },
+   "url": {
+    "result": null,
+    "warnings": []
+   }
+  },
+  "locations": {
+   "calls": [
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ]
+   ],
+   "full": {
+    "result": {
+     "best_oa_location": {
+      "url_for_pdf": null
+     },
+     "oa_locations": [
+      {
+       "url_for_pdf": null
+      },
+      {
+       "url_for_pdf": "https://f.example.com/p.pdf"
+      }
+     ]
+    },
+    "warnings": []
+   },
+   "url": {
+    "result": "https://f.example.com/p.pdf",
+    "warnings": []
+   }
+  },
+  "not_json": {
+   "calls": [
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ]
+   ],
+   "full": {
+    "result": null,
+    "warnings": [
+     "UserWarning: Unpaywall full record failed for '10.1/x': Expecting value: line 1 column 1 (char 0)"
+    ]
+   },
+   "url": {
+    "result": null,
+    "warnings": []
+   }
+  },
+  "null_locations": {
+   "calls": [
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ],
+    [
+     "get_text",
+     "https://api.unpaywall.org/v2/10.1/x?email=me@example.org",
+     true
+    ]
+   ],
+   "full": {
+    "result": {
+     "oa_locations": null
+    },
+    "warnings": []
+   },
+   "url": {
+    "result": null,
+    "warnings": []
+   }
+  },
+  "other": {
+   "full": {
+    "result": null,
+    "warnings": [
+     "UserWarning: Unpaywall full record failed for '10.1/x': boom"
+    ]
+   },
+   "url": {
+    "result": null,
+    "warnings": [
+     "UserWarning: Unpaywall unexpected error for '10.1/x': boom"
+    ]
+   }
+  },
+  "scrape_error": {
+   "full": {
+    "result": null,
+    "warnings": [
+     "UserWarning: Unpaywall full record failed for '10.1/x': blocked"
+    ]
+   },
+   "url": {
+    "result": null,
+    "warnings": [
+     "UserWarning: Unpaywall lookup failed for '10.1/x': blocked"
+    ]
+   }
+  }
+ }
+}

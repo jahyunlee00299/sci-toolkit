@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.125] — 2026-10-02
+
+- Split fetch_academic into academic_sources package with golden characterization
+
 ## [1.2.124] — 2026-10-02
 
 - Split detect_resources into resource_probes package with golden characterization

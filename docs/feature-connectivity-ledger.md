@@ -1401,3 +1401,54 @@ sequential assembly and the result dict).
 wired-by: skills/get-available-resources/scripts/resource_probes/snapshot.py
 wired-by: skills/get-available-resources/scripts/resource_probes/cgroup.py
 wired-by: skills/get-available-resources/tests/test_detect_resources_characterization.py
+
+### Unit 4 — web-scraping `fetch_academic.py` split
+
+**Scope** — `skills/web-scraping/scripts/fetch_academic.py` (1638 lines). The skill's
+shared `_common.py` is reused as is (HTTP client, URL safety, JSON output); no new helper
+copy was made.
+
+**Change** — `fetch_academic.py` is now the CLI entry (106 lines: docstring and re-exports
+of every name the old script exposed, including the stdlib modules it imported). One module
+per source or backend in `scripts/academic_sources/`: `crossref_provider.py` (71),
+`arxiv_provider.py` (47), `biorxiv_provider.py` (58), `open_access.py` (138, Unpaywall +
+PMC), `libkey.py` (53), `library_auth.py` (316), `ezproxy.py` (438), `pdf_identity.py` (173),
+`pdf_downloader.py` (211), `cli.py` (190). Longest functions
+now: `_selenium_login` 137 -> 41 (`_chrome_user_data_dir`, `_chromedriver_service`,
+`_launch_chrome`, `_login_and_collect_cookies`), `EZproxyPdfDownloader.download` 113 -> 72
+(`_stream_pdf`) and `get_pdf_url` 77 -> 47 (`_resolve_pdf_url`), `PdfDownloader.download`
+97 -> 43 (one method per source), `verify_pdf_identity` 91 -> 20 (`_read_pdf_text`,
+`_identity_score`), `main` 30 -> 12 (`_dispatch`), `_build_parser` 46 -> 12. The quarantine /
+size-and-identity result block that `_try_download` and the EZproxy path each carried is now
+one `check_downloaded_pdf`. `verify_pdf_identity` closes the file handle it used to leak.
+
+**Evidence** — `tests/academic_snapshots.py` + `tests/golden/fetch_academic.json` (generated
+from the unsplit script, twice byte-identical; PDFs built with pypdf, DNS disabled) pin:
+the Crossref / Unpaywall / PMC / arXiv / bioRxiv providers against fake modules and a
+scripted client, 22 identity-gate cases including the exact score-4 and score-5 boundaries,
+the Netscape cookie loader, cookie scope and link host gating, `get_pdf_url` and `download`
+over an httpx MockTransport (headers, cookies, rate-limiter calls, quarantine files), the
+cookie cache and `_selenium_login` against fake selenium / webdriver-manager modules (profile
+fallback, every failure branch), the whole download waterfall with 19 scenarios (+5 record variants) and hostile
+filename parts, 16 CLI invocations (outputs, exit codes, stderr, flags and defaults) and
+the public surface (every old name and method signature must remain). 15 new tests; suite
+129 -> 144 passed (4 skipped as before). `tests/test_ezproxy_scope.py` kept both of its AST
+checks but they now scan the entry file and every `academic_sources` module (a widened scope;
+scanning only the entry file would have made them fail or pass vacuously).
+
+**Refutation** — mutations caught: dropping `expected=` at the EZproxy call site, an unsanitized
+f-string filename, the Default/Profile-1 fallback, identity threshold 5 -> 4, the EZproxy and
+the PdfDownloader 1 KB size floors, and an eager (non-lazy) evaluation of the download
+sources. Writing the split initially introduced exactly that eager evaluation; the golden
+(which records every source call) failed on it. Four of the scenarios (score boundary, 700 B
+payload, single-link size case) were added only after a mutation survived, and the golden was
+regenerated from the ORIGINAL script each time. One mutation (cookie domain without the leading
+dot) is behaviourally equivalent in httpx and cannot be caught.
+
+**Deferred** — `EZproxyPdfDownloader.download` (72 lines) and `InstitutionalLibraryAuth`
+(Selenium path) remain the longest units; nothing else beyond the four requested units.
+
+wired-by: skills/web-scraping/scripts/academic_sources/cli.py
+wired-by: skills/web-scraping/scripts/academic_sources/pdf_identity.py
+wired-by: skills/web-scraping/scripts/academic_sources/pdf_downloader.py
+wired-by: skills/web-scraping/tests/test_academic_characterization.py
