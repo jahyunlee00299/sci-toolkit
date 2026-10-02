@@ -1452,3 +1452,73 @@ wired-by: skills/web-scraping/scripts/academic_sources/cli.py
 wired-by: skills/web-scraping/scripts/academic_sources/pdf_identity.py
 wired-by: skills/web-scraping/scripts/academic_sources/pdf_downloader.py
 wired-by: skills/web-scraping/tests/test_academic_characterization.py
+
+## K-Dense adoption: uncertainty-and-units and doe-and-replication (2026-10-02)
+
+**Scope / layer** — two skills adapted from K-Dense-AI/scientific-agent-skills
+(MIT, commit 154988403bb5, 2026-10-01): `skills/uncertainty-and-units/` (units,
+error propagation with correlated fit parameters, SD/SEM/95% CI wording,
+plausibility screen) and `skills/doe-and-replication/` (design choice, seeded
+run tables, run-order and 96-well randomization, replicate levels, sample-size
+essentials folded in from the upstream statistical-power skill). Layer: skill +
+vendored scripts (nine, logic unchanged), `licenses/K-Dense-MIT.txt`, catalog,
+AGENTS.md §0 routing, doctor check, test. Selected by the 2026-10-02 re-judge
+of upstream candidates; the clinical designs, the upstream auto-cite
+instruction and the standalone power skill were deliberately left out.
+
+**Input / output** — in: a measurement model or fit covariance, a calibration
+line, or a factor-range dict. Out: a value with a stated `±`, a converted
+quantity, a seeded CSV run table or plate layout. State ownership: none (CLIs
+are stateless; the run table's seed is recorded in the lab-record EXP). External
+effects: none (offline, no network, no subprocess in the scripts; checked by
+grep before adoption).
+
+**Wiring** — `config/catalog.json` (both in `data-figures`, `doe-and-replication`
+also in `molbio`; `all` preset 48); `AGENTS.md` §0 (two rows, file now 32.7 KB of
+the 32 KiB budget — the next row must go to `docs/agents/`); two-way links in
+experiment-hub (Mode 2 defers), stats-workflow (power snippet), scientific-validation,
+lab-data-analysis, publication-figures, lab-record, academic-term-rules;
+`doctor_lib/checks_env.py::check_lab_numeric_stack` (WARN, never FAIL, for
+Python < 3.12 and missing pint/uncertainties/pydoe) plus the existing
+`config/skill-requirements.toml` declaration (pydoe, numpy, pandas for the DoE
+scripts); docs/01 (Python 3.12+ floor, Korean beginner wording) and docs/06;
+NOTICE.md amended (it said no upstream file is redistributed verbatim; nine
+scripts now are, and the exception is stated); README/PROJECT_STRUCTURE counts
+and lists; `tests/test_uncertainty_doe_skills.py` registered in doctor's
+`SELF_TEST_SCRIPTS`.
+
+**Evidence** — upstream scripts passed 21/21 in an isolated Python 3.13 venv
+before adoption, and the same 21 checks pass against these worktree copies
+(`test_skills_wt.sh`). `tests/test_uncertainty_doe_skills.py` pins hand-derived
+cases: kcat/Km = 5.0 with u = 0.35355, 1 g glucose = 5.5507e-3 mol, 2.5 mM =
+2500 uM, 2^3 factorial = 8 runs on the bounds, inscribed CCD = 20 runs inside
+the bounds with 6 center runs, balanced blocks 6/6, a 60-well layout with no
+edge well, and the two SKILL.md recipes (Michaelis-Menten with correlation
+kept: `181 ± 10` vs `181 ± 14` when it is dropped; HPLC calibration
+`41.5 ± 0.6 mM`). 17 passed in the pint/pydoe venv.
+
+**Refutation** — the test skips (5 of 17) in an interpreter without pydoe and
+the DoE cases are the only ones that need it; a malformed argument
+(`--variable "kcat=abc"`) exits 2 with a one-line `error:` and no traceback; an
+unknown unit exits non-zero without a traceback; the default (circumscribed)
+CCD leaves the stated pH 6-8 box (5.37 to 8.63), which is why the skill says
+`face="inscribed"` and a test asserts both behaviours; `audit_units.py` is
+checked to work with no pint.
+
+**Deferred risk** — (1) the installer copies skills one by one, so
+`licenses/K-Dense-MIT.txt` does not travel with an installed skill; each script
+header carries the copyright line and MIT identifier, but a copy of the full
+text beside the scripts is not shipped. (2) `uncertainties` 3.2.x and later emit
+FutureWarnings from inside the vendored `propagate_uncertainty.py`; they are
+harmless today and a future uncertainties release that removes
+`AffineScalarFunc.derivatives()` would break it until upstream or this copy
+changes. (3) The DoE wrappers shuffle globally; block-wise randomization is
+documented in the skill, not implemented. (4) Python 3.12+ is a floor for these
+two skills only; installs on 3.10/3.11 get a WARN and no skill.
+
+wired-by: tests/test_uncertainty_doe_skills.py
+wired-by: doctor_lib/checks_env.py
+wired-by: config/catalog.json
+wired-by: licenses/K-Dense-MIT.txt
+wired-by: skills/uncertainty-and-units/SKILL.md
+wired-by: skills/doe-and-replication/SKILL.md

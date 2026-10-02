@@ -27,6 +27,8 @@ Input
  └── Exotic format (HDF5, MAT, etc.) → [General EDA] 200+ format parser
 ```
 
+After the EDA: a mean ± SD/SEM, a fitted parameter's `±`, or a calibration-curve concentration → `uncertainty-and-units` (units, propagation, caption wording). Before the next run, replicate level and plate layout → `doe-and-replication`.
+
 ---
 
 ## Safety Check (MSDS/GHS)

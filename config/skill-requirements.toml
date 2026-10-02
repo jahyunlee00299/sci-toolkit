@@ -10,6 +10,9 @@ packages = []
 packages = ["pyyaml"]
 # pyyaml: import yaml
 
+[doe-and-replication]
+packages = ["numpy", "pandas", "pydoe"]
+
 [generate-image]
 packages = []
 
@@ -59,6 +62,9 @@ packages = ["biopython"]
 # biopython: import Bio
 
 [stats-workflow]
+packages = []
+
+[uncertainty-and-units]
 packages = []
 
 [web-scraping]

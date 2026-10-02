@@ -126,6 +126,12 @@
       "size_kb": 0,
       "external": true
     },
+    "doe-and-replication": {
+      "category": "data-stats",
+      "role": "Experiment design before the run -- DoE (factorial, fractional, Plackett-Burman, CCD/Box-Behnken) run tables, run-order and 96-well plate randomization, technical vs biological replicates (pseudoreplication), sample-size essentials. Needs Python 3.12+ and pydoe",
+      "requires": [],
+      "size_kb": 33
+    },
     "endnote-citation-injection": {
       "category": "paper-writing",
       "role": "Bulk EndNote citation insertion + dual DOI verification",
@@ -341,6 +347,12 @@
       "requires": [],
       "size_kb": 8
     },
+    "uncertainty-and-units": {
+      "category": "data-stats",
+      "role": "Units and uncertainty for reported numbers -- pint conversion, error propagation with correlated fit parameters (kcat/Km, HPLC calibration), rounding and SD/SEM/95% CI wording, plausibility screen. Needs Python 3.12+, pint, uncertainties",
+      "requires": [],
+      "size_kb": 160
+    },
     "web-scraping": {
       "category": "literature",
       "role": "Web crawling, academic metadata (Crossref/arXiv/bioRxiv), bulk PDF harvesting",
@@ -391,6 +403,7 @@
         "primer-design",
         "sequence-verification",
         "experiment-hub",
+        "doe-and-replication",
         "lab-record"
       ]
     },
@@ -401,6 +414,8 @@
         "data-quality-checks",
         "lab-data-analysis",
         "stats-workflow",
+        "uncertainty-and-units",
+        "doe-and-replication",
         "publication-figures",
         "scientific-validation",
         "statsmodels",
@@ -421,7 +436,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 46 skills",
+      "desc": "All 48 skills",
       "skills": [
         "__ALL__"
       ]
