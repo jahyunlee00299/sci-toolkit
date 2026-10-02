@@ -193,3 +193,77 @@ def test_user_agent_with_email_has_mailto():
 def test_user_agent_without_email():
     ua = sci_http.user_agent("si_fetch")
     assert "no-contact-provided" in ua and ua.startswith("sci-toolkit-si_fetch/")
+
+
+# --------------------------------------------------------------------------
+# non-GET requests (the REST connectors), error body, network detail, header lookup
+# --------------------------------------------------------------------------
+
+def _capturing_opener(script):
+    seen = []
+    inner, calls = _opener(script)
+
+    def opener(req, timeout=None):
+        seen.append((req.get_method(), req.data, dict(req.header_items())))
+        return inner(req, timeout=timeout)
+    return opener, seen, calls
+
+
+def test_post_sends_method_and_body():
+    op, seen, _ = _capturing_opener([b"{}"])
+    sci_http.request(URL, method="post", data=b"x=1", headers={"X-A": "b"}, opener=op, sleep=lambda s: None)
+    method, data, hdrs = seen[0]
+    assert method == "POST" and data == b"x=1" and hdrs["X-a"] == "b"
+
+
+def test_default_method_is_get_without_body():
+    op, seen, _ = _capturing_opener([b"{}"])
+    sci_http.request(URL, opener=op, sleep=lambda s: None)
+    assert seen[0][0] == "GET" and seen[0][1] is None
+
+
+@pytest.mark.parametrize("method", ["POST", "PATCH", "PUT", "DELETE"])
+def test_write_methods_are_never_retried_by_default(method, slept, sleep):
+    # Refutation: a 503 on a write must be attempted exactly once, or a task/page
+    # would be created twice.
+    op, _, calls = _capturing_opener([503, b"{}"])
+    with pytest.raises(sci_http.HttpError) as ei:
+        sci_http.request(URL, method=method, data=b"{}", opener=op, sleep=sleep)
+    assert ei.value.status == 503 and len(calls) == 1 and slept == []
+
+
+def test_explicit_retries_override_applies_to_writes():
+    op, _, calls = _capturing_opener([503, b"{}"])
+    r = sci_http.request(URL, method="PUT", data=b"{}", retries=2, opener=op, sleep=lambda s: None)
+    assert r.status == 200 and len(calls) == 2
+
+
+def test_http_error_carries_response_body_on_4xx_and_exhausted_5xx(sleep):
+    op, _ = _opener([(400, b'{"message":"bad prop"}', {})])
+    with pytest.raises(sci_http.HttpError) as ei:
+        sci_http.request(URL, opener=op, sleep=sleep)
+    assert ei.value.body == b'{"message":"bad prop"}'
+    op, _ = _opener([(503, b"down", {})] * 3)
+    with pytest.raises(sci_http.HttpError) as ei:
+        sci_http.request(URL, opener=op, sleep=sleep)
+    assert ei.value.status == 503 and ei.value.body == b"down"
+
+
+def test_network_error_detail_is_the_raw_reason(sleep):
+    op, _ = _opener([urllib.error.URLError("getaddrinfo failed")] * 3)
+    with pytest.raises(sci_http.NetworkError) as ei:
+        sci_http.request(URL, opener=op, sleep=sleep)
+    assert ei.value.detail == "getaddrinfo failed"
+    assert ei.value.reason == "URLError: getaddrinfo failed"
+
+
+def test_truncated_body_is_a_retried_network_error(sleep, slept):
+    import http.client
+    op, _ = _opener([http.client.IncompleteRead(b"ab"), b"ok"])
+    assert sci_http.request(URL, opener=op, sleep=sleep).body == b"ok"
+    assert slept == [1.5]
+
+
+def test_response_header_lookup_is_case_insensitive():
+    r = sci_http.Response(200, b"", {"content-type": "application/pdf"}, URL)
+    assert r.header("Content-Type") == "application/pdf" and r.header("X-Missing", "d") == "d"

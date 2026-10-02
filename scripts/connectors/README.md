@@ -26,6 +26,12 @@ draft.**
 > never ship in the distribution or a commit (excluded via
 > `.distignore`/`.gitignore`).
 
+> **Shared helpers**: the connectors send every request through
+> `scripts/sci_http.py` (one attempt per call, so a write is never replayed) and
+> set up UTF-8 output with `scripts/_stdio.py`. Both live one folder up, so when
+> you copy `scripts/connectors/` elsewhere, copy those two files next to it
+> (still stdlib only — no `pip install`).
+
 ## 0. Setup — credentials
 
 1. Copy `config/credentials.example.json` to `credentials.json` in the same

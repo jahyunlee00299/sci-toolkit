@@ -29,16 +29,15 @@ force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 import argparse
 import json
 import sys
-import urllib.error
-import urllib.request
 
 import _credentials as cred
+import sci_http  # scripts/sci_http.py (scripts/ is on sys.path via the _stdio snippet)
 
 API_ROOT = "https://app.asana.com/api/1.0"
 
 
 def http(method, url, token, data=None, headers=None):
-    """Minimal urllib-based HTTP helper. Returns parsed JSON or exits with a clear error."""
+    """Thin wrapper over sci_http.request. Returns parsed JSON or exits with a clear error."""
     hdrs = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/json",
@@ -53,26 +52,26 @@ def http(method, url, token, data=None, headers=None):
         # charset=utf-8 is explicit -- preserves non-ASCII text in comments/subtask bodies.
         body = json.dumps({"data": data}, ensure_ascii=False).encode("utf-8")
         hdrs["Content-Type"] = "application/json; charset=utf-8"
-    req = urllib.request.Request(url, data=body, headers=hdrs, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            raw = resp.read()
-            return json.loads(raw) if raw else {}
-    except urllib.error.HTTPError as e:
-        if e.code == 401:
+        # One attempt only: a connector write (POST/PATCH/DELETE) must never be replayed.
+        raw = sci_http.request(url, method=method, data=body, headers=hdrs,
+                               timeout=30, retries=1).body
+        return json.loads(raw) if raw else {}
+    except sci_http.HttpError as e:
+        if e.status == 401:
             sys.exit(f"[Error] Authentication failed (401). Check your token (asana.token). (masked: {cred.mask(token)})")
-        if e.code == 403:
+        if e.status == 403:
             sys.exit("[Error] 403 -- possibly an API rate limit or insufficient permission.")
-        if e.code == 404:
+        if e.status == 404:
             sys.exit("[Error] 404 -- resource not found. Check the gid/workspace value.")
         detail = ""
         try:
-            detail = e.read().decode("utf-8", "ignore")
+            detail = e.body.decode("utf-8", "ignore")
         except Exception:
             pass
-        sys.exit(f"[Error] Asana API error {e.code}: {detail[:300]}")
-    except urllib.error.URLError as e:
-        sys.exit(f"[Error] Check your network connection: {e.reason}")
+        sys.exit(f"[Error] Asana API error {e.status}: {detail[:300]}")
+    except sci_http.NetworkError as e:
+        sys.exit(f"[Error] Check your network connection: {e.detail}")
 
 
 def cmd_me(args, token):

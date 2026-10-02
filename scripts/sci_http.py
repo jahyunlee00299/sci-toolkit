@@ -13,17 +13,26 @@ none of the others.
 
 Scope
 -----
-Stdlib only, GET only, for the tools that live in ``scripts/``. Skill folders
+Stdlib only, for the tools that live in ``scripts/``. GET is the default (and the
+only method that is retried by default); the REST connectors under
+``scripts/connectors/`` also send POST/PATCH/PUT/DELETE through ``request`` with
+``method=`` / ``data=`` and a single attempt, so a write is never replayed. Skill folders
 under ``skills/`` install stand-alone and cannot import this module, so their
 scripts keep a private copy of the loop; that is deliberate, not an oversight.
 
 Contract
 --------
 * ``request(url, ...)`` returns a ``Response`` or raises ``HttpError`` (a final
-  HTTP status) / ``NetworkError`` (no usable response after retries).
-* Retried: 429 and 5xx, ``URLError``, timeouts, connection resets. Not
+  HTTP status; ``.body`` keeps the error response body for diagnostics) /
+  ``NetworkError`` (no usable response after retries; ``.detail`` is the raw
+  low-level reason without the exception-class prefix).
+* Retried: 429 and 5xx, ``URLError``, timeouts, connection resets, truncated
+  bodies (``http.client.HTTPException``). Not
   retried: any other 4xx (a 400/401/403/404 will not change on retry).
 * ``Retry-After`` (seconds) is honoured on 429/503 when present, capped.
+* ``retries=None`` (the default) means ``DEFAULT_RETRIES`` for GET/HEAD and a
+  single attempt for every other method; a caller that knows its write is
+  idempotent may pass an explicit number.
 * Backoff = ``backoff * attempt`` seconds between attempts, none after the
   last one.
 * ``get_json`` / ``get_text`` / ``get_bytes`` return the ``(value, error)``
@@ -35,6 +44,7 @@ Contract
 """
 from __future__ import annotations
 
+import http.client
 import json
 import time
 import urllib.error
@@ -52,20 +62,22 @@ MAX_RETRY_AFTER = 30.0  # seconds; a server asking for more than this is treated
 class HttpError(Exception):
     """A final (non-retried or retries-exhausted) HTTP status."""
 
-    def __init__(self, status: int, url: str, reason: str = ""):
+    def __init__(self, status: int, url: str, reason: str = "", body: bytes = b""):
         super().__init__(f"HTTP {status} for {url}" + (f" ({reason})" if reason else ""))
         self.status = status
         self.url = url
         self.reason = reason
+        self.body = body
 
 
 class NetworkError(Exception):
     """No HTTP response at all after retries (DNS, timeout, reset, ...)."""
 
-    def __init__(self, url: str, reason: str):
+    def __init__(self, url: str, reason: str, detail: str = ""):
         super().__init__(f"{reason} for {url}")
         self.url = url
         self.reason = reason
+        self.detail = detail or reason
 
 
 @dataclass
@@ -74,6 +86,14 @@ class Response:
     body: bytes
     headers: Mapping[str, str]
     url: str
+
+    def header(self, name: str, default: str = "") -> str:
+        """Case-insensitive response-header lookup."""
+        wanted = name.lower()
+        for k, v in self.headers.items():
+            if k.lower() == wanted:
+                return v
+        return default
 
     def text(self, encoding: str = "utf-8") -> str:
         return self.body.decode(encoding, errors="replace")
@@ -104,15 +124,20 @@ def _retry_after_seconds(headers: Mapping[str, str]) -> Optional[float]:
 
 
 def request(url: str, *, headers: Optional[Mapping[str, str]] = None,
-            timeout: float = DEFAULT_TIMEOUT, retries: int = DEFAULT_RETRIES,
+            method: str = "GET", data: Optional[bytes] = None,
+            timeout: float = DEFAULT_TIMEOUT, retries: Optional[int] = None,
             backoff: float = DEFAULT_BACKOFF,
             opener: Callable[..., Any] = urllib.request.urlopen,
             sleep: Callable[[float], None] = time.sleep) -> Response:
-    """GET ``url`` with retry on 429/5xx/network errors. See module docstring."""
+    """Send ``url`` with retry on 429/5xx/network errors. See module docstring."""
+    method = method.upper()
+    if retries is None:
+        retries = DEFAULT_RETRIES if method in ("GET", "HEAD") else 1
     if retries < 1:
         raise ValueError("retries must be >= 1")
-    req = urllib.request.Request(url, headers=dict(headers or {}))
-    last_reason = ""
+    req = urllib.request.Request(url, data=data, headers=dict(headers or {}), method=method)
+    last_reason = last_detail = ""
+    last_body = b""
     last_status: Optional[int] = None
     for attempt in range(1, retries + 1):
         wait: Optional[float] = None
@@ -124,19 +149,23 @@ def request(url: str, *, headers: Optional[Mapping[str, str]] = None,
                 return Response(status=int(status), body=body, headers=hdrs, url=url)
         except urllib.error.HTTPError as e:
             last_status, last_reason = e.code, f"HTTP {e.code}"
+            try:
+                last_body = e.read()
+            except Exception:  # noqa: BLE001 - the body is diagnostics only
+                last_body = b""
             if e.code not in RETRY_STATUSES:
-                raise HttpError(e.code, url, str(e.reason)) from e
+                raise HttpError(e.code, url, str(e.reason), last_body) from e
             hdrs = dict(e.headers.items()) if getattr(e, "headers", None) is not None else {}
             wait = _retry_after_seconds(hdrs)
         except urllib.error.URLError as e:
-            last_status, last_reason = None, f"URLError: {e.reason}"
-        except (TimeoutError, ConnectionError, OSError) as e:
-            last_status, last_reason = None, f"{type(e).__name__}: {e}"
+            last_status, last_reason, last_detail = None, f"URLError: {e.reason}", str(e.reason)
+        except (TimeoutError, ConnectionError, OSError, http.client.HTTPException) as e:  # incl. IncompleteRead
+            last_status, last_reason, last_detail = None, f"{type(e).__name__}: {e}", str(e)
         if attempt < retries:
             sleep(wait if wait is not None else backoff * attempt)
     if last_status is not None:
-        raise HttpError(last_status, url, "retries exhausted")
-    raise NetworkError(url, last_reason or "unknown_error")
+        raise HttpError(last_status, url, "retries exhausted", last_body)
+    raise NetworkError(url, last_reason or "unknown_error", last_detail)
 
 
 # --------------------------------------------------------------------------

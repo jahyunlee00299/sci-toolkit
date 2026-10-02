@@ -26,17 +26,16 @@ force_utf8()  # UTF-8 stdout/stderr on legacy Windows codepages
 import argparse
 import json
 import sys
-import urllib.error
-import urllib.request
 
 import _credentials as cred
+import sci_http  # scripts/sci_http.py (scripts/ is on sys.path via the _stdio snippet)
 
 API_ROOT = "https://api.notion.com/v1"
 NOTION_VERSION = "2022-06-28"
 
 
 def http(method, url, token, data=None, headers=None):
-    """Minimal urllib-based HTTP helper. Returns parsed JSON, or exits with a friendly error message."""
+    """Thin wrapper over sci_http.request. Returns parsed JSON, or exits with a friendly error message."""
     hdrs = {
         "Authorization": f"Bearer {token}",
         "Notion-Version": NOTION_VERSION,
@@ -49,34 +48,34 @@ def http(method, url, token, data=None, headers=None):
     if data is not None:
         body = json.dumps(data).encode("utf-8")
         hdrs["Content-Type"] = "application/json"
-    req = urllib.request.Request(url, data=body, headers=hdrs, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            raw = resp.read()
-            return json.loads(raw) if raw else {}
-    except urllib.error.HTTPError as e:
-        if e.code == 401:
+        # One attempt only: a connector write (POST/PATCH/DELETE) must never be replayed.
+        raw = sci_http.request(url, method=method, data=body, headers=hdrs,
+                               timeout=30, retries=1).body
+        return json.loads(raw) if raw else {}
+    except sci_http.HttpError as e:
+        if e.status == 401:
             sys.exit(
                 f"[Error] Authentication failed (401). Check the token (notion.token). "
                 f"(masked: {cred.mask(token)})"
             )
-        if e.code == 403:
+        if e.status == 403:
             sys.exit(
                 "[Error] 403 — insufficient permissions. This database may not have "
                 "the Integration shared to it (Connections). In Notion, open the DB "
                 "page's '...' menu -> Connections -> select the Integration, then retry."
             )
-        if e.code == 404:
+        if e.status == 404:
             sys.exit(
                 "[Error] 404 — database not found. Check the --db value (32-char id), "
                 "or the Integration may not be shared with this database yet "
                 "('...' -> Connections -> select the Integration). First confirm it "
                 "appears in the list-dbs output."
             )
-        if e.code == 400:
+        if e.status == 400:
             detail = ""
             try:
-                detail = e.read().decode("utf-8", "ignore")
+                detail = e.body.decode("utf-8", "ignore")
             except Exception:
                 pass
             sys.exit(
@@ -86,12 +85,12 @@ def http(method, url, token, data=None, headers=None):
             )
         detail = ""
         try:
-            detail = e.read().decode("utf-8", "ignore")
+            detail = e.body.decode("utf-8", "ignore")
         except Exception:
             pass
-        sys.exit(f"[Error] Notion API error {e.code}: {detail[:300]}")
-    except urllib.error.URLError as e:
-        sys.exit(f"[Error] Check your network connection: {e.reason}")
+        sys.exit(f"[Error] Notion API error {e.status}: {detail[:300]}")
+    except sci_http.NetworkError as e:
+        sys.exit(f"[Error] Check your network connection: {e.detail}")
 
 
 def _title_of(props: dict) -> str:

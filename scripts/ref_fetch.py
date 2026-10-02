@@ -55,9 +55,7 @@ import shutil
 import subprocess
 import sys
 import time
-import urllib.error
 import urllib.parse
-import urllib.request
 from pathlib import Path
 from typing import Any, Optional
 
@@ -123,41 +121,33 @@ def _download_pdf(url: str, dest: Path, email: Optional[str], timeout: int = 60)
     a real PDF.
     """
     headers = {"User-Agent": _build_user_agent(email), "Accept": "application/pdf,*/*"}
-    last_err = None
-    for attempt in range(1, _MAX_RETRIES + 1):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                content_type = (resp.headers.get("Content-Type", "") or "").lower()
-                data = resp.read()
+    try:
+        resp = sci_http.request(url, headers=headers, timeout=timeout,
+                                retries=_MAX_RETRIES, backoff=_RETRY_BACKOFF)
+    except sci_http.HttpError as e:
+        return False, f"HTTP {e.status}"
+    except sci_http.NetworkError as e:
+        return False, e.reason
 
-                is_pdf_magic = data[:5] == b"%PDF-"
-                is_pdf_content_type = "application/pdf" in content_type
-                looks_like_html = content_type.startswith("text/html") or data.lstrip()[:15].lower().startswith(
-                    (b"<!doctype html", b"<html")
-                )
+    content_type = resp.header("Content-Type").lower()
+    data = resp.body
 
-                if looks_like_html or not (is_pdf_magic or is_pdf_content_type):
-                    return False, (
-                        f"response is not a PDF (Content-Type={content_type or 'unknown'}, "
-                        f"magic_byte_ok={is_pdf_magic}, {len(data)} bytes) — likely "
-                        f"redirected to a landing page"
-                    )
+    is_pdf_magic = data[:5] == b"%PDF-"
+    is_pdf_content_type = "application/pdf" in content_type
+    looks_like_html = content_type.startswith("text/html") or data.lstrip()[:15].lower().startswith(
+        (b"<!doctype html", b"<html")
+    )
 
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                dest.write_bytes(data)
-                return True, None
-        except urllib.error.HTTPError as e:
-            last_err = f"HTTP {e.code}"
-            if e.code == 404:
-                return False, last_err
-        except Exception as e:  # noqa: BLE001
-            last_err = f"{type(e).__name__}: {e}"
+    if looks_like_html or not (is_pdf_magic or is_pdf_content_type):
+        return False, (
+            f"response is not a PDF (Content-Type={content_type or 'unknown'}, "
+            f"magic_byte_ok={is_pdf_magic}, {len(data)} bytes) — likely "
+            f"redirected to a landing page"
+        )
 
-        if attempt < _MAX_RETRIES:
-            time.sleep(_RETRY_BACKOFF * attempt)
-
-    return False, last_err or "unknown_error"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    return True, None
 
 
 # --------------------------------------------------------------------------- #
@@ -521,21 +511,8 @@ def fetch_one(
 def fetch_bibtex(doi: str, email: Optional[str]) -> tuple[Optional[str], Optional[str]]:
     url = f"{CROSSREF_BASE}/{urllib.parse.quote(doi)}/transform/application/x-bibtex"
     headers = {"User-Agent": _build_user_agent(email), "Accept": "application/x-bibtex"}
-    last_err = None
-    for attempt in range(1, _MAX_RETRIES + 1):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
-                return resp.read().decode("utf-8", errors="replace"), None
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                return None, "not_found"
-            last_err = f"HTTP {e.code}"
-        except Exception as e:  # noqa: BLE001
-            last_err = f"{type(e).__name__}: {e}"
-        if attempt < _MAX_RETRIES:
-            time.sleep(_RETRY_BACKOFF * attempt)
-    return None, last_err or "unknown_error"
+    return sci_http.get_text(url, headers=headers, timeout=_TIMEOUT,
+                             retries=_MAX_RETRIES, backoff=_RETRY_BACKOFF)
 
 
 # --------------------------------------------------------------------------- #

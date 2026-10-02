@@ -36,12 +36,11 @@ from __future__ import annotations
 import json
 import sys
 import time
-import urllib.error
 import urllib.parse
-import urllib.request
 from pathlib import Path
 
 import _credentials as cred
+import sci_http  # scripts/sci_http.py; _credentials (above) puts scripts/ on sys.path
 
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 _SKEW_SEC = 60  # renewal margin just before expiry
@@ -77,14 +76,13 @@ def _read_json(path: Path, what: str) -> dict:
 
 def _post_form(url: str, fields: dict) -> dict:
     data = urllib.parse.urlencode(fields).encode()
-    req = urllib.request.Request(
-        url, data=data, method="POST",
-        headers={"Content-Type": "application/x-www-form-urlencoded"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", "replace")[:400]
+        resp = sci_http.request(
+            url, method="POST", data=data, timeout=30, retries=1,
+            headers={"Content-Type": "application/x-www-form-urlencoded"})
+        return json.loads(resp.body.decode("utf-8"))
+    except sci_http.HttpError as exc:
+        body = exc.body.decode("utf-8", "replace")[:400]
         # invalid_grant = the refresh token was revoked (password change, permission
         # revoked, or 6+ months unused). There is no fix but reissuing it, so say so.
         if "invalid_grant" in body:
@@ -92,9 +90,9 @@ def _post_form(url: str, fields: dict) -> dict:
                 "[Error] The refresh token is no longer valid (invalid_grant).\n"
                 "  Revoked by a password change, permission revocation, or long disuse. Reissue is required.\n"
                 f"  Response: {body}")
-        sys.exit(f"[Error] Token refresh failed (HTTP {exc.code}): {body}")
-    except urllib.error.URLError as exc:
-        sys.exit(f"[Error] Could not connect to the token server: {exc.reason}")
+        sys.exit(f"[Error] Token refresh failed (HTTP {exc.status}): {body}")
+    except sci_http.NetworkError as exc:
+        sys.exit(f"[Error] Could not connect to the token server: {exc.detail}")
 
 
 def access_token(cfg: dict | None = None) -> str:
@@ -145,20 +143,19 @@ def api_get(url: str, token: str, params: dict | None = None) -> dict:
     """Google API GET. Used only on read-only paths."""
     if params:
         url = f"{url}?{urllib.parse.urlencode(params)}"
-    req = urllib.request.Request(
-        url, headers={"Authorization": f"Bearer {token}"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", "replace")[:400]
-        if exc.code == 403:
+        resp = sci_http.request(
+            url, headers={"Authorization": f"Bearer {token}"}, timeout=30, retries=1)
+        return json.loads(resp.body.decode("utf-8"))
+    except sci_http.HttpError as exc:
+        body = exc.body.decode("utf-8", "replace")[:400]
+        if exc.status == 403:
             sys.exit(
                 f"[Error] Permission denied (HTTP 403). Check the token's scope.\n"
                 f"  Response: {body}")
-        sys.exit(f"[Error] API call failed (HTTP {exc.code}): {body}")
-    except urllib.error.URLError as exc:
-        sys.exit(f"[Error] Could not connect to the Google API: {exc.reason}")
+        sys.exit(f"[Error] API call failed (HTTP {exc.status}): {body}")
+    except sci_http.NetworkError as exc:
+        sys.exit(f"[Error] Could not connect to the Google API: {exc.detail}")
 
 
 def api_post(url: str, token: str, body: dict,
@@ -166,23 +163,24 @@ def api_post(url: str, token: str, body: dict,
     """Google API write. Called only after the caller has already passed the --write gate."""
     if params:
         url = f"{url}?{urllib.parse.urlencode(params)}"
-    req = urllib.request.Request(
-        url, data=json.dumps(body).encode("utf-8"), method=method,
-        headers={"Authorization": f"Bearer {token}",
-                 "Content-Type": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            raw = resp.read().decode("utf-8")
-            return json.loads(raw) if raw.strip() else {}
-    except urllib.error.HTTPError as exc:
-        body_txt = exc.read().decode("utf-8", "replace")[:400]
-        if exc.code == 403:
+        # One attempt only: a write must never be replayed.
+        resp = sci_http.request(
+            url, method=method, data=json.dumps(body).encode("utf-8"),
+            timeout=30, retries=1,
+            headers={"Authorization": f"Bearer {token}",
+                     "Content-Type": "application/json"})
+        raw = resp.body.decode("utf-8")
+        return json.loads(raw) if raw.strip() else {}
+    except sci_http.HttpError as exc:
+        body_txt = exc.body.decode("utf-8", "replace")[:400]
+        if exc.status == 403:
             sys.exit(
                 f"[Error] Permission denied (HTTP 403). A read-only scope cannot write.\n"
                 f"  Response: {body_txt}")
-        sys.exit(f"[Error] API write failed (HTTP {exc.code}): {body_txt}")
-    except urllib.error.URLError as exc:
-        sys.exit(f"[Error] Could not connect to the Google API: {exc.reason}")
+        sys.exit(f"[Error] API write failed (HTTP {exc.status}): {body_txt}")
+    except sci_http.NetworkError as exc:
+        sys.exit(f"[Error] Could not connect to the Google API: {exc.detail}")
 
 
 if __name__ == "__main__":
