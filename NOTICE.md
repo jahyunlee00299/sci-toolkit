@@ -68,7 +68,7 @@ redistributed with their logic unchanged: in `skills/uncertainty-and-units/scrip
 are a provenance header comment (upstream path, commit, license) and LF line endings. Their
 SKILL.md files, references and examples are this repository's own rewrite (enzyme and HPLC
 examples, the upstream citation boilerplate dropped). The full MIT text, with the copyright
-notice that must accompany the scripts, is in [`licenses/K-Dense-MIT.txt`](licenses/K-Dense-MIT.txt).
+notice that must accompany the scripts, is in [`licenses/K-Dense-MIT.txt`](licenses/K-Dense-MIT.txt). Each of the two skill folders also carries `LICENSE-K-Dense-MIT.txt`, because the installer copies skills one folder at a time and the notice must travel with every installed copy.
 
 `skills/spec-first-development/SKILL.md` and
 `skills/test-first-development/SKILL.md` take the three-path classification, the

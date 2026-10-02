@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.128] — 2026-10-03
+
+- Ship the K-Dense MIT notice inside each adopted skill folder so installed copies keep it
+
+## [1.2.127] — 2026-10-02
+
+- Ship the K-Dense MIT notice inside each adopted skill folder so installed copies keep it
+
 ## [1.2.126] — 2026-10-02
 
 - Adopt uncertainty-and-units and doe-and-replication skills from K-Dense (MIT), with vendored scripts, doctor check and lab-case tests

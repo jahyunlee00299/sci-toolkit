@@ -1,15 +1,15 @@
-3c57d560df7580aae6a2c9592c35992fdca3403b61eb6209660cb6065f71eba4 *./.claude-plugin/plugin.json
+cf51b8bdce93d320c8980702118691e21a65427a2bf958002dd09c06b0dfc7e6 *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 d8a83d2addd47b5d8d8d5022d8b6fe0c3f4b454075f898142fdd3d34a723bb09 *./AGENTS.md
-5c9bea26fd6f8026197811bc153c2efcd5964a529555aae74d04de0333601188 *./CHANGELOG.md
+7d0a25737a1b22bdc73adb3ef2c8445016336c66ff6a448209620f8c9ae17cca *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
-7c97b3875d3686bc9f8dbd3c93790f7c138ca8cb241df3dcdce9629d69dadbf0 *./NOTICE.md
+274b2b4cc55b8613c189482dbf8b00ef33a85ac76a306b85584a5281172faa03 *./NOTICE.md
 b330e91deff0abcc575f3e377dd442ec4bcbb2bb8d433b3b50e3709943082453 *./PROJECT_STRUCTURE.md
 b667bb57f719bf9bb0bb6b5071ce82f2fa3689bb7e3fea11ee067aba2ac8d53d *./QUICKSTART.md
 9c5be38a3b160efdba312b546c4230330ecb1c517aad6a5a8cbff7d8ab50c647 *./README.md
@@ -146,6 +146,7 @@ acea85901f4dacca49e1b8e8cdb38e3ded67d005f572c5110f26d77c4f6db79d *./skills/conda
 1e0321e69093770b6d3b9ae9d0e047aa35dc3824a90e9aa3ef55a574647ab7fa *./skills/conda-env-manager/scripts/scan_imports.py
 3e646674b79c412d253c6fb13b46d19efda3829f06a29d0642ee21df803cd192 *./skills/data-quality-checks/SKILL.md
 4555cd92710962ddffc2f3cbc9d377d7b7047dfe74399d3fdcd70817d8fb7ae3 *./skills/debugging-loop/SKILL.md
+09b02a3c9df3053c55531d503357a9c7cde275970e6c3ceaa1ddf5f0e90b40c1 *./skills/doe-and-replication/LICENSE-K-Dense-MIT.txt
 4064dd2616707f27c10e2011073a5d13b2faf3e3058ab3af47ad367669f37169 *./skills/doe-and-replication/SKILL.md
 0a4e01f74c047be179dbc551bab3c5cd57d68e4f682b094915b32fd61f25732c *./skills/doe-and-replication/references/design-notes.md
 0b8ba1bb2f668992b0ce2f8817f09d55251c73adfa642028f428337e85bc7a33 *./skills/doe-and-replication/scripts/doe_designs.py
@@ -437,6 +438,7 @@ f4d8ec3c6b149af355ae3cb33f29bea1776b873867dcc035906753b2b47d5620 *./skills/stats
 5e20d2943d3c3576194b471f2e99bfa79c9b4029dafad2ea5e0012d3d0c8d4e8 *./skills/test-first-development/SKILL.md
 2f84e4f2ff869624529f3d16911dba47a277c502156456a330af14b949f3ef03 *./skills/test-quality/SKILL.md
 d60bad6e07071d80c355f503a86c730acde8cc5769264654aeef4ef500eddffd *./skills/token-efficient-routing/SKILL.md
+09b02a3c9df3053c55531d503357a9c7cde275970e6c3ceaa1ddf5f0e90b40c1 *./skills/uncertainty-and-units/LICENSE-K-Dense-MIT.txt
 980b1b816f82beb1a9384548572461dd92a30fd18999f14e96fba97a79056bc3 *./skills/uncertainty-and-units/SKILL.md
 4b8268f4d6e8605662011cd4eaf53122ee8ea4207186bf7800b943733c78ac83 *./skills/uncertainty-and-units/references/lab-recipes.md
 94c4fbbfca44a0a1e721a0159c9d4419d3f03ba1cf4e68b16bc4aca6c6ff0175 *./skills/uncertainty-and-units/scripts/_common.py
