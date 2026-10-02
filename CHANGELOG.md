@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.113] — 2026-10-02
+
+- experiment-hub excel_com_guard: detect CVErr int error codes, single-call UsedRange read with busy-retry, utf-8 worker output
+
 ## [1.2.112] — 2026-10-02
 
 - ledger: record refactor batch 1 (structure list gate, fiducial rename, primer-design pytest suite, shared sha256 helper)

@@ -110,3 +110,13 @@ if __name__ == "__main__":
     print("This test file uses pytest fixtures (monkeypatch, tmp_path) -- run via:")
     print("  python -m pytest tests/test_excel_com_guard.py -v")
     sys.exit(1)
+
+
+def test_error_text_maps_com_cverr_ints_and_strings():
+    """Over COM an error cell comes back as an int CVErr code; a string-only check missed every one."""
+    assert excel_com_guard._error_text(-2146826281) == "#DIV/0!"
+    assert excel_com_guard._error_text(-2146826246) == "#N/A"
+    assert excel_com_guard._error_text("#REF!") == "#REF!"
+    assert excel_com_guard._error_text(5) is None
+    assert excel_com_guard._error_text(True) is None
+    assert excel_com_guard._col_letters(1) == "A" and excel_com_guard._col_letters(28) == "AB"
