@@ -411,6 +411,41 @@ def install(final: list[str], dest: Path, apply: bool, force: bool = False) -> N
         _run_doctor_after_install()
 
 
+def connector_bundle(cat: dict) -> list[str]:
+    """Repo-relative paths a connector install must ship together.
+
+    The connectors import scripts/sci_http.py and scripts/_stdio.py from the
+    parent folder, so the helper list lives in catalog.json
+    (connectors._shared_files) and is the single source for the installer, the
+    docs and tests/test_connector_bundle.py.
+    """
+    shared = list(cat.get("connectors", {}).get("_shared_files", []))
+    if not shared:
+        raise SystemExit("catalog.json: connectors._shared_files is missing — a connector copy would be broken")
+    return ["scripts/connectors"] + shared
+
+
+def install_connectors(dest: Path, apply: bool, cat: dict | None = None) -> None:
+    """Copy scripts/connectors/ plus its shared helpers under <dest>/scripts/."""
+    cat = cat or load_catalog()
+    print(f"\nConnector destination: {dest / 'scripts'}")
+    for rel in connector_bundle(cat):
+        src, dst = ROOT / rel, dest / rel
+        if not src.exists():
+            raise SystemExit(f"connector bundle member missing in the distribution: {rel}")
+        if apply:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            if src.is_dir():
+                shutil.copytree(src, dst, ignore=_build_ignore(), dirs_exist_ok=True)
+            else:
+                shutil.copy2(src, dst)
+            print(f"  [installed] {rel}")
+        else:
+            print(f"  [preview] {rel}")
+    if not apply:
+        print("\n* This is a preview. Re-run with --apply to actually install.")
+
+
 def _run_doctor_after_install() -> None:
     """Automatically run doctor.py right after install.
 
@@ -469,11 +504,18 @@ def main() -> None:
     ap.add_argument("--force", action="store_true",
                     help="Replace the destination skill folder entirely (also deletes destination-only files). "
                          "The default is a non-destructive merge; use this option only when explicitly needed.")
+    ap.add_argument("--connectors-dest", default=None,
+                    help="Also copy scripts/connectors/ together with the shared helpers it imports "
+                         "(sci_http.py, _stdio.py) into <folder>/scripts/. Can be used alone.")
     args = ap.parse_args()
 
     _shell_env_notice()
 
     cat = load_catalog()
+
+    if args.connectors_dest and not (args.preset or args.skills):
+        install_connectors(Path(args.connectors_dest).expanduser(), args.apply, cat)
+        return
 
     if args.list:
         print_catalog(cat)
@@ -511,6 +553,8 @@ def main() -> None:
         print(f"  {dest}")
         print("  To install elsewhere, use --dest <path>.")
     install(final, dest, args.apply, force=args.force)
+    if args.connectors_dest:
+        install_connectors(Path(args.connectors_dest).expanduser(), args.apply, cat)
 
 
 if __name__ == "__main__":

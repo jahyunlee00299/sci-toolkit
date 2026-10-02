@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.122] — 2026-10-02
+
+- Ship connector helpers with connectors: catalog list, installer flag, bundle test
+
 ## [1.2.121] — 2026-10-02
 
 - Merge remote-tracking branch 'origin/main' into scitoolkit/fix/refactor-batch2-261002

@@ -37,6 +37,7 @@
   },
   "connectors": {
     "_note": "External service connectors — scripts/connectors/. Unlike skills, these require credentials.json, and are draft-first/write-guarded. On install, copy scripts/connectors/ as a whole (they share the common _credentials.py) TOGETHER WITH scripts/sci_http.py and scripts/_stdio.py, which they import from the parent folder.",
+    "_shared_files": ["scripts/sci_http.py", "scripts/_stdio.py"],
     "mail": {
       "role": "Mail draft-first (IMAP read + SMTP draft, triple-gated send)",
       "needs": "IMAP/SMTP account + app password"

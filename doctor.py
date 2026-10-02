@@ -167,6 +167,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),
     ("tests/test_skill_drift.py", "toolkit vs authoring-tree skill drift detector"),
     ("tests/test_connectors.py", "REST connectors (dry-run isolation, --write gate, token gating)"),
+    ("tests/test_connector_bundle.py", "connector install bundle (shared helpers shipped, negative controls)"),
     ("tests/test_service_routing.py", "service/skill routing (connector-silent steering, dead skill refs)"),
     ("tests/test_adopted_discipline_skills.py", "adopted discipline skills keep their substance"),
     ("tests/test_development_discipline.py", "spec-first/test-first discipline wiring + core rules"),

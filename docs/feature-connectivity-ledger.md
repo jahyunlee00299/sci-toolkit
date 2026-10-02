@@ -1279,3 +1279,34 @@ wired-by: skills/primer-design/tests/test_characterization.py
 `PROJECT_STRUCTURE.md` (scripts row), `scripts/connectors/README.md`,
 `config/catalog.json` (connector install note), `skills/primer-design/REFERENCE.md`
 (file list) and the README test count (42 -> 44) name the new helpers and files.
+
+---
+
+## Refactor batch 3 (2026-10-02)
+
+### Unit 1 — connector bundle enforcement
+
+**Scope** — `scripts/connectors/*` imports `scripts/sci_http.py` and
+`scripts/_stdio.py` from the parent folder. The helper list was only prose
+(README, catalog `_note`); nothing shipped or checked it.
+
+**Change** — `config/catalog.json` gains `connectors._shared_files` (the single
+list). `install/install.py` gains `connector_bundle()`, `install_connectors()` and
+`--connectors-dest <folder>` (copies `scripts/connectors/` plus both helpers into
+`<folder>/scripts/`; preview without `--apply`). New `tests/test_connector_bundle.py`
+(15 checks, registered in `doctor.py SELF_TEST_SCRIPTS`).
+
+**Evidence** — every connector module is imported in a fresh `python -I` process
+from a temp copy produced by the real installer function, and its `__file__` must
+resolve inside the temp copy (no silent fallback to the repo). A static check
+fails when a connector imports any `scripts/*.py` module that the catalog does
+not list.
+
+**Refutation** — negative controls: deleting `sci_http.py` from the copy breaks
+exactly the seven importers that need it (asana, github, notion, notion_db,
+_google_auth, calendar, sheets); deleting `_stdio.py` breaks all of them; a plain
+`copytree` of `scripts/connectors/` alone fails to import `github_connector`.
+
+wired-by: install/install.py
+wired-by: tests/test_connector_bundle.py
+wired-by: config/catalog.json

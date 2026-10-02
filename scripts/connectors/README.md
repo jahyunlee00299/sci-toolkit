@@ -31,6 +31,12 @@ draft.**
 > set up UTF-8 output with `scripts/_stdio.py`. Both live one folder up, so when
 > you copy `scripts/connectors/` elsewhere, copy those two files next to it
 > (still stdlib only — no `pip install`).
+>
+> The installer does this for you: `python install/install.py --connectors-dest <folder> --apply`
+> copies the connectors and both helpers into `<folder>/scripts/`. The helper list
+> lives in `config/catalog.json` (`connectors._shared_files`) and
+> `tests/test_connector_bundle.py` fails if a connector imports a parent-folder
+> helper that is not listed.
 
 ## 0. Setup — credentials
 
