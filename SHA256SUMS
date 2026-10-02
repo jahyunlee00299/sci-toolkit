@@ -193,7 +193,7 @@ c5e0872b588e761141ed23ca96f58078a84d2cd0ef15722b4c30f7399a08e504 *./skills/get-a
 8c083f9e77365813d4ea48d277d4a0d6fc811c300c2e78b37ac9b3065f3433cb *./skills/get-available-resources/scripts/resource_probes/disk.py
 a841ceb940c0858481b2837ccf63c9b469ab39e0f937326ced2968e799c82344 *./skills/get-available-resources/scripts/resource_probes/memory.py
 a71cc29f9fce8befaa783e9ef93bbd570dd059a9cd4bfebfafa660354254c504 *./skills/get-available-resources/scripts/resource_probes/scheduler.py
-2559278fb1f513670fc40d9914b706e5baf872c103cb2a9bf4d4c58d9923af7d *./skills/get-available-resources/scripts/resource_probes/snapshot.py
+6e6ef295174e190a7a2001367dc06d61b79699847efb3d564d887a9e39d41b2d *./skills/get-available-resources/scripts/resource_probes/snapshot.py
 c636c2ae4993f5fcddd9520d85d80bcbad6cc3d4769fd85427cf8f2752dbc87d *./skills/get-available-resources/scripts/snapshot_tools.py
 e90266038b1f719fdd95b17c7b04c1aea9930a19e36bc68b208ff926a415a82c *./skills/get-available-resources/tests/collect_snapshot_trace.py
 f3fc33a62c392320c936527f0a87f3a93ed841ac09af89d0f04aeb5e6eacab97 *./skills/get-available-resources/tests/conftest.py
