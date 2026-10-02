@@ -347,7 +347,7 @@ d385518e3ac0a684b2ba1031498dd3a211b57ae126ab3ee9be5a4a4f2d39b1c5 *./skills/prime
 41170a5a99e476393ecd03448979136e8f8c3854015744c049a70529257d305f *./skills/primer-design/src/primer_design/mcp_server.py
 7144dceec523787682cd67aadaab6b396df79ecb73671e885c3c43401d7f356e *./skills/primer-design/src/primer_design/order_sheet.py
 f4f9539dfc60607a7049ffcafe1074760309ea5641eb610613a3052e99897c9e *./skills/primer-design/src/primer_design/order_sheet_writers.py
-ab2aceef7943caae527686e914244b03fffe1c5600aac214421de1bcb4eb31e8 *./skills/primer-design/src/primer_design/restriction_cloning_mode.py
+ac6925b7b85c1be0b0905903cf64d20b3c4910f5d27d0dcc2aefc7330c40e991 *./skills/primer-design/src/primer_design/restriction_cloning_mode.py
 b4e9fbf487a41f54288cc2ad4a67bcd3c5ef45295bc83648758a23f5d3069838 *./skills/primer-design/src/primer_design/snapgene_parser.py
 def0f9ef8a230a6d8df0dc957dfb9aead4b6ca32669584d32b1455251da30765 *./skills/primer-design/src/primer_design/snapgene_writer.py
 e00a534556f04240cfac3c8a7fb1a0ca1d04d26798f78bebf251d3c2fc366f7d *./skills/primer-design/src/primer_design/subst_primer_mode.py
