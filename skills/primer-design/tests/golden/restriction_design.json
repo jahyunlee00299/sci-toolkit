@@ -1,0 +1,1264 @@
+{
+ "errors": {
+  "empty_insert": [
+   "ValueError",
+   "insert_seq is empty"
+  ],
+  "forward_annealing_fails": [
+   "RuntimeError",
+   "Forward primer annealing design failed (target Tm=62.0C, range=18-30 bp)"
+  ],
+  "hf_variant_is_not_a_design_enzyme": [
+   "ValueError",
+   "Unknown 5' RE: 'BamHI-HF'. Available: AscI, AvrII, BamHI, BglII, EcoRI, EcoRV, FseI, HindIII, KpnI, MfeI, NcoI, NdeI, NheI, NotI, PacI, PstI, SacI, SalI, XhoI"
+  ],
+  "long_primer_overflows_primer3": [
+   "RuntimeError",
+   "b'At least one sequence must be equal to or shorter than 60bp for thermodynamic calculations'"
+  ],
+  "non_atgc": [
+   "ValueError",
+   "insert_seq contains non-ATGC characters"
+  ],
+  "reverse_annealing_fails": [
+   "RuntimeError",
+   "Reverse primer annealing design failed (target Tm=62.0C, range=18-30 bp)"
+  ],
+  "unknown_3prime_re": [
+   "ValueError",
+   "Unknown 3' RE: 'Nope'. Available: AscI, AvrII, BamHI, BglII, EcoRI, EcoRV, FseI, HindIII, KpnI, MfeI, NcoI, NdeI, NheI, NotI, PacI, PstI, SacI, SalI, XhoI"
+  ],
+  "unknown_5prime_re": [
+   "ValueError",
+   "Unknown 5' RE: 'Nope'. Available: AscI, AvrII, BamHI, BglII, EcoRI, EcoRV, FseI, HindIII, KpnI, MfeI, NcoI, NdeI, NheI, NotI, PacI, PstI, SacI, SalI, XhoI"
+  ]
+ },
+ "results": {
+  "at_rich_forward_relaxed_tm": {
+   "anneal_temp": 61.3,
+   "f_ann": "ATGCTATTAAAACTATAATCAACAAATGATTATATG",
+   "f_ann_len": 36,
+   "f_full": "GCGCGGATCCATGCTATTAAAACTATAATCAACAAATGATTATATG",
+   "f_gc": 19.4,
+   "f_len": 46,
+   "f_qc": {
+    "hairpin_dg": -2.8,
+    "hairpin_tm": 56.6,
+    "homodimer_dg": -5.8,
+    "homodimer_tm": 26.5,
+    "issues": [
+     "Hairpin risk (Tm=56.6C, dG=-2.8, 5C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 60.3,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -5.0,
+    "tm": 4.5
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 66,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTAGATGGATTATATTGCATATATTGTCGGC",
+   "r_ann_len": 31,
+   "r_full": "GCGCCTCGAGTTAGATGGATTATATTGCATATATTGTCGGC",
+   "r_gc": 32.3,
+   "r_len": 41,
+   "r_qc": {
+    "hairpin_dg": 1.2,
+    "hairpin_tm": 30.6,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 63.9,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "Forward primer Tm (60.3°C) is below target (62.0°C) due to AT-rich region",
+    "F hairpin: annealing length adjustment cannot resolve",
+    "F primer homopolymer: AAAA"
+   ]
+  },
+  "at_rich_reverse_relaxed_tm": {
+   "anneal_temp": 59.3,
+   "f_ann": "ATGTTTGAATAAAAGTAAGATATACAGCCAT",
+   "f_ann_len": 31,
+   "f_full": "GCGCGGATCCATGTTTGAATAAAAGTAAGATATACAGCCAT",
+   "f_gc": 25.8,
+   "f_len": 41,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 62.1,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -4.4,
+    "tm": -6.8
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 156,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTACTGGTGTAAATAATTCATATTCTTAAA",
+   "r_ann_len": 30,
+   "r_full": "GCGCCTCGAGTTACTGGTGTAAATAATTCATATTCTTAAA",
+   "r_gc": 20.0,
+   "r_len": 40,
+   "r_qc": {
+    "hairpin_dg": -0.4,
+    "hairpin_tm": 40.9,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [
+     "Hairpin marginal (Tm=40.9C, dG=-0.4, 18C below anneal)"
+    ],
+    "verdict": "WARNING"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 58.3,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "Reverse primer Tm (58.3°C) is below target (62.0°C) due to AT-rich region",
+    "F primer homopolymer: AAAA",
+    "F primer no 3' G/C clamp",
+    "R primer no 3' G/C clamp"
+   ]
+  },
+  "auto_protection": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGCGCGGCCGCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 35,
+   "f_qc": {
+    "hairpin_dg": -1.9,
+    "hairpin_tm": 60.9,
+    "homodimer_dg": -14.5,
+    "homodimer_tm": 54.2,
+    "issues": [
+     "Hairpin risk (Tm=60.9C, dG=-1.9, 3C below anneal)",
+     "Homodimer risk (Tm=54.2C, dG=-14.5, 10C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "f_tail": "GCGCGCGCGGCCGC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -7.9,
+    "tm": 30.0
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.6,
+    "hairpin_tm": 40.5,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "NotI",
+   "re_5prime_site": "GCGGCCGC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "F hairpin: annealing length adjustment cannot resolve"
+   ]
+  },
+  "bamhi_xhoi_pet28a": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.6,
+    "hairpin_tm": 40.5,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": []
+  },
+  "compatible_overhang": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCAGATCTTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": 0.3,
+    "hairpin_tm": 35.6,
+    "homodimer_dg": -5.7,
+    "homodimer_tm": 9.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCAGATCT",
+   "r_tm": 64.4,
+   "re_3prime": "BglII",
+   "re_3prime_site": "AGATCT",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "BamHI and BglII produce compatible sticky ends - insert can ligate in BOTH orientations (non-directional)!"
+   ]
+  },
+  "custom_protection_literal": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "AATTCCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 33,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "AATTCCGGATCC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGCGC",
+   "protection_5": "AATTCC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 34,
+   "r_qc": {
+    "hairpin_dg": -0.7,
+    "hairpin_tm": 41.0,
+    "homodimer_dg": -8.8,
+    "homodimer_tm": 31.4,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCGCCTCGAG",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": []
+  },
+  "ecorv_blunt": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGATATCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -7.4,
+    "homodimer_tm": 21.1,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGATATC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.6,
+    "hairpin_tm": 40.5,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "EcoRV",
+   "re_5prime_site": "GATATC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "EcoRV produces blunt ends - no directionality from this side"
+   ]
+  },
+  "forward_hairpin_adjusted": {
+   "anneal_temp": 63.1,
+   "f_ann": "ATGACGCCATTAAGGAAGCGG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGACGCCATTAAGGAAGCGG",
+   "f_gc": 52.4,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": -1.3,
+    "hairpin_tm": 52.8,
+    "homodimer_dg": -5.4,
+    "homodimer_tm": 27.5,
+    "issues": [
+     "Hairpin marginal (Tm=52.8C, dG=-1.3, 10C below anneal)"
+    ],
+    "verdict": "WARNING"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 67.0,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -5.7,
+    "tm": 13.2
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 96,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTAAAAATGGTGAAGATATCTAGATTTATCAACAT",
+   "r_ann_len": 35,
+   "r_full": "GCGCCTCGAGTTAAAAATGGTGAAGATATCTAGATTTATCAACAT",
+   "r_gc": 22.9,
+   "r_len": 45,
+   "r_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -5.5,
+    "homodimer_tm": 27.1,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 62.1,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "F annealing adjusted for hairpin avoidance (21 bp)",
+    "R primer homopolymer: AAAA",
+    "R primer no 3' G/C clamp"
+   ]
+  },
+  "forward_hairpin_unresolved": {
+   "anneal_temp": 64.3,
+   "f_ann": "ATGGTATACCGCACTAGCAC",
+   "f_ann_len": 20,
+   "f_full": "GCGCGGATCCATGGTATACCGCACTAGCAC",
+   "f_gc": 50.0,
+   "f_len": 30,
+   "f_qc": {
+    "hairpin_dg": -2.5,
+    "hairpin_tm": 58.1,
+    "homodimer_dg": -11.5,
+    "homodimer_tm": 40.6,
+    "issues": [
+     "Hairpin risk (Tm=58.1C, dG=-2.5, 6C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.3,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -6.6,
+    "tm": 18.0
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 96,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTAGGTCGTGGGCGGGTAATG",
+   "r_ann_len": 21,
+   "r_full": "GCGCCTCGAGTTAGGTCGTGGGCGGGTAATG",
+   "r_gc": 57.1,
+   "r_len": 31,
+   "r_qc": {
+    "hairpin_dg": -4.0,
+    "hairpin_tm": 56.4,
+    "homodimer_dg": -9.5,
+    "homodimer_tm": 36.3,
+    "issues": [
+     "Hairpin risk (Tm=56.4C, dG=-4.0, 8C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 68.5,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "F hairpin: annealing length adjustment cannot resolve",
+    "R hairpin: annealing length adjustment cannot resolve"
+   ]
+  },
+  "frame_check_disabled": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.6,
+    "hairpin_tm": 40.5,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": []
+  },
+  "internal_3prime_site": {
+   "anneal_temp": 63.5,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -7.1,
+    "tm": 27.2
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 124,
+   "internal_re_sites_3": [
+    30
+   ],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "CTTGAAGAATTCCGGGATAACG",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGCTTGAAGAATTCCGGGATAACG",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.7,
+    "hairpin_tm": 43.0,
+    "homodimer_dg": -5.8,
+    "homodimer_tm": 14.9,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 62.5,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "INSERT contains XhoI site (CTCGAG) at position(s): [30] - may be cut during digestion!"
+   ]
+  },
+  "internal_site": {
+   "anneal_temp": 63.5,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -7.1,
+    "tm": 27.2
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 124,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [
+    30
+   ],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "CTTGAAGAATTCCGGGATAACG",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGCTTGAAGAATTCCGGGATAACG",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.7,
+    "hairpin_tm": 43.0,
+    "homodimer_dg": -5.8,
+    "homodimer_tm": 14.9,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 62.5,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "INSERT contains BamHI site (GGATCC) at position(s): [30] - may be cut during digestion!"
+   ]
+  },
+  "ndei_atg": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCCATATGATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -5.2,
+    "homodimer_tm": 11.4,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCCATATG",
+   "f_tm": 63.0,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 63,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHM",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATG",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "NdeI",
+    "topology": "[N-His6] [Thrombin] (NdeI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: NdeI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHM (63 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] (NdeI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.6,
+    "hairpin_tm": 40.5,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "NdeI",
+   "re_5prime_site": "CATATG",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "NdeI recognition site (CATATG) contains ATG - RE site itself provides start codon"
+   ]
+  },
+  "nhei_noti_pet21a_stop": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGCTAGCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": -0.7,
+    "hairpin_tm": 46.9,
+    "homodimer_dg": -9.3,
+    "homodimer_tm": 34.3,
+    "issues": [
+     "Hairpin marginal (Tm=46.9C, dG=-0.7, 17C below anneal)"
+    ],
+    "verdict": "WARNING"
+   },
+   "f_tail": "GCGCGCTAGC",
+   "f_tm": 63.0,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": true,
+    "insert_start_pos": 9,
+    "linker_3prime_aa": "AAALEHHHHHH",
+    "linker_3prime_nt": "GCGGCCGCACTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MAS",
+    "linker_5prime_nt": "ATGGCTAGC",
+    "nt_3prime_to_stop": 33,
+    "re_3prime": "NotI",
+    "re_5prime": "NheI",
+    "topology": "[T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)",
+    "vector_name": "pET-21a(+)",
+    "warnings": [
+     "Insert has stop codon -> C-terminal tag will NOT be fused",
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-21a(+)\nStrategy: NheI / NotI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MAS (9 nt)\n3' junction: IN-FRAME (33 nt to stop, 11 codons)\n\nTopology: [T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)\n\n  ! Insert has stop codon -> C-terminal tag will NOT be fused\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -9.0,
+    "tm": 33.0
+   },
+   "include_start_codon": true,
+   "include_stop_codon": true,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCGCGCGGCCGCTTATTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 39,
+   "r_qc": {
+    "hairpin_dg": -4.1,
+    "hairpin_tm": 65.7,
+    "homodimer_dg": -14.5,
+    "homodimer_tm": 54.2,
+    "issues": [
+     "Hairpin risk (Tm=65.7C, dG=-4.1, -2C below anneal)",
+     "Homodimer risk (Tm=54.2C, dG=-14.5, 10C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "r_tail": "GCGCGCGCGGCCGCTTA",
+   "r_tm": 64.4,
+   "re_3prime": "NotI",
+   "re_3prime_site": "GCGGCCGC",
+   "re_5prime": "NheI",
+   "re_5prime_site": "GCTAGC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "R hairpin: annealing length adjustment cannot resolve"
+   ]
+  },
+  "reverse_hairpin_adjusted": {
+   "anneal_temp": 67.7,
+   "f_ann": "ATGCCGGGGCCACCCCGTATC",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGCCGGGGCCACCCCGTATC",
+   "f_gc": 71.4,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": -4.0,
+    "hairpin_tm": 74.1,
+    "homodimer_dg": -11.0,
+    "homodimer_tm": 41.0,
+    "issues": [
+     "Hairpin risk (Tm=74.1C, dG=-4.0, -6C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 76.3,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -10.1,
+    "tm": 38.5
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 96,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTAAATTACGGCCCAGGCGAG",
+   "r_ann_len": 21,
+   "r_full": "GCGCCTCGAGTTAAATTACGGCCCAGGCGAG",
+   "r_gc": 52.4,
+   "r_len": 31,
+   "r_qc": {
+    "hairpin_dg": -2.5,
+    "hairpin_tm": 58.1,
+    "homodimer_dg": -7.2,
+    "homodimer_tm": 30.8,
+    "issues": [
+     "Hairpin risk (Tm=58.1C, dG=-2.5, 10C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 66.7,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "F hairpin: annealing length adjustment cannot resolve",
+    "R annealing adjusted for hairpin avoidance (21 bp)",
+    "F primer homopolymer: GGGG"
+   ]
+  },
+  "reverse_hairpin_unresolved": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGTACTGGTGGTATAATGGTAAATCTATC",
+   "f_ann_len": 30,
+   "f_full": "GCGCGGATCCATGTACTGGTGGTATAATGGTAAATCTATC",
+   "f_gc": 33.3,
+   "f_len": 40,
+   "f_qc": {
+    "hairpin_dg": -0.8,
+    "hairpin_tm": 46.8,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [
+     "Hairpin marginal (Tm=46.8C, dG=-0.8, 17C below anneal)"
+    ],
+    "verdict": "WARNING"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "frame_check": {
+    "frame_at_insert_start": 0,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+   "het": {
+    "dg": -4.4,
+    "tm": -6.8
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 66,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTAGGGGGAAACCCCTGG",
+   "r_ann_len": 18,
+   "r_full": "GCGCCTCGAGTTAGGGGGAAACCCCTGG",
+   "r_gc": 61.1,
+   "r_len": 28,
+   "r_qc": {
+    "hairpin_dg": -5.1,
+    "hairpin_tm": 87.3,
+    "homodimer_dg": -9.5,
+    "homodimer_tm": 36.1,
+    "issues": [
+     "Hairpin risk (Tm=87.3C, dG=-5.1, -23C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 65.7,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "R hairpin: annealing length adjustment cannot resolve",
+    "R primer homopolymer: GGGG"
+   ]
+  },
+  "same_enzyme": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -6.3,
+    "tm": 19.3
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCGGATCCTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.2,
+    "hairpin_tm": 37.8,
+    "homodimer_dg": -6.4,
+    "homodimer_tm": 17.0,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCGGATCC",
+   "r_tm": 64.4,
+   "re_3prime": "BamHI",
+   "re_3prime_site": "GGATCC",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "Same RE (BamHI/BamHI) on both sides - insert can ligate in BOTH orientations (non-directional)!"
+   ]
+  },
+  "spacers_lowercase_spaces": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCGCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 33,
+   "f_qc": {
+    "hairpin_dg": -2.3,
+    "hairpin_tm": 63.1,
+    "homodimer_dg": -14.6,
+    "homodimer_tm": 52.5,
+    "issues": [
+     "Hairpin risk (Tm=63.1C, dG=-2.3, 1C below anneal)",
+     "Homodimer marginal (Tm=52.5C, dG=-14.6, 11C below anneal)"
+    ],
+    "verdict": "FAIL"
+   },
+   "f_tail": "GCGCGGATCCGC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGAATTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 34,
+   "r_qc": {
+    "hairpin_dg": -0.3,
+    "hairpin_tm": 38.5,
+    "homodimer_dg": -7.3,
+    "homodimer_tm": 23.5,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAGAA",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "AA",
+   "spacer_5prime": "GC",
+   "warnings": [
+    "F hairpin: annealing length adjustment cannot resolve"
+   ]
+  },
+  "unknown_vector_frame_check_fails": {
+   "anneal_temp": 64.0,
+   "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+   "f_ann_len": 21,
+   "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+   "f_gc": 42.9,
+   "f_len": 31,
+   "f_qc": {
+    "hairpin_dg": 0.0,
+    "hairpin_tm": 0.0,
+    "homodimer_dg": -6.5,
+    "homodimer_tm": 20.6,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "f_tail": "GCGCGGATCC",
+   "f_tm": 63.0,
+   "het": {
+    "dg": -5.5,
+    "tm": 14.6
+   },
+   "include_start_codon": true,
+   "include_stop_codon": false,
+   "insert_len": 243,
+   "internal_re_sites_3": [],
+   "internal_re_sites_5": [],
+   "protection_3": "GCGC",
+   "protection_5": "GCGC",
+   "r_ann": "TTATTCCACATCGGTCGCTTTC",
+   "r_ann_len": 22,
+   "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+   "r_gc": 45.5,
+   "r_len": 32,
+   "r_qc": {
+    "hairpin_dg": -0.6,
+    "hairpin_tm": 40.5,
+    "homodimer_dg": -6.2,
+    "homodimer_tm": 19.3,
+    "issues": [],
+    "verdict": "PASS"
+   },
+   "r_tail": "GCGCCTCGAG",
+   "r_tm": 64.4,
+   "re_3prime": "XhoI",
+   "re_3prime_site": "CTCGAG",
+   "re_5prime": "BamHI",
+   "re_5prime_site": "GGATCC",
+   "spacer_3prime": "",
+   "spacer_5prime": "",
+   "warnings": [
+    "Frame check failed: Unknown vector: 'no-such-vector'. Available: pET-21a(+), pET-28a(+), pMAL-c6T, pETDuet-1:MCS1, pETDuet-1:MCS2, pACYCDuet-1:MCS1, pACYCDuet-1:MCS2"
+   ]
+  }
+ }
+}

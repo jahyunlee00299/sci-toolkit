@@ -1,0 +1,4930 @@
+{
+ "duet_mcs2_minimal": {
+  "axes": [
+   {
+    "axis_off": true,
+    "lines": [
+     {
+      "cap": "round",
+      "color": "#2ECC71",
+      "first": [
+       0.1874,
+       0.9823
+      ],
+      "last": [
+       -0.1874,
+       0.9823
+      ],
+      "lw": 18.0,
+      "n": 100,
+      "sha": "ce454951bc431bcb",
+      "z": 3
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       0.1799,
+       0.943
+      ],
+      "last": [
+       0.1949,
+       1.0216
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "dcc445a2c8a2f92c",
+      "z": 5
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       0.454,
+       0.891
+      ],
+      "last": [
+       0.3971,
+       0.9178
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a47bbdd112734a9b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#C0392B",
+      "first": [
+       0.1253,
+       0.9921
+      ],
+      "last": [
+       0.0314,
+       0.9995
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1f29b9dab03f46c9",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#95A5A6",
+      "first": [
+       0.8443,
+       -0.5358
+      ],
+      "last": [
+       0.7705,
+       0.6374
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a6d33854626a283d",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       -0.729,
+       0.6845
+      ],
+      "last": [
+       -0.9823,
+       -0.1874
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "e623f93db98b7eb5",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#2980B9",
+      "first": [
+       -0.9686,
+       -0.2487
+      ],
+      "last": [
+       -0.6374,
+       -0.7705
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "0002711d28c050e3",
+      "z": 2
+     }
+    ],
+    "patches": [
+     {
+      "center": [
+       0.0,
+       0.0
+      ],
+      "ec": [
+       0.6902,
+       0.7451,
+       0.7725,
+       1.0
+      ],
+      "fc": [
+       0.1216,
+       0.4667,
+       0.7059,
+       0.0
+      ],
+      "fill": false,
+      "lw": 10.0,
+      "radius": 1.0,
+      "type": "Circle",
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.1804,
+       0.8,
+       0.4431,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -1.2,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.6078,
+       0.349,
+       0.7137,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.65,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9059,
+       0.298,
+       0.2353,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.1,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.2039,
+       0.5961,
+       0.8588,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       0.45,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.5843,
+       0.6471,
+       0.651,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.0,
+       -1.38
+      ],
+      "z": 1
+     }
+    ],
+    "texts": [
+     {
+      "color": "#1B5E20",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       1.22
+      ],
+      "size": 11.0,
+      "text": "Insert\n(300 bp)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.2136,
+       1.1198
+      ],
+      "size": 8.0,
+      "text": "XhoI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5024,
+       1.0677
+      ],
+      "size": 7.5,
+      "text": "T7 promoter",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0926,
+       1.1764
+      ],
+      "size": 7.5,
+      "text": "T7 terminator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1777,
+       0.0741
+      ],
+      "size": 7.5,
+      "text": "lacI",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.1331,
+       0.3292
+      ],
+      "size": 7.5,
+      "text": "AmpR",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.9963,
+       -0.6323
+      ],
+      "size": 7.5,
+      "text": "ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#1A237E",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       0.12
+      ],
+      "size": 16.0,
+      "text": "pETDuet-1:MCS2",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 3
+     },
+     {
+      "color": "#2E7D32",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.05
+      ],
+      "size": 12.0,
+      "text": "+ Insert",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.22
+      ],
+      "size": 11.0,
+      "text": "5,720 bp",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "arrowstyle": "{'arrowstyle': '->', 'color': '#888', 'lw': 1.5}",
+      "color": "black",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.051,
+       -1.0187
+      ],
+      "size": 10.0,
+      "text": "",
+      "type": "Annotation",
+      "va": "baseline",
+      "weight": "normal",
+      "xy": [
+       0.051,
+       -1.0187
+      ],
+      "xytext": [
+       -0.051,
+       -1.0187
+      ],
+      "z": 5
+     },
+     {
+      "color": "#999",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.58
+      ],
+      "size": 7.0,
+      "text": "Generated: <date>",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Insert CDS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Fusion tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Promoter / Resistance",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Origin of replication",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Regulatory",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     }
+    ],
+    "xlim": [
+     -1.6,
+     1.6
+    ],
+    "ylim": [
+     -1.6,
+     1.6
+    ]
+   }
+  ],
+  "size": [
+   10.0,
+   10.0
+  ]
+ },
+ "pet21a_ctags_out_of_frame": {
+  "axes": [
+   {
+    "axis_off": true,
+    "lines": [
+     {
+      "cap": "round",
+      "color": "#2ECC71",
+      "first": [
+       0.6278,
+       0.7784
+      ],
+      "last": [
+       -0.6278,
+       0.7784
+      ],
+      "lw": 18.0,
+      "n": 100,
+      "sha": "8e0c86b46841d605",
+      "z": 3
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       -0.6027,
+       0.7472
+      ],
+      "last": [
+       -0.6529,
+       0.8095
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "a3b9a4f993e0cedd",
+      "z": 5
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       0.6027,
+       0.7472
+      ],
+      "last": [
+       0.6529,
+       0.8095
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "85a7e6d5a631dd09",
+      "z": 5
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       0.454,
+       0.891
+      ],
+      "last": [
+       0.3971,
+       0.9178
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a47bbdd112734a9b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E67E22",
+      "first": [
+       0.5036,
+       0.8639
+      ],
+      "last": [
+       0.4596,
+       0.8881
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "c3e9dac6fa89c70b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#F39C12",
+      "first": [
+       0.5305,
+       0.8477
+      ],
+      "last": [
+       0.509,
+       0.8607
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a414b943a8b0199f",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#C0392B",
+      "first": [
+       0.1253,
+       0.9921
+      ],
+      "last": [
+       0.0314,
+       0.9995
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1f29b9dab03f46c9",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#95A5A6",
+      "first": [
+       0.8443,
+       -0.5358
+      ],
+      "last": [
+       0.7705,
+       0.6374
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a6d33854626a283d",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       -0.6845,
+       0.729
+      ],
+      "last": [
+       -0.9823,
+       -0.1874
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "b8af304a953e9b26",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#3498DB",
+      "first": [
+       -0.0628,
+       0.998
+      ],
+      "last": [
+       -0.5358,
+       0.8443
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "26a487378f67a4e7",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#2980B9",
+      "first": [
+       -0.9686,
+       -0.2487
+      ],
+      "last": [
+       -0.6374,
+       -0.7705
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "0002711d28c050e3",
+      "z": 2
+     }
+    ],
+    "patches": [
+     {
+      "center": [
+       0.0,
+       0.0
+      ],
+      "ec": [
+       0.6902,
+       0.7451,
+       0.7725,
+       1.0
+      ],
+      "fc": [
+       0.1216,
+       0.4667,
+       0.7059,
+       0.0
+      ],
+      "fill": false,
+      "lw": 10.0,
+      "radius": 1.0,
+      "type": "Circle",
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.1804,
+       0.8,
+       0.4431,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -1.2,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.6078,
+       0.349,
+       0.7137,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.65,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9059,
+       0.298,
+       0.2353,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.1,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.2039,
+       0.5961,
+       0.8588,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       0.45,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.5843,
+       0.6471,
+       0.651,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.0,
+       -1.38
+      ],
+      "z": 1
+     }
+    ],
+    "texts": [
+     {
+      "color": "#1B5E20",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       1.22
+      ],
+      "size": 11.0,
+      "text": "GeneY\n(1500 bp)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.7157,
+       0.8873
+      ],
+      "size": 8.0,
+      "text": "NdeI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.7157,
+       0.8873
+      ],
+      "size": 8.0,
+      "text": "XhoI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5024,
+       1.0677
+      ],
+      "size": 7.5,
+      "text": "T7 promoter",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5685,
+       1.034
+      ],
+      "size": 7.5,
+      "text": "lac operator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.6134,
+       1.008
+      ],
+      "size": 7.5,
+      "text": "RBS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0926,
+       1.1764
+      ],
+      "size": 7.5,
+      "text": "T7 terminator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1777,
+       0.0741
+      ],
+      "size": 7.5,
+      "text": "lacI",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.1222,
+       0.3646
+      ],
+      "size": 7.5,
+      "text": "AmpR",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.3646,
+       1.1222
+      ],
+      "size": 7.5,
+      "text": "f1 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.9963,
+       -0.6323
+      ],
+      "size": 7.5,
+      "text": "pBR322 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#1A237E",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       0.12
+      ],
+      "size": 16.0,
+      "text": "pET-21a(+)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 3
+     },
+     {
+      "color": "#2E7D32",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.05
+      ],
+      "size": 12.0,
+      "text": "+ GeneY",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.22
+      ],
+      "size": 11.0,
+      "text": "6,943 bp",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.42
+      ],
+      "size": 9.0,
+      "text": "5' frame: ✗  |  3' frame: ✗",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "arrowstyle": "{'arrowstyle': '->', 'color': '#888', 'lw': 1.5}",
+      "color": "black",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.051,
+       -1.0187
+      ],
+      "size": 10.0,
+      "text": "",
+      "type": "Annotation",
+      "va": "baseline",
+      "weight": "normal",
+      "xy": [
+       0.051,
+       -1.0187
+      ],
+      "xytext": [
+       -0.051,
+       -1.0187
+      ],
+      "z": 5
+     },
+     {
+      "color": "#999",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.58
+      ],
+      "size": 7.0,
+      "text": "Generated: <date>",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Insert CDS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Fusion tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Promoter / Resistance",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Origin of replication",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Regulatory",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     }
+    ],
+    "xlim": [
+     -1.6,
+     1.6
+    ],
+    "ylim": [
+     -1.6,
+     1.6
+    ]
+   }
+  ],
+  "size": [
+   10.0,
+   10.0
+  ]
+ },
+ "pet28a_c_tags_in_frame": {
+  "axes": [
+   {
+    "axis_off": true,
+    "lines": [
+     {
+      "cap": "round",
+      "color": "#2ECC71",
+      "first": [
+       0.3756,
+       0.9268
+      ],
+      "last": [
+       -0.3756,
+       0.9268
+      ],
+      "lw": 18.0,
+      "n": 100,
+      "sha": "9c10ff45321c3e2a",
+      "z": 3
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       -0.3606,
+       0.8897
+      ],
+      "last": [
+       -0.3906,
+       0.9638
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "147dc16f603ba88c",
+      "z": 5
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       0.3606,
+       0.8897
+      ],
+      "last": [
+       0.3906,
+       0.9638
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "d759f784d01691f5",
+      "z": 5
+     },
+     {
+      "cap": "round",
+      "color": "#9B59B6",
+      "first": [
+       0.4612,
+       0.8873
+      ],
+      "last": [
+       0.3756,
+       0.9268
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "040697b6cb80d9bf",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#9B59B6",
+      "first": [
+       0.5426,
+       0.84
+      ],
+      "last": [
+       0.4612,
+       0.8873
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1248dcf17a81d5a2",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       0.454,
+       0.891
+      ],
+      "last": [
+       0.3971,
+       0.9178
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a47bbdd112734a9b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E67E22",
+      "first": [
+       0.5036,
+       0.8639
+      ],
+      "last": [
+       0.4596,
+       0.8881
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "c3e9dac6fa89c70b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#F39C12",
+      "first": [
+       0.5305,
+       0.8477
+      ],
+      "last": [
+       0.509,
+       0.8607
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a414b943a8b0199f",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#C0392B",
+      "first": [
+       0.1253,
+       0.9921
+      ],
+      "last": [
+       0.0314,
+       0.9995
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1f29b9dab03f46c9",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#95A5A6",
+      "first": [
+       0.8443,
+       -0.5358
+      ],
+      "last": [
+       0.7705,
+       0.6374
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a6d33854626a283d",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       -0.6374,
+       0.7705
+      ],
+      "last": [
+       -0.998,
+       -0.0628
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "0b36d31821593498",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#3498DB",
+      "first": [
+       -0.0628,
+       0.998
+      ],
+      "last": [
+       -0.5358,
+       0.8443
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "26a487378f67a4e7",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#2980B9",
+      "first": [
+       -0.9921,
+       -0.1253
+      ],
+      "last": [
+       -0.6374,
+       -0.7705
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "47b675a1404800cd",
+      "z": 2
+     }
+    ],
+    "patches": [
+     {
+      "center": [
+       0.0,
+       0.0
+      ],
+      "ec": [
+       0.6902,
+       0.7451,
+       0.7725,
+       1.0
+      ],
+      "fc": [
+       0.1216,
+       0.4667,
+       0.7059,
+       0.0
+      ],
+      "fill": false,
+      "lw": 10.0,
+      "radius": 1.0,
+      "type": "Circle",
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.1804,
+       0.8,
+       0.4431,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -1.2,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.6078,
+       0.349,
+       0.7137,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.65,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9059,
+       0.298,
+       0.2353,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.1,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.2039,
+       0.5961,
+       0.8588,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       0.45,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.5843,
+       0.6471,
+       0.651,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.0,
+       -1.38
+      ],
+      "z": 1
+     }
+    ],
+    "texts": [
+     {
+      "color": "#1B5E20",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       1.22
+      ],
+      "size": 11.0,
+      "text": "GeneW\n(750 bp)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.4282,
+       1.0565
+      ],
+      "size": 8.0,
+      "text": "NcoI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.4282,
+       1.0565
+      ],
+      "size": 8.0,
+      "text": "XhoI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#6A1B9A",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.4817,
+       1.0443
+      ],
+      "size": 7.5,
+      "text": "C-His6 + S-tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5024,
+       1.0677
+      ],
+      "size": 7.5,
+      "text": "T7 promoter",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5685,
+       1.034
+      ],
+      "size": 7.5,
+      "text": "lac operator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.6134,
+       1.008
+      ],
+      "size": 7.5,
+      "text": "RBS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0926,
+       1.1764
+      ],
+      "size": 7.5,
+      "text": "T7 terminator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1777,
+       0.0741
+      ],
+      "size": 7.5,
+      "text": "lacI",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.083,
+       0.4686
+      ],
+      "size": 7.5,
+      "text": "KanR",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.3646,
+       1.1222
+      ],
+      "size": 7.5,
+      "text": "f1 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.034,
+       -0.5685
+      ],
+      "size": 7.5,
+      "text": "pBR322 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#1A237E",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       0.12
+      ],
+      "size": 16.0,
+      "text": "pET-28a(+)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 3
+     },
+     {
+      "color": "#2E7D32",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.05
+      ],
+      "size": 12.0,
+      "text": "+ GeneW",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.22
+      ],
+      "size": 11.0,
+      "text": "6,119 bp",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.42
+      ],
+      "size": 9.0,
+      "text": "5' frame: ✓  |  3' frame: ✗",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "arrowstyle": "{'arrowstyle': '->', 'color': '#888', 'lw': 1.5}",
+      "color": "black",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.051,
+       -1.0187
+      ],
+      "size": 10.0,
+      "text": "",
+      "type": "Annotation",
+      "va": "baseline",
+      "weight": "normal",
+      "xy": [
+       0.051,
+       -1.0187
+      ],
+      "xytext": [
+       -0.051,
+       -1.0187
+      ],
+      "z": 5
+     },
+     {
+      "color": "#999",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.58
+      ],
+      "size": 7.0,
+      "text": "Generated: <date>",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Insert CDS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Fusion tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Promoter / Resistance",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Origin of replication",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Regulatory",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     }
+    ],
+    "xlim": [
+     -1.6,
+     1.6
+    ],
+    "ylim": [
+     -1.6,
+     1.6
+    ]
+   }
+  ],
+  "size": [
+   10.0,
+   10.0
+  ]
+ },
+ "pet28a_tags_frame_ok": {
+  "axes": [
+   {
+    "axis_off": true,
+    "lines": [
+     {
+      "cap": "round",
+      "color": "#2ECC71",
+      "first": [
+       0.4359,
+       0.9
+      ],
+      "last": [
+       -0.4359,
+       0.9
+      ],
+      "lw": 18.0,
+      "n": 100,
+      "sha": "57410277dee8d40c",
+      "z": 3
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       -0.4184,
+       0.864
+      ],
+      "last": [
+       -0.4533,
+       0.936
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "960cc9f3ab995019",
+      "z": 5
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       0.4184,
+       0.864
+      ],
+      "last": [
+       0.4533,
+       0.936
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "992ae48adc4593de",
+      "z": 5
+     },
+     {
+      "cap": "round",
+      "color": "#9B59B6",
+      "first": [
+       -0.4359,
+       0.9
+      ],
+      "last": [
+       -0.5186,
+       0.855
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "3550e836975be369",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#9B59B6",
+      "first": [
+       -0.5186,
+       0.855
+      ],
+      "last": [
+       -0.5968,
+       0.8024
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "20a1a48a8f457569",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#9B59B6",
+      "first": [
+       -0.5968,
+       0.8024
+      ],
+      "last": [
+       -0.6697,
+       0.7427
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "d2564db329ba87ca",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#9B59B6",
+      "first": [
+       0.5186,
+       0.855
+      ],
+      "last": [
+       0.4359,
+       0.9
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "62828a6bfe81e66d",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       0.454,
+       0.891
+      ],
+      "last": [
+       0.3971,
+       0.9178
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a47bbdd112734a9b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E67E22",
+      "first": [
+       0.5036,
+       0.8639
+      ],
+      "last": [
+       0.4596,
+       0.8881
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "c3e9dac6fa89c70b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#F39C12",
+      "first": [
+       0.5305,
+       0.8477
+      ],
+      "last": [
+       0.509,
+       0.8607
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a414b943a8b0199f",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#C0392B",
+      "first": [
+       0.1253,
+       0.9921
+      ],
+      "last": [
+       0.0314,
+       0.9995
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1f29b9dab03f46c9",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#95A5A6",
+      "first": [
+       0.8443,
+       -0.5358
+      ],
+      "last": [
+       0.7705,
+       0.6374
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a6d33854626a283d",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       -0.6374,
+       0.7705
+      ],
+      "last": [
+       -0.998,
+       -0.0628
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "0b36d31821593498",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#3498DB",
+      "first": [
+       -0.0628,
+       0.998
+      ],
+      "last": [
+       -0.5358,
+       0.8443
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "26a487378f67a4e7",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#2980B9",
+      "first": [
+       -0.9921,
+       -0.1253
+      ],
+      "last": [
+       -0.6374,
+       -0.7705
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "47b675a1404800cd",
+      "z": 2
+     }
+    ],
+    "patches": [
+     {
+      "center": [
+       0.0,
+       0.0
+      ],
+      "ec": [
+       0.6902,
+       0.7451,
+       0.7725,
+       1.0
+      ],
+      "fc": [
+       0.1216,
+       0.4667,
+       0.7059,
+       0.0
+      ],
+      "fill": false,
+      "lw": 10.0,
+      "radius": 1.0,
+      "type": "Circle",
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.1804,
+       0.8,
+       0.4431,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -1.2,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.6078,
+       0.349,
+       0.7137,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.65,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9059,
+       0.298,
+       0.2353,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.1,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.2039,
+       0.5961,
+       0.8588,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       0.45,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.5843,
+       0.6471,
+       0.651,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.0,
+       -1.38
+      ],
+      "z": 1
+     }
+    ],
+    "texts": [
+     {
+      "color": "#1B5E20",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       1.22
+      ],
+      "size": 11.0,
+      "text": "GeneX\n(900 bp)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.4969,
+       1.026
+      ],
+      "size": 8.0,
+      "text": "BamHI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.4969,
+       1.026
+      ],
+      "size": 8.0,
+      "text": "XhoI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#6A1B9A",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.5495,
+       1.0102
+      ],
+      "size": 7.5,
+      "text": "N-His6 + Thrombin + T7-tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#6A1B9A",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5495,
+       1.0102
+      ],
+      "size": 7.5,
+      "text": "C-His6",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5024,
+       1.0677
+      ],
+      "size": 7.5,
+      "text": "T7 promoter",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5685,
+       1.034
+      ],
+      "size": 7.5,
+      "text": "lac operator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.6134,
+       1.008
+      ],
+      "size": 7.5,
+      "text": "RBS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0926,
+       1.1764
+      ],
+      "size": 7.5,
+      "text": "T7 terminator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1777,
+       0.0741
+      ],
+      "size": 7.5,
+      "text": "lacI",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.083,
+       0.4686
+      ],
+      "size": 7.5,
+      "text": "KanR",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.3646,
+       1.1222
+      ],
+      "size": 7.5,
+      "text": "f1 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.034,
+       -0.5685
+      ],
+      "size": 7.5,
+      "text": "pBR322 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#1A237E",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       0.12
+      ],
+      "size": 16.0,
+      "text": "pET-28a(+)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 3
+     },
+     {
+      "color": "#2E7D32",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.05
+      ],
+      "size": 12.0,
+      "text": "+ GeneX",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.22
+      ],
+      "size": 11.0,
+      "text": "6,269 bp",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.42
+      ],
+      "size": 9.0,
+      "text": "5' frame: ✓  |  3' frame: ✓",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "arrowstyle": "{'arrowstyle': '->', 'color': '#888', 'lw': 1.5}",
+      "color": "black",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.051,
+       -1.0187
+      ],
+      "size": 10.0,
+      "text": "",
+      "type": "Annotation",
+      "va": "baseline",
+      "weight": "normal",
+      "xy": [
+       0.051,
+       -1.0187
+      ],
+      "xytext": [
+       -0.051,
+       -1.0187
+      ],
+      "z": 5
+     },
+     {
+      "color": "#999",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.58
+      ],
+      "size": 7.0,
+      "text": "Generated: <date>",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Insert CDS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Fusion tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Promoter / Resistance",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Origin of replication",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Regulatory",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     }
+    ],
+    "xlim": [
+     -1.6,
+     1.6
+    ],
+    "ylim": [
+     -1.6,
+     1.6
+    ]
+   }
+  ],
+  "size": [
+   10.0,
+   10.0
+  ]
+ },
+ "pmal_signal_peptide": {
+  "axes": [
+   {
+    "axis_off": true,
+    "lines": [
+     {
+      "cap": "round",
+      "color": "#2ECC71",
+      "first": [
+       0.2546,
+       0.967
+      ],
+      "last": [
+       -0.2546,
+       0.967
+      ],
+      "lw": 18.0,
+      "n": 100,
+      "sha": "6318301763ef5e6a",
+      "z": 3
+     },
+     {
+      "cap": "projecting",
+      "color": "#E74C3C",
+      "first": [
+       -0.2445,
+       0.9284
+      ],
+      "last": [
+       -0.2648,
+       1.0057
+      ],
+      "lw": 2.5,
+      "n": 2,
+      "sha": "c753338f08fb53fe",
+      "z": 5
+     },
+     {
+      "cap": "round",
+      "color": "#F39C12",
+      "first": [
+       -0.1944,
+       0.9809
+      ],
+      "last": [
+       -0.2546,
+       0.967
+      ],
+      "lw": 16.0,
+      "n": 100,
+      "sha": "ecd534019d38c02f",
+      "z": 4
+     },
+     {
+      "cap": "projecting",
+      "color": "#D35400",
+      "first": [
+       -0.1847,
+       0.9319
+      ],
+      "last": [
+       -0.2042,
+       1.03
+      ],
+      "lw": 2.0,
+      "n": 2,
+      "sha": "20cf005edcf1fd98",
+      "z": 5
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       0.454,
+       0.891
+      ],
+      "last": [
+       0.3971,
+       0.9178
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a47bbdd112734a9b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#8E44AD",
+      "first": [
+       1.0,
+       0.0
+      ],
+      "last": [
+       0.4818,
+       0.8763
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "768de37e6a129996",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#F39C12",
+      "first": [
+       0.9995,
+       -0.0314
+      ],
+      "last": [
+       1.0,
+       0.0
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "57f163a7351c933e",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#C0392B",
+      "first": [
+       0.1253,
+       0.9921
+      ],
+      "last": [
+       0.0314,
+       0.9995
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1f29b9dab03f46c9",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       -0.7705,
+       0.6374
+      ],
+      "last": [
+       -0.9823,
+       -0.1874
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "fc1c4f333e575a38",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#2980B9",
+      "first": [
+       -0.9048,
+       -0.4258
+      ],
+      "last": [
+       -0.4818,
+       -0.8763
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "202d451e2eea9836",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#95A5A6",
+      "first": [
+       -0.1874,
+       -0.9823
+      ],
+      "last": [
+       0.6845,
+       -0.729
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "83f52e1738f270fe",
+      "z": 2
+     }
+    ],
+    "patches": [
+     {
+      "center": [
+       0.0,
+       0.0
+      ],
+      "ec": [
+       0.6902,
+       0.7451,
+       0.7725,
+       1.0
+      ],
+      "fc": [
+       0.1216,
+       0.4667,
+       0.7059,
+       0.0
+      ],
+      "fill": false,
+      "lw": 10.0,
+      "radius": 1.0,
+      "type": "Circle",
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.1804,
+       0.8,
+       0.4431,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -1.2,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9529,
+       0.6118,
+       0.0706,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.65,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.6078,
+       0.349,
+       0.7137,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.1,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9059,
+       0.298,
+       0.2353,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       0.45,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.2039,
+       0.5961,
+       0.8588,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.0,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.5843,
+       0.6471,
+       0.651,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.55,
+       -1.38
+      ],
+      "z": 1
+     }
+    ],
+    "texts": [
+     {
+      "color": "#1B5E20",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       1.22
+      ],
+      "size": 11.0,
+      "text": "GeneZ\n(600 bp)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#E74C3C",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.2903,
+       1.1024
+      ],
+      "size": 8.0,
+      "text": "NotI",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#D35400",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "center",
+      "pos": [
+       -0.21,
+       1.0594
+      ],
+      "size": 14.0,
+      "text": "✂",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#D35400",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.1842,
+       0.799
+      ],
+      "size": 7.5,
+      "text": "SP (24 aa)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5024,
+       1.0677
+      ],
+      "size": 7.5,
+      "text": "Ptac promoter",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.0157,
+       0.6007
+      ],
+      "size": 7.5,
+      "text": "malE (MBP)",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1799,
+       -0.0185
+      ],
+      "size": 7.5,
+      "text": "TEV site",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0926,
+       1.1764
+      ],
+      "size": 7.5,
+      "text": "rrnB terminator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.1429,
+       0.2935
+      ],
+      "size": 7.5,
+      "text": "AmpR",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.8602,
+       -0.8078
+      ],
+      "size": 7.5,
+      "text": "pBR322 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.3292,
+       -1.1331
+      ],
+      "size": 7.5,
+      "text": "lacIq",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#1A237E",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       0.12
+      ],
+      "size": 16.0,
+      "text": "pMAL-c6T",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 3
+     },
+     {
+      "color": "#2E7D32",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.05
+      ],
+      "size": 12.0,
+      "text": "+ GeneZ",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.22
+      ],
+      "size": 11.0,
+      "text": "7,321 bp",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "arrowstyle": "{'arrowstyle': '->', 'color': '#888', 'lw': 1.5}",
+      "color": "black",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.051,
+       -1.0187
+      ],
+      "size": 10.0,
+      "text": "",
+      "type": "Annotation",
+      "va": "baseline",
+      "weight": "normal",
+      "xy": [
+       0.051,
+       -1.0187
+      ],
+      "xytext": [
+       -0.051,
+       -1.0187
+      ],
+      "z": 5
+     },
+     {
+      "color": "#999",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.58
+      ],
+      "size": 7.0,
+      "text": "Generated: <date>",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Insert CDS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Signal peptide",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Fusion tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Promoter / Resistance",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Origin of replication",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.65,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Regulatory",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     }
+    ],
+    "xlim": [
+     -1.6,
+     1.6
+    ],
+    "ylim": [
+     -1.6,
+     1.6
+    ]
+   }
+  ],
+  "size": [
+   10.0,
+   10.0
+  ]
+ },
+ "signal_peptide_zero_cleavage": {
+  "axes": [
+   {
+    "axis_off": true,
+    "lines": [
+     {
+      "cap": "round",
+      "color": "#2ECC71",
+      "first": [
+       0.2406,
+       0.9706
+      ],
+      "last": [
+       -0.2406,
+       0.9706
+      ],
+      "lw": 18.0,
+      "n": 100,
+      "sha": "47eeb20edb606592",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       0.454,
+       0.891
+      ],
+      "last": [
+       0.3971,
+       0.9178
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a47bbdd112734a9b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E67E22",
+      "first": [
+       0.5036,
+       0.8639
+      ],
+      "last": [
+       0.4596,
+       0.8881
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "c3e9dac6fa89c70b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#F39C12",
+      "first": [
+       0.5305,
+       0.8477
+      ],
+      "last": [
+       0.509,
+       0.8607
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a414b943a8b0199f",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#C0392B",
+      "first": [
+       0.1253,
+       0.9921
+      ],
+      "last": [
+       0.0314,
+       0.9995
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1f29b9dab03f46c9",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#95A5A6",
+      "first": [
+       0.8443,
+       -0.5358
+      ],
+      "last": [
+       0.7705,
+       0.6374
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a6d33854626a283d",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       -0.6374,
+       0.7705
+      ],
+      "last": [
+       -0.998,
+       -0.0628
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "0b36d31821593498",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#3498DB",
+      "first": [
+       -0.0628,
+       0.998
+      ],
+      "last": [
+       -0.5358,
+       0.8443
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "26a487378f67a4e7",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#2980B9",
+      "first": [
+       -0.9921,
+       -0.1253
+      ],
+      "last": [
+       -0.6374,
+       -0.7705
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "47b675a1404800cd",
+      "z": 2
+     }
+    ],
+    "patches": [
+     {
+      "center": [
+       0.0,
+       0.0
+      ],
+      "ec": [
+       0.6902,
+       0.7451,
+       0.7725,
+       1.0
+      ],
+      "fc": [
+       0.1216,
+       0.4667,
+       0.7059,
+       0.0
+      ],
+      "fill": false,
+      "lw": 10.0,
+      "radius": 1.0,
+      "type": "Circle",
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.1804,
+       0.8,
+       0.4431,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -1.2,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9529,
+       0.6118,
+       0.0706,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.65,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.6078,
+       0.349,
+       0.7137,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.1,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9059,
+       0.298,
+       0.2353,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       0.45,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.2039,
+       0.5961,
+       0.8588,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.0,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.5843,
+       0.6471,
+       0.651,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.55,
+       -1.38
+      ],
+      "z": 1
+     }
+    ],
+    "texts": [
+     {
+      "color": "#1B5E20",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       1.22
+      ],
+      "size": 11.0,
+      "text": "Insert\n(450 bp)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5024,
+       1.0677
+      ],
+      "size": 7.5,
+      "text": "T7 promoter",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5685,
+       1.034
+      ],
+      "size": 7.5,
+      "text": "lac operator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.6134,
+       1.008
+      ],
+      "size": 7.5,
+      "text": "RBS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0926,
+       1.1764
+      ],
+      "size": 7.5,
+      "text": "T7 terminator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1777,
+       0.0741
+      ],
+      "size": 7.5,
+      "text": "lacI",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.083,
+       0.4686
+      ],
+      "size": 7.5,
+      "text": "KanR",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.3646,
+       1.1222
+      ],
+      "size": 7.5,
+      "text": "f1 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.034,
+       -0.5685
+      ],
+      "size": 7.5,
+      "text": "pBR322 ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#1A237E",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       0.12
+      ],
+      "size": 16.0,
+      "text": "pET-28a(+)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 3
+     },
+     {
+      "color": "#2E7D32",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.05
+      ],
+      "size": 12.0,
+      "text": "+ Insert",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.22
+      ],
+      "size": 11.0,
+      "text": "5,819 bp",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "arrowstyle": "{'arrowstyle': '->', 'color': '#888', 'lw': 1.5}",
+      "color": "black",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.051,
+       -1.0187
+      ],
+      "size": 10.0,
+      "text": "",
+      "type": "Annotation",
+      "va": "baseline",
+      "weight": "normal",
+      "xy": [
+       0.051,
+       -1.0187
+      ],
+      "xytext": [
+       -0.051,
+       -1.0187
+      ],
+      "z": 5
+     },
+     {
+      "color": "#999",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.58
+      ],
+      "size": 7.0,
+      "text": "Generated: <date>",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Insert CDS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Signal peptide",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Fusion tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Promoter / Resistance",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Origin of replication",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.65,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Regulatory",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     }
+    ],
+    "xlim": [
+     -1.6,
+     1.6
+    ],
+    "ylim": [
+     -1.6,
+     1.6
+    ]
+   }
+  ],
+  "size": [
+   10.0,
+   10.0
+  ]
+ },
+ "unknown_vector_fallback": {
+  "axes": [
+   {
+    "axis_off": true,
+    "lines": [
+     {
+      "cap": "round",
+      "color": "#2ECC71",
+      "first": [
+       0.1874,
+       0.9823
+      ],
+      "last": [
+       -0.1874,
+       0.9823
+      ],
+      "lw": 18.0,
+      "n": 100,
+      "sha": "ce454951bc431bcb",
+      "z": 3
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       0.454,
+       0.891
+      ],
+      "last": [
+       0.3971,
+       0.9178
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "a47bbdd112734a9b",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#C0392B",
+      "first": [
+       0.1253,
+       0.9921
+      ],
+      "last": [
+       0.0314,
+       0.9995
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "1f29b9dab03f46c9",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#E74C3C",
+      "first": [
+       -0.729,
+       0.6845
+      ],
+      "last": [
+       -0.9823,
+       -0.1874
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "e623f93db98b7eb5",
+      "z": 2
+     },
+     {
+      "cap": "round",
+      "color": "#2980B9",
+      "first": [
+       -0.9686,
+       -0.2487
+      ],
+      "last": [
+       -0.6374,
+       -0.7705
+      ],
+      "lw": 14.0,
+      "n": 100,
+      "sha": "0002711d28c050e3",
+      "z": 2
+     }
+    ],
+    "patches": [
+     {
+      "center": [
+       0.0,
+       0.0
+      ],
+      "ec": [
+       0.6902,
+       0.7451,
+       0.7725,
+       1.0
+      ],
+      "fc": [
+       0.1216,
+       0.4667,
+       0.7059,
+       0.0
+      ],
+      "fill": false,
+      "lw": 10.0,
+      "radius": 1.0,
+      "type": "Circle",
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.1804,
+       0.8,
+       0.4431,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -1.2,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.6078,
+       0.349,
+       0.7137,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.65,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.9059,
+       0.298,
+       0.2353,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       -0.1,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.2039,
+       0.5961,
+       0.8588,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       0.45,
+       -1.38
+      ],
+      "z": 1
+     },
+     {
+      "ec": [
+       0.6,
+       0.6,
+       0.6,
+       1.0
+      ],
+      "fc": [
+       0.5843,
+       0.6471,
+       0.651,
+       1.0
+      ],
+      "fill": true,
+      "lw": 0.5,
+      "type": "FancyBboxPatch",
+      "wh": [
+       0.08,
+       0.06
+      ],
+      "xy": [
+       1.0,
+       -1.38
+      ],
+      "z": 1
+     }
+    ],
+    "texts": [
+     {
+      "color": "#1B5E20",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       1.22
+      ],
+      "size": 11.0,
+      "text": "G\n(0 bp)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.5024,
+       1.0677
+      ],
+      "size": 7.5,
+      "text": "Promoter",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0926,
+       1.1764
+      ],
+      "size": 7.5,
+      "text": "Terminator",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -1.1331,
+       0.3292
+      ],
+      "size": 7.5,
+      "text": "AmpR",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#444",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "right",
+      "pos": [
+       -0.9963,
+       -0.6323
+      ],
+      "size": 7.5,
+      "text": "ori",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 10
+     },
+     {
+      "color": "#1A237E",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       0.12
+      ],
+      "size": 16.0,
+      "text": "mystery(+)",
+      "type": "Text",
+      "va": "center",
+      "weight": "bold",
+      "z": 3
+     },
+     {
+      "color": "#2E7D32",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.05
+      ],
+      "size": 12.0,
+      "text": "+ G",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.22
+      ],
+      "size": 11.0,
+      "text": "5,000 bp",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "arrowstyle": "{'arrowstyle': '->', 'color': '#888', 'lw': 1.5}",
+      "color": "black",
+      "family": [
+       "sans-serif"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.051,
+       -1.0187
+      ],
+      "size": 10.0,
+      "text": "",
+      "type": "Annotation",
+      "va": "baseline",
+      "weight": "normal",
+      "xy": [
+       0.051,
+       -1.0187
+      ],
+      "xytext": [
+       -0.051,
+       -1.0187
+      ],
+      "z": 5
+     },
+     {
+      "color": "#999",
+      "family": [
+       "DejaVu Sans Mono"
+      ],
+      "ha": "center",
+      "pos": [
+       0.0,
+       -0.58
+      ],
+      "size": 7.0,
+      "text": "Generated: <date>",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Insert CDS",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       -0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Fusion tag",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.0,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Promoter / Resistance",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       0.55,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Origin of replication",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     },
+     {
+      "color": "#555",
+      "family": [
+       "DejaVu Sans"
+      ],
+      "ha": "left",
+      "pos": [
+       1.1,
+       -1.35
+      ],
+      "size": 6.5,
+      "text": "Regulatory",
+      "type": "Text",
+      "va": "center",
+      "weight": "normal",
+      "z": 3
+     }
+    ],
+    "xlim": [
+     -1.6,
+     1.6
+    ],
+    "ylim": [
+     -1.6,
+     1.6
+    ]
+   }
+  ],
+  "size": [
+   10.0,
+   10.0
+  ]
+ }
+}

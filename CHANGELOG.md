@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.115] — 2026-10-02
+
+- primer-design: golden characterization tests for order sheet, circular construct map and restriction-cloning design (pre-split baseline)
+
 ## [1.2.114] — 2026-10-02
 
 - http: connectors, _google_auth and ref_fetch use scripts/sci_http (non-GET methods, error body, single-attempt writes) instead of direct urllib
