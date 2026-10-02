@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from datetime import date
 from pathlib import Path
+from typing import NamedTuple
 
 import matplotlib
 matplotlib.use("Agg")
@@ -138,8 +139,8 @@ def _draw_header(ax, dr: dict, gene_name: str):
     )
 
 
-def _draw_primer_architecture(ax, dr: dict):
-    """Draw colored primer structure diagrams for F and R primers."""
+def _draw_panel_frame(ax, title: str | None = None):
+    """Set up a 10 x 10 panel: axes limits, background card and, optionally, its title."""
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 10)
     ax.set_axis_off()
@@ -149,6 +150,17 @@ def _draw_primer_architecture(ax, dr: dict):
         boxstyle="round,pad=0.1",
         facecolor=_C["bg"], edgecolor=_C["border"], linewidth=1,
     ))
+
+    if title is not None:
+        ax.text(
+            0.4, 9.2, title,
+            fontsize=12, fontweight="bold", fontfamily=_FONT_SANS,
+        )
+
+
+def _draw_primer_architecture(ax, dr: dict):
+    """Draw colored primer structure diagrams for F and R primers."""
+    _draw_panel_frame(ax)
 
     # ── Forward primer ────────────────────────────────────────────────────
     _draw_single_primer(
@@ -338,30 +350,39 @@ def _draw_single_primer(ax, y_center, label, full_seq, tm, gc, total_len, sectio
     )
 
 
+class _QcGrid(NamedTuple):
+    """Geometry of the QC table, in the panel's 10 x 10 coordinates."""
+
+    col_widths: list[float]
+    x_start: float = 0.5
+    y_top: float = 8.2
+    row_h: float = 1.2
+    header_h: float = 1.2
+
+
 def _draw_qc_table(ax, dr: dict):
     """Draw the QC summary table."""
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 10)
-    ax.set_axis_off()
-
-    ax.add_patch(FancyBboxPatch(
-        (0, 0), 10, 10,
-        boxstyle="round,pad=0.1",
-        facecolor=_C["bg"], edgecolor=_C["border"], linewidth=1,
-    ))
-
-    ax.text(
-        0.4, 9.2, "Quality Control",
-        fontsize=12, fontweight="bold", fontfamily=_FONT_SANS,
-    )
+    _draw_panel_frame(ax, "Quality Control")
 
     # Table data
+    col_labels = ["Primer", "Tm (°C)", "GC%", "Length", "Anneal", "Hairpin Tm", "Verdict"]
+    cell_data = _qc_cell_data(dr)
+
+    # Draw table manually for reliable rendering
+    grid = _qc_grid()
+    _draw_qc_header_row(ax, grid, col_labels)
+    _draw_qc_data_rows(ax, grid, cell_data)
+
+    # Additional info below table
+    info_y = grid.y_top - grid.header_h - len(cell_data) * grid.row_h - 0.8
+    _draw_qc_footer(ax, dr, info_y)
+
+
+def _qc_cell_data(dr: dict) -> list[list[str]]:
+    """Cell text of the Forward and Reverse rows; a missing QC result reads N/A."""
     f_qc = dr.get("f_qc", {})
     r_qc = dr.get("r_qc", {})
-    het = dr.get("het", {})
-
-    col_labels = ["Primer", "Tm (°C)", "GC%", "Length", "Anneal", "Hairpin Tm", "Verdict"]
-    cell_data = [
+    return [
         [
             "Forward",
             f"{dr['f_tm']}",
@@ -382,79 +403,79 @@ def _draw_qc_table(ax, dr: dict):
         ],
     ]
 
-    # Draw table manually for reliable rendering
+
+def _qc_grid() -> _QcGrid:
+    """Column widths scaled to the table's 8.5-unit width."""
     col_widths = [1.1, 0.8, 0.7, 0.8, 0.8, 1.0, 0.9]
     total_w = sum(col_widths)
     scale = 8.5 / total_w
-    col_widths = [w * scale for w in col_widths]
+    return _QcGrid(col_widths=[w * scale for w in col_widths])
 
-    x_start = 0.5
-    y_top = 8.2
-    row_h = 1.2
-    header_h = 1.2
 
-    # Header row
-    x = x_start
+def _draw_qc_header_row(ax, grid: _QcGrid, col_labels: list[str]):
+    x = grid.x_start
     for j, label in enumerate(col_labels):
-        w = col_widths[j]
+        w = grid.col_widths[j]
         ax.add_patch(FancyBboxPatch(
-            (x, y_top - header_h), w, header_h,
+            (x, grid.y_top - grid.header_h), w, grid.header_h,
             boxstyle="square,pad=0",
             facecolor="#37474F", edgecolor="#263238", linewidth=0.8,
         ))
         ax.text(
-            x + w / 2, y_top - header_h / 2, label,
+            x + w / 2, grid.y_top - grid.header_h / 2, label,
             ha="center", va="center",
             fontsize=9, fontweight="bold", color="white",
             fontfamily=_FONT_SANS,
         )
         x += w
 
-    # Data rows
+
+def _draw_qc_data_rows(ax, grid: _QcGrid, cell_data: list[list[str]]):
     for i, row in enumerate(cell_data):
-        y_row = y_top - header_h - i * row_h
+        y_row = grid.y_top - grid.header_h - i * grid.row_h
         row_bg = "#FFFFFF" if i % 2 == 0 else "#F5F5F5"
-        x = x_start
+        x = grid.x_start
         for j, val in enumerate(row):
-            w = col_widths[j]
+            w = grid.col_widths[j]
             # Verdict cell coloring
             if j == len(row) - 1:
-                if val == "PASS":
-                    cell_bg = "#C8E6C9"
-                    cell_color = "#2E7D32"
-                elif val == "WARNING":
-                    cell_bg = "#FFF3E0"
-                    cell_color = "#E65100"
-                elif val == "FAIL":
-                    cell_bg = "#FFCDD2"
-                    cell_color = "#C62828"
-                else:
-                    cell_bg = row_bg
-                    cell_color = "#333333"
+                cell_bg, cell_color = _verdict_colors(val, row_bg)
             else:
-                cell_bg = row_bg
-                cell_color = "#333333"
+                cell_bg, cell_color = row_bg, "#333333"
 
             ax.add_patch(FancyBboxPatch(
-                (x, y_row - row_h), w, row_h,
+                (x, y_row - grid.row_h), w, grid.row_h,
                 boxstyle="square,pad=0",
                 facecolor=cell_bg, edgecolor="#CCCCCC", linewidth=0.5,
             ))
             fw = "bold" if j == 0 or j == len(row) - 1 else "normal"
             ax.text(
-                x + w / 2, y_row - row_h / 2, val,
+                x + w / 2, y_row - grid.row_h / 2, val,
                 ha="center", va="center",
                 fontsize=9, fontweight=fw, color=cell_color,
                 fontfamily=_FONT_SANS,
             )
             x += w
 
-    # Additional info below table
+
+def _verdict_colors(verdict: str, row_bg: str) -> tuple[str, str]:
+    """(background, text) colours of a verdict cell; anything but PASS/WARNING/FAIL is plain."""
+    if verdict == "PASS":
+        return "#C8E6C9", "#2E7D32"
+    if verdict == "WARNING":
+        return "#FFF3E0", "#E65100"
+    if verdict == "FAIL":
+        return "#FFCDD2", "#C62828"
+    return row_bg, "#333333"
+
+
+def _draw_qc_footer(ax, dr: dict, info_y: float):
+    """Annealing temperature and heterodimer line, then up to three warnings."""
+    het = dr.get("het", {})
     het_dg = het.get("dg", "N/A")
     het_tm = het.get("tm", "N/A")
     anneal = dr.get("anneal_temp", "N/A")
 
-    info_y = y_top - header_h - len(cell_data) * row_h - 0.8
     info_text = (
         f"Annealing temp: {anneal}°C    |    "
         f"Heterodimer: dG = {het_dg} kcal/mol, Tm = {het_tm}°C"
@@ -480,36 +501,19 @@ def _draw_qc_table(ax, dr: dict):
 
 def _draw_construct_map(ax, dr: dict, gene_name: str):
     """Draw linear construct map and reading frame info."""
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 10)
-    ax.set_axis_off()
+    _draw_panel_frame(ax, "Cloning Construct (PCR Product)")
+    _draw_construct_bar(ax, dr, gene_name)
+    _draw_reading_frame_info(ax, dr.get("frame_check"))
+    _draw_legend(ax, dr.get("include_stop_codon"))
 
-    ax.add_patch(FancyBboxPatch(
-        (0, 0), 10, 10,
-        boxstyle="round,pad=0.1",
-        facecolor=_C["bg"], edgecolor=_C["border"], linewidth=1,
-    ))
 
-    ax.text(
-        0.4, 9.2, "Cloning Construct (PCR Product)",
-        fontsize=12, fontweight="bold", fontfamily=_FONT_SANS,
-    )
-
-    # Construct diagram
-    y_bar = 6.5
-    bar_height = 1.0
-    x_start = 1.0
-    x_end = 9.0
-    bar_w = x_end - x_start
-
-    insert_len = dr.get("insert_len", 0)
-    f_tail_len = len(dr["f_tail"])
-    r_tail_len = len(dr["r_tail"])
+def _construct_bar_widths(f_tail_len: int, insert_len: int, r_tail_len: int,
+                          bar_w: float) -> tuple[float, float, float]:
+    """Widths of the 5' RE box, the CDS box and the 3' RE box; a tail is never thinner than 0.6."""
     total_bp = f_tail_len + insert_len + r_tail_len
 
     # Proportional widths
     w_ftail = (f_tail_len / total_bp) * bar_w if total_bp else 0.5
-    w_insert = (insert_len / total_bp) * bar_w if total_bp else 6.0
     w_rtail = (r_tail_len / total_bp) * bar_w if total_bp else 0.5
 
     # Minimum widths for visibility
@@ -519,50 +523,50 @@ def _draw_construct_map(ax, dr: dict, gene_name: str):
     if w_rtail < min_w:
         w_rtail = min_w
     w_insert = bar_w - w_ftail - w_rtail
+    return w_ftail, w_insert, w_rtail
 
-    # 5' RE site box
+
+def _draw_construct_box(ax, x: float, y_bar: float, width: float, bar_height: float,
+                        color: str, label: str, fontsize: int):
+    """One box of the construct bar with its centred white label."""
     ax.add_patch(FancyBboxPatch(
-        (x_start, y_bar - bar_height / 2), w_ftail, bar_height,
+        (x, y_bar - bar_height / 2), width, bar_height,
         boxstyle="round,pad=0.02",
-        facecolor=_C["re_site"], edgecolor="#333", linewidth=1,
+        facecolor=color, edgecolor="#333", linewidth=1,
     ))
     ax.text(
-        x_start + w_ftail / 2, y_bar,
-        dr["re_5prime"],
+        x + width / 2, y_bar,
+        label,
         ha="center", va="center",
-        fontsize=9, fontweight="bold", color="white",
+        fontsize=fontsize, fontweight="bold", color="white",
         fontfamily=_FONT_SANS,
     )
+
+
+def _draw_construct_bar(ax, dr: dict, gene_name: str):
+    """Draw the PCR product bar (5' RE | CDS | 3' RE), its direction arrow and its size."""
+    y_bar = 6.5
+    bar_height = 1.0
+    x_start = 1.0
+    x_end = 9.0
+    bar_w = x_end - x_start
+
+    insert_len = dr.get("insert_len", 0)
+    f_tail_len = len(dr["f_tail"])
+    r_tail_len = len(dr["r_tail"])
+    w_ftail, w_insert, w_rtail = _construct_bar_widths(f_tail_len, insert_len, r_tail_len, bar_w)
+
+    # 5' RE site box
+    _draw_construct_box(ax, x_start, y_bar, w_ftail, bar_height, _C["re_site"], dr["re_5prime"], 9)
 
     # Insert CDS box
     cds_x = x_start + w_ftail
-    ax.add_patch(FancyBboxPatch(
-        (cds_x, y_bar - bar_height / 2), w_insert, bar_height,
-        boxstyle="round,pad=0.02",
-        facecolor=_C["cds"], edgecolor="#333", linewidth=1,
-    ))
-    ax.text(
-        cds_x + w_insert / 2, y_bar,
-        f"{gene_name} CDS ({insert_len} bp)",
-        ha="center", va="center",
-        fontsize=10, fontweight="bold", color="white",
-        fontfamily=_FONT_SANS,
-    )
+    _draw_construct_box(ax, cds_x, y_bar, w_insert, bar_height, _C["cds"],
+                        f"{gene_name} CDS ({insert_len} bp)", 10)
 
     # 3' RE site box
     re3_x = cds_x + w_insert
-    ax.add_patch(FancyBboxPatch(
-        (re3_x, y_bar - bar_height / 2), w_rtail, bar_height,
-        boxstyle="round,pad=0.02",
-        facecolor=_C["re_site"], edgecolor="#333", linewidth=1,
-    ))
-    ax.text(
-        re3_x + w_rtail / 2, y_bar,
-        dr["re_3prime"],
-        ha="center", va="center",
-        fontsize=9, fontweight="bold", color="white",
-        fontfamily=_FONT_SANS,
-    )
+    _draw_construct_box(ax, re3_x, y_bar, w_rtail, bar_height, _C["re_site"], dr["re_3prime"], 9)
 
     # 5'→3' direction arrow
     ax.annotate(
@@ -586,66 +590,77 @@ def _draw_construct_map(ax, dr: dict, gene_name: str):
         fontsize=9, fontfamily=_FONT, color="#555",
     )
 
-    # ── Reading frame info ────────────────────────────────────────────────
-    fc = dr.get("frame_check")
-    if fc:
-        y_frame = 3.0
-        in5 = fc.get("in_frame_5prime", False)
-        in3 = fc.get("in_frame_3prime", False)
 
-        mark5 = "\u2713" if in5 else "\u2717"
-        mark3 = "\u2713" if in3 else "\u2717"
-        c5 = _C["pass"] if in5 else _C["fail"]
-        c3 = _C["pass"] if in3 else _C["fail"]
-
-        ax.text(
-            0.4, y_frame + 0.6,
-            "Reading Frame:",
-            fontsize=10, fontweight="bold", fontfamily=_FONT_SANS,
-        )
-        ax.text(
-            3.0, y_frame + 0.6,
-            f"{mark5} 5' junction",
-            fontsize=10, color=c5, fontfamily=_FONT_SANS,
-        )
-        ax.text(
-            5.5, y_frame + 0.6,
-            f"{mark3} 3' junction",
-            fontsize=10, color=c3, fontfamily=_FONT_SANS,
-        )
-
-        # Topology
-        topology = fc.get("topology", "")
-        if topology:
-            # Show only first line of topology
-            topo_line = topology.split("\n")[0] if "\n" in topology else topology
-            if len(topo_line) > 90:
-                topo_line = topo_line[:87] + "..."
-            ax.text(
-                0.4, y_frame - 0.3,
-                topo_line,
-                fontsize=7.5, fontfamily=_FONT, color="#666",
-            )
-
-        # Linker sequences
-        linker5 = fc.get("linker_5prime_aa", "")
-        linker3 = fc.get("linker_3prime_aa", "")
-        if linker5 or linker3:
-            linker_text = f"5' linker: {linker5 or 'N/A'}    3' linker: {linker3 or 'N/A'}"
-            ax.text(
-                0.4, y_frame - 1.0,
-                linker_text,
-                fontsize=8, fontfamily=_FONT, color="#777",
-            )
-    else:
+def _draw_reading_frame_info(ax, fc: dict | None):
+    """Junction verdicts, topology and linkers of the vector; a note when there is no vector."""
+    if not fc:
         ax.text(
             0.4, 3.0,
             "Reading frame: (no vector specified)",
             fontsize=10, fontfamily=_FONT_SANS, color="#999",
             style="italic",
         )
+        return
 
-    # ── Legend ─────────────────────────────────────────────────────────────
+    y_frame = 3.0
+    _draw_junction_status(ax, fc, y_frame)
+    _draw_frame_details(ax, fc, y_frame)
+
+
+def _draw_junction_status(ax, fc: dict, y_frame: float):
+    in5 = fc.get("in_frame_5prime", False)
+    in3 = fc.get("in_frame_3prime", False)
+
+    mark5 = "\u2713" if in5 else "\u2717"
+    mark3 = "\u2713" if in3 else "\u2717"
+    c5 = _C["pass"] if in5 else _C["fail"]
+    c3 = _C["pass"] if in3 else _C["fail"]
+
+    ax.text(
+        0.4, y_frame + 0.6,
+        "Reading Frame:",
+        fontsize=10, fontweight="bold", fontfamily=_FONT_SANS,
+    )
+    ax.text(
+        3.0, y_frame + 0.6,
+        f"{mark5} 5' junction",
+        fontsize=10, color=c5, fontfamily=_FONT_SANS,
+    )
+    ax.text(
+        5.5, y_frame + 0.6,
+        f"{mark3} 3' junction",
+        fontsize=10, color=c3, fontfamily=_FONT_SANS,
+    )
+
+
+def _draw_frame_details(ax, fc: dict, y_frame: float):
+    """Topology (first line, cut at 90 characters) and the linker amino acids."""
+    # Topology
+    topology = fc.get("topology", "")
+    if topology:
+        # Show only first line of topology
+        topo_line = topology.split("\n")[0] if "\n" in topology else topology
+        if len(topo_line) > 90:
+            topo_line = topo_line[:87] + "..."
+        ax.text(
+            0.4, y_frame - 0.3,
+            topo_line,
+            fontsize=7.5, fontfamily=_FONT, color="#666",
+        )
+
+    # Linker sequences
+    linker5 = fc.get("linker_5prime_aa", "")
+    linker3 = fc.get("linker_3prime_aa", "")
+    if linker5 or linker3:
+        linker_text = f"5' linker: {linker5 or 'N/A'}    3' linker: {linker3 or 'N/A'}"
+        ax.text(
+            0.4, y_frame - 1.0,
+            linker_text,
+            fontsize=8, fontfamily=_FONT, color="#777",
+        )
+
+
+def _draw_legend(ax, include_stop_codon):
     legend_y = 0.7
     legend_items = [
         (_C["protection"], "Protection"),
@@ -654,7 +669,7 @@ def _draw_construct_map(ax, dr: dict, gene_name: str):
         (_C["annealing"], "Annealing"),
         (_C["cds"], "CDS"),
     ]
-    if dr.get("include_stop_codon"):
+    if include_stop_codon:
         legend_items.insert(4, (_C["stop_rc"], "Stop(RC)"))
 
     x_legend = 0.5

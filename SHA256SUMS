@@ -336,7 +336,7 @@ b2535caedb455235123f523e3c726db7ab76f25c75f4aae22e6df10d9e257b18 *./skills/prime
 083a5497893f69d288a151db4e459ce64b5b2087b0db55bdd0ae24c0fb010f90 *./skills/primer-design/src/primer_design/_mcp_common.py
 0f6e4abc1dfe44241d299a81c4b9d74635cb123720aafe1146329917ccd4d103 *./skills/primer-design/src/primer_design/_plot_style.py
 b05492a7d97ca65fef1985056d69922e4322df3f41f706dea05def86daea90ae *./skills/primer-design/src/primer_design/clients/__init__.py
-e130a23b65eaa6a0decf16965a91e9538dc2e7c38d8307260d94e4ab8386d070 *./skills/primer-design/src/primer_design/cloning_report.py
+136af8d0992742c9fd96ac25d8ac218a135b13ce2c3c9d81d90d6e3a7b071976 *./skills/primer-design/src/primer_design/cloning_report.py
 bcaf8de7ce8b0d31043b1f05b89bb5ab15e495cf36df49643eb0d1c24e22a984 *./skills/primer-design/src/primer_design/colony_pcr_mode.py
 380dfc168ad90e2184bff5804581901955c1743cab29b16feb8ce08ba82127a6 *./skills/primer-design/src/primer_design/del_primer_mode.py
 592eec7d6c3894695bf582b77525aac42623e068f26dca42bdc74ad54752998b *./skills/primer-design/src/primer_design/expression_analyzer.py
