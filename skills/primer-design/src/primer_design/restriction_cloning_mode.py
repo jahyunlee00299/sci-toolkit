@@ -150,117 +150,38 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         dict : f_full, r_full, f_ann, r_ann, f_tail, r_tail, QC results, etc.
         """
         insert_seq = insert_seq.upper().replace(" ", "")
-        warnings = []
+        warnings: list[str] = []
 
-        # ── 1. Input validation ──────────────────────────────────────────
-        if not insert_seq:
-            raise ValueError("insert_seq is empty")
-        if not all(c in "ATGC" for c in insert_seq):
-            raise ValueError("insert_seq contains non-ATGC characters")
-
-        if re_5prime not in RESTRICTION_ENZYMES:
-            raise ValueError(
-                f"Unknown 5' RE: {re_5prime!r}. "
-                f"Available: {', '.join(sorted(RESTRICTION_ENZYMES.keys()))}"
-            )
-        if re_3prime not in RESTRICTION_ENZYMES:
-            raise ValueError(
-                f"Unknown 3' RE: {re_3prime!r}. "
-                f"Available: {', '.join(sorted(RESTRICTION_ENZYMES.keys()))}"
-            )
-
-        re5_info = RESTRICTION_ENZYMES[re_5prime]
-        re3_info = RESTRICTION_ENZYMES[re_3prime]
+        re5_info, re3_info = self._validate_design_inputs(insert_seq, re_5prime, re_3prime)
         re5_site = re5_info["recognition"]
         re3_site = re3_info["recognition"]
 
         # ── 2. Internal RE site scan ─────────────────────────────────────
         internal_re_sites_5 = _find_all_occurrences(insert_seq, re5_site)
         internal_re_sites_3 = _find_all_occurrences(insert_seq, re3_site)
-
-        if internal_re_sites_5:
-            warnings.append(
-                f"INSERT contains {re_5prime} site ({re5_site}) at position(s): "
-                f"{internal_re_sites_5} - may be cut during digestion!"
-            )
-        if internal_re_sites_3:
-            warnings.append(
-                f"INSERT contains {re_3prime} site ({re3_site}) at position(s): "
-                f"{internal_re_sites_3} - may be cut during digestion!"
-            )
+        for re_name, site, positions in (
+            (re_5prime, re5_site, internal_re_sites_5),
+            (re_3prime, re3_site, internal_re_sites_3),
+        ):
+            if positions:
+                warnings.append(
+                    f"INSERT contains {re_name} site ({site}) at position(s): "
+                    f"{positions} - may be cut during digestion!"
+                )
 
         # ── 3. Protection bases determination ────────────────────────────
         protection_5 = self._resolve_protection(protection_bases_5, re5_site)
         protection_3 = self._resolve_protection(protection_bases_3, re3_site)
 
-        # ── 4. NdeI/NcoI special case: ATG in recognition site ───────────
-        re5_has_atg = "ATG" in re5_site
-        if re5_has_atg and include_start_codon:
-            warnings.append(
-                f"{re_5prime} recognition site ({re5_site}) contains ATG - "
-                f"RE site itself provides start codon"
-            )
-
-        # ── 5. Compatible overhang warning ───────────────────────────────
-        base_5 = _get_base_enzyme(re_5prime)
-        base_3 = _get_base_enzyme(re_3prime)
-        for pair in COMPATIBLE_OVERHANGS:
-            if (base_5 in pair and base_3 in pair) and base_5 != base_3:
-                warnings.append(
-                    f"{re_5prime} and {re_3prime} produce compatible sticky ends - "
-                    f"insert can ligate in BOTH orientations (non-directional)!"
-                )
-                break
-
-        # Same enzyme on both sides
-        if base_5 == base_3:
-            warnings.append(
-                f"Same RE ({re_5prime}/{re_3prime}) on both sides - "
-                f"insert can ligate in BOTH orientations (non-directional)!"
-            )
-
-        # Blunt-end warning
-        if re5_info["overhang"] == "blunt" or re3_info["overhang"] == "blunt":
-            blunt_re = re_5prime if re5_info["overhang"] == "blunt" else re_3prime
-            warnings.append(
-                f"{blunt_re} produces blunt ends - "
-                f"no directionality from this side"
-            )
+        # ── 4-5. Start-codon, compatible-overhang, same-RE, blunt-end warnings
+        warnings.extend(self._enzyme_pair_warnings(
+            re_5prime, re_3prime, re5_info, re3_info, include_start_codon))
 
         # ── 6. Forward primer assembly ───────────────────────────────────
+        # Forward annealing: the RE tail does NOT contribute to Tm.
         f_tail = protection_5 + re5_site + spacer_5prime
-
-        # Forward annealing: RE tail does NOT contribute to Tm
-        # Fallback: extend range then relax Tm for AT-rich regions
-        f_ann, f_tm, f_gc, f_ann_len = self._design_annealing(
-            template=insert_seq, anchor=0, direction="+",
-            target_tm=target_tm, min_len=min_ann_len, max_len=max_ann_len,
-            tail_seq="",
-        )
-        if f_ann is None:
-            # Fallback 1: extend max to 35 bp
-            f_ann, f_tm, f_gc, f_ann_len = self._design_annealing(
-                template=insert_seq, anchor=0, direction="+",
-                target_tm=target_tm, min_len=min_ann_len, max_len=35,
-                tail_seq="",
-            )
-        if f_ann is None:
-            # Fallback 2: relax Tm by 4°C with extended range
-            f_ann, f_tm, f_gc, f_ann_len = self._design_annealing(
-                template=insert_seq, anchor=0, direction="+",
-                target_tm=target_tm - 4.0, min_len=min_ann_len, max_len=36,
-                tail_seq="",
-            )
-            if f_ann is not None:
-                warnings.append(
-                    f"Forward primer Tm ({f_tm:.1f}°C) is below target "
-                    f"({target_tm}°C) due to AT-rich region"
-                )
-        if f_ann is None:
-            raise RuntimeError(
-                "Forward primer annealing design failed "
-                f"(target Tm={target_tm}C, range={min_ann_len}-{max_ann_len} bp)"
-            )
+        f_ann, f_tm, f_gc, f_ann_len = self._design_end_annealing(
+            insert_seq, "Forward", target_tm, min_ann_len, max_ann_len, warnings)
 
         # ── 7. Reverse primer assembly ───────────────────────────────────
         stop_rc = ""
@@ -268,38 +189,8 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
             stop_rc = str(Seq(stop_codon.upper()).reverse_complement())
 
         r_tail = protection_3 + re3_site + spacer_3prime + stop_rc
-
-        # Reverse annealing: RE tail does NOT contribute to Tm
-        # Fallback: extend range then relax Tm for AT-rich regions
-        r_ann, r_tm, r_gc, r_ann_len = self._design_annealing(
-            template=insert_seq, anchor=len(insert_seq), direction="-",
-            target_tm=target_tm, min_len=min_ann_len, max_len=max_ann_len,
-            tail_seq="",
-        )
-        if r_ann is None:
-            # Fallback 1: extend max to 35 bp
-            r_ann, r_tm, r_gc, r_ann_len = self._design_annealing(
-                template=insert_seq, anchor=len(insert_seq), direction="-",
-                target_tm=target_tm, min_len=min_ann_len, max_len=35,
-                tail_seq="",
-            )
-        if r_ann is None:
-            # Fallback 2: relax Tm by 4°C with extended range
-            r_ann, r_tm, r_gc, r_ann_len = self._design_annealing(
-                template=insert_seq, anchor=len(insert_seq), direction="-",
-                target_tm=target_tm - 4.0, min_len=min_ann_len, max_len=36,
-                tail_seq="",
-            )
-            if r_ann is not None:
-                warnings.append(
-                    f"Reverse primer Tm ({r_tm:.1f}°C) is below target "
-                    f"({target_tm}°C) due to AT-rich region"
-                )
-        if r_ann is None:
-            raise RuntimeError(
-                "Reverse primer annealing design failed "
-                f"(target Tm={target_tm}C, range={min_ann_len}-{max_ann_len} bp)"
-            )
+        r_ann, r_tm, r_gc, r_ann_len = self._design_end_annealing(
+            insert_seq, "Reverse", target_tm, min_ann_len, max_ann_len, warnings)
 
         # ── 8. 2-pass hairpin avoidance ──────────────────────────────────
         anneal_temp = min(f_tm, r_tm) + 1.0
@@ -308,50 +199,20 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         r_qc = self.check_primer(r_tail + r_ann, anneal_temp)
 
         if f_qc["verdict"] == "FAIL":
-            alt = self._design_annealing(
-                template=insert_seq, anchor=0, direction="+",
-                target_tm=target_tm, min_len=min_ann_len, max_len=max_ann_len,
-                tail_seq="", anneal_temp=anneal_temp,
-            )
-            if alt[0] is not None and alt[0] != f_ann:
-                f_ann, f_tm, f_gc, f_ann_len = alt
-                warnings.append(
-                    f"F annealing adjusted for hairpin avoidance ({len(f_ann)} bp)"
-                )
-            else:
-                warnings.append(
-                    "F hairpin: annealing length adjustment cannot resolve"
-                )
-
+            f_ann, f_tm, f_gc, f_ann_len = self._retry_for_hairpin(
+                "F", insert_seq, (f_ann, f_tm, f_gc, f_ann_len), target_tm,
+                min_ann_len, max_ann_len, anneal_temp, warnings)
         if r_qc["verdict"] == "FAIL":
-            alt = self._design_annealing(
-                template=insert_seq, anchor=len(insert_seq), direction="-",
-                target_tm=target_tm, min_len=min_ann_len, max_len=max_ann_len,
-                tail_seq="", anneal_temp=anneal_temp,
-            )
-            if alt[0] is not None and alt[0] != r_ann:
-                r_ann, r_tm, r_gc, r_ann_len = alt
-                warnings.append(
-                    f"R annealing adjusted for hairpin avoidance ({len(r_ann)} bp)"
-                )
-            else:
-                warnings.append(
-                    "R hairpin: annealing length adjustment cannot resolve"
-                )
+            r_ann, r_tm, r_gc, r_ann_len = self._retry_for_hairpin(
+                "R", insert_seq, (r_ann, r_tm, r_gc, r_ann_len), target_tm,
+                min_ann_len, max_ann_len, anneal_temp, warnings)
 
         # ── 9. Assemble final primers ────────────────────────────────────
         f_full = f_tail + f_ann
         r_full = r_tail + r_ann
 
         # ── 10. Primer-level warnings ────────────────────────────────────
-        for label, primer in [("F", f_full), ("R", r_full)]:
-            hp = self.homopolymer_run(primer)
-            if hp:
-                warnings.append(f"{label} primer homopolymer: {hp}")
-            if not self.gc_clamp_ok(primer):
-                warnings.append(f"{label} primer no 3' G/C clamp")
-            if len(primer) > 60:
-                warnings.append(f"{label} primer length ({len(primer)} nt) > 60 nt")
+        warnings.extend(self._primer_level_warnings(f_full, r_full))
 
         # ── 11. Final QC ─────────────────────────────────────────────────
         anneal_temp = min(f_tm, r_tm) + 1.0
@@ -362,20 +223,10 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         # ── 12. Reading frame check ──────────────────────────────────────
         frame_check = None
         frame_report = None
-
         if vector_name is not None and auto_frame_check:
-            try:
-                frame_check = check_reading_frame(
-                    vector_name=vector_name,
-                    re_5prime=re_5prime,
-                    re_3prime=re_3prime,
-                    insert_has_atg=include_start_codon,
-                    insert_has_stop=include_stop_codon,
-                    insert_cds_bp=len(insert_seq),
-                )
-                frame_report = format_frame_report(frame_check)
-            except ValueError as e:
-                warnings.append(f"Frame check failed: {e}")
+            frame_check, frame_report = self._check_frame(
+                vector_name, re_5prime, re_3prime, include_start_codon,
+                include_stop_codon, len(insert_seq), warnings)
 
         # ── 13. Build result ─────────────────────────────────────────────
         result = {
@@ -418,6 +269,167 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
             result["frame_report"] = frame_report
 
         return result
+
+    # ── design() building blocks ─────────────────────────────────────────
+
+    @staticmethod
+    def _validate_design_inputs(insert_seq: str, re_5prime: str, re_3prime: str) -> tuple[dict, dict]:
+        """Validate the insert and both enzyme names; return their RESTRICTION_ENZYMES records."""
+        if not insert_seq:
+            raise ValueError("insert_seq is empty")
+        if not all(c in "ATGC" for c in insert_seq):
+            raise ValueError("insert_seq contains non-ATGC characters")
+
+        if re_5prime not in RESTRICTION_ENZYMES:
+            raise ValueError(
+                f"Unknown 5' RE: {re_5prime!r}. "
+                f"Available: {', '.join(sorted(RESTRICTION_ENZYMES.keys()))}"
+            )
+        if re_3prime not in RESTRICTION_ENZYMES:
+            raise ValueError(
+                f"Unknown 3' RE: {re_3prime!r}. "
+                f"Available: {', '.join(sorted(RESTRICTION_ENZYMES.keys()))}"
+            )
+        return RESTRICTION_ENZYMES[re_5prime], RESTRICTION_ENZYMES[re_3prime]
+
+    @staticmethod
+    def _enzyme_pair_warnings(re_5prime: str, re_3prime: str, re5_info: dict, re3_info: dict,
+                              include_start_codon: bool) -> list[str]:
+        """NdeI/NcoI ATG, compatible overhangs, same enzyme on both sides, blunt ends."""
+        warnings: list[str] = []
+        re5_site = re5_info["recognition"]
+
+        # NdeI/NcoI special case: ATG in recognition site
+        if "ATG" in re5_site and include_start_codon:
+            warnings.append(
+                f"{re_5prime} recognition site ({re5_site}) contains ATG - "
+                f"RE site itself provides start codon"
+            )
+
+        # Compatible overhang warning
+        base_5 = _get_base_enzyme(re_5prime)
+        base_3 = _get_base_enzyme(re_3prime)
+        for pair in COMPATIBLE_OVERHANGS:
+            if (base_5 in pair and base_3 in pair) and base_5 != base_3:
+                warnings.append(
+                    f"{re_5prime} and {re_3prime} produce compatible sticky ends - "
+                    f"insert can ligate in BOTH orientations (non-directional)!"
+                )
+                break
+
+        # Same enzyme on both sides
+        if base_5 == base_3:
+            warnings.append(
+                f"Same RE ({re_5prime}/{re_3prime}) on both sides - "
+                f"insert can ligate in BOTH orientations (non-directional)!"
+            )
+
+        # Blunt-end warning
+        if re5_info["overhang"] == "blunt" or re3_info["overhang"] == "blunt":
+            blunt_re = re_5prime if re5_info["overhang"] == "blunt" else re_3prime
+            warnings.append(
+                f"{blunt_re} produces blunt ends - "
+                f"no directionality from this side"
+            )
+        return warnings
+
+    def _design_end_annealing(self, insert_seq: str, label: str, target_tm: float,
+                              min_ann_len: int, max_ann_len: int,
+                              warnings: list[str]) -> tuple:
+        """Annealing part of one primer, with the two AT-rich fallbacks.
+
+        ``label`` is "Forward" (anchored at the insert start, + strand) or
+        "Reverse" (anchored at the insert end, - strand). The RE tail does NOT
+        contribute to Tm. Fallback 1 extends max length to 35 bp; fallback 2
+        relaxes the target Tm by 4 degC with max length 36 (and warns).
+        Returns (ann, tm, gc, ann_len) or raises RuntimeError.
+        """
+        if label == "Forward":
+            anchor, direction = 0, "+"
+        else:
+            anchor, direction = len(insert_seq), "-"
+
+        def attempt(tm_target: float, max_len: int):
+            return self._design_annealing(
+                template=insert_seq, anchor=anchor, direction=direction,
+                target_tm=tm_target, min_len=min_ann_len, max_len=max_len,
+                tail_seq="",
+            )
+
+        ann, tm, gc, ann_len = attempt(target_tm, max_ann_len)
+        if ann is None:
+            # Fallback 1: extend max to 35 bp
+            ann, tm, gc, ann_len = attempt(target_tm, 35)
+        if ann is None:
+            # Fallback 2: relax Tm by 4°C with extended range
+            ann, tm, gc, ann_len = attempt(target_tm - 4.0, 36)
+            if ann is not None:
+                warnings.append(
+                    f"{label} primer Tm ({tm:.1f}°C) is below target "
+                    f"({target_tm}°C) due to AT-rich region"
+                )
+        if ann is None:
+            raise RuntimeError(
+                f"{label} primer annealing design failed "
+                f"(target Tm={target_tm}C, range={min_ann_len}-{max_ann_len} bp)"
+            )
+        return ann, tm, gc, ann_len
+
+    def _retry_for_hairpin(self, label: str, insert_seq: str, current: tuple, target_tm: float,
+                           min_ann_len: int, max_ann_len: int, anneal_temp: float,
+                           warnings: list[str]) -> tuple:
+        """Second pass for a primer whose QC verdict is FAIL: redesign at ``anneal_temp``.
+
+        ``label`` is "F" or "R". Keeps ``current`` (ann, tm, gc, ann_len) when the
+        redesign finds nothing new; either way a warning records the outcome.
+        """
+        anchor, direction = (0, "+") if label == "F" else (len(insert_seq), "-")
+        alt = self._design_annealing(
+            template=insert_seq, anchor=anchor, direction=direction,
+            target_tm=target_tm, min_len=min_ann_len, max_len=max_ann_len,
+            tail_seq="", anneal_temp=anneal_temp,
+        )
+        if alt[0] is not None and alt[0] != current[0]:
+            warnings.append(
+                f"{label} annealing adjusted for hairpin avoidance ({len(alt[0])} bp)"
+            )
+            return alt
+        warnings.append(
+            f"{label} hairpin: annealing length adjustment cannot resolve"
+        )
+        return current
+
+    def _primer_level_warnings(self, f_full: str, r_full: str) -> list[str]:
+        """Homopolymer runs, missing 3' G/C clamp and over-long primers."""
+        warnings: list[str] = []
+        for label, primer in [("F", f_full), ("R", r_full)]:
+            hp = self.homopolymer_run(primer)
+            if hp:
+                warnings.append(f"{label} primer homopolymer: {hp}")
+            if not self.gc_clamp_ok(primer):
+                warnings.append(f"{label} primer no 3' G/C clamp")
+            if len(primer) > 60:
+                warnings.append(f"{label} primer length ({len(primer)} nt) > 60 nt")
+        return warnings
+
+    @staticmethod
+    def _check_frame(vector_name: str, re_5prime: str, re_3prime: str, include_start_codon: bool,
+                     include_stop_codon: bool, insert_cds_bp: int,
+                     warnings: list[str]) -> tuple[dict | None, str | None]:
+        """Reading-frame check against the vector; a ValueError becomes a warning."""
+        try:
+            frame_check = check_reading_frame(
+                vector_name=vector_name,
+                re_5prime=re_5prime,
+                re_3prime=re_3prime,
+                insert_has_atg=include_start_codon,
+                insert_has_stop=include_stop_codon,
+                insert_cds_bp=insert_cds_bp,
+            )
+            return frame_check, format_frame_report(frame_check)
+        except ValueError as e:
+            warnings.append(f"Frame check failed: {e}")
+            return None, None
 
     def recommend_re_pair(
         self,

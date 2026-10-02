@@ -1,11 +1,11 @@
-d048189cb29546fd6118b1f5f44af9cc80cdb68eb9d031e369f26478baa8418f *./.claude-plugin/plugin.json
+4814cff0f86ac8b6d4ab7902cfec55109f058aefafec0ca4cab502b271d630ed *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 2e4e75bafd8e5ecf1b873f63ab713a141fdeb3ea5f50e2053fdbe51409680b36 *./AGENTS.md
-cd1197dfff9841295e0dcba4917c6a1a46155085a79f3b9755dd76f5cd144177 *./CHANGELOG.md
+46fed22142c82b5aca49f1b9222cf892a190fcb8d799184dd1a5a700aafea44f *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -316,7 +316,7 @@ bcaf8de7ce8b0d31043b1f05b89bb5ab15e495cf36df49643eb0d1c24e22a984 *./skills/prime
 a25928d97195768825d0799d25ae335cd0bc615adeeae62aee8d9b6cd9391f56 *./skills/primer-design/src/primer_design/mcp_server.py
 7144dceec523787682cd67aadaab6b396df79ecb73671e885c3c43401d7f356e *./skills/primer-design/src/primer_design/order_sheet.py
 f4f9539dfc60607a7049ffcafe1074760309ea5641eb610613a3052e99897c9e *./skills/primer-design/src/primer_design/order_sheet_writers.py
-98792ccda1c7b67e0f9b3fe4662d51978d190eeeecaa5356079b69fd4c54f013 *./skills/primer-design/src/primer_design/restriction_cloning_mode.py
+ab2aceef7943caae527686e914244b03fffe1c5600aac214421de1bcb4eb31e8 *./skills/primer-design/src/primer_design/restriction_cloning_mode.py
 b4e9fbf487a41f54288cc2ad4a67bcd3c5ef45295bc83648758a23f5d3069838 *./skills/primer-design/src/primer_design/snapgene_parser.py
 def0f9ef8a230a6d8df0dc957dfb9aead4b6ca32669584d32b1455251da30765 *./skills/primer-design/src/primer_design/snapgene_writer.py
 e00a534556f04240cfac3c8a7fb1a0ca1d04d26798f78bebf251d3c2fc366f7d *./skills/primer-design/src/primer_design/subst_primer_mode.py
