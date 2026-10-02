@@ -20,9 +20,9 @@ GOLDEN = json.loads((cst.GOLDEN / "collect_snapshot.json").read_text(encoding="u
 def traced():
     mp = pytest.MonkeyPatch()
     try:
-        yield cst.build_all(mp)
+        return cst.build_all(mp)
     finally:
-        mp.undo()
+        mp.undo()  # the fake host must not stay patched for the rest of the module
 
 
 def _norm(value):
