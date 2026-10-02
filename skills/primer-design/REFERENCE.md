@@ -345,7 +345,8 @@ src/primer_design/
 +-- restriction_cloning_mode.py  # RestrictionCloningDesigner
 +-- colony_pcr_mode.py           # ColonyPCRDesigner
 +-- expression_analyzer.py       # ExpressionAnalyzer
-+-- order_sheet.py               # Macrogen XLSX
++-- order_sheet.py               # PrimerOrderSheet data model (Macrogen order sheet)
++-- order_sheet_writers.py       # XLSX/XLS/Markdown writers behind PrimerOrderSheet
 +-- snapgene_parser.py           # .dna parser
 +-- snapgene_writer.py           # .dna generator
 +-- vector_registry.py           # Vector/RE DB

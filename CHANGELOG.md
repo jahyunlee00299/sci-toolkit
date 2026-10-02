@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.116] — 2026-10-02
+
+- primer-design: split PrimerOrderSheet writers (xlsx, macrogen oligo/seq, markdown) into order_sheet_writers.py; behaviour pinned by golden tests
+
 ## [1.2.115] — 2026-10-02
 
 - primer-design: golden characterization tests for order sheet, circular construct map and restriction-cloning design (pre-split baseline)

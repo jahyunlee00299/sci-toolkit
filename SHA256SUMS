@@ -1,11 +1,11 @@
-578957c2fb7f79eefa03b690c38a506ef4e2840fa406be79751e96b9bad9141a *./.claude-plugin/plugin.json
+deb040a2ea0be9a73236511972490869120bd230c660ebb8855d781a0ad39f64 *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 2e4e75bafd8e5ecf1b873f63ab713a141fdeb3ea5f50e2053fdbe51409680b36 *./AGENTS.md
-1dba2519af57b15e78935bd5e5fa67ee1a2ef655335249532d10730a6471dc8d *./CHANGELOG.md
+ca9aef1249968519eaf52042fe6ea102f243aa50ee294fbac41477bb7f4fb5da *./CHANGELOG.md
 b7e49795d6bc39e2b8f2d01de775358921d76e5e74cfafbd90d4e14df74e9c79 *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -303,7 +303,7 @@ d3858de13b644cf476a4e107c167bd744a2b803308f7b89cee9be4faf686b2cc *./skills/paten
 6b3a0f089af4e537dba27d18b6a374540a0f3835b9c48c006823c5132d4f293b *./skills/patent-invention-disclosure/references/translation_register.md
 bb7e5056ef31ac5df792008f99304e686067a412883edd32fc8a38c96009c452 *./skills/patent-invention-disclosure/scripts/verify_numeric_claims.py
 b2535caedb455235123f523e3c726db7ab76f25c75f4aae22e6df10d9e257b18 *./skills/primer-design/.gitignore
-aa8164747e638f3f57bbcb20cbc9bae012a32ad0012c1430a84a96ece1fff64a *./skills/primer-design/REFERENCE.md
+a6df8c277df601fd7231e9a96c455e4d84db28858c6f54a8e5ded0ef866ed821 *./skills/primer-design/REFERENCE.md
 00250b335a3697cba002b46810356d806afadad5baeff8fb1c69224c39f3ff25 *./skills/primer-design/SKILL.md
 7d2603995c7ac022f285e67831f0b99dacf2428ca167e6f6c410c653af4431e6 *./skills/primer-design/requirements.txt
 60a717cc9b5e3e122152f7b0969fe8f5bf9e48f469629ebc809d42e606dc24c5 *./skills/primer-design/src/primer_design/__init__.py
@@ -313,7 +313,8 @@ bcaf8de7ce8b0d31043b1f05b89bb5ab15e495cf36df49643eb0d1c24e22a984 *./skills/prime
 380dfc168ad90e2184bff5804581901955c1743cab29b16feb8ce08ba82127a6 *./skills/primer-design/src/primer_design/del_primer_mode.py
 592eec7d6c3894695bf582b77525aac42623e068f26dca42bdc74ad54752998b *./skills/primer-design/src/primer_design/expression_analyzer.py
 a25928d97195768825d0799d25ae335cd0bc615adeeae62aee8d9b6cd9391f56 *./skills/primer-design/src/primer_design/mcp_server.py
-33665897449ed1aa09b87cba28079ec201e7d9fa1b8c738d8b9d001f0e24697a *./skills/primer-design/src/primer_design/order_sheet.py
+7144dceec523787682cd67aadaab6b396df79ecb73671e885c3c43401d7f356e *./skills/primer-design/src/primer_design/order_sheet.py
+f4f9539dfc60607a7049ffcafe1074760309ea5641eb610613a3052e99897c9e *./skills/primer-design/src/primer_design/order_sheet_writers.py
 98792ccda1c7b67e0f9b3fe4662d51978d190eeeecaa5356079b69fd4c54f013 *./skills/primer-design/src/primer_design/restriction_cloning_mode.py
 b4e9fbf487a41f54288cc2ad4a67bcd3c5ef45295bc83648758a23f5d3069838 *./skills/primer-design/src/primer_design/snapgene_parser.py
 def0f9ef8a230a6d8df0dc957dfb9aead4b6ca32669584d32b1455251da30765 *./skills/primer-design/src/primer_design/snapgene_writer.py

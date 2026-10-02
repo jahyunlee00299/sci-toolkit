@@ -20,25 +20,24 @@ from pathlib import Path
 
 import pandas as pd
 
+from .order_sheet_writers import (
+    PURIFICATION_TO_MACROGEN as _PURIFICATION_TO_MACROGEN,  # noqa: F401 - still importable from here
+    SCALE_TO_UMOL as _SCALE_TO_UMOL,  # noqa: F401
+    render_markdown,
+    write_macrogen_oligo_xls,
+    write_macrogen_oligo_xlsx,
+    write_macrogen_seq_xlsx,
+    write_order_xlsx,
+)
+
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
 COST_PER_BASE_KRW = 400    # 50 nmol scale
 MIN_PRIMER_COST_KRW = 5000
 
-# Mapping to the Macrogen order-sheet format
-_SCALE_TO_UMOL = {
-    "25 nmol": 0.025,
-    "50 nmol": 0.05,
-    "100 nmol": 0.1,
-    "1 umol": 1.0,
-}
-
-_PURIFICATION_TO_MACROGEN = {
-    "Desalting": "MOPC",
-    "PAGE": "PAGE",
-    "HPLC": "HPLC",
-}
+# The Macrogen scale/purification mappings live in order_sheet_writers.py
+# (imported above under their historical private names).
 
 
 # ── Enums ──────────────────────────────────────────────────────────────────
@@ -279,116 +278,7 @@ class PrimerOrderSheet:
         Sheet2 "Summary": summary statistics
         Sheet3 "QC": Tm, GC%, QC Verdict
         """
-        import openpyxl
-        from openpyxl.styles import Alignment, Font, PatternFill
-        from openpyxl.utils import get_column_letter
-
-        if output_path is None:
-            output_path = self._generate_filename(Path.cwd(), "xlsx")
-        else:
-            output_path = Path(output_path)
-
-        wb = openpyxl.Workbook()
-
-        # ── Sheet 1: Macrogen Order ────────────────────────────────────
-        ws_order = wb.active
-        ws_order.title = "Macrogen Order"
-
-        headers = [
-            "No.", "Primer Name", "Sequence (5'->3')", "Scale",
-            "Purification", "Length (nt)", "Notes",
-        ]
-        header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
-        header_font = Font(bold=True, color="FFFFFF")
-
-        for col_idx, header in enumerate(headers, 1):
-            cell = ws_order.cell(row=1, column=col_idx, value=header)
-            cell.fill = header_fill
-            cell.font = header_font
-            cell.alignment = Alignment(horizontal="center")
-
-        for row_idx, entry in enumerate(self.entries, 2):
-            ws_order.cell(row=row_idx, column=1, value=row_idx - 1)
-            ws_order.cell(row=row_idx, column=2, value=entry.name)
-            seq_cell = ws_order.cell(row=row_idx, column=3, value=entry.sequence)
-            seq_cell.font = Font(name="Consolas", size=10)
-            ws_order.cell(row=row_idx, column=4, value=entry.scale.value)
-            ws_order.cell(row=row_idx, column=5, value=entry.purification.value)
-            ws_order.cell(row=row_idx, column=6, value=entry.length)
-            ws_order.cell(row=row_idx, column=7, value=entry.notes)
-
-        # Column widths
-        col_widths = [6, 25, 60, 12, 12, 12, 20]
-        for i, width in enumerate(col_widths, 1):
-            ws_order.column_dimensions[get_column_letter(i)].width = width
-
-        # ── Sheet 2: Summary ───────────────────────────────────────────
-        ws_summary = wb.create_sheet("Summary")
-        summary_data = self.summary()
-
-        summary_rows = [
-            ("Total Primers", summary_data["total_primers"]),
-            ("Total Length (nt)", summary_data["total_length_nt"]),
-            ("Estimated Cost (KRW)", f"{summary_data['estimated_cost_krw']:,}"),
-            ("Unique Experiments", ", ".join(summary_data["unique_experiments"]) or "-"),
-        ]
-
-        ws_summary.cell(row=1, column=1, value="Metric").font = Font(bold=True)
-        ws_summary.cell(row=1, column=2, value="Value").font = Font(bold=True)
-
-        for row_idx, (metric, value) in enumerate(summary_rows, 2):
-            ws_summary.cell(row=row_idx, column=1, value=metric)
-            ws_summary.cell(row=row_idx, column=2, value=value)
-
-        # Scale counts
-        row_offset = len(summary_rows) + 3
-        ws_summary.cell(row=row_offset, column=1, value="Scale").font = Font(bold=True)
-        ws_summary.cell(row=row_offset, column=2, value="Count").font = Font(bold=True)
-        for i, (scale, count) in enumerate(summary_data["scale_counts"].items(), 1):
-            ws_summary.cell(row=row_offset + i, column=1, value=scale)
-            ws_summary.cell(row=row_offset + i, column=2, value=count)
-
-        # Purification counts
-        row_offset2 = row_offset + len(summary_data["scale_counts"]) + 2
-        ws_summary.cell(row=row_offset2, column=1, value="Purification").font = Font(bold=True)
-        ws_summary.cell(row=row_offset2, column=2, value="Count").font = Font(bold=True)
-        for i, (pur, count) in enumerate(summary_data["purification_counts"].items(), 1):
-            ws_summary.cell(row=row_offset2 + i, column=1, value=pur)
-            ws_summary.cell(row=row_offset2 + i, column=2, value=count)
-
-        ws_summary.column_dimensions["A"].width = 25
-        ws_summary.column_dimensions["B"].width = 30
-
-        # ── Sheet 3: QC ────────────────────────────────────────────────
-        ws_qc = wb.create_sheet("QC")
-
-        qc_headers = ["Primer Name", "Tm", "GC%", "QC Verdict", "Experiment"]
-        for col_idx, header in enumerate(qc_headers, 1):
-            cell = ws_qc.cell(row=1, column=col_idx, value=header)
-            cell.font = Font(bold=True)
-            cell.alignment = Alignment(horizontal="center")
-
-        verdict_fills = {
-            "PASS": PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid"),
-            "WARNING": PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid"),
-            "FAIL": PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid"),
-        }
-
-        for row_idx, entry in enumerate(self.entries, 2):
-            ws_qc.cell(row=row_idx, column=1, value=entry.name)
-            ws_qc.cell(row=row_idx, column=2, value=entry.tm)
-            ws_qc.cell(row=row_idx, column=3, value=entry.gc)
-            verdict_cell = ws_qc.cell(row=row_idx, column=4, value=entry.qc_verdict or "-")
-            if entry.qc_verdict in verdict_fills:
-                verdict_cell.fill = verdict_fills[entry.qc_verdict]
-            ws_qc.cell(row=row_idx, column=5, value=entry.experiment)
-
-        qc_col_widths = [25, 10, 10, 15, 25]
-        for i, width in enumerate(qc_col_widths, 1):
-            ws_qc.column_dimensions[get_column_letter(i)].width = width
-
-        wb.save(str(output_path))
-        return output_path
+        return write_order_xlsx(self.entries, self.summary(), self._resolve_path(output_path, "xlsx"))
 
     # ── Export: Macrogen Oligo Order ──────────────────────────────────
 
@@ -404,10 +294,7 @@ class PrimerOrderSheet:
 
         Saved via openpyxl if output_path's extension is .xlsx, via xlwt if .xls (default).
         """
-        if output_path is None:
-            output_path = self._generate_filename(Path.cwd(), "xls")
-        else:
-            output_path = Path(output_path)
+        output_path = self._resolve_path(output_path, "xls")
 
         if output_path.suffix.lower() == ".xlsx":
             return self._write_macrogen_oligo_xlsx(output_path)
@@ -415,80 +302,11 @@ class PrimerOrderSheet:
 
     def _write_macrogen_oligo_xls(self, output_path: Path) -> Path:
         """Generate the Macrogen Oligo order sheet (.xls BIFF8) via xlwt."""
-        import xlwt
-
-        wb = xlwt.Workbook(encoding="utf-8")
-        ws = wb.add_sheet("Sheet")
-
-        # Header style
-        header_style = xlwt.easyxf("font: bold on; align: horiz center")
-        seq_style = xlwt.easyxf("font: name Consolas, height 200")
-
-        # Column widths (1/256 character units)
-        ws.col(0).width = 256 * 6    # No.
-        ws.col(1).width = 256 * 35   # Oligo Name
-        ws.col(2).width = 256 * 60   # Sequence
-        ws.col(3).width = 256 * 10   # Amount
-        ws.col(4).width = 256 * 14   # Purification
-
-        # Header row
-        headers = ["No.", "Oligo Name", "5` - Oligo Seq - 3`", "Amount", "Purification"]
-        for col, h in enumerate(headers):
-            ws.write(0, col, h, header_style)
-
-        # Data + blank rows (1000 rows total)
-        for row_num in range(1, 1001):
-            ws.write(row_num, 0, row_num)
-
-            if row_num <= len(self.entries):
-                entry = self.entries[row_num - 1]
-                ws.write(row_num, 1, entry.name)
-                ws.write(row_num, 2, entry.sequence, seq_style)
-                amount = _SCALE_TO_UMOL.get(entry.scale.value, 0.05)
-                ws.write(row_num, 3, amount)
-                pur = _PURIFICATION_TO_MACROGEN.get(entry.purification.value, "MOPC")
-                ws.write(row_num, 4, pur)
-
-        wb.save(str(output_path))
-        return output_path
+        return write_macrogen_oligo_xls(self.entries, output_path)
 
     def _write_macrogen_oligo_xlsx(self, output_path: Path) -> Path:
         """Generate the Macrogen Oligo order sheet (.xlsx) via openpyxl (fallback)."""
-        import openpyxl
-        from openpyxl.styles import Alignment, Font
-
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Sheet"
-
-        headers = ["No.", "Oligo Name", "5` - Oligo Seq - 3`", "Amount", "Purification"]
-        for col_idx, header in enumerate(headers, 1):
-            cell = ws.cell(row=1, column=col_idx, value=header)
-            cell.font = Font(bold=True)
-            cell.alignment = Alignment(horizontal="center")
-
-        for row_num in range(1, 1001):
-            row_idx = row_num + 1
-            ws.cell(row=row_idx, column=1, value=row_num)
-
-            if row_num <= len(self.entries):
-                entry = self.entries[row_num - 1]
-                ws.cell(row=row_idx, column=2, value=entry.name)
-                seq_cell = ws.cell(row=row_idx, column=3, value=entry.sequence)
-                seq_cell.font = Font(name="Consolas", size=10)
-                amount = _SCALE_TO_UMOL.get(entry.scale.value, 0.05)
-                ws.cell(row=row_idx, column=4, value=amount)
-                pur = _PURIFICATION_TO_MACROGEN.get(entry.purification.value, "MOPC")
-                ws.cell(row=row_idx, column=5, value=pur)
-
-        ws.column_dimensions["A"].width = 6
-        ws.column_dimensions["B"].width = 35
-        ws.column_dimensions["C"].width = 60
-        ws.column_dimensions["D"].width = 10
-        ws.column_dimensions["E"].width = 14
-
-        wb.save(str(output_path))
-        return output_path
+        return write_macrogen_oligo_xlsx(self.entries, output_path)
 
     # ── Export: Macrogen Sequencing Order ─────────────────────────────
 
@@ -526,93 +344,13 @@ class PrimerOrderSheet:
         The experimenter fills in the measured concentration after miniprep,
         so this is left as None (blank).
         """
-        import openpyxl
-        from openpyxl.styles import Alignment, Font
-
-        if output_path is None:
-            output_path = self._generate_filename(Path.cwd(), "xlsx")
-        else:
-            output_path = Path(output_path)
-
-        wb = openpyxl.Workbook()
-
-        # ── Sheet1: Order ─────────────────────────────────────────────
-        ws = wb.active
-        ws.title = "Sheet1"
-
-        # Row 1: notice
-        ws.cell(
-            row=1, column=1,
-            value="     ※ Only English Alphabet (either capital small letters), "
-                  "digit 0~9, a hypen (-) or under bar (_) is allowed "
-                  "without any blanks.",
-        )
-
-        # Row 2: group header
-        ws.cell(row=2, column=1, value="#")
-        ws.cell(row=2, column=2, value="Reaction Information")
-        ws.cell(row=2, column=4, value="Sample Information")
-        ws.cell(row=2, column=9, value="Primer Information")
-        for col in [1, 2, 4, 9]:
-            ws.cell(row=2, column=col).font = Font(bold=True)
-
-        # Row 3: column header
-        col_headers = [
-            "#", "Sample Name *", "Primer Name *",
-            "Sample Concentration (ng/ul)", "Plate Name", "Well Position",
-            "Product Size(bp)", "Target Size(bp)",
-            "Primer Sequence(5 to 3)", "Primer Concentration (pmol/ul)",
-        ]
-        for col_idx, header in enumerate(col_headers, 1):
-            cell = ws.cell(row=3, column=col_idx, value=header)
-            cell.font = Font(bold=True)
-            cell.alignment = Alignment(horizontal="center", wrap_text=True)
-
-        # Data rows (starting at row 4)
-        total_rows = max(len(sample_primer_pairs), 1000)
-        for row_num in range(1, total_rows + 1):
-            row_idx = row_num + 3
-            ws.cell(row=row_idx, column=1, value=row_num)
-
-            if row_num <= len(sample_primer_pairs):
-                sp = sample_primer_pairs[row_num - 1]
-                ws.cell(row=row_idx, column=2, value=sp.get("sample_name", ""))
-                ws.cell(row=row_idx, column=3, value=sp.get("primer_name", ""))
-                ws.cell(row=row_idx, column=4, value=sp.get("sample_conc"))
-                ws.cell(row=row_idx, column=5, value=sp.get("plate_name", ""))
-                ws.cell(row=row_idx, column=6, value=sp.get("well_position", ""))
-                ws.cell(row=row_idx, column=7, value=sp.get("product_size"))
-                ws.cell(row=row_idx, column=8, value=sp.get("target_size"))
-                seq_cell = ws.cell(row=row_idx, column=9, value=sp.get("primer_seq", ""))
-                seq_cell.font = Font(name="Consolas", size=10)
-                ws.cell(row=row_idx, column=10, value=sp.get("primer_conc"))
-
-        # Column widths
-        widths = [5, 25, 25, 15, 12, 12, 12, 12, 45, 15]
-        for i, w in enumerate(widths, 1):
-            from openpyxl.utils import get_column_letter
-            ws.column_dimensions[get_column_letter(i)].width = w
-
-        # ── Sheet2: Reference ─────────────────────────────────────────
-        ws2 = wb.create_sheet("Sheet2")
-        ws2.cell(row=2, column=1, value="Product Size(bp)").font = Font(bold=True)
-        ws2.cell(row=2, column=2, value="Sample Align").font = Font(bold=True)
-        ws2.cell(row=3, column=1, value="600bp Over")
-        ws2.cell(row=3, column=2, value="Vertical")
-        ws2.cell(row=4, column=1, value="600bp Less")
-        ws2.cell(row=4, column=2, value="Horizontal")
-
-        wb.save(str(output_path))
-        return output_path
+        return write_macrogen_seq_xlsx(sample_primer_pairs, self._resolve_path(output_path, "xlsx"))
 
     # ── Export: CSV ────────────────────────────────────────────────────
 
     def to_csv(self, output_path: str | Path | None = None) -> Path:
         """UTF-8 BOM CSV (for Korean-Excel compatibility)."""
-        if output_path is None:
-            output_path = self._generate_filename(Path.cwd(), "csv")
-        else:
-            output_path = Path(output_path)
+        output_path = self._resolve_path(output_path, "csv")
 
         df = self.to_dataframe()
         df.to_csv(str(output_path), index=False, encoding="utf-8-sig")
@@ -622,56 +360,11 @@ class PrimerOrderSheet:
 
     def to_markdown(self, output_path: str | Path | None = None) -> Path:
         """Generate the Markdown order sheet."""
-        if output_path is None:
-            output_path = self._generate_filename(Path.cwd(), "md")
-        else:
-            output_path = Path(output_path)
-
-        lines: list[str] = []
-        lines.append(f"# Primer Order: {self.project_name}")
-        lines.append(f"")
-        lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        lines.append(f"")
-
-        # Order table
-        lines.append("## Order List")
-        lines.append("")
-        lines.append("| No. | Primer Name | Sequence (5'->3') | Scale | Purification | Length (nt) | Notes |")
-        lines.append("|-----|-------------|-------------------|-------|--------------|------------|-------|")
-        for i, entry in enumerate(self.entries, 1):
-            lines.append(
-                f"| {i} | {entry.name} | `{entry.sequence}` | "
-                f"{entry.scale.value} | {entry.purification.value} | "
-                f"{entry.length} | {entry.notes} |"
-            )
-        lines.append("")
-
-        # QC table
-        lines.append("## QC Summary")
-        lines.append("")
-        lines.append("| Primer Name | Tm | GC% | QC Verdict | Experiment |")
-        lines.append("|-------------|----|-----|------------|------------|")
-        for entry in self.entries:
-            tm_str = f"{entry.tm:.1f}" if entry.tm is not None else "-"
-            gc_str = f"{entry.gc:.1f}" if entry.gc is not None else "-"
-            lines.append(
-                f"| {entry.name} | {tm_str} | {gc_str} | "
-                f"{entry.qc_verdict or '-'} | {entry.experiment} |"
-            )
-        lines.append("")
-
-        # Summary
-        summary_data = self.summary()
-        lines.append("## Summary")
-        lines.append("")
-        lines.append(f"- Total primers: {summary_data['total_primers']}")
-        lines.append(f"- Total length: {summary_data['total_length_nt']} nt")
-        lines.append(f"- Estimated cost: {summary_data['estimated_cost_krw']:,} KRW")
-        if summary_data["unique_experiments"]:
-            lines.append(f"- Experiments: {', '.join(summary_data['unique_experiments'])}")
-        lines.append("")
-
-        output_path.write_text("\n".join(lines), encoding="utf-8")
+        output_path = self._resolve_path(output_path, "md")
+        output_path.write_text(
+            render_markdown(self.project_name, self.entries, self.summary()),
+            encoding="utf-8",
+        )
         return output_path
 
     # ── Export: DataFrame ──────────────────────────────────────────────
@@ -703,3 +396,9 @@ class PrimerOrderSheet:
         existing = sorted(output_dir.glob(f"{self.project_name}_{date_str}_*_order.{ext}"))
         seq = len(existing) + 1
         return output_dir / f"{self.project_name}_{date_str}_{seq:03d}_order.{ext}"
+
+    def _resolve_path(self, output_path: str | Path | None, ext: str) -> Path:
+        """``output_path`` as a Path, or an auto-numbered name in the cwd."""
+        if output_path is None:
+            return self._generate_filename(Path.cwd(), ext)
+        return Path(output_path)
