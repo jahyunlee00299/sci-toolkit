@@ -22,7 +22,7 @@
     "experiment-hub": {
       "reason": "toolkit copy sanitized: license MIT, maintainer-specific recipe, workbook IDs, machine wording and personal rule/tool names generalized",
       "toolkit_fp": "1f8f192f68014952",
-      "runtime_fp": "ee4187425f0b781c",
+      "runtime_fp": "e24fc0e101b39c1e",
       "declared": "2026-10-02"
     },
     "generate-image": {

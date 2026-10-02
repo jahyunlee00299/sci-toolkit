@@ -46,6 +46,43 @@ import time
 from pathlib import Path
 
 EXCEL_ERROR_STRINGS = ("#VALUE!", "#DIV/0!", "#REF!", "#NAME?", "#NULL!", "#NUM!", "#N/A")
+# Over COM an error cell's .Value is an int CVErr code, not the "#N/A" text, so a
+# string-only check never fired (found 261002). Map both forms to the display text.
+EXCEL_CVERR_CODES = {-2146826281: "#DIV/0!", -2146826246: "#N/A", -2146826259: "#NAME?",
+                     -2146826288: "#NULL!", -2146826252: "#NUM!", -2146826265: "#REF!",
+                     -2146826273: "#VALUE!"}
+
+
+def _error_text(v):
+    """Return the Excel error text for a COM cell value, or None."""
+    if isinstance(v, int) and not isinstance(v, bool) and v in EXCEL_CVERR_CODES:
+        return EXCEL_CVERR_CODES[v]
+    if isinstance(v, str):
+        for err in EXCEL_ERROR_STRINGS:
+            if err in v:
+                return err
+    return None
+
+
+def _col_letters(n: int) -> str:
+    out = ""
+    while n:
+        n, r = divmod(n - 1, 26)
+        out = chr(65 + r) + out
+    return out
+
+
+def _com_retry(fn, tries: int = 20, wait: float = 0.5):
+    """Retry a COM call Excel rejects while busy (RPC_E_CALL_REJECTED / SERVERCALL_RETRYLATER)."""
+    for i in range(tries):
+        try:
+            return fn()
+        except Exception as e:  # pywintypes.com_error is not importable off-Windows
+            code = getattr(e, "args", [None])[0]
+            if code in (-2147418111, -2147417846) and i < tries - 1:
+                time.sleep(wait)
+                continue
+            raise
 
 _WORKER_MARKER = "--_com-worker"
 
@@ -95,7 +132,8 @@ def recalc_and_scan(xlsx_path: str | Path, timeout_sec: int = 300) -> dict:
     started = time.monotonic()
     try:
         proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            encoding="utf-8", errors="replace",  # Korean paths: a cp949 decode error made stdout/stderr None
         )
     except OSError as e:
         return {"status": "spawn_error", "error": str(e)}
@@ -117,9 +155,9 @@ def recalc_and_scan(xlsx_path: str | Path, timeout_sec: int = 300) -> dict:
     elapsed = round(time.monotonic() - started, 1)
 
     if proc.returncode == 3:
-        return {"status": "env_error", "error": stderr.strip() or "pywin32/Excel not available", "elapsed_sec": elapsed}
+        return {"status": "env_error", "error": (stderr or "").strip() or "pywin32/Excel not available", "elapsed_sec": elapsed}
     if proc.returncode != 0:
-        return {"status": "worker_error", "error": stderr.strip(), "returncode": proc.returncode, "elapsed_sec": elapsed}
+        return {"status": "worker_error", "error": (stderr or "").strip(), "returncode": proc.returncode, "elapsed_sec": elapsed}
 
     try:
         result = json.loads(stdout)
@@ -160,17 +198,27 @@ def _com_worker_main(xlsx_path: str) -> dict:
         total_errors = 0
         wb2 = excel.Workbooks.Open(str(path), UpdateLinks=0)
         try:
-            for ws in wb2.Worksheets:
-                used = ws.UsedRange
-                for row in used.Rows:
-                    for cell in row.Cells:
-                        v = cell.Value
-                        if isinstance(v, str):
-                            for err in EXCEL_ERROR_STRINGS:
-                                if err in v:
-                                    errors.setdefault(err, []).append(f"{ws.Name}!{cell.Address(False, False)}")
-                                    total_errors += 1
-                                    break
+            # Wait until recalculation is done (xlDone = 0), then read each sheet's
+            # UsedRange in ONE call -- per-cell COM reads were slow and got rejected
+            # while Excel was still busy.
+            for _ in range(240):
+                if _com_retry(lambda: excel.CalculationState) == 0:
+                    break
+                time.sleep(0.5)
+            for ws in _com_retry(lambda: list(wb2.Worksheets)):
+                used = _com_retry(lambda: ws.UsedRange)
+                r0 = _com_retry(lambda: used.Row)
+                c0 = _com_retry(lambda: used.Column)
+                vals = _com_retry(lambda: used.Value)
+                if not isinstance(vals, tuple):
+                    vals = ((vals,),)
+                name = _com_retry(lambda: ws.Name)
+                for i, row in enumerate(vals):
+                    for j, v in enumerate(row):
+                        err = _error_text(v)
+                        if err:
+                            errors.setdefault(err, []).append(f"{name}!{_col_letters(c0 + j)}{r0 + i}")
+                            total_errors += 1
         finally:
             wb2.Close(SaveChanges=False)
 

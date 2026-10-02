@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.121] — 2026-10-02
+
+- Merge remote-tracking branch 'origin/main' into scitoolkit/fix/refactor-batch2-261002
+
+## [1.2.120] — 2026-10-02
+
+- experiment-hub excel_com_guard: detect CVErr int error codes, single-call UsedRange read with busy-retry, utf-8 worker output
+
 ## [1.2.119] — 2026-10-02
 
 - ledger: record refactor batch 2 (shared stdout helper, sci_http consolidation, primer-design decomposition)
