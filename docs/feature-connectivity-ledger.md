@@ -1310,3 +1310,46 @@ _google_auth, calendar, sheets); deleting `_stdio.py` breaks all of them; a plai
 wired-by: install/install.py
 wired-by: tests/test_connector_bundle.py
 wired-by: config/catalog.json
+
+### Unit 2 — primer-design `mcp_server.py` split
+
+**Scope** — `skills/primer-design/src/primer_design/mcp_server.py` (1073 lines,
+`_check_expression_viability` 241 lines, `design_re_cloning_primers` 140,
+`_fetch_cds_from_gene_id` 135, `fetch_gene_sequence` 113).
+
+**Change** — `mcp_server.py` (1073 -> 86 lines) keeps the FastMCP instance, the
+tool registry (names and order) and the entry point; tool bodies moved to plain
+functions in `mcp_cloning_tools.py` (277), `mcp_analysis_tools.py` (132),
+`mcp_gene_tools.py` (340), `expression_viability.py` (361, pure logic) and
+`_mcp_common.py` (logging + designer singletons). Every old name is re-exported from
+`mcp_server`, so `tests/stress_test_genes.py` and
+`python -m src.primer_design.mcp_server` are untouched. Longest functions after the
+split: `fetch_gene_sequence` 88 (docstring ~25), `design_re_cloning_primers` 64
+(docstring ~37), `generate_macrogen_order` 49; `_check_expression_viability` 241 -> 99 (docstring and the 35-line result dict included)
+via `_translate_insert`, `_fusion_protein`, `_fusion_mw_kda`, `_start_codon_source`,
+`_reading_frame_warnings`, `_active_tags`, `_internal_re_sites`, `_premature_stops`,
+`_verdict`; `_fetch_cds_from_gene_id` 135 -> 73 via `_fetch_gene_summary`,
+`_link_gene_to_nucleotides`, `_cds_info_from_feature`. A no-op condition
+(`check_site == re_site or check_site != re_site`) was dropped.
+
+**Evidence** — `tests/characterization_mcp.py` + `tests/golden/mcp_server.json`
+(produced from the unsplit module, regenerated twice byte-identical) pin: the
+registered tool list with every JSON schema and description, the registration order,
+and the output of every tool for fixed inputs: 7 design scenarios (files written to
+a temp dir, paths normalised), 56 viability combinations covering PASS/WARNING/FAIL,
+frame mismatches, blocked C-tags and internal sites, vector-context fuzzy matching,
+RE-pair / colony-PCR / frame / expression tools including unknown-vector errors, the
+Macrogen order cells, and `fetch_gene_sequence` against a scripted fake Entrez (8
+branches incl. not found, no links, no name match, fetch failure, codon
+optimisation). A real stdio client (`mcp.client.stdio`) lists the same 9 tools and
+calls one against the split server. 15 new tests; suite 78 -> 93.
+
+**Refutation** — four mutations were each caught: a warning string in
+`expression_viability.py`, a swapped registration order, a dropped Entrez link
+type, and a changed default in a tool signature (schema).
+
+wired-by: skills/primer-design/src/primer_design/mcp_cloning_tools.py
+wired-by: skills/primer-design/src/primer_design/mcp_analysis_tools.py
+wired-by: skills/primer-design/src/primer_design/mcp_gene_tools.py
+wired-by: skills/primer-design/src/primer_design/expression_viability.py
+wired-by: skills/primer-design/tests/test_mcp_characterization.py

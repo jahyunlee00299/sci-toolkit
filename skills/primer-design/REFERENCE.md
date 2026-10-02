@@ -354,6 +354,11 @@ src/primer_design/
 +-- cloning_report.py            # PNG report (re-exports the circular map)
 +-- vector_construct_map.py      # circular plasmid construct map
 +-- _plot_style.py               # shared plot fonts
-+-- mcp_server.py                # FastMCP server (8 tools)
++-- mcp_server.py                # FastMCP server: tool registry + entry point (9 tools)
++-- mcp_cloning_tools.py         # design_re_cloning_primers, recommend_re_pair, suggest_colony_pcr, check_reading_frame_tool
++-- mcp_analysis_tools.py        # analyze_expression, list_vectors, list_restriction_enzymes, generate_macrogen_order
++-- mcp_gene_tools.py            # fetch_gene_sequence + NCBI Entrez helpers
++-- expression_viability.py      # construct viability check used by the design tool
++-- _mcp_common.py               # stderr logging + shared designer singletons
 +-- clients/                     # project-specific mutagenesis clients (user-supplied, not bundled)
 ```

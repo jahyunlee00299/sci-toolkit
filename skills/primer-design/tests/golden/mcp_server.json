@@ -1,0 +1,5156 @@
+{
+ "order": [
+  "design_re_cloning_primers",
+  "recommend_re_pair",
+  "suggest_colony_pcr",
+  "analyze_expression",
+  "check_reading_frame_tool",
+  "list_vectors",
+  "list_restriction_enzymes",
+  "generate_macrogen_order",
+  "fetch_gene_sequence"
+ ],
+ "outputs": {
+  "_check_expression_viability": {
+   "bad_length|c_tag_blocked": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 5,
+    "fusion_protein_mw_kda": 0.5,
+    "gc_content": 0.4375,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "bad_length|duet_fuzzy": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "C-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "GS",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 11,
+    "fusion_protein_mw_kda": 1.05,
+    "gc_content": 0.4375,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-S-tag-insert-S-tag",
+    "vector_context": {
+     "expression_type": "cytoplasmic, co-expression",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "Duet vector MCS1; N-terminal His6; co-expression with MCS2",
+     "promoter": "T7/lac (MCS1)",
+     "rbs": "vector-provided"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "bad_length|frame_mismatch3": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "LEH",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 5,
+    "fusion_protein_mw_kda": 0.5,
+    "gc_content": 0.4375,
+    "in_frame_3prime": false,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "3' reading frame MISMATCH: insert is NOT in-frame with vector C-terminal tags through XhoI",
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "bad_length|frame_mismatch5": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 5,
+    "fusion_protein_mw_kda": 0.5,
+    "gc_content": 0.4375,
+    "in_frame_3prime": true,
+    "in_frame_5prime": false,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "5' reading frame MISMATCH: insert is NOT in-frame with vector N-terminal tags through BamHI",
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "bad_length|mbp": {
+    "active_tags": [
+     {
+      "name": "MBP",
+      "position": "N-terminal"
+     },
+     {
+      "name": "TEV",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 10,
+    "fusion_protein_mw_kda": 0.96,
+    "gc_content": 0.4375,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MKIEE",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "MBP-TEV-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, MBP fusion",
+     "host_requirement": "any E. coli strain",
+     "inducer": "IPTG",
+     "notes": "MBP-TEV-insert fusion; amylose resin purification",
+     "promoter": "Ptac",
+     "rbs": "malE translation initiation signals"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "bad_length|n_his_tags": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "Thrombin",
+      "position": "N-terminal"
+     },
+     {
+      "name": "T7-tag",
+      "position": "N-terminal"
+     },
+     {
+      "name": "C-His6",
+      "position": "C-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "LEHHHHHH",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 33,
+    "fusion_protein_mw_kda": 3.07,
+    "gc_content": 0.4375,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSH",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-Thrombin-T7-tag-insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "bad_length|plain": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 5,
+    "fusion_protein_mw_kda": 0.5,
+    "gc_content": 0.4375,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "",
+    "vector_context": {
+     "notes": "No vector specified",
+     "promoter": "unknown"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "bad_length|unknown_vec": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7502,
+    "cds_length_valid": false,
+    "fusion_protein_length_aa": 5,
+    "fusion_protein_mw_kda": 0.5,
+    "gc_content": 0.4375,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 16,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 5,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "x",
+    "vector_context": {
+     "notes": "Vector 'mystery' not in expression database",
+     "promoter": "unknown"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Insert length (16 bp) is not a multiple of 3. Reading frame will be disrupted!"
+    ]
+   },
+   "good_stop|c_tag_blocked": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 80,
+    "fusion_protein_mw_kda": 7.39,
+    "gc_content": 0.4979,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "good_stop|duet_fuzzy": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 84,
+    "fusion_protein_mw_kda": 7.76,
+    "gc_content": 0.4979,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-S-tag-insert-S-tag",
+    "vector_context": {
+     "expression_type": "cytoplasmic, co-expression",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "Duet vector MCS1; N-terminal His6; co-expression with MCS2",
+     "promoter": "T7/lac (MCS1)",
+     "rbs": "vector-provided"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "good_stop|frame_mismatch3": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 80,
+    "fusion_protein_mw_kda": 7.39,
+    "gc_content": 0.4979,
+    "in_frame_3prime": false,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "good_stop|frame_mismatch5": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 80,
+    "fusion_protein_mw_kda": 7.39,
+    "gc_content": 0.4979,
+    "in_frame_3prime": true,
+    "in_frame_5prime": false,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "5' reading frame MISMATCH: insert is NOT in-frame with vector N-terminal tags through BamHI"
+    ]
+   },
+   "good_stop|mbp": {
+    "active_tags": [
+     {
+      "name": "MBP",
+      "position": "N-terminal"
+     },
+     {
+      "name": "TEV",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 85,
+    "fusion_protein_mw_kda": 7.85,
+    "gc_content": 0.4979,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MKIEE",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "MBP-TEV-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, MBP fusion",
+     "host_requirement": "any E. coli strain",
+     "inducer": "IPTG",
+     "notes": "MBP-TEV-insert fusion; amylose resin purification",
+     "promoter": "Ptac",
+     "rbs": "malE translation initiation signals"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "good_stop|n_his_tags": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "Thrombin",
+      "position": "N-terminal"
+     },
+     {
+      "name": "T7-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 100,
+    "fusion_protein_mw_kda": 9.23,
+    "gc_content": 0.4979,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSH",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-Thrombin-T7-tag-insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "good_stop|plain": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 80,
+    "fusion_protein_mw_kda": 7.39,
+    "gc_content": 0.4979,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "",
+    "vector_context": {
+     "notes": "No vector specified",
+     "promoter": "unknown"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "good_stop|unknown_vec": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8156,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 80,
+    "fusion_protein_mw_kda": 7.39,
+    "gc_content": 0.4979,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 243,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 80,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "x",
+    "vector_context": {
+     "notes": "Vector 'mystery' not in expression database",
+     "promoter": "unknown"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "internal_both|c_tag_blocked": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 9,
+    "fusion_protein_mw_kda": 0.86,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "internal_both|duet_fuzzy": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 13,
+    "fusion_protein_mw_kda": 1.23,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "N-His6-S-tag-insert-S-tag",
+    "vector_context": {
+     "expression_type": "cytoplasmic, co-expression",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "Duet vector MCS1; N-terminal His6; co-expression with MCS2",
+     "promoter": "T7/lac (MCS1)",
+     "rbs": "vector-provided"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "internal_both|frame_mismatch3": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 9,
+    "fusion_protein_mw_kda": 0.86,
+    "gc_content": 0.4333,
+    "in_frame_3prime": false,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "internal_both|frame_mismatch5": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 9,
+    "fusion_protein_mw_kda": 0.86,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": false,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "N-His6-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "5' reading frame MISMATCH: insert is NOT in-frame with vector N-terminal tags through BamHI"
+    ]
+   },
+   "internal_both|mbp": {
+    "active_tags": [
+     {
+      "name": "MBP",
+      "position": "N-terminal"
+     },
+     {
+      "name": "TEV",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 14,
+    "fusion_protein_mw_kda": 1.32,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [
+     {
+      "count": 1,
+      "enzyme": "BamHI",
+      "positions_bp": [
+       7
+      ],
+      "site": "GGATCC"
+     },
+     {
+      "count": 1,
+      "enzyme": "BamHI",
+      "positions_bp": [
+       7
+      ],
+      "site": "RC(GGATCC)"
+     }
+    ],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MKIEE",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "MBP-TEV-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, MBP fusion",
+     "host_requirement": "any E. coli strain",
+     "inducer": "IPTG",
+     "notes": "MBP-TEV-insert fusion; amylose resin purification",
+     "promoter": "Ptac",
+     "rbs": "malE translation initiation signals"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "CRITICAL: BamHI (GGATCC) cuts within the insert at 1 position(s): bp [7]",
+     "CRITICAL: BamHI (RC(GGATCC)) cuts within the insert at 1 position(s): bp [7]"
+    ]
+   },
+   "internal_both|n_his_tags": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "Thrombin",
+      "position": "N-terminal"
+     },
+     {
+      "name": "T7-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 29,
+    "fusion_protein_mw_kda": 2.7,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [
+     {
+      "count": 1,
+      "enzyme": "BamHI",
+      "positions_bp": [
+       7
+      ],
+      "site": "GGATCC"
+     },
+     {
+      "count": 1,
+      "enzyme": "BamHI",
+      "positions_bp": [
+       7
+      ],
+      "site": "RC(GGATCC)"
+     },
+     {
+      "count": 1,
+      "enzyme": "XhoI",
+      "positions_bp": [
+       16
+      ],
+      "site": "CTCGAG"
+     },
+     {
+      "count": 1,
+      "enzyme": "XhoI",
+      "positions_bp": [
+       16
+      ],
+      "site": "RC(CTCGAG)"
+     }
+    ],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSH",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "N-His6-Thrombin-T7-tag-insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "CRITICAL: BamHI (GGATCC) cuts within the insert at 1 position(s): bp [7]",
+     "CRITICAL: BamHI (RC(GGATCC)) cuts within the insert at 1 position(s): bp [7]",
+     "CRITICAL: XhoI (CTCGAG) cuts within the insert at 1 position(s): bp [16]",
+     "CRITICAL: XhoI (RC(CTCGAG)) cuts within the insert at 1 position(s): bp [16]"
+    ]
+   },
+   "internal_both|plain": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 9,
+    "fusion_protein_mw_kda": 0.86,
+    "gc_content": 0.4333,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "",
+    "vector_context": {
+     "notes": "No vector specified",
+     "promoter": "unknown"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "internal_both|unknown_vec": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.4544,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 9,
+    "fusion_protein_mw_kda": 0.86,
+    "gc_content": 0.4333,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 9,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 10.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "x",
+    "vector_context": {
+     "notes": "Vector 'mystery' not in expression database",
+     "promoter": "unknown"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_atg|c_tag_blocked": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 7,
+    "fusion_protein_mw_kda": 0.68,
+    "gc_content": 0.4583,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "unknown",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Minor issues found - review before proceeding",
+    "warnings": [
+     "No ATG start codon found at insert start, and no vector N-terminal fusion detected"
+    ]
+   },
+   "no_atg|duet_fuzzy": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 11,
+    "fusion_protein_mw_kda": 1.05,
+    "gc_content": 0.4583,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "MGSS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-S-tag-insert-S-tag",
+    "vector_context": {
+     "expression_type": "cytoplasmic, co-expression",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "Duet vector MCS1; N-terminal His6; co-expression with MCS2",
+     "promoter": "T7/lac (MCS1)",
+     "rbs": "vector-provided"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_atg|frame_mismatch3": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 7,
+    "fusion_protein_mw_kda": 0.68,
+    "gc_content": 0.4583,
+    "in_frame_3prime": false,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "unknown",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Minor issues found - review before proceeding",
+    "warnings": [
+     "No ATG start codon found at insert start, and no vector N-terminal fusion detected"
+    ]
+   },
+   "no_atg|frame_mismatch5": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 7,
+    "fusion_protein_mw_kda": 0.68,
+    "gc_content": 0.4583,
+    "in_frame_3prime": true,
+    "in_frame_5prime": false,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "MGS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "5' reading frame MISMATCH: insert is NOT in-frame with vector N-terminal tags through BamHI"
+    ]
+   },
+   "no_atg|mbp": {
+    "active_tags": [
+     {
+      "name": "MBP",
+      "position": "N-terminal"
+     },
+     {
+      "name": "TEV",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 12,
+    "fusion_protein_mw_kda": 1.14,
+    "gc_content": 0.4583,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "MKIEE",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "MBP-TEV-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, MBP fusion",
+     "host_requirement": "any E. coli strain",
+     "inducer": "IPTG",
+     "notes": "MBP-TEV-insert fusion; amylose resin purification",
+     "promoter": "Ptac",
+     "rbs": "malE translation initiation signals"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_atg|n_his_tags": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "Thrombin",
+      "position": "N-terminal"
+     },
+     {
+      "name": "T7-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 27,
+    "fusion_protein_mw_kda": 2.52,
+    "gc_content": 0.4583,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSH",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-Thrombin-T7-tag-insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_atg|plain": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 7,
+    "fusion_protein_mw_kda": 0.68,
+    "gc_content": 0.4583,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "unknown",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "",
+    "vector_context": {
+     "notes": "No vector specified",
+     "promoter": "unknown"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Minor issues found - review before proceeding",
+    "warnings": [
+     "No ATG start codon found at insert start, and no vector N-terminal fusion detected"
+    ]
+   },
+   "no_atg|unknown_vec": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8129,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 7,
+    "fusion_protein_mw_kda": 0.68,
+    "gc_content": 0.4583,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 7,
+    "internal_re_sites": [],
+    "map_removal": true,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "unknown",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "x",
+    "vector_context": {
+     "notes": "Vector 'mystery' not in expression database",
+     "promoter": "unknown"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Minor issues found - review before proceeding",
+    "warnings": [
+     "No ATG start codon found at insert start, and no vector N-terminal fusion detected"
+    ]
+   },
+   "no_stop|c_tag_blocked": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 10,
+    "fusion_protein_mw_kda": 0.96,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_stop|duet_fuzzy": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "C-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "GS",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 16,
+    "fusion_protein_mw_kda": 1.51,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-S-tag-insert-S-tag",
+    "vector_context": {
+     "expression_type": "cytoplasmic, co-expression",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "Duet vector MCS1; N-terminal His6; co-expression with MCS2",
+     "promoter": "T7/lac (MCS1)",
+     "rbs": "vector-provided"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_stop|frame_mismatch3": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "LEH",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 10,
+    "fusion_protein_mw_kda": 0.96,
+    "gc_content": 0.4333,
+    "in_frame_3prime": false,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Minor issues found - review before proceeding",
+    "warnings": [
+     "3' reading frame MISMATCH: insert is NOT in-frame with vector C-terminal tags through XhoI"
+    ]
+   },
+   "no_stop|frame_mismatch5": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 10,
+    "fusion_protein_mw_kda": 0.96,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": false,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "5' reading frame MISMATCH: insert is NOT in-frame with vector N-terminal tags through BamHI"
+    ]
+   },
+   "no_stop|mbp": {
+    "active_tags": [
+     {
+      "name": "MBP",
+      "position": "N-terminal"
+     },
+     {
+      "name": "TEV",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 15,
+    "fusion_protein_mw_kda": 1.42,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MKIEE",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "MBP-TEV-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, MBP fusion",
+     "host_requirement": "any E. coli strain",
+     "inducer": "IPTG",
+     "notes": "MBP-TEV-insert fusion; amylose resin purification",
+     "promoter": "Ptac",
+     "rbs": "malE translation initiation signals"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_stop|n_his_tags": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "Thrombin",
+      "position": "N-terminal"
+     },
+     {
+      "name": "T7-tag",
+      "position": "N-terminal"
+     },
+     {
+      "name": "C-His6",
+      "position": "C-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "LEHHHHHH",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 38,
+    "fusion_protein_mw_kda": 3.53,
+    "gc_content": 0.4333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSH",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-Thrombin-T7-tag-insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_stop|plain": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 10,
+    "fusion_protein_mw_kda": 0.96,
+    "gc_content": 0.4333,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "",
+    "vector_context": {
+     "notes": "No vector specified",
+     "promoter": "unknown"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "no_stop|unknown_vec": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.8427,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 10,
+    "fusion_protein_mw_kda": 0.96,
+    "gc_content": 0.4333,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 30,
+    "insert_has_native_stop": false,
+    "insert_protein_length_aa": 10,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "x",
+    "vector_context": {
+     "notes": "Vector 'mystery' not in expression database",
+     "promoter": "unknown"
+    },
+    "verdict": "PASS",
+    "verdict_detail": "No issues detected - construct should express correctly",
+    "warnings": []
+   },
+   "premature_stop|c_tag_blocked": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 2,
+    "fusion_protein_mw_kda": 0.22,
+    "gc_content": 0.25,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "premature_stop|duet_fuzzy": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 6,
+    "fusion_protein_mw_kda": 0.59,
+    "gc_content": 0.25,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSS",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-S-tag-insert-S-tag",
+    "vector_context": {
+     "expression_type": "cytoplasmic, co-expression",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "Duet vector MCS1; N-terminal His6; co-expression with MCS2",
+     "promoter": "T7/lac (MCS1)",
+     "rbs": "vector-provided"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "premature_stop|frame_mismatch3": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 2,
+    "fusion_protein_mw_kda": 0.22,
+    "gc_content": 0.25,
+    "in_frame_3prime": false,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "premature_stop|frame_mismatch5": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 2,
+    "fusion_protein_mw_kda": 0.22,
+    "gc_content": 0.25,
+    "in_frame_3prime": true,
+    "in_frame_5prime": false,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGS",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "5' reading frame MISMATCH: insert is NOT in-frame with vector N-terminal tags through BamHI",
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "premature_stop|mbp": {
+    "active_tags": [
+     {
+      "name": "MBP",
+      "position": "N-terminal"
+     },
+     {
+      "name": "TEV",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 7,
+    "fusion_protein_mw_kda": 0.68,
+    "gc_content": 0.25,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MKIEE",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "MBP-TEV-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, MBP fusion",
+     "host_requirement": "any E. coli strain",
+     "inducer": "IPTG",
+     "notes": "MBP-TEV-insert fusion; amylose resin purification",
+     "promoter": "Ptac",
+     "rbs": "malE translation initiation signals"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "premature_stop|n_his_tags": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "Thrombin",
+      "position": "N-terminal"
+     },
+     {
+      "name": "T7-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 22,
+    "fusion_protein_mw_kda": 2.06,
+    "gc_content": 0.25,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSH",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "vector",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "N-His6-Thrombin-T7-tag-insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "premature_stop|plain": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 2,
+    "fusion_protein_mw_kda": 0.22,
+    "gc_content": 0.25,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "",
+    "vector_context": {
+     "notes": "No vector specified",
+     "promoter": "unknown"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "premature_stop|unknown_vec": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.7535,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 2,
+    "fusion_protein_mw_kda": 0.22,
+    "gc_content": 0.25,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 24,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 2,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [
+     {
+      "codon": "TAA",
+      "position_bp": 7,
+      "position_codon": 3
+     }
+    ],
+    "rare_codon_clusters": 0,
+    "rare_codon_pct": 0.0,
+    "start_codon_source": "insert",
+    "strain_recommendation": "BL21(DE3)",
+    "topology": "x",
+    "vector_context": {
+     "notes": "Vector 'mystery' not in expression database",
+     "promoter": "unknown"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "Premature stop codon(s) at codon position(s): [3]. Protein will be truncated!"
+    ]
+   },
+   "rare|c_tag_blocked": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 14,
+    "fusion_protein_mw_kda": 1.32,
+    "gc_content": 0.5333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Very low CAI - expression may fail",
+    "warnings": []
+   },
+   "rare|duet_fuzzy": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "S-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 18,
+    "fusion_protein_mw_kda": 1.69,
+    "gc_content": 0.5333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "N-His6-S-tag-insert-S-tag",
+    "vector_context": {
+     "expression_type": "cytoplasmic, co-expression",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "Duet vector MCS1; N-terminal His6; co-expression with MCS2",
+     "promoter": "T7/lac (MCS1)",
+     "rbs": "vector-provided"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Very low CAI - expression may fail",
+    "warnings": []
+   },
+   "rare|frame_mismatch3": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 14,
+    "fusion_protein_mw_kda": 1.32,
+    "gc_content": 0.5333,
+    "in_frame_3prime": false,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "C-terminal His-tag only (no N-terminal tag)",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Very low CAI - expression may fail",
+    "warnings": []
+   },
+   "rare|frame_mismatch5": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 14,
+    "fusion_protein_mw_kda": 1.32,
+    "gc_content": 0.5333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": false,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGS",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "N-His6-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "FAIL",
+    "verdict_detail": "Critical issues found - construct will NOT express correctly",
+    "warnings": [
+     "5' reading frame MISMATCH: insert is NOT in-frame with vector N-terminal tags through BamHI"
+    ]
+   },
+   "rare|mbp": {
+    "active_tags": [
+     {
+      "name": "MBP",
+      "position": "N-terminal"
+     },
+     {
+      "name": "TEV",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 19,
+    "fusion_protein_mw_kda": 1.78,
+    "gc_content": 0.5333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MKIEE",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "MBP-TEV-insert",
+    "vector_context": {
+     "expression_type": "cytoplasmic, MBP fusion",
+     "host_requirement": "any E. coli strain",
+     "inducer": "IPTG",
+     "notes": "MBP-TEV-insert fusion; amylose resin purification",
+     "promoter": "Ptac",
+     "rbs": "malE translation initiation signals"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Very low CAI - expression may fail",
+    "warnings": []
+   },
+   "rare|n_his_tags": {
+    "active_tags": [
+     {
+      "name": "N-His6",
+      "position": "N-terminal"
+     },
+     {
+      "name": "Thrombin",
+      "position": "N-terminal"
+     },
+     {
+      "name": "T7-tag",
+      "position": "N-terminal"
+     }
+    ],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": true,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 34,
+    "fusion_protein_mw_kda": 3.16,
+    "gc_content": 0.5333,
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSH",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "vector",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "N-His6-Thrombin-T7-tag-insert-C-His6",
+    "vector_context": {
+     "expression_type": "cytoplasmic, high-level",
+     "host_requirement": "BL21(DE3) or DE3 lysogen",
+     "inducer": "IPTG",
+     "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+     "promoter": "T7/lac",
+     "rbs": "vector-provided (T7 gene 10 leader)"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Very low CAI - expression may fail",
+    "warnings": []
+   },
+   "rare|plain": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 14,
+    "fusion_protein_mw_kda": 1.32,
+    "gc_content": 0.5333,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "",
+    "vector_context": {
+     "notes": "No vector specified",
+     "promoter": "unknown"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Very low CAI - expression may fail",
+    "warnings": []
+   },
+   "rare|unknown_vec": {
+    "active_tags": [],
+    "c_terminal_linker_aa": "(blocked by stop codon)",
+    "c_terminal_tag_blocked": false,
+    "cai": 0.0426,
+    "cds_length_valid": true,
+    "fusion_protein_length_aa": 14,
+    "fusion_protein_mw_kda": 1.32,
+    "gc_content": 0.5333,
+    "in_frame_3prime": null,
+    "in_frame_5prime": null,
+    "insert_cds_length_bp": 45,
+    "insert_has_native_stop": true,
+    "insert_protein_length_aa": 14,
+    "internal_re_sites": [],
+    "map_removal": false,
+    "n_terminal_linker_aa": "",
+    "premature_stop_codons": [],
+    "rare_codon_clusters": 1,
+    "rare_codon_pct": 86.67,
+    "start_codon_source": "insert",
+    "strain_recommendation": "Rosetta 2(DE3)",
+    "topology": "x",
+    "vector_context": {
+     "notes": "Vector 'mystery' not in expression database",
+     "promoter": "unknown"
+    },
+    "verdict": "WARNING",
+    "verdict_detail": "Very low CAI - expression may fail",
+    "warnings": []
+   }
+  },
+  "analyze_expression": {
+   "rare": {
+    "basic_info": {
+     "cds_length_bp": 45,
+     "gc_content": 0.5333,
+     "has_start_codon": true,
+     "mature_mw_kda": 2.18,
+     "molecular_weight_kda": 2.18,
+     "protein_length_aa": 14,
+     "protein_sequence": "MRRRRRRRRRRRRR"
+    },
+    "cai": 0.0426,
+    "map_removal": {
+     "note": "N-terminal Met likely retained (second residue: R, not small enough for MAP).",
+     "will_be_removed": false
+    },
+    "organism_source": "",
+    "rare_codon_clusters": [
+     {
+      "end": 15,
+      "rare_codons": [
+       {
+        "codon": "AGG",
+        "position": 2
+       },
+       {
+        "codon": "AGA",
+        "position": 3
+       },
+       {
+        "codon": "AGG",
+        "position": 4
+       },
+       {
+        "codon": "CGG",
+        "position": 5
+       },
+       {
+        "codon": "AGA",
+        "position": 6
+       },
+       {
+        "codon": "AGG",
+        "position": 7
+       },
+       {
+        "codon": "AGA",
+        "position": 8
+       },
+       {
+        "codon": "AGG",
+        "position": 9
+       },
+       {
+        "codon": "CGG",
+        "position": 10
+       },
+       {
+        "codon": "AGA",
+        "position": 11
+       },
+       {
+        "codon": "AGG",
+        "position": 12
+       },
+       {
+        "codon": "AGA",
+        "position": 13
+       },
+       {
+        "codon": "AGG",
+        "position": 14
+       }
+      ],
+      "start": 1
+     }
+    ],
+    "rare_codons": {
+     "detail": [
+      {
+       "amino_acid": "Arg",
+       "codon": "AGA",
+       "count": 5,
+       "freq_per_1000": 2.1,
+       "positions": [
+        3,
+        6,
+        8,
+        11,
+        13
+       ],
+       "prare": true,
+       "prare2": true
+      },
+      {
+       "amino_acid": "Arg",
+       "codon": "AGG",
+       "count": 6,
+       "freq_per_1000": 1.2,
+       "positions": [
+        2,
+        4,
+        7,
+        9,
+        12,
+        14
+       ],
+       "prare": true,
+       "prare2": true
+      },
+      {
+       "amino_acid": "Arg",
+       "codon": "CGG",
+       "count": 2,
+       "freq_per_1000": 5.4,
+       "positions": [
+        5,
+        10
+       ],
+       "prare": false,
+       "prare2": true
+      }
+     ],
+     "prare2_count": 13,
+     "prare_count": 11,
+     "rare_codon_pct": 86.67,
+     "total_codons": 15,
+     "total_rare": 13
+    },
+    "recommendations": [
+     "High rare codon content (>8%): strongly recommend codon optimization or use Rosetta 2(DE3)",
+     "1 rare codon cluster(s) detected: may cause ribosomal stalling. Consider codon optimization in clustered regions.",
+     "Very low CAI (<0.2): expression likely very poor. Codon optimization strongly recommended."
+    ],
+    "signal_peptide": {
+     "cleavage_site_estimate": null,
+     "confidence": "none",
+     "has_signal_peptide": false,
+     "hydrophobic_pct": 0.0,
+     "n_region_positive": 0,
+     "notes": [
+      "Protein too short for signal peptide analysis"
+     ]
+    },
+    "strain_recommendation": {
+     "alternative_strain": "Rosetta(DE3)",
+     "codon_optimization_needed": true,
+     "optimization_priority": "high",
+     "primary_strain": "Rosetta 2(DE3)",
+     "rationale": [
+      "Rare codon content (86.7%) exceeds 8%: Rosetta 2(DE3) supplies all rare tRNAs",
+      "1 rare codon cluster(s) detected: Rosetta strain mandatory or codon optimization required",
+      "Low CAI (0.043): codon optimization strongly recommended"
+     ]
+    },
+    "warnings": []
+   },
+   "spaces_newlines": {
+    "basic_info": {
+     "cds_length_bp": 243,
+     "gc_content": 0.4979,
+     "has_start_codon": true,
+     "mature_mw_kda": 8.9,
+     "molecular_weight_kda": 8.9,
+     "protein_length_aa": 80,
+     "protein_sequence": "MKAAIVLSESGVHECPKESKLVPALNGLEIEDEGVIPEFFKGKLDRGFKAILNNAKDWSRVENYQPDLINELKAKATDVE"
+    },
+    "cai": 0.8156,
+    "map_removal": {
+     "note": "N-terminal Met likely retained (second residue: K, not small enough for MAP).",
+     "will_be_removed": false
+    },
+    "organism_source": "",
+    "rare_codon_clusters": [],
+    "rare_codons": {
+     "detail": [],
+     "prare2_count": 0,
+     "prare_count": 0,
+     "rare_codon_pct": 0.0,
+     "total_codons": 81,
+     "total_rare": 0
+    },
+    "recommendations": [],
+    "signal_peptide": {
+     "cleavage_site_estimate": null,
+     "confidence": "low",
+     "has_signal_peptide": false,
+     "hydrophobic_pct": 0.44,
+     "n_region_positive": 1,
+     "notes": [
+      "High hydrophobic content in first 25 aa: 44%",
+      "Weakly positive N-region: 1 K/R in first 5 aa",
+      "Potential cleavage site near position 24 (small amino acid)",
+      "Some signal peptide features but below threshold"
+     ]
+    },
+    "strain_recommendation": {
+     "alternative_strain": null,
+     "codon_optimization_needed": false,
+     "optimization_priority": "low",
+     "primary_strain": "BL21(DE3)",
+     "rationale": [
+      "Low rare codon content (0.0%): BL21(DE3) sufficient"
+     ]
+    },
+    "warnings": []
+   },
+   "test_insert": {
+    "basic_info": {
+     "cds_length_bp": 243,
+     "gc_content": 0.4979,
+     "has_start_codon": true,
+     "mature_mw_kda": 8.9,
+     "molecular_weight_kda": 8.9,
+     "protein_length_aa": 80,
+     "protein_sequence": "MKAAIVLSESGVHECPKESKLVPALNGLEIEDEGVIPEFFKGKLDRGFKAILNNAKDWSRVENYQPDLINELKAKATDVE"
+    },
+    "cai": 0.8156,
+    "map_removal": {
+     "note": "N-terminal Met likely retained (second residue: K, not small enough for MAP).",
+     "will_be_removed": false
+    },
+    "organism_source": "",
+    "rare_codon_clusters": [],
+    "rare_codons": {
+     "detail": [],
+     "prare2_count": 0,
+     "prare_count": 0,
+     "rare_codon_pct": 0.0,
+     "total_codons": 81,
+     "total_rare": 0
+    },
+    "recommendations": [],
+    "signal_peptide": {
+     "cleavage_site_estimate": null,
+     "confidence": "low",
+     "has_signal_peptide": false,
+     "hydrophobic_pct": 0.44,
+     "n_region_positive": 1,
+     "notes": [
+      "High hydrophobic content in first 25 aa: 44%",
+      "Weakly positive N-region: 1 K/R in first 5 aa",
+      "Potential cleavage site near position 24 (small amino acid)",
+      "Some signal peptide features but below threshold"
+     ]
+    },
+    "strain_recommendation": {
+     "alternative_strain": null,
+     "codon_optimization_needed": false,
+     "optimization_priority": "low",
+     "primary_strain": "BL21(DE3)",
+     "rationale": [
+      "Low rare codon content (0.0%): BL21(DE3) sufficient"
+     ]
+    },
+    "warnings": []
+   }
+  },
+  "check_reading_frame_tool": {
+   "no_atg": {
+    "frame_at_insert_start": 0,
+    "frame_report": "Vector:   pET-28a(+)\nStrategy: NdeI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHM (63 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] (NdeI) [INSERT] (XhoI) [C-His6] [STOP]",
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 63,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHM",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATG",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "NdeI",
+    "topology": "[N-His6] [Thrombin] (NdeI) [INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": []
+   },
+   "pet21a_stop": {
+    "frame_at_insert_start": 0,
+    "frame_report": "Vector:   pET-21a(+)\nStrategy: NheI / NotI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MAS (9 nt)\n3' junction: IN-FRAME (33 nt to stop, 11 codons)\n\nTopology: [T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)\n\n  ! Insert has stop codon -> C-terminal tag will NOT be fused\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": true,
+    "insert_start_pos": 9,
+    "linker_3prime_aa": "AAALEHHHHHH",
+    "linker_3prime_nt": "GCGGCCGCACTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MAS",
+    "linker_5prime_nt": "ATGGCTAGC",
+    "nt_3prime_to_stop": 33,
+    "re_3prime": "NotI",
+    "re_5prime": "NheI",
+    "topology": "[T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)",
+    "vector_name": "pET-21a(+)",
+    "warnings": [
+     "Insert has stop codon -> C-terminal tag will NOT be fused",
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "pet28a_bamhi_xhoi": {
+    "frame_at_insert_start": 0,
+    "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+    "in_frame_3prime": true,
+    "in_frame_5prime": true,
+    "insert_has_stop": false,
+    "insert_start_pos": 102,
+    "linker_3prime_aa": "LEHHHHHH",
+    "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+    "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+    "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+    "nt_3prime_to_stop": 24,
+    "re_3prime": "XhoI",
+    "re_5prime": "BamHI",
+    "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+    "vector_name": "pET-28a(+)",
+    "warnings": [
+     "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+    ]
+   },
+   "unknown": [
+    "raised",
+    "ValueError",
+    "Unknown vector: 'zzz'. Available: pET-21a(+), pET-28a(+), pMAL-c6T, pETDuet-1:MCS1, pETDuet-1:MCS2, pACYCDuet-1:MCS1, pACYCDuet-1:MCS2"
+   ]
+  },
+  "codon_optimize": {
+   "bad": [
+    "raised",
+    "ValueError",
+    "Unknown amino acid: 'B'"
+   ],
+   "lower": "ATGAAAGTG",
+   "ok": "ATGAAAGCGTGGCGCTGCTAA"
+  },
+  "design_re_cloning_primers": {
+   "duet_mcs1": {
+    "files": [
+     "Insert_pETDuet-1-MCS1_NcoI_HindIII_construct.dna"
+    ],
+    "result": {
+     "anneal_temp": 64.0,
+     "colony_pcr": {
+      "anneal_temp": 57.4,
+      "expected_band_empty": 390,
+      "expected_band_with_insert": 543,
+      "f_name": "pET-upstream",
+      "f_seq": "ATGCGTCCGGCGTAGAGG",
+      "f_tm": 69.1,
+      "flanking_downstream": 150,
+      "flanking_upstream": 150,
+      "notes": [
+       "Flanking distances: default for pETDuet-1:MCS1",
+       "Tm difference 6.7C between F/R; consider touchdown PCR"
+      ],
+      "r_name": "T7terminator",
+      "r_seq": "GCTAGTTATTGCTCAGCGG",
+      "r_tm": 62.4,
+      "vector_name": "pETDuet-1:MCS1"
+     },
+     "expression_check": {
+      "active_tags": [],
+      "c_terminal_linker_aa": "(blocked by stop codon)",
+      "c_terminal_tag_blocked": false,
+      "cai": 0.8156,
+      "cds_length_valid": true,
+      "fusion_protein_length_aa": 80,
+      "fusion_protein_mw_kda": 7.39,
+      "gc_content": 0.4979,
+      "in_frame_3prime": null,
+      "in_frame_5prime": null,
+      "insert_cds_length_bp": 243,
+      "insert_has_native_stop": true,
+      "insert_protein_length_aa": 80,
+      "internal_re_sites": [],
+      "map_removal": false,
+      "n_terminal_linker_aa": "",
+      "premature_stop_codons": [],
+      "rare_codon_clusters": 0,
+      "rare_codon_pct": 0.0,
+      "start_codon_source": "insert",
+      "strain_recommendation": "BL21(DE3)",
+      "topology": "",
+      "vector_context": {
+       "notes": "No vector specified",
+       "promoter": "unknown"
+      },
+      "verdict": "PASS",
+      "verdict_detail": "No issues detected - construct should express correctly",
+      "warnings": []
+     },
+     "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+     "f_ann_len": 21,
+     "f_full": "GCGCCCATGGATGAAAGCTGCCATTGTTCTG",
+     "f_gc": 42.9,
+     "f_len": 31,
+     "f_qc": {
+      "hairpin_dg": -0.2,
+      "hairpin_tm": 40.1,
+      "homodimer_dg": -7.4,
+      "homodimer_tm": 23.4,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "f_tail": "GCGCCCATGG",
+     "f_tm": 63.0,
+     "het": {
+      "dg": -5.8,
+      "tm": 25.3
+     },
+     "include_start_codon": false,
+     "include_stop_codon": false,
+     "insert_len": 243,
+     "internal_re_sites_3": [],
+     "internal_re_sites_5": [],
+     "protection_3": "GCGC",
+     "protection_5": "GCGC",
+     "r_ann": "TTATTCCACATCGGTCGCTTTC",
+     "r_ann_len": 22,
+     "r_full": "GCGCAAGCTTTTATTCCACATCGGTCGCTTTC",
+     "r_gc": 45.5,
+     "r_len": 32,
+     "r_qc": {
+      "hairpin_dg": -1.9,
+      "hairpin_tm": 65.4,
+      "homodimer_dg": -5.7,
+      "homodimer_tm": 9.3,
+      "issues": [
+       "Hairpin risk (Tm=65.4C, dG=-1.9, -1C below anneal)"
+      ],
+      "verdict": "FAIL"
+     },
+     "r_tail": "GCGCAAGCTT",
+     "r_tm": 64.4,
+     "re_3prime": "HindIII",
+     "re_3prime_site": "AAGCTT",
+     "re_5prime": "NcoI",
+     "re_5prime_site": "CCATGG",
+     "snapgene_path": "<TMP>\\duet_mcs1\\Insert_pETDuet-1-MCS1_NcoI_HindIII_construct.dna",
+     "spacer_3prime": "",
+     "spacer_5prime": "",
+     "warnings": [
+      "R hairpin: annealing length adjustment cannot resolve",
+      "R primer homopolymer: TTTT",
+      "Frame check failed: NcoI not in pETDuet-1:MCS1 MCS. Available: AscI, BamHI, EcoRI, HindIII, NotI, PstI, SacI, SalI"
+     ]
+    }
+   },
+   "internal_site": {
+    "files": [
+     "Insert_pET-28a+_BamHI_XhoI_construct.dna"
+    ],
+    "result": {
+     "anneal_temp": 63.5,
+     "colony_pcr": {
+      "anneal_temp": 51.2,
+      "expected_band_empty": 510,
+      "expected_band_with_insert": 474,
+      "f_name": "T7promoter",
+      "f_seq": "TAATACGACTCACTATAGGG",
+      "f_tm": 56.2,
+      "flanking_downstream": 150,
+      "flanking_upstream": 200,
+      "notes": [
+       "Flanking distances: default for pET-28a(+)",
+       "Tm difference 6.2C between F/R; consider touchdown PCR"
+      ],
+      "r_name": "T7terminator",
+      "r_seq": "GCTAGTTATTGCTCAGCGG",
+      "r_tm": 62.4,
+      "vector_name": "pET-28a(+)"
+     },
+     "expression_check": {
+      "active_tags": [
+       {
+        "name": "N-His6",
+        "position": "N-terminal"
+       },
+       {
+        "name": "Thrombin",
+        "position": "N-terminal"
+       },
+       {
+        "name": "T7-tag",
+        "position": "N-terminal"
+       },
+       {
+        "name": "C-His6",
+        "position": "C-terminal"
+       }
+      ],
+      "c_terminal_linker_aa": "LEHHHHHH",
+      "c_terminal_tag_blocked": false,
+      "cai": 0.3846,
+      "cds_length_valid": false,
+      "fusion_protein_length_aa": 74,
+      "fusion_protein_mw_kda": 6.84,
+      "gc_content": 0.4919,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_cds_length_bp": 124,
+      "insert_has_native_stop": false,
+      "insert_protein_length_aa": 32,
+      "internal_re_sites": [
+       {
+        "count": 1,
+        "enzyme": "BamHI",
+        "positions_bp": [
+         31
+        ],
+        "site": "GGATCC"
+       },
+       {
+        "count": 1,
+        "enzyme": "BamHI",
+        "positions_bp": [
+         31
+        ],
+        "site": "RC(GGATCC)"
+       }
+      ],
+      "map_removal": false,
+      "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+      "premature_stop_codons": [
+       {
+        "codon": "TGA",
+        "position_bp": 97,
+        "position_codon": 33
+       }
+      ],
+      "rare_codon_clusters": 2,
+      "rare_codon_pct": 24.39,
+      "start_codon_source": "vector",
+      "strain_recommendation": "Rosetta 2(DE3)",
+      "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+      "vector_context": {
+       "expression_type": "cytoplasmic, high-level",
+       "host_requirement": "BL21(DE3) or DE3 lysogen",
+       "inducer": "IPTG",
+       "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+       "promoter": "T7/lac",
+       "rbs": "vector-provided (T7 gene 10 leader)"
+      },
+      "verdict": "FAIL",
+      "verdict_detail": "Critical issues found - construct will NOT express correctly",
+      "warnings": [
+       "CRITICAL: BamHI (GGATCC) cuts within the insert at 1 position(s): bp [31]",
+       "CRITICAL: BamHI (RC(GGATCC)) cuts within the insert at 1 position(s): bp [31]",
+       "Premature stop codon(s) at codon position(s): [33]. Protein will be truncated!",
+       "Insert length (124 bp) is not a multiple of 3. Reading frame will be disrupted!"
+      ]
+     },
+     "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+     "f_ann_len": 21,
+     "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+     "f_gc": 42.9,
+     "f_len": 31,
+     "f_qc": {
+      "hairpin_dg": 0.0,
+      "hairpin_tm": 0.0,
+      "homodimer_dg": -6.5,
+      "homodimer_tm": 20.6,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "f_tail": "GCGCGGATCC",
+     "f_tm": 63.0,
+     "frame_check": {
+      "frame_at_insert_start": 0,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_has_stop": false,
+      "insert_start_pos": 102,
+      "linker_3prime_aa": "LEHHHHHH",
+      "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+      "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+      "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+      "nt_3prime_to_stop": 24,
+      "re_3prime": "XhoI",
+      "re_5prime": "BamHI",
+      "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+      "vector_name": "pET-28a(+)",
+      "warnings": [
+       "Insert CDS length (124 bp) is not a multiple of 3",
+       "Insert (124 bp) + 3' linker (24 bp) = 148 bp, not a multiple of 3 -> C-tag out of frame",
+       "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+      ]
+     },
+     "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Insert CDS length (124 bp) is not a multiple of 3\n  ! Insert (124 bp) + 3' linker (24 bp) = 148 bp, not a multiple of 3 -> C-tag out of frame\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+     "het": {
+      "dg": -7.1,
+      "tm": 27.2
+     },
+     "include_start_codon": true,
+     "include_stop_codon": false,
+     "insert_len": 124,
+     "internal_re_sites_3": [],
+     "internal_re_sites_5": [
+      30
+     ],
+     "protection_3": "GCGC",
+     "protection_5": "GCGC",
+     "r_ann": "CTTGAAGAATTCCGGGATAACG",
+     "r_ann_len": 22,
+     "r_full": "GCGCCTCGAGCTTGAAGAATTCCGGGATAACG",
+     "r_gc": 45.5,
+     "r_len": 32,
+     "r_qc": {
+      "hairpin_dg": -0.7,
+      "hairpin_tm": 43.0,
+      "homodimer_dg": -5.8,
+      "homodimer_tm": 14.9,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "r_tail": "GCGCCTCGAG",
+     "r_tm": 62.5,
+     "re_3prime": "XhoI",
+     "re_3prime_site": "CTCGAG",
+     "re_5prime": "BamHI",
+     "re_5prime_site": "GGATCC",
+     "snapgene_path": "<TMP>\\internal_site\\Insert_pET-28a+_BamHI_XhoI_construct.dna",
+     "spacer_3prime": "",
+     "spacer_5prime": "",
+     "warnings": [
+      "INSERT contains BamHI site (GGATCC) at position(s): [30] - may be cut during digestion!"
+     ]
+    }
+   },
+   "no_vector": {
+    "files": [
+     "Insert_BamHI_XhoI_construct.dna"
+    ],
+    "result": {
+     "anneal_temp": 64.0,
+     "expression_check": {
+      "active_tags": [],
+      "c_terminal_linker_aa": "(blocked by stop codon)",
+      "c_terminal_tag_blocked": false,
+      "cai": 0.8156,
+      "cds_length_valid": true,
+      "fusion_protein_length_aa": 80,
+      "fusion_protein_mw_kda": 7.39,
+      "gc_content": 0.4979,
+      "in_frame_3prime": null,
+      "in_frame_5prime": null,
+      "insert_cds_length_bp": 243,
+      "insert_has_native_stop": true,
+      "insert_protein_length_aa": 80,
+      "internal_re_sites": [],
+      "map_removal": false,
+      "n_terminal_linker_aa": "",
+      "premature_stop_codons": [],
+      "rare_codon_clusters": 0,
+      "rare_codon_pct": 0.0,
+      "start_codon_source": "insert",
+      "strain_recommendation": "BL21(DE3)",
+      "topology": "",
+      "vector_context": {
+       "notes": "No vector specified",
+       "promoter": "unknown"
+      },
+      "verdict": "PASS",
+      "verdict_detail": "No issues detected - construct should express correctly",
+      "warnings": []
+     },
+     "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+     "f_ann_len": 21,
+     "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+     "f_gc": 42.9,
+     "f_len": 31,
+     "f_qc": {
+      "hairpin_dg": 0.0,
+      "hairpin_tm": 0.0,
+      "homodimer_dg": -6.5,
+      "homodimer_tm": 20.6,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "f_tail": "GCGCGGATCC",
+     "f_tm": 63.0,
+     "het": {
+      "dg": -5.5,
+      "tm": 14.6
+     },
+     "include_start_codon": true,
+     "include_stop_codon": false,
+     "insert_len": 243,
+     "internal_re_sites_3": [],
+     "internal_re_sites_5": [],
+     "protection_3": "GCGC",
+     "protection_5": "GCGC",
+     "r_ann": "TTATTCCACATCGGTCGCTTTC",
+     "r_ann_len": 22,
+     "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+     "r_gc": 45.5,
+     "r_len": 32,
+     "r_qc": {
+      "hairpin_dg": -0.6,
+      "hairpin_tm": 40.5,
+      "homodimer_dg": -6.2,
+      "homodimer_tm": 19.3,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "r_tail": "GCGCCTCGAG",
+     "r_tm": 64.4,
+     "re_3prime": "XhoI",
+     "re_3prime_site": "CTCGAG",
+     "re_5prime": "BamHI",
+     "re_5prime_site": "GGATCC",
+     "snapgene_path": "<TMP>\\no_vector\\Insert_BamHI_XhoI_construct.dna",
+     "spacer_3prime": "",
+     "spacer_5prime": "",
+     "warnings": []
+    }
+   },
+   "pet21a_nhei_noti_stop": {
+    "files": [
+     "gene_Y_pET-21a+_NheI_NotI_construct.dna"
+    ],
+    "result": {
+     "anneal_temp": 64.0,
+     "colony_pcr": {
+      "anneal_temp": 51.2,
+      "expected_band_empty": 450,
+      "expected_band_with_insert": 593,
+      "f_name": "T7promoter",
+      "f_seq": "TAATACGACTCACTATAGGG",
+      "f_tm": 56.2,
+      "flanking_downstream": 150,
+      "flanking_upstream": 200,
+      "notes": [
+       "Flanking distances: default for pET-21a(+)",
+       "Tm difference 6.2C between F/R; consider touchdown PCR"
+      ],
+      "r_name": "T7terminator",
+      "r_seq": "GCTAGTTATTGCTCAGCGG",
+      "r_tm": 62.4,
+      "vector_name": "pET-21a(+)"
+     },
+     "expression_check": {
+      "active_tags": [
+       {
+        "name": "T7-tag",
+        "position": "N-terminal"
+       }
+      ],
+      "c_terminal_linker_aa": "(blocked by stop codon)",
+      "c_terminal_tag_blocked": false,
+      "cai": 0.8156,
+      "cds_length_valid": true,
+      "fusion_protein_length_aa": 83,
+      "fusion_protein_mw_kda": 7.67,
+      "gc_content": 0.4979,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_cds_length_bp": 243,
+      "insert_has_native_stop": true,
+      "insert_protein_length_aa": 80,
+      "internal_re_sites": [],
+      "map_removal": false,
+      "n_terminal_linker_aa": "MAS",
+      "premature_stop_codons": [],
+      "rare_codon_clusters": 0,
+      "rare_codon_pct": 0.0,
+      "start_codon_source": "vector",
+      "strain_recommendation": "BL21(DE3)",
+      "topology": "[T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)",
+      "vector_context": {
+       "expression_type": "cytoplasmic, high-level",
+       "host_requirement": "BL21(DE3) or DE3 lysogen",
+       "inducer": "IPTG",
+       "notes": "C-terminal His-tag only (no N-terminal tag)",
+       "promoter": "T7/lac",
+       "rbs": "vector-provided (T7 gene 10 leader)"
+      },
+      "verdict": "PASS",
+      "verdict_detail": "No issues detected - construct should express correctly",
+      "warnings": []
+     },
+     "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+     "f_ann_len": 21,
+     "f_full": "GCGCGCTAGCATGAAAGCTGCCATTGTTCTG",
+     "f_gc": 42.9,
+     "f_len": 31,
+     "f_qc": {
+      "hairpin_dg": -0.7,
+      "hairpin_tm": 46.9,
+      "homodimer_dg": -9.3,
+      "homodimer_tm": 34.3,
+      "issues": [
+       "Hairpin marginal (Tm=46.9C, dG=-0.7, 17C below anneal)"
+      ],
+      "verdict": "WARNING"
+     },
+     "f_tail": "GCGCGCTAGC",
+     "f_tm": 63.0,
+     "frame_check": {
+      "frame_at_insert_start": 0,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_has_stop": true,
+      "insert_start_pos": 9,
+      "linker_3prime_aa": "AAALEHHHHHH",
+      "linker_3prime_nt": "GCGGCCGCACTCGAGCACCACCACCACCACCAC",
+      "linker_5prime_aa": "MAS",
+      "linker_5prime_nt": "ATGGCTAGC",
+      "nt_3prime_to_stop": 33,
+      "re_3prime": "NotI",
+      "re_5prime": "NheI",
+      "topology": "[T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)",
+      "vector_name": "pET-21a(+)",
+      "warnings": [
+       "Insert has stop codon -> C-terminal tag will NOT be fused",
+       "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+      ]
+     },
+     "frame_report": "Vector:   pET-21a(+)\nStrategy: NheI / NotI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MAS (9 nt)\n3' junction: IN-FRAME (33 nt to stop, 11 codons)\n\nTopology: [T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)\n\n  ! Insert has stop codon -> C-terminal tag will NOT be fused\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+     "het": {
+      "dg": -9.0,
+      "tm": 33.0
+     },
+     "include_start_codon": true,
+     "include_stop_codon": true,
+     "insert_len": 243,
+     "internal_re_sites_3": [],
+     "internal_re_sites_5": [],
+     "protection_3": "GCGCGC",
+     "protection_5": "GCGC",
+     "r_ann": "TTATTCCACATCGGTCGCTTTC",
+     "r_ann_len": 22,
+     "r_full": "GCGCGCGCGGCCGCTTATTATTCCACATCGGTCGCTTTC",
+     "r_gc": 45.5,
+     "r_len": 39,
+     "r_qc": {
+      "hairpin_dg": -4.1,
+      "hairpin_tm": 65.7,
+      "homodimer_dg": -14.5,
+      "homodimer_tm": 54.2,
+      "issues": [
+       "Hairpin risk (Tm=65.7C, dG=-4.1, -2C below anneal)",
+       "Homodimer risk (Tm=54.2C, dG=-14.5, 10C below anneal)"
+      ],
+      "verdict": "FAIL"
+     },
+     "r_tail": "GCGCGCGCGGCCGCTTA",
+     "r_tm": 64.4,
+     "re_3prime": "NotI",
+     "re_3prime_site": "GCGGCCGC",
+     "re_5prime": "NheI",
+     "re_5prime_site": "GCTAGC",
+     "snapgene_path": "<TMP>\\pet21a_nhei_noti_stop\\gene_Y_pET-21a+_NheI_NotI_construct.dna",
+     "spacer_3prime": "",
+     "spacer_5prime": "",
+     "warnings": [
+      "R hairpin: annealing length adjustment cannot resolve"
+     ]
+    }
+   },
+   "pet28a_bamhi_xhoi": {
+    "files": [
+     "geneX_pET-28a+_BamHI_XhoI_construct.dna"
+    ],
+    "result": {
+     "anneal_temp": 64.0,
+     "colony_pcr": {
+      "anneal_temp": 51.2,
+      "expected_band_empty": 510,
+      "expected_band_with_insert": 593,
+      "f_name": "T7promoter",
+      "f_seq": "TAATACGACTCACTATAGGG",
+      "f_tm": 56.2,
+      "flanking_downstream": 150,
+      "flanking_upstream": 200,
+      "notes": [
+       "Flanking distances: default for pET-28a(+)",
+       "Tm difference 6.2C between F/R; consider touchdown PCR"
+      ],
+      "r_name": "T7terminator",
+      "r_seq": "GCTAGTTATTGCTCAGCGG",
+      "r_tm": 62.4,
+      "vector_name": "pET-28a(+)"
+     },
+     "expression_check": {
+      "active_tags": [
+       {
+        "name": "N-His6",
+        "position": "N-terminal"
+       },
+       {
+        "name": "Thrombin",
+        "position": "N-terminal"
+       },
+       {
+        "name": "T7-tag",
+        "position": "N-terminal"
+       }
+      ],
+      "c_terminal_linker_aa": "(blocked by stop codon)",
+      "c_terminal_tag_blocked": true,
+      "cai": 0.8156,
+      "cds_length_valid": true,
+      "fusion_protein_length_aa": 114,
+      "fusion_protein_mw_kda": 10.52,
+      "gc_content": 0.4979,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_cds_length_bp": 243,
+      "insert_has_native_stop": true,
+      "insert_protein_length_aa": 80,
+      "internal_re_sites": [],
+      "map_removal": false,
+      "n_terminal_linker_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+      "premature_stop_codons": [],
+      "rare_codon_clusters": 0,
+      "rare_codon_pct": 0.0,
+      "start_codon_source": "vector",
+      "strain_recommendation": "BL21(DE3)",
+      "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+      "vector_context": {
+       "expression_type": "cytoplasmic, high-level",
+       "host_requirement": "BL21(DE3) or DE3 lysogen",
+       "inducer": "IPTG",
+       "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+       "promoter": "T7/lac",
+       "rbs": "vector-provided (T7 gene 10 leader)"
+      },
+      "verdict": "PASS",
+      "verdict_detail": "No issues detected - construct should express correctly",
+      "warnings": []
+     },
+     "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+     "f_ann_len": 21,
+     "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+     "f_gc": 42.9,
+     "f_len": 31,
+     "f_qc": {
+      "hairpin_dg": 0.0,
+      "hairpin_tm": 0.0,
+      "homodimer_dg": -6.5,
+      "homodimer_tm": 20.6,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "f_tail": "GCGCGGATCC",
+     "f_tm": 63.0,
+     "frame_check": {
+      "frame_at_insert_start": 0,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_has_stop": false,
+      "insert_start_pos": 102,
+      "linker_3prime_aa": "LEHHHHHH",
+      "linker_3prime_nt": "CTCGAGCACCACCACCACCACCAC",
+      "linker_5prime_aa": "MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS",
+      "linker_5prime_nt": "ATGGGCAGCAGCCATCATCATCATCATCACAGCAGCGGCCTGGTGCCGCGCGGCAGCCATATGGCTAGCATGACTGGTGGACAGCAAATGGGTCGCGGATCC",
+      "nt_3prime_to_stop": 24,
+      "re_3prime": "XhoI",
+      "re_5prime": "BamHI",
+      "topology": "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+      "vector_name": "pET-28a(+)",
+      "warnings": [
+       "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+      ]
+     },
+     "frame_report": "Vector:   pET-28a(+)\nStrategy: BamHI / XhoI\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS (102 nt)\n3' junction: IN-FRAME (24 nt to stop, 8 codons)\n  3' linker:  LEHHHHHH\n\nTopology: [N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+     "het": {
+      "dg": -5.5,
+      "tm": 14.6
+     },
+     "include_start_codon": true,
+     "include_stop_codon": false,
+     "insert_len": 243,
+     "internal_re_sites_3": [],
+     "internal_re_sites_5": [],
+     "protection_3": "GCGC",
+     "protection_5": "GCGC",
+     "r_ann": "TTATTCCACATCGGTCGCTTTC",
+     "r_ann_len": 22,
+     "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+     "r_gc": 45.5,
+     "r_len": 32,
+     "r_qc": {
+      "hairpin_dg": -0.6,
+      "hairpin_tm": 40.5,
+      "homodimer_dg": -6.2,
+      "homodimer_tm": 19.3,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "r_tail": "GCGCCTCGAG",
+     "r_tm": 64.4,
+     "re_3prime": "XhoI",
+     "re_3prime_site": "CTCGAG",
+     "re_5prime": "BamHI",
+     "re_5prime_site": "GGATCC",
+     "snapgene_path": "<TMP>\\pet28a_bamhi_xhoi\\geneX_pET-28a+_BamHI_XhoI_construct.dna",
+     "spacer_3prime": "",
+     "spacer_5prime": "",
+     "warnings": []
+    }
+   },
+   "pmal": {
+    "files": [
+     "mal_pMAL-c6T_BamHI_HindIII_construct.dna"
+    ],
+    "result": {
+     "anneal_temp": 64.0,
+     "colony_pcr": {
+      "anneal_temp": 54.0,
+      "expected_band_empty": 365,
+      "expected_band_with_insert": 543,
+      "f_name": "pMalE",
+      "f_seq": "TCAGACTGTCGATGAAGC",
+      "f_tm": 60.5,
+      "flanking_downstream": 100,
+      "flanking_upstream": 200,
+      "notes": [
+       "Flanking distances: default for pMAL-c6T"
+      ],
+      "r_name": "pET-RP",
+      "r_seq": "CTAGTTATTGCTCAGCGG",
+      "r_tm": 59.0,
+      "vector_name": "pMAL-c6T"
+     },
+     "expression_check": {
+      "active_tags": [],
+      "c_terminal_linker_aa": "(blocked by stop codon)",
+      "c_terminal_tag_blocked": false,
+      "cai": 0.8156,
+      "cds_length_valid": true,
+      "fusion_protein_length_aa": 93,
+      "fusion_protein_mw_kda": 8.59,
+      "gc_content": 0.4979,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_cds_length_bp": 243,
+      "insert_has_native_stop": true,
+      "insert_protein_length_aa": 80,
+      "internal_re_sites": [],
+      "map_removal": false,
+      "n_terminal_linker_aa": "GMLMGGRDIVDGS",
+      "premature_stop_codons": [],
+      "rare_codon_clusters": 0,
+      "rare_codon_pct": 0.0,
+      "start_codon_source": "vector",
+      "strain_recommendation": "BL21(DE3)",
+      "topology": "(BamHI) [ATG-INSERT] (HindIII) [STOP]",
+      "vector_context": {
+       "expression_type": "cytoplasmic, MBP fusion",
+       "host_requirement": "any E. coli strain",
+       "inducer": "IPTG",
+       "notes": "MBP-TEV-insert fusion; amylose resin purification",
+       "promoter": "Ptac",
+       "rbs": "malE translation initiation signals"
+      },
+      "verdict": "PASS",
+      "verdict_detail": "No issues detected - construct should express correctly",
+      "warnings": []
+     },
+     "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+     "f_ann_len": 21,
+     "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+     "f_gc": 42.9,
+     "f_len": 31,
+     "f_qc": {
+      "hairpin_dg": 0.0,
+      "hairpin_tm": 0.0,
+      "homodimer_dg": -6.5,
+      "homodimer_tm": 20.6,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "f_tail": "GCGCGGATCC",
+     "f_tm": 63.0,
+     "frame_check": {
+      "frame_at_insert_start": 0,
+      "in_frame_3prime": true,
+      "in_frame_5prime": true,
+      "insert_has_stop": false,
+      "insert_start_pos": 39,
+      "linker_3prime_aa": "KL",
+      "linker_3prime_nt": "AAGCTT",
+      "linker_5prime_aa": "GMLMGGRDIVDGS",
+      "linker_5prime_nt": "GGCATGCTGATGGGCGGCCGCGATATCGTCGACGGATCC",
+      "nt_3prime_to_stop": 6,
+      "re_3prime": "HindIII",
+      "re_5prime": "BamHI",
+      "topology": "(BamHI) [ATG-INSERT] (HindIII) [STOP]",
+      "vector_name": "pMAL-c6T",
+      "warnings": [
+       "Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated"
+      ]
+     },
+     "frame_report": "Vector:   pMAL-c6T\nStrategy: BamHI / HindIII\n\n5' junction: IN-FRAME (insert starts at frame 0)\n  5' leader:  GMLMGGRDIVDGS (39 nt)\n3' junction: IN-FRAME (6 nt to stop, 2 codons)\n  3' linker:  KL\n\nTopology: (BamHI) [ATG-INSERT] (HindIII) [STOP]\n\n  ! Dual ATG: vector reading frame continues into insert which has its own ATG. N-terminal fusion tag will be translated",
+     "het": {
+      "dg": -4.8,
+      "tm": 16.6
+     },
+     "include_start_codon": true,
+     "include_stop_codon": false,
+     "insert_len": 243,
+     "internal_re_sites_3": [],
+     "internal_re_sites_5": [],
+     "protection_3": "GCGC",
+     "protection_5": "GCGC",
+     "r_ann": "TTATTCCACATCGGTCGCTTTC",
+     "r_ann_len": 22,
+     "r_full": "GCGCAAGCTTTTATTCCACATCGGTCGCTTTC",
+     "r_gc": 45.5,
+     "r_len": 32,
+     "r_qc": {
+      "hairpin_dg": -1.9,
+      "hairpin_tm": 65.4,
+      "homodimer_dg": -5.7,
+      "homodimer_tm": 9.3,
+      "issues": [
+       "Hairpin risk (Tm=65.4C, dG=-1.9, -1C below anneal)"
+      ],
+      "verdict": "FAIL"
+     },
+     "r_tail": "GCGCAAGCTT",
+     "r_tm": 64.4,
+     "re_3prime": "HindIII",
+     "re_3prime_site": "AAGCTT",
+     "re_5prime": "BamHI",
+     "re_5prime_site": "GGATCC",
+     "snapgene_path": "<TMP>\\pmal\\mal_pMAL-c6T_BamHI_HindIII_construct.dna",
+     "spacer_3prime": "",
+     "spacer_5prime": "",
+     "warnings": [
+      "R hairpin: annealing length adjustment cannot resolve",
+      "R primer homopolymer: TTTT"
+     ]
+    }
+   },
+   "png_flag": {
+    "files": [
+     "Insert_pET-28a+_BamHI_XhoI_construct.dna",
+     "Insert_pET-28a+_BamHI_XhoI_report.png"
+    ],
+    "has_report_path": true,
+    "png_nonempty": true,
+    "report_error": null
+   },
+   "unknown_vector": {
+    "files": [
+     "Insert_no-such-vector_BamHI_XhoI_construct.dna"
+    ],
+    "result": {
+     "anneal_temp": 64.0,
+     "expression_check": {
+      "active_tags": [],
+      "c_terminal_linker_aa": "(blocked by stop codon)",
+      "c_terminal_tag_blocked": false,
+      "cai": 0.8156,
+      "cds_length_valid": true,
+      "fusion_protein_length_aa": 80,
+      "fusion_protein_mw_kda": 7.39,
+      "gc_content": 0.4979,
+      "in_frame_3prime": null,
+      "in_frame_5prime": null,
+      "insert_cds_length_bp": 243,
+      "insert_has_native_stop": true,
+      "insert_protein_length_aa": 80,
+      "internal_re_sites": [],
+      "map_removal": false,
+      "n_terminal_linker_aa": "",
+      "premature_stop_codons": [],
+      "rare_codon_clusters": 0,
+      "rare_codon_pct": 0.0,
+      "start_codon_source": "insert",
+      "strain_recommendation": "BL21(DE3)",
+      "topology": "",
+      "vector_context": {
+       "notes": "No vector specified",
+       "promoter": "unknown"
+      },
+      "verdict": "PASS",
+      "verdict_detail": "No issues detected - construct should express correctly",
+      "warnings": []
+     },
+     "f_ann": "ATGAAAGCTGCCATTGTTCTG",
+     "f_ann_len": 21,
+     "f_full": "GCGCGGATCCATGAAAGCTGCCATTGTTCTG",
+     "f_gc": 42.9,
+     "f_len": 31,
+     "f_qc": {
+      "hairpin_dg": 0.0,
+      "hairpin_tm": 0.0,
+      "homodimer_dg": -6.5,
+      "homodimer_tm": 20.6,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "f_tail": "GCGCGGATCC",
+     "f_tm": 63.0,
+     "het": {
+      "dg": -5.5,
+      "tm": 14.6
+     },
+     "include_start_codon": true,
+     "include_stop_codon": false,
+     "insert_len": 243,
+     "internal_re_sites_3": [],
+     "internal_re_sites_5": [],
+     "protection_3": "GCGC",
+     "protection_5": "GCGC",
+     "r_ann": "TTATTCCACATCGGTCGCTTTC",
+     "r_ann_len": 22,
+     "r_full": "GCGCCTCGAGTTATTCCACATCGGTCGCTTTC",
+     "r_gc": 45.5,
+     "r_len": 32,
+     "r_qc": {
+      "hairpin_dg": -0.6,
+      "hairpin_tm": 40.5,
+      "homodimer_dg": -6.2,
+      "homodimer_tm": 19.3,
+      "issues": [],
+      "verdict": "PASS"
+     },
+     "r_tail": "GCGCCTCGAG",
+     "r_tm": 64.4,
+     "re_3prime": "XhoI",
+     "re_3prime_site": "CTCGAG",
+     "re_5prime": "BamHI",
+     "re_5prime_site": "GGATCC",
+     "snapgene_path": "<TMP>\\unknown_vector\\Insert_no-such-vector_BamHI_XhoI_construct.dna",
+     "spacer_3prime": "",
+     "spacer_5prime": "",
+     "warnings": [
+      "Frame check failed: Unknown vector: 'no-such-vector'. Available: pET-21a(+), pET-28a(+), pMAL-c6T, pETDuet-1:MCS1, pETDuet-1:MCS2, pACYCDuet-1:MCS1, pACYCDuet-1:MCS2"
+     ]
+    }
+   }
+  },
+  "fetch_gene_sequence": {
+   "explicit_id_single_cds": {
+    "calls": [
+     [
+      "efetch",
+      "gene",
+      "5"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqrna"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqgene"
+     ],
+     [
+      "elink",
+      "gene_nuccore"
+     ],
+     [
+      "efetch",
+      "nuccore",
+      "N2"
+     ]
+    ],
+    "result": {
+     "cds_length_bp": 30,
+     "cds_seq": "GTGGCGCTGGGTAAACGTTTCCTGACCTAA",
+     "codon_optimized": false,
+     "description": "lonely",
+     "gene_id": 5,
+     "gene_name": "zzz",
+     "locus_tag": "b9",
+     "native_start_codon": "GTG",
+     "organism": "Escherichia coli",
+     "protein_length_aa": 9,
+     "protein_seq": "VALGKRFLT",
+     "source": "NC_FAKE.1",
+     "start_codon_note": "Native start codon is GTG (not ATG). For recombinant expression, the RE cloning primer will replace it with ATG automatically."
+    }
+   },
+   "fetch_fails": {
+    "calls": [
+     [
+      "esearch",
+      "gudD[Gene Name] AND \"Escherichia coli\"[Organism]"
+     ],
+     [
+      "efetch",
+      "gene",
+      "1"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqrna"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqgene"
+     ],
+     [
+      "elink",
+      "gene_nuccore"
+     ],
+     [
+      "efetch",
+      "nuccore",
+      "N9"
+     ]
+    ],
+    "result": {
+     "error": "No valid CDS for Gene ID 1 ('gudD'). Provide the sequence directly.",
+     "gene_id": 1,
+     "gene_name": "gudD"
+    }
+   },
+   "found_by_search": {
+    "calls": [
+     [
+      "esearch",
+      "gudD[Gene Name] AND \"Escherichia coli\"[Organism]"
+     ],
+     [
+      "efetch",
+      "gene",
+      "111"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqrna"
+     ],
+     [
+      "efetch",
+      "nuccore",
+      "N1"
+     ]
+    ],
+    "result": {
+     "cds_length_bp": 30,
+     "cds_seq": "ATGAAAGCTGCCATTGTTCTGAGCGAATAA",
+     "codon_optimized": false,
+     "description": "glucarate dehydratase",
+     "gene_id": 111,
+     "gene_name": "gudD",
+     "locus_tag": "b2",
+     "native_start_codon": "ATG",
+     "organism": "Escherichia coli",
+     "protein_length_aa": 9,
+     "protein_seq": "MKAAIVLSE",
+     "source": "NC_FAKE.1"
+    }
+   },
+   "no_links": {
+    "calls": [
+     [
+      "esearch",
+      "gudD[Gene Name] AND \"Escherichia coli\"[Organism]"
+     ],
+     [
+      "efetch",
+      "gene",
+      "1"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqrna"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqgene"
+     ],
+     [
+      "elink",
+      "gene_nuccore"
+     ]
+    ],
+    "result": {
+     "error": "No valid CDS for Gene ID 1 ('gudD'). Provide the sequence directly.",
+     "gene_id": 1,
+     "gene_name": "gudD"
+    }
+   },
+   "no_name_match": {
+    "calls": [
+     [
+      "efetch",
+      "gene",
+      "1"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqrna"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqgene"
+     ],
+     [
+      "elink",
+      "gene_nuccore"
+     ],
+     [
+      "efetch",
+      "nuccore",
+      "N3"
+     ]
+    ],
+    "result": {
+     "error": "No valid CDS for Gene ID 1 ('qqq'). Provide the sequence directly.",
+     "gene_id": 1,
+     "gene_name": "qqq"
+    }
+   },
+   "not_found": {
+    "calls": [
+     [
+      "esearch",
+      "nope[Gene Name] AND \"Escherichia coli\"[Organism]"
+     ],
+     [
+      "esearch",
+      "nope[All Fields] AND \"Escherichia coli\"[Organism]"
+     ]
+    ],
+    "result": {
+     "error": "Gene 'nope' not found for 'Escherichia coli'. Try a different name or provide gene_id directly.",
+     "gene_name": "nope",
+     "organism": "Escherichia coli"
+    }
+   },
+   "optimized": {
+    "calls": [
+     [
+      "esearch",
+      "gudD[Gene Name] AND \"Escherichia coli\"[Organism]"
+     ],
+     [
+      "efetch",
+      "gene",
+      "111"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqrna"
+     ],
+     [
+      "efetch",
+      "nuccore",
+      "N1"
+     ]
+    ],
+    "result": {
+     "cds_length_bp": 30,
+     "cds_seq": "ATGAAAGCGGCGATTGTGCTGAGCGAATAA",
+     "codon_optimized": true,
+     "description": "glucarate dehydratase",
+     "gene_id": 111,
+     "gene_name": "gudD",
+     "locus_tag": "b2",
+     "native_start_codon": "ATG",
+     "organism": "Escherichia coli",
+     "protein_length_aa": 9,
+     "protein_seq": "MKAAIVLSE",
+     "source": "NC_FAKE.1"
+    }
+   },
+   "second_query_hits": {
+    "calls": [
+     [
+      "esearch",
+      "gudD[Gene Name] AND \"Escherichia coli\"[Organism]"
+     ],
+     [
+      "esearch",
+      "gudD[All Fields] AND \"Escherichia coli\"[Organism]"
+     ],
+     [
+      "efetch",
+      "gene",
+      "7"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqrna"
+     ],
+     [
+      "elink",
+      "gene_nuccore_refseqgene"
+     ],
+     [
+      "efetch",
+      "nuccore",
+      "N1"
+     ]
+    ],
+    "result": {
+     "cds_length_bp": 30,
+     "cds_seq": "ATGAAAGCTGCCATTGTTCTGAGCGAATAA",
+     "codon_optimized": false,
+     "description": "glucarate dehydratase",
+     "gene_id": 7,
+     "gene_name": "gudD",
+     "locus_tag": "b2",
+     "native_start_codon": "ATG",
+     "organism": "Escherichia coli",
+     "protein_length_aa": 9,
+     "protein_seq": "MKAAIVLSE",
+     "source": "NC_FAKE.1"
+    }
+   }
+  },
+  "generate_macrogen_order": {
+   "default_project": {
+    "cells_error": "InvalidFileException",
+    "estimated_cost_krw": 17600,
+    "file_stem": "primer_order",
+    "in_dir": "orders",
+    "total_length_nt": 44,
+    "total_primers": 2
+   },
+   "named_project": {
+    "cells_error": "InvalidFileException",
+    "estimated_cost_krw": 17600,
+    "file_stem": "projX",
+    "in_dir": "orders2",
+    "total_length_nt": 44,
+    "total_primers": 2
+   }
+  },
+  "list_restriction_enzymes": [
+   {
+    "cut_bottom": 6,
+    "cut_top": 2,
+    "name": "AscI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "GGCGCGCC"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "AvrII",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "CCTAGG"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "BamHI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "GGATCC"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "BglII",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "AGATCT"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "EcoRI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "GAATTC"
+   },
+   {
+    "cut_bottom": 3,
+    "cut_top": 3,
+    "name": "EcoRV",
+    "overhang": "blunt",
+    "overhang_len": 0,
+    "recognition": "GATATC"
+   },
+   {
+    "cut_bottom": 2,
+    "cut_top": 6,
+    "name": "FseI",
+    "overhang": "3prime",
+    "overhang_len": 4,
+    "recognition": "GGCCGGCC"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "HindIII",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "AAGCTT"
+   },
+   {
+    "cut_bottom": 1,
+    "cut_top": 5,
+    "name": "KpnI",
+    "overhang": "3prime",
+    "overhang_len": 4,
+    "recognition": "GGTACC"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "MfeI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "CAATTG"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "NcoI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "CCATGG"
+   },
+   {
+    "cut_bottom": 4,
+    "cut_top": 2,
+    "name": "NdeI",
+    "overhang": "5prime",
+    "overhang_len": 2,
+    "recognition": "CATATG"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "NheI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "GCTAGC"
+   },
+   {
+    "cut_bottom": 6,
+    "cut_top": 2,
+    "name": "NotI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "GCGGCCGC"
+   },
+   {
+    "cut_bottom": 3,
+    "cut_top": 5,
+    "name": "PacI",
+    "overhang": "3prime",
+    "overhang_len": 2,
+    "recognition": "TTAATTAA"
+   },
+   {
+    "cut_bottom": 1,
+    "cut_top": 5,
+    "name": "PstI",
+    "overhang": "3prime",
+    "overhang_len": 4,
+    "recognition": "CTGCAG"
+   },
+   {
+    "cut_bottom": 1,
+    "cut_top": 5,
+    "name": "SacI",
+    "overhang": "3prime",
+    "overhang_len": 4,
+    "recognition": "GAGCTC"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "SalI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "GTCGAC"
+   },
+   {
+    "cut_bottom": 5,
+    "cut_top": 1,
+    "name": "XhoI",
+    "overhang": "5prime",
+    "overhang_len": 4,
+    "recognition": "CTCGAG"
+   }
+  ],
+  "list_vectors": [
+   {
+    "aliases": [
+     "pET21a",
+     "pET-21a",
+     "pet21a",
+     "pet-21a(+)"
+    ],
+    "name": "pET-21a(+)",
+    "notes": "",
+    "re_sites": [
+     "NheI",
+     "BamHI",
+     "EcoRI",
+     "SacI",
+     "SalI",
+     "HindIII",
+     "NotI",
+     "XhoI"
+    ],
+    "tags": {
+     "C-His6": "C-terminal",
+     "T7-tag": "N-terminal"
+    }
+   },
+   {
+    "aliases": [
+     "pET28a",
+     "pET-28a",
+     "pet28a",
+     "pet-28a(+)"
+    ],
+    "name": "pET-28a(+)",
+    "notes": "",
+    "re_sites": [
+     "NdeI",
+     "NheI",
+     "BamHI",
+     "EcoRI",
+     "SacI",
+     "SalI",
+     "HindIII",
+     "NotI",
+     "XhoI"
+    ],
+    "tags": {
+     "C-His6": "C-terminal",
+     "N-His6": "N-terminal",
+     "T7-tag": "N-terminal",
+     "Thrombin": "N-terminal"
+    }
+   },
+   {
+    "aliases": [
+     "pMALc6T",
+     "pmal-c6t",
+     "pmalc6t",
+     "pMAL c6T"
+    ],
+    "name": "pMAL-c6T",
+    "notes": "MCS position 0 = TEV cleavage product (G), not ATG. malE ATG is far upstream.",
+    "re_sites": [
+     "NotI",
+     "EcoRV",
+     "SalI",
+     "BamHI",
+     "EcoRI",
+     "PstI",
+     "HindIII"
+    ],
+    "tags": {}
+   },
+   {
+    "aliases": [
+     "pETDuet1",
+     "pETDuet-1",
+     "petduet1",
+     "petduet-1",
+     "pETDuet1:MCS1"
+    ],
+    "name": "pETDuet-1:MCS1",
+    "notes": "BamHI/EcoRI/SacI are cross-codon (frame +2). Only PstI/SalI/HindIII/NotI are codon-aligned.",
+    "re_sites": [
+     "BamHI",
+     "EcoRI",
+     "SacI",
+     "AscI",
+     "PstI",
+     "SalI",
+     "HindIII",
+     "NotI"
+    ],
+    "tags": {
+     "N-His6": "N-terminal"
+    }
+   },
+   {
+    "aliases": [
+     "pETDuet1:MCS2"
+    ],
+    "name": "pETDuet-1:MCS2",
+    "notes": "NdeI at position -2 (overlaps start ATG). BglII/MfeI/EcoRV/FseI are cross-codon (frame +2). Only KpnI/XhoI are codon-aligned.",
+    "re_sites": [
+     "BglII",
+     "MfeI",
+     "EcoRV",
+     "FseI",
+     "KpnI",
+     "XhoI"
+    ],
+    "tags": {
+     "S-tag": "C-terminal"
+    }
+   },
+   {
+    "aliases": [
+     "pACYCDuet1",
+     "pACYCDuet-1",
+     "pacycduet1",
+     "pACYCDuet1:MCS1"
+    ],
+    "name": "pACYCDuet-1:MCS1",
+    "notes": "MCS1 identical to pETDuet-1:MCS1. BamHI/EcoRI/SacI are cross-codon (frame +2).",
+    "re_sites": [
+     "BamHI",
+     "EcoRI",
+     "SacI",
+     "AscI",
+     "PstI",
+     "SalI",
+     "HindIII",
+     "NotI"
+    ],
+    "tags": {
+     "N-His6": "N-terminal"
+    }
+   },
+   {
+    "aliases": [
+     "pACYCDuet1:MCS2"
+    ],
+    "name": "pACYCDuet-1:MCS2",
+    "notes": "MCS2 identical to pETDuet-1:MCS2. NdeI at position -2 (overlaps start ATG).",
+    "re_sites": [
+     "BglII",
+     "MfeI",
+     "EcoRV",
+     "FseI",
+     "KpnI",
+     "XhoI"
+    ],
+    "tags": {
+     "S-tag": "C-terminal"
+    }
+   }
+  ],
+  "recommend_re_pair": {
+   "no-such-vector|True": [
+    "raised",
+    "ValueError",
+    "Unknown vector: 'no-such-vector'. Available: pET-21a(+), pET-28a(+), pMAL-c6T, pETDuet-1:MCS1, pETDuet-1:MCS2, pACYCDuet-1:MCS1, pACYCDuet-1:MCS2"
+   ],
+   "pET-21a(+)|False": [
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BamHI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SacI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SacI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "HindIII",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "HindIII",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "XhoI",
+     "re_5prime": "NotI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch",
+     "score": 5
+    }
+   ],
+   "pET-28a(+)|True": [
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NheI",
+     "re_5prime": "NdeI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BamHI",
+     "re_5prime": "NdeI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SacI",
+     "re_5prime": "NdeI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "NdeI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "NdeI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "NdeI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BamHI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, BamHI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SacI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, SacI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, SalI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, NotI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "NheI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SacI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, SacI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, SalI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, NotI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF, SalI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF, NotI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "SacI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, NotI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NotI",
+     "re_5prime": "HindIII",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: HindIII-HF, NotI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "HindIII",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "XhoI",
+     "re_5prime": "NdeI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "XhoI",
+     "re_5prime": "NotI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: NotI-HF",
+     "score": 6
+    }
+   ],
+   "pMAL-c6T|True": [
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "EcoRV",
+     "re_5prime": "NotI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, EcoRV-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "NotI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, SalI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BamHI",
+     "re_5prime": "NotI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, BamHI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "NotI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "SalI",
+     "re_5prime": "EcoRV",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: EcoRV-HF, SalI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BamHI",
+     "re_5prime": "EcoRV",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: EcoRV-HF, BamHI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "EcoRV",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: EcoRV-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BamHI",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, BamHI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "HindIII",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, HindIII-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "PstI",
+     "re_5prime": "NotI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: NotI-HF, PstI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "PstI",
+     "re_5prime": "EcoRV",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: EcoRV-HF, PstI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "PstI",
+     "re_5prime": "SalI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: SalI-HF, PstI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "PstI",
+     "re_5prime": "BamHI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: BamHI-HF, PstI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "HindIII",
+     "re_5prime": "PstI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: PstI-HF, HindIII-HF",
+     "score": 6
+    }
+   ]
+  },
+  "suggest_colony_pcr": {
+   "bad|100": [
+    "raised",
+    "ValueError",
+    "Unknown vector: 'bad'. Available: pET-21a(+), pET-28a(+), pMAL-c6T, pETDuet-1:MCS1, pETDuet-1:MCS2, pACYCDuet-1:MCS1, pACYCDuet-1:MCS2"
+   ],
+   "pET-28a(+)|1000": {
+    "anneal_temp": 51.2,
+    "expected_band_empty": 510,
+    "expected_band_with_insert": 1350,
+    "f_name": "T7promoter",
+    "f_seq": "TAATACGACTCACTATAGGG",
+    "f_tm": 56.2,
+    "flanking_downstream": 150,
+    "flanking_upstream": 200,
+    "notes": [
+     "Flanking distances: default for pET-28a(+)",
+     "Tm difference 6.2C between F/R; consider touchdown PCR"
+    ],
+    "r_name": "T7terminator",
+    "r_seq": "GCTAGTTATTGCTCAGCGG",
+    "r_tm": 62.4,
+    "vector_name": "pET-28a(+)"
+   },
+   "pET28a|500": {
+    "anneal_temp": 51.2,
+    "expected_band_empty": 510,
+    "expected_band_with_insert": 850,
+    "f_name": "T7promoter",
+    "f_seq": "TAATACGACTCACTATAGGG",
+    "f_tm": 56.2,
+    "flanking_downstream": 150,
+    "flanking_upstream": 200,
+    "notes": [
+     "Flanking distances: default for pET-28a(+)",
+     "Tm difference 6.2C between F/R; consider touchdown PCR"
+    ],
+    "r_name": "T7terminator",
+    "r_seq": "GCTAGTTATTGCTCAGCGG",
+    "r_tm": 62.4,
+    "vector_name": "pET-28a(+)"
+   },
+   "pETDuet-1:MCS1|800": {
+    "anneal_temp": 57.4,
+    "expected_band_empty": 390,
+    "expected_band_with_insert": 1100,
+    "f_name": "pET-upstream",
+    "f_seq": "ATGCGTCCGGCGTAGAGG",
+    "f_tm": 69.1,
+    "flanking_downstream": 150,
+    "flanking_upstream": 150,
+    "notes": [
+     "Flanking distances: default for pETDuet-1:MCS1",
+     "Tm difference 6.7C between F/R; consider touchdown PCR"
+    ],
+    "r_name": "T7terminator",
+    "r_seq": "GCTAGTTATTGCTCAGCGG",
+    "r_tm": 62.4,
+    "vector_name": "pETDuet-1:MCS1"
+   },
+   "pMAL-c6T|1200": {
+    "anneal_temp": 54.0,
+    "expected_band_empty": 365,
+    "expected_band_with_insert": 1500,
+    "f_name": "pMalE",
+    "f_seq": "TCAGACTGTCGATGAAGC",
+    "f_tm": 60.5,
+    "flanking_downstream": 100,
+    "flanking_upstream": 200,
+    "notes": [
+     "Flanking distances: default for pMAL-c6T"
+    ],
+    "r_name": "pET-RP",
+    "r_seq": "CTAGTTATTGCTCAGCGG",
+    "r_tm": 59.0,
+    "vector_name": "pMAL-c6T"
+   }
+  },
+  "vector_context": {
+   "": {
+    "notes": "No vector specified",
+    "promoter": "unknown"
+   },
+   "PET 28A (+)": {
+    "expression_type": "cytoplasmic, high-level",
+    "host_requirement": "BL21(DE3) or DE3 lysogen",
+    "inducer": "IPTG",
+    "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+    "promoter": "T7/lac",
+    "rbs": "vector-provided (T7 gene 10 leader)"
+   },
+   "nope": {
+    "notes": "Vector 'nope' not in expression database",
+    "promoter": "unknown"
+   },
+   "pET-28a(+)": {
+    "expression_type": "cytoplasmic, high-level",
+    "host_requirement": "BL21(DE3) or DE3 lysogen",
+    "inducer": "IPTG",
+    "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+    "promoter": "T7/lac",
+    "rbs": "vector-provided (T7 gene 10 leader)"
+   },
+   "pETDuet-1:MCS2": {
+    "expression_type": "cytoplasmic, co-expression",
+    "host_requirement": "BL21(DE3) or DE3 lysogen",
+    "inducer": "IPTG",
+    "notes": "Duet vector MCS2; optional S-tag; co-expression with MCS1",
+    "promoter": "T7/lac (MCS2)",
+    "rbs": "vector-provided"
+   },
+   "pacycduet1mcs1": {
+    "notes": "Vector 'pacycduet1mcs1' not in expression database",
+    "promoter": "unknown"
+   },
+   "pet28a": {
+    "expression_type": "cytoplasmic, high-level",
+    "host_requirement": "BL21(DE3) or DE3 lysogen",
+    "inducer": "IPTG",
+    "notes": "N-terminal His6 + thrombin + T7-tag; optional C-terminal His6",
+    "promoter": "T7/lac",
+    "rbs": "vector-provided (T7 gene 10 leader)"
+   }
+  }
+ },
+ "tools": [
+  {
+   "description": "Analyze a CDS sequence for E. coli expression optimization.\n\nPerforms comprehensive analysis including:\n- Protein info (length, MW, GC content)\n- Rare codon frequency and cluster detection (E. coli K12)\n- CAI (Codon Adaptation Index)\n- Signal peptide prediction (rule-based)\n- MAP (Met aminopeptidase) removal prediction\n- Expression strain recommendation (BL21/Rosetta/Rosetta 2)\n\nArgs:\n    cds_seq: CDS DNA sequence (ATG to stop codon, inclusive).\n\nReturns:\n    dict with basic_info, rare_codons, cai, signal_peptide,\n    strain_recommendation, and warnings.\n",
+   "inputSchema": {
+    "properties": {
+     "cds_seq": {
+      "title": "Cds Seq",
+      "type": "string"
+     }
+    },
+    "required": [
+     "cds_seq"
+    ],
+    "title": "analyze_expressionArguments",
+    "type": "object"
+   },
+   "name": "analyze_expression"
+  },
+  {
+   "description": "Verify reading frame compatibility for an RE cloning strategy.\n\nChecks whether the insert will be in-frame with the vector's N-terminal\nand C-terminal tags after ligation.\n\nArgs:\n    vector_name: Vector name (e.g. \"pET-28a(+)\").\n    re_5prime: 5' restriction enzyme name.\n    re_3prime: 3' restriction enzyme name.\n    insert_has_atg: Whether the insert has its own start codon (default True).\n    insert_has_stop: Whether the insert has its own stop codon (default False).\n    insert_cds_bp: Insert CDS length in bp (optional, for length validation).\n\nReturns:\n    dict with in_frame_5prime, in_frame_3prime, topology diagram,\n    linker sequences, and warnings. Also includes a human-readable\n    frame_report string.\n",
+   "inputSchema": {
+    "properties": {
+     "insert_cds_bp": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Insert Cds Bp"
+     },
+     "insert_has_atg": {
+      "default": true,
+      "title": "Insert Has Atg",
+      "type": "boolean"
+     },
+     "insert_has_stop": {
+      "default": false,
+      "title": "Insert Has Stop",
+      "type": "boolean"
+     },
+     "re_3prime": {
+      "title": "Re 3Prime",
+      "type": "string"
+     },
+     "re_5prime": {
+      "title": "Re 5Prime",
+      "type": "string"
+     },
+     "vector_name": {
+      "title": "Vector Name",
+      "type": "string"
+     }
+    },
+    "required": [
+     "vector_name",
+     "re_5prime",
+     "re_3prime"
+    ],
+    "title": "check_reading_frame_toolArguments",
+    "type": "object"
+   },
+   "name": "check_reading_frame_tool"
+  },
+  {
+   "description": "Design RE cloning primers for inserting a CDS into an expression vector.\n\nAutomatically generates a SnapGene .dna construct file (output_dir or CWD).\nOptionally generates a PNG report when generate_report_png=True.\n\nArgs:\n    insert_seq: Insert CDS sequence (DNA, ATG to stop). Spaces are stripped.\n    re_5prime: 5' restriction enzyme name (e.g. \"BamHI\", \"NdeI\", \"NheI\").\n    re_3prime: 3' restriction enzyme name (e.g. \"XhoI\", \"NotI\", \"HindIII\").\n    vector_name: Optional vector name for reading frame check (e.g. \"pET-28a(+)\").\n    include_start_codon: Include ATG start codon in forward primer (default True).\n    include_stop_codon: Include stop codon in reverse primer (default False).\n    target_tm: Target annealing Tm in Celsius (default 62.0).\n    gene_name: Gene name for labeling report and SnapGene features (default \"Insert\").\n    gene_description: Gene product description (e.g. \"beta-galactosidase\").\n        Added as /note qualifier on CDS in SnapGene .dna file.\n    output_dir: Output directory for generated files.\n        Defaults to current working directory.\n    generate_report_png: Generate a visual PNG report (default False).\n\nReturns:\n    dict with F/R primer sequences, Tm, GC%, QC results, frame check, warnings,\n    snapgene_path, and optionally report_image_path.\n",
+   "inputSchema": {
+    "properties": {
+     "gene_description": {
+      "default": "",
+      "title": "Gene Description",
+      "type": "string"
+     },
+     "gene_name": {
+      "default": "Insert",
+      "title": "Gene Name",
+      "type": "string"
+     },
+     "generate_report_png": {
+      "default": false,
+      "title": "Generate Report Png",
+      "type": "boolean"
+     },
+     "include_start_codon": {
+      "default": true,
+      "title": "Include Start Codon",
+      "type": "boolean"
+     },
+     "include_stop_codon": {
+      "default": false,
+      "title": "Include Stop Codon",
+      "type": "boolean"
+     },
+     "insert_seq": {
+      "title": "Insert Seq",
+      "type": "string"
+     },
+     "output_dir": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Output Dir"
+     },
+     "re_3prime": {
+      "title": "Re 3Prime",
+      "type": "string"
+     },
+     "re_5prime": {
+      "title": "Re 5Prime",
+      "type": "string"
+     },
+     "target_tm": {
+      "default": 62.0,
+      "title": "Target Tm",
+      "type": "number"
+     },
+     "vector_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Vector Name"
+     }
+    },
+    "required": [
+     "insert_seq",
+     "re_5prime",
+     "re_3prime"
+    ],
+    "title": "design_re_cloning_primersArguments",
+    "type": "object"
+   },
+   "name": "design_re_cloning_primers"
+  },
+  {
+   "description": "Fetch a gene's CDS nucleotide sequence from NCBI for primer design.\n\nSearches the NCBI Gene database, retrieves the CDS (ATG to stop),\nand returns DNA/protein sequences ready for design_re_cloning_primers.\n\nDefault: returns the native genomic sequence (for gDNA PCR).\nOnly back-translates using E. coli K12-optimal codons when codon_optimize=True.\n\nArgs:\n    gene_name: Gene name or symbol (e.g. \"gudD\", \"lacZ\", \"malE\").\n    organism: Organism name for NCBI search (default \"Escherichia coli\").\n    gene_id: Optional NCBI Gene ID. If provided, skips search step.\n    codon_optimize: Back-translate using E. coli K12 optimal codons\n        (default False). Only enable when explicitly requested.\n\nReturns:\n    dict with gene_name, organism, gene_id, cds_seq, protein_seq,\n    cds_length_bp, protein_length_aa, source, description.\n",
+   "inputSchema": {
+    "properties": {
+     "codon_optimize": {
+      "default": false,
+      "title": "Codon Optimize",
+      "type": "boolean"
+     },
+     "gene_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Gene Id"
+     },
+     "gene_name": {
+      "title": "Gene Name",
+      "type": "string"
+     },
+     "organism": {
+      "default": "Escherichia coli",
+      "title": "Organism",
+      "type": "string"
+     }
+    },
+    "required": [
+     "gene_name"
+    ],
+    "title": "fetch_gene_sequenceArguments",
+    "type": "object"
+   },
+   "name": "fetch_gene_sequence"
+  },
+  {
+   "description": "Generate a Macrogen-compatible primer order sheet (XLSX).\n\nCreates an XLSX file with Macrogen Oligo Order format\n(No., Oligo Name, Sequence, Amount, Purification).\n\nArgs:\n    primers: List of primer dicts, each with \"name\" (str) and \"sequence\" (str).\n        Example: [{\"name\": \"gudD_BamHI_F\", \"sequence\": \"GCGCGGATCC...\"}]\n    project_name: Project name for the output file (default \"primer_order\").\n    output_dir: Output directory path. Defaults to current working directory.\n\nReturns:\n    dict with the generated file path and order summary.\n",
+   "inputSchema": {
+    "properties": {
+     "output_dir": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Output Dir"
+     },
+     "primers": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "title": "Primers",
+      "type": "array"
+     },
+     "project_name": {
+      "default": "primer_order",
+      "title": "Project Name",
+      "type": "string"
+     }
+    },
+    "required": [
+     "primers"
+    ],
+    "title": "generate_macrogen_orderArguments",
+    "type": "object"
+   },
+   "name": "generate_macrogen_order"
+  },
+  {
+   "description": "List all available restriction enzymes with recognition sites and cut info.\n\nReturns:\n    List of enzymes, each with name, recognition site, overhang type,\n    overhang length, and cut positions.\n",
+   "inputSchema": {
+    "properties": {},
+    "title": "list_restriction_enzymesArguments",
+    "type": "object"
+   },
+   "name": "list_restriction_enzymes"
+  },
+  {
+   "description": "List all available expression vectors and their RE sites.\n\nReturns:\n    List of vectors, each with name, RE sites, tag info, and aliases.\n",
+   "inputSchema": {
+    "properties": {},
+    "title": "list_vectorsArguments",
+    "type": "object"
+   },
+   "name": "list_vectors"
+  },
+  {
+   "description": "Recommend optimal RE pairs for cloning an insert into a vector.\n\nScores each RE combination based on buffer compatibility, reading frame,\nand HF variant availability.\n\nArgs:\n    insert_seq: Insert CDS sequence (DNA).\n    vector_name: Vector name (e.g. \"pET-28a(+)\", \"pET-21a(+)\").\n    prefer_hf: Prefer HF (High Fidelity) enzyme variants (default True).\n\nReturns:\n    List of RE pair recommendations sorted by score (highest first).\n    Each entry has re_5prime, re_3prime, score, buffer, frame_ok, reason.\n",
+   "inputSchema": {
+    "properties": {
+     "insert_seq": {
+      "title": "Insert Seq",
+      "type": "string"
+     },
+     "prefer_hf": {
+      "default": true,
+      "title": "Prefer Hf",
+      "type": "boolean"
+     },
+     "vector_name": {
+      "title": "Vector Name",
+      "type": "string"
+     }
+    },
+    "required": [
+     "insert_seq",
+     "vector_name"
+    ],
+    "title": "recommend_re_pairArguments",
+    "type": "object"
+   },
+   "name": "recommend_re_pair"
+  },
+  {
+   "description": "Suggest colony PCR primers and expected band sizes for a vector+insert.\n\nUses universal primer database (Macrogen standard primers) matched to\nthe vector type.\n\nArgs:\n    vector_name: Vector name (e.g. \"pET-28a(+)\", \"pETDuet-1:MCS1\").\n        Fuzzy matching supported (e.g. \"pET28a\").\n    insert_length_bp: Insert length in base pairs.\n\nReturns:\n    dict with F/R primer name, sequence, Tm, expected band sizes\n    (with insert and empty vector), and annealing temperature.\n",
+   "inputSchema": {
+    "properties": {
+     "insert_length_bp": {
+      "title": "Insert Length Bp",
+      "type": "integer"
+     },
+     "vector_name": {
+      "title": "Vector Name",
+      "type": "string"
+     }
+    },
+    "required": [
+     "vector_name",
+     "insert_length_bp"
+    ],
+    "title": "suggest_colony_pcrArguments",
+    "type": "object"
+   },
+   "name": "suggest_colony_pcr"
+  }
+ ]
+}
