@@ -1,0 +1,2331 @@
+{
+ "defaults": {
+  "empty_environ_ignores_process_environment": {
+   "accelerators": {
+    "candidate_counts": {
+     "cuda": 1,
+     "metal": 0,
+     "rocm": 0
+    },
+    "candidate_upper_bounds": {
+     "cuda": 1,
+     "metal": null,
+     "rocm": null
+    },
+    "devices": [
+     {
+      "backend_candidate": "cuda",
+      "compute_capability": null,
+      "device_class": "gpu",
+      "device_permission": "not_tested",
+      "driver_version": "470.82",
+      "local_index": 0,
+      "management_query": "visible",
+      "memory": {
+       "dedicated_free_bytes": 15728640000,
+       "dedicated_total_bytes": 16106127360,
+       "model": "dedicated"
+      },
+      "name": "Tesla T4",
+      "runtime_compatibility": "not_tested",
+      "vendor": "nvidia"
+     }
+    ],
+    "runtime_usable_devices": null,
+    "visibility_environment": {
+     "CUDA_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "HIP_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "NVIDIA_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "ROCR_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     }
+    }
+   },
+   "cgroup_v2": {
+    "detected": false,
+    "scope": "unknown"
+   },
+   "completeness": "partial",
+   "container": {
+    "detected": false,
+    "evidence": [],
+    "runtime": null
+   },
+   "cpu": {
+    "cgroup_v2": {
+     "cpuset_logical": null,
+     "quota_cores": null
+    },
+    "effective": {
+     "capacity_cores": 4.0,
+     "limiting_sources": [
+      "process_affinity",
+      "python_process_count"
+     ],
+     "worker_ceiling": 4
+    },
+    "host": {
+     "logical": 8,
+     "physical": null
+    },
+    "process": {
+     "affinity_logical": 4,
+     "python_available_logical": 4
+    }
+   },
+   "disk": {
+    "capacity_bytes": 107374182400,
+    "free_bytes": 64424509440,
+    "scope": "working_filesystem_path_redacted",
+    "user_available_bytes": 53687091200,
+    "writability_check": "os_access_only_no_write_probe",
+    "writable": true
+   },
+   "memory": {
+    "cgroup_v2": {
+     "available_bytes": null,
+     "current_bytes": null,
+     "high_bytes": null,
+     "max_bytes": null
+    },
+    "effective": {
+     "available_bytes": null,
+     "available_limiting_sources": [],
+     "hard_limit_bytes": null,
+     "hard_limit_sources": [],
+     "pressure_threshold_bytes": null
+    },
+    "host": {
+     "available_bytes": null,
+     "total_bytes": null
+    },
+    "model": "system_ram",
+    "swap": {
+     "free_bytes": null,
+     "total_bytes": null
+    }
+   },
+   "observed_at": "2026-01-02T03:04:05Z",
+   "platform": {
+    "machine": "x86_64",
+    "python_version": "3.12.1",
+    "system": "Linux"
+   },
+   "privacy": {
+    "absolute_paths_included": false,
+    "environment_values_included": false,
+    "hostnames_included": false,
+    "identifiers_redacted_by_default": true
+   },
+   "provenance": [
+    {
+     "component": "accelerators.amd",
+     "source": "rocm-smi",
+     "status": "not_found"
+    },
+    {
+     "component": "accelerators.nvidia",
+     "source": "nvidia-smi",
+     "status": "ok"
+    },
+    {
+     "component": "cgroup_v2",
+     "source": "cgroup.controllers",
+     "status": "unavailable"
+    },
+    {
+     "component": "cpu.host.logical",
+     "source": "os.cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.host.physical",
+     "source": "platform_fallbacks",
+     "status": "unavailable"
+    },
+    {
+     "component": "cpu.process.affinity_logical",
+     "source": "os.sched_getaffinity",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.process.python_available_logical",
+     "source": "os.process_cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "disk",
+     "source": "shutil.disk_usage",
+     "status": "ok"
+    },
+    {
+     "component": "disk.user_available",
+     "source": "os.statvfs",
+     "status": "ok"
+    },
+    {
+     "component": "inventory.psutil",
+     "source": "injected",
+     "status": "unavailable"
+    },
+    {
+     "component": "scheduler",
+     "source": "named_slurm_environment",
+     "status": "absent"
+    }
+   ],
+   "scheduler": {
+    "allocation": {
+     "cpu_per_process": null,
+     "cpus_on_node": null,
+     "gpus_on_node": null,
+     "gpus_per_process": null,
+     "memory_effective_bytes": null,
+     "memory_scope": null,
+     "tasks": null
+    },
+    "detected": false,
+    "enforcement": "not_applicable",
+    "fields_read": [],
+    "kind": null
+   },
+   "schema_version": "1.1",
+   "snapshot_kind": "effective_resource_snapshot",
+   "warnings": [
+    {
+     "code": "ACCELERATOR_RUNTIME_NOT_TESTED",
+     "component": "accelerators",
+     "message": "Management visibility does not prove permission or framework/runtime compatibility.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_PHYSICAL_CPU_UNKNOWN",
+     "component": "cpu",
+     "message": "Physical core count is unknown and was not inferred from logical CPUs.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_MEMORY_AVAILABLE_UNKNOWN",
+     "component": "memory",
+     "message": "Host available memory could not be determined without an allocation probe.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_MEMORY_TOTAL_UNKNOWN",
+     "component": "memory",
+     "message": "Host memory total could not be determined.",
+     "severity": "warning"
+    }
+   ]
+  },
+  "empty_observed_at_falls_back_to_clock": {
+   "iso_utc_seconds": true,
+   "snapshot": {
+    "accelerators": {
+     "candidate_counts": {
+      "cuda": 0,
+      "metal": 0,
+      "rocm": 0
+     },
+     "candidate_upper_bounds": {
+      "cuda": null,
+      "metal": null,
+      "rocm": null
+     },
+     "devices": [],
+     "runtime_usable_devices": null,
+     "visibility_environment": {
+      "CUDA_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      },
+      "HIP_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      },
+      "NVIDIA_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      },
+      "ROCR_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      }
+     }
+    },
+    "cgroup_v2": {
+     "detected": false,
+     "scope": "unknown"
+    },
+    "completeness": "partial",
+    "container": {
+     "detected": false,
+     "evidence": [],
+     "runtime": null
+    },
+    "cpu": {
+     "cgroup_v2": {
+      "cpuset_logical": null,
+      "quota_cores": null
+     },
+     "effective": {
+      "capacity_cores": 4.0,
+      "limiting_sources": [
+       "process_affinity",
+       "python_process_count"
+      ],
+      "worker_ceiling": 4
+     },
+     "host": {
+      "logical": 8,
+      "physical": null
+     },
+     "process": {
+      "affinity_logical": 4,
+      "python_available_logical": 4
+     }
+    },
+    "disk": {
+     "capacity_bytes": 107374182400,
+     "free_bytes": 64424509440,
+     "scope": "working_filesystem_path_redacted",
+     "user_available_bytes": 53687091200,
+     "writability_check": "os_access_only_no_write_probe",
+     "writable": true
+    },
+    "memory": {
+     "cgroup_v2": {
+      "available_bytes": null,
+      "current_bytes": null,
+      "high_bytes": null,
+      "max_bytes": null
+     },
+     "effective": {
+      "available_bytes": null,
+      "available_limiting_sources": [],
+      "hard_limit_bytes": null,
+      "hard_limit_sources": [],
+      "pressure_threshold_bytes": null
+     },
+     "host": {
+      "available_bytes": null,
+      "total_bytes": null
+     },
+     "model": "system_ram",
+     "swap": {
+      "free_bytes": null,
+      "total_bytes": null
+     }
+    },
+    "observed_at": "<clock>",
+    "platform": {
+     "machine": "x86_64",
+     "python_version": "3.12.1",
+     "system": "Linux"
+    },
+    "privacy": {
+     "absolute_paths_included": false,
+     "environment_values_included": false,
+     "hostnames_included": false,
+     "identifiers_redacted_by_default": true
+    },
+    "provenance": [
+     {
+      "component": "accelerators",
+      "source": "user_option",
+      "status": "skipped"
+     },
+     {
+      "component": "cgroup_v2",
+      "source": "cgroup.controllers",
+      "status": "unavailable"
+     },
+     {
+      "component": "cpu.host.logical",
+      "source": "os.cpu_count",
+      "status": "ok"
+     },
+     {
+      "component": "cpu.host.physical",
+      "source": "platform_fallbacks",
+      "status": "unavailable"
+     },
+     {
+      "component": "cpu.process.affinity_logical",
+      "source": "os.sched_getaffinity",
+      "status": "ok"
+     },
+     {
+      "component": "cpu.process.python_available_logical",
+      "source": "os.process_cpu_count",
+      "status": "ok"
+     },
+     {
+      "component": "disk",
+      "source": "shutil.disk_usage",
+      "status": "ok"
+     },
+     {
+      "component": "disk.user_available",
+      "source": "os.statvfs",
+      "status": "ok"
+     },
+     {
+      "component": "inventory.psutil",
+      "source": "injected",
+      "status": "unavailable"
+     },
+     {
+      "component": "scheduler",
+      "source": "named_slurm_environment",
+      "status": "absent"
+     }
+    ],
+    "scheduler": {
+     "allocation": {
+      "cpu_per_process": null,
+      "cpus_on_node": null,
+      "gpus_on_node": null,
+      "gpus_per_process": null,
+      "memory_effective_bytes": null,
+      "memory_scope": null,
+      "tasks": null
+     },
+     "detected": false,
+     "enforcement": "not_applicable",
+     "fields_read": [],
+     "kind": null
+    },
+    "schema_version": "1.1",
+    "snapshot_kind": "effective_resource_snapshot",
+    "warnings": [
+     {
+      "code": "HOST_PHYSICAL_CPU_UNKNOWN",
+      "component": "cpu",
+      "message": "Physical core count is unknown and was not inferred from logical CPUs.",
+      "severity": "info"
+     },
+     {
+      "code": "HOST_MEMORY_AVAILABLE_UNKNOWN",
+      "component": "memory",
+      "message": "Host available memory could not be determined without an allocation probe.",
+      "severity": "info"
+     },
+     {
+      "code": "HOST_MEMORY_TOTAL_UNKNOWN",
+      "component": "memory",
+      "message": "Host memory total could not be determined.",
+      "severity": "warning"
+     }
+    ]
+   },
+   "within_call_window": true
+  },
+  "environ_from_process_environment": {
+   "accelerators": {
+    "candidate_counts": {
+     "cuda": 1,
+     "metal": 0,
+     "rocm": 0
+    },
+    "candidate_upper_bounds": {
+     "cuda": 1,
+     "metal": null,
+     "rocm": null
+    },
+    "devices": [
+     {
+      "backend_candidate": "cuda",
+      "compute_capability": null,
+      "device_class": "gpu",
+      "device_permission": "not_tested",
+      "driver_version": "470.82",
+      "local_index": 0,
+      "management_query": "visible",
+      "memory": {
+       "dedicated_free_bytes": 15728640000,
+       "dedicated_total_bytes": 16106127360,
+       "model": "dedicated"
+      },
+      "name": "Tesla T4",
+      "runtime_compatibility": "not_tested",
+      "vendor": "nvidia"
+     }
+    ],
+    "runtime_usable_devices": null,
+    "visibility_environment": {
+     "CUDA_VISIBLE_DEVICES": {
+      "entry_count": 1,
+      "set": true,
+      "state": "restricted",
+      "value_redacted": true
+     },
+     "HIP_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "NVIDIA_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "ROCR_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     }
+    }
+   },
+   "cgroup_v2": {
+    "detected": false,
+    "scope": "unknown"
+   },
+   "completeness": "partial",
+   "container": {
+    "detected": false,
+    "evidence": [],
+    "runtime": null
+   },
+   "cpu": {
+    "cgroup_v2": {
+     "cpuset_logical": null,
+     "quota_cores": null
+    },
+    "effective": {
+     "capacity_cores": 2.0,
+     "limiting_sources": [
+      "scheduler_per_process"
+     ],
+     "worker_ceiling": 2
+    },
+    "host": {
+     "logical": 8,
+     "physical": null
+    },
+    "process": {
+     "affinity_logical": 4,
+     "python_available_logical": 4
+    }
+   },
+   "disk": {
+    "capacity_bytes": 107374182400,
+    "free_bytes": 64424509440,
+    "scope": "working_filesystem_path_redacted",
+    "user_available_bytes": 53687091200,
+    "writability_check": "os_access_only_no_write_probe",
+    "writable": true
+   },
+   "memory": {
+    "cgroup_v2": {
+     "available_bytes": null,
+     "current_bytes": null,
+     "high_bytes": null,
+     "max_bytes": null
+    },
+    "effective": {
+     "available_bytes": 2147483648,
+     "available_limiting_sources": [
+      "scheduler_memory_upper_bound"
+     ],
+     "hard_limit_bytes": 2147483648,
+     "hard_limit_sources": [
+      "scheduler_memory"
+     ],
+     "pressure_threshold_bytes": null
+    },
+    "host": {
+     "available_bytes": null,
+     "total_bytes": null
+    },
+    "model": "system_ram",
+    "swap": {
+     "free_bytes": null,
+     "total_bytes": null
+    }
+   },
+   "observed_at": "2026-01-02T03:04:05Z",
+   "platform": {
+    "machine": "x86_64",
+    "python_version": "3.12.1",
+    "system": "Linux"
+   },
+   "privacy": {
+    "absolute_paths_included": false,
+    "environment_values_included": false,
+    "hostnames_included": false,
+    "identifiers_redacted_by_default": true
+   },
+   "provenance": [
+    {
+     "component": "accelerators.amd",
+     "source": "rocm-smi",
+     "status": "not_found"
+    },
+    {
+     "component": "accelerators.nvidia",
+     "source": "nvidia-smi",
+     "status": "ok"
+    },
+    {
+     "component": "cgroup_v2",
+     "source": "cgroup.controllers",
+     "status": "unavailable"
+    },
+    {
+     "component": "cpu.host.logical",
+     "source": "os.cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.host.physical",
+     "source": "platform_fallbacks",
+     "status": "unavailable"
+    },
+    {
+     "component": "cpu.process.affinity_logical",
+     "source": "os.sched_getaffinity",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.process.python_available_logical",
+     "source": "os.process_cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "disk",
+     "source": "shutil.disk_usage",
+     "status": "ok"
+    },
+    {
+     "component": "disk.user_available",
+     "source": "os.statvfs",
+     "status": "ok"
+    },
+    {
+     "component": "inventory.psutil",
+     "source": "injected",
+     "status": "unavailable"
+    },
+    {
+     "component": "scheduler",
+     "source": "named_slurm_environment",
+     "status": "ok"
+    }
+   ],
+   "scheduler": {
+    "allocation": {
+     "cpu_per_process": 2,
+     "cpus_on_node": null,
+     "first_job_cpus_per_node": null,
+     "gpus_on_node": null,
+     "gpus_per_process": null,
+     "gpus_requested": null,
+     "memory_effective_bytes": 2147483648,
+     "memory_scope": "per_task_from_per_cpu",
+     "tasks": null,
+     "tasks_per_node": null
+    },
+    "detected": true,
+    "enforcement": "unknown",
+    "fields_read": [
+     "SLURM_CPUS_PER_TASK",
+     "SLURM_JOB_ID",
+     "SLURM_MEM_PER_CPU"
+    ],
+    "kind": "slurm"
+   },
+   "schema_version": "1.1",
+   "snapshot_kind": "effective_resource_snapshot",
+   "warnings": [
+    {
+     "code": "ACCELERATOR_RUNTIME_NOT_TESTED",
+     "component": "accelerators",
+     "message": "Management visibility does not prove permission or framework/runtime compatibility.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_PHYSICAL_CPU_UNKNOWN",
+     "component": "cpu",
+     "message": "Physical core count is unknown and was not inferred from logical CPUs.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_MEMORY_AVAILABLE_UNKNOWN",
+     "component": "memory",
+     "message": "Host available memory could not be determined without an allocation probe.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_MEMORY_TOTAL_UNKNOWN",
+     "component": "memory",
+     "message": "Host memory total could not be determined.",
+     "severity": "warning"
+    },
+    {
+     "code": "SLURM_ENFORCEMENT_UNKNOWN",
+     "component": "scheduler",
+     "message": "Allocation variables do not prove task affinity or cgroup enforcement.",
+     "severity": "info"
+    }
+   ]
+  },
+  "observed_at_from_clock": {
+   "iso_utc_seconds": true,
+   "snapshot": {
+    "accelerators": {
+     "candidate_counts": {
+      "cuda": 0,
+      "metal": 0,
+      "rocm": 0
+     },
+     "candidate_upper_bounds": {
+      "cuda": null,
+      "metal": null,
+      "rocm": null
+     },
+     "devices": [],
+     "runtime_usable_devices": null,
+     "visibility_environment": {
+      "CUDA_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      },
+      "HIP_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      },
+      "NVIDIA_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      },
+      "ROCR_VISIBLE_DEVICES": {
+       "entry_count": null,
+       "set": false,
+       "state": "unset",
+       "value_redacted": true
+      }
+     }
+    },
+    "cgroup_v2": {
+     "detected": false,
+     "scope": "unknown"
+    },
+    "completeness": "partial",
+    "container": {
+     "detected": false,
+     "evidence": [],
+     "runtime": null
+    },
+    "cpu": {
+     "cgroup_v2": {
+      "cpuset_logical": null,
+      "quota_cores": null
+     },
+     "effective": {
+      "capacity_cores": 4.0,
+      "limiting_sources": [
+       "process_affinity",
+       "python_process_count"
+      ],
+      "worker_ceiling": 4
+     },
+     "host": {
+      "logical": 8,
+      "physical": null
+     },
+     "process": {
+      "affinity_logical": 4,
+      "python_available_logical": 4
+     }
+    },
+    "disk": {
+     "capacity_bytes": 107374182400,
+     "free_bytes": 64424509440,
+     "scope": "working_filesystem_path_redacted",
+     "user_available_bytes": 53687091200,
+     "writability_check": "os_access_only_no_write_probe",
+     "writable": true
+    },
+    "memory": {
+     "cgroup_v2": {
+      "available_bytes": null,
+      "current_bytes": null,
+      "high_bytes": null,
+      "max_bytes": null
+     },
+     "effective": {
+      "available_bytes": null,
+      "available_limiting_sources": [],
+      "hard_limit_bytes": null,
+      "hard_limit_sources": [],
+      "pressure_threshold_bytes": null
+     },
+     "host": {
+      "available_bytes": null,
+      "total_bytes": null
+     },
+     "model": "system_ram",
+     "swap": {
+      "free_bytes": null,
+      "total_bytes": null
+     }
+    },
+    "observed_at": "<clock>",
+    "platform": {
+     "machine": "x86_64",
+     "python_version": "3.12.1",
+     "system": "Linux"
+    },
+    "privacy": {
+     "absolute_paths_included": false,
+     "environment_values_included": false,
+     "hostnames_included": false,
+     "identifiers_redacted_by_default": true
+    },
+    "provenance": [
+     {
+      "component": "accelerators",
+      "source": "user_option",
+      "status": "skipped"
+     },
+     {
+      "component": "cgroup_v2",
+      "source": "cgroup.controllers",
+      "status": "unavailable"
+     },
+     {
+      "component": "cpu.host.logical",
+      "source": "os.cpu_count",
+      "status": "ok"
+     },
+     {
+      "component": "cpu.host.physical",
+      "source": "platform_fallbacks",
+      "status": "unavailable"
+     },
+     {
+      "component": "cpu.process.affinity_logical",
+      "source": "os.sched_getaffinity",
+      "status": "ok"
+     },
+     {
+      "component": "cpu.process.python_available_logical",
+      "source": "os.process_cpu_count",
+      "status": "ok"
+     },
+     {
+      "component": "disk",
+      "source": "shutil.disk_usage",
+      "status": "ok"
+     },
+     {
+      "component": "disk.user_available",
+      "source": "os.statvfs",
+      "status": "ok"
+     },
+     {
+      "component": "inventory.psutil",
+      "source": "injected",
+      "status": "unavailable"
+     },
+     {
+      "component": "scheduler",
+      "source": "named_slurm_environment",
+      "status": "absent"
+     }
+    ],
+    "scheduler": {
+     "allocation": {
+      "cpu_per_process": null,
+      "cpus_on_node": null,
+      "gpus_on_node": null,
+      "gpus_per_process": null,
+      "memory_effective_bytes": null,
+      "memory_scope": null,
+      "tasks": null
+     },
+     "detected": false,
+     "enforcement": "not_applicable",
+     "fields_read": [],
+     "kind": null
+    },
+    "schema_version": "1.1",
+    "snapshot_kind": "effective_resource_snapshot",
+    "warnings": [
+     {
+      "code": "HOST_PHYSICAL_CPU_UNKNOWN",
+      "component": "cpu",
+      "message": "Physical core count is unknown and was not inferred from logical CPUs.",
+      "severity": "info"
+     },
+     {
+      "code": "HOST_MEMORY_AVAILABLE_UNKNOWN",
+      "component": "memory",
+      "message": "Host available memory could not be determined without an allocation probe.",
+      "severity": "info"
+     },
+     {
+      "code": "HOST_MEMORY_TOTAL_UNKNOWN",
+      "component": "memory",
+      "message": "Host memory total could not be determined.",
+      "severity": "warning"
+     }
+    ]
+   },
+   "within_call_window": true
+  },
+  "psutil_imported_on_demand": {
+   "accelerators": {
+    "candidate_counts": {
+     "cuda": 0,
+     "metal": 0,
+     "rocm": 0
+    },
+    "candidate_upper_bounds": {
+     "cuda": null,
+     "metal": null,
+     "rocm": null
+    },
+    "devices": [],
+    "runtime_usable_devices": null,
+    "visibility_environment": {
+     "CUDA_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "HIP_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "NVIDIA_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "ROCR_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     }
+    }
+   },
+   "cgroup_v2": {
+    "detected": false,
+    "scope": "unknown"
+   },
+   "completeness": "complete",
+   "container": {
+    "detected": false,
+    "evidence": [],
+    "runtime": null
+   },
+   "cpu": {
+    "cgroup_v2": {
+     "cpuset_logical": null,
+     "quota_cores": null
+    },
+    "effective": {
+     "capacity_cores": 4.0,
+     "limiting_sources": [
+      "process_affinity",
+      "python_process_count"
+     ],
+     "worker_ceiling": 4
+    },
+    "host": {
+     "logical": 8,
+     "physical": 4
+    },
+    "process": {
+     "affinity_logical": 4,
+     "python_available_logical": 4
+    }
+   },
+   "disk": {
+    "capacity_bytes": 107374182400,
+    "free_bytes": 64424509440,
+    "scope": "working_filesystem_path_redacted",
+    "user_available_bytes": 53687091200,
+    "writability_check": "os_access_only_no_write_probe",
+    "writable": true
+   },
+   "memory": {
+    "cgroup_v2": {
+     "available_bytes": null,
+     "current_bytes": null,
+     "high_bytes": null,
+     "max_bytes": null
+    },
+    "effective": {
+     "available_bytes": 21474836480,
+     "available_limiting_sources": [
+      "host_available"
+     ],
+     "hard_limit_bytes": 34359738368,
+     "hard_limit_sources": [
+      "host_total"
+     ],
+     "pressure_threshold_bytes": null
+    },
+    "host": {
+     "available_bytes": 21474836480,
+     "total_bytes": 34359738368
+    },
+    "model": "system_ram",
+    "swap": {
+     "free_bytes": 3221225472,
+     "total_bytes": 4294967296
+    }
+   },
+   "observed_at": "2026-01-02T03:04:05Z",
+   "platform": {
+    "machine": "x86_64",
+    "python_version": "3.12.1",
+    "system": "Linux"
+   },
+   "privacy": {
+    "absolute_paths_included": false,
+    "environment_values_included": false,
+    "hostnames_included": false,
+    "identifiers_redacted_by_default": true
+   },
+   "provenance": [
+    {
+     "component": "accelerators",
+     "source": "user_option",
+     "status": "skipped"
+    },
+    {
+     "component": "cgroup_v2",
+     "source": "cgroup.controllers",
+     "status": "unavailable"
+    },
+    {
+     "component": "cpu.host.logical",
+     "source": "os.cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.host.physical",
+     "source": "psutil.cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.process.affinity_logical",
+     "source": "os.sched_getaffinity",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.process.python_available_logical",
+     "source": "os.process_cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "disk",
+     "source": "shutil.disk_usage",
+     "status": "ok"
+    },
+    {
+     "component": "disk.user_available",
+     "source": "os.statvfs",
+     "status": "ok"
+    },
+    {
+     "component": "inventory.psutil",
+     "source": "optional_import",
+     "status": "ok"
+    },
+    {
+     "component": "memory.host",
+     "source": "psutil.virtual_memory",
+     "status": "ok"
+    },
+    {
+     "component": "memory.swap",
+     "source": "psutil.swap_memory",
+     "status": "ok"
+    },
+    {
+     "component": "scheduler",
+     "source": "named_slurm_environment",
+     "status": "absent"
+    }
+   ],
+   "scheduler": {
+    "allocation": {
+     "cpu_per_process": null,
+     "cpus_on_node": null,
+     "gpus_on_node": null,
+     "gpus_per_process": null,
+     "memory_effective_bytes": null,
+     "memory_scope": null,
+     "tasks": null
+    },
+    "detected": false,
+    "enforcement": "not_applicable",
+    "fields_read": [],
+    "kind": null
+   },
+   "schema_version": "1.1",
+   "snapshot_kind": "effective_resource_snapshot",
+   "warnings": []
+  },
+  "psutil_missing_on_demand": {
+   "accelerators": {
+    "candidate_counts": {
+     "cuda": 0,
+     "metal": 0,
+     "rocm": 0
+    },
+    "candidate_upper_bounds": {
+     "cuda": null,
+     "metal": null,
+     "rocm": null
+    },
+    "devices": [],
+    "runtime_usable_devices": null,
+    "visibility_environment": {
+     "CUDA_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "HIP_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "NVIDIA_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     },
+     "ROCR_VISIBLE_DEVICES": {
+      "entry_count": null,
+      "set": false,
+      "state": "unset",
+      "value_redacted": true
+     }
+    }
+   },
+   "cgroup_v2": {
+    "detected": false,
+    "scope": "unknown"
+   },
+   "completeness": "partial",
+   "container": {
+    "detected": false,
+    "evidence": [],
+    "runtime": null
+   },
+   "cpu": {
+    "cgroup_v2": {
+     "cpuset_logical": null,
+     "quota_cores": null
+    },
+    "effective": {
+     "capacity_cores": 4.0,
+     "limiting_sources": [
+      "process_affinity",
+      "python_process_count"
+     ],
+     "worker_ceiling": 4
+    },
+    "host": {
+     "logical": 8,
+     "physical": null
+    },
+    "process": {
+     "affinity_logical": 4,
+     "python_available_logical": 4
+    }
+   },
+   "disk": {
+    "capacity_bytes": 107374182400,
+    "free_bytes": 64424509440,
+    "scope": "working_filesystem_path_redacted",
+    "user_available_bytes": 53687091200,
+    "writability_check": "os_access_only_no_write_probe",
+    "writable": true
+   },
+   "memory": {
+    "cgroup_v2": {
+     "available_bytes": null,
+     "current_bytes": null,
+     "high_bytes": null,
+     "max_bytes": null
+    },
+    "effective": {
+     "available_bytes": null,
+     "available_limiting_sources": [],
+     "hard_limit_bytes": null,
+     "hard_limit_sources": [],
+     "pressure_threshold_bytes": null
+    },
+    "host": {
+     "available_bytes": null,
+     "total_bytes": null
+    },
+    "model": "system_ram",
+    "swap": {
+     "free_bytes": null,
+     "total_bytes": null
+    }
+   },
+   "observed_at": "2026-01-02T03:04:05Z",
+   "platform": {
+    "machine": "x86_64",
+    "python_version": "3.12.1",
+    "system": "Linux"
+   },
+   "privacy": {
+    "absolute_paths_included": false,
+    "environment_values_included": false,
+    "hostnames_included": false,
+    "identifiers_redacted_by_default": true
+   },
+   "provenance": [
+    {
+     "component": "accelerators",
+     "source": "user_option",
+     "status": "skipped"
+    },
+    {
+     "component": "cgroup_v2",
+     "source": "cgroup.controllers",
+     "status": "unavailable"
+    },
+    {
+     "component": "cpu.host.logical",
+     "source": "os.cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.host.physical",
+     "source": "platform_fallbacks",
+     "status": "unavailable"
+    },
+    {
+     "component": "cpu.process.affinity_logical",
+     "source": "os.sched_getaffinity",
+     "status": "ok"
+    },
+    {
+     "component": "cpu.process.python_available_logical",
+     "source": "os.process_cpu_count",
+     "status": "ok"
+    },
+    {
+     "component": "disk",
+     "source": "shutil.disk_usage",
+     "status": "ok"
+    },
+    {
+     "component": "disk.user_available",
+     "source": "os.statvfs",
+     "status": "ok"
+    },
+    {
+     "component": "inventory.psutil",
+     "source": "optional_import",
+     "status": "unavailable"
+    },
+    {
+     "component": "scheduler",
+     "source": "named_slurm_environment",
+     "status": "absent"
+    }
+   ],
+   "scheduler": {
+    "allocation": {
+     "cpu_per_process": null,
+     "cpus_on_node": null,
+     "gpus_on_node": null,
+     "gpus_per_process": null,
+     "memory_effective_bytes": null,
+     "memory_scope": null,
+     "tasks": null
+    },
+    "detected": false,
+    "enforcement": "not_applicable",
+    "fields_read": [],
+    "kind": null
+   },
+   "schema_version": "1.1",
+   "snapshot_kind": "effective_resource_snapshot",
+   "warnings": [
+    {
+     "code": "HOST_PHYSICAL_CPU_UNKNOWN",
+     "component": "cpu",
+     "message": "Physical core count is unknown and was not inferred from logical CPUs.",
+     "severity": "info"
+    },
+    {
+     "code": "PSUTIL_UNAVAILABLE",
+     "component": "inventory",
+     "message": "Optional psutil is unavailable; standard-library fallbacks were used.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_MEMORY_AVAILABLE_UNKNOWN",
+     "component": "memory",
+     "message": "Host available memory could not be determined without an allocation probe.",
+     "severity": "info"
+    },
+    {
+     "code": "HOST_MEMORY_TOTAL_UNKNOWN",
+     "component": "memory",
+     "message": "Host memory total could not be determined.",
+     "severity": "warning"
+    }
+   ]
+  }
+ },
+ "fresh_output": {
+  "emptied_result_does_not_leak_into_next_call": true,
+  "snapshot_sha256": "bd1d13eda5da3ec9b410881cf71af7f6239b7bf2a9eff105de4615c8d6ad98f1",
+  "top_level_keys": [
+   "accelerators",
+   "cgroup_v2",
+   "completeness",
+   "container",
+   "cpu",
+   "disk",
+   "memory",
+   "observed_at",
+   "platform",
+   "privacy",
+   "provenance",
+   "scheduler",
+   "schema_version",
+   "snapshot_kind",
+   "warnings"
+  ],
+  "two_calls_equal": true
+ },
+ "probe_order": {
+  "amd_smi_empty_ok_then_no_fallback": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 5,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "93ce5e4841e9037a20fde2ecfa3df13d4c075e54edc9d47905cf56ccc7f2ffbf"
+   }
+  },
+  "amd_smi_error_rocm_not_found": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 6,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "2e8665694e9c722bc9503ad59e5a588903cccb7592b2844c14d2b7de1bb18fc3"
+   }
+  },
+  "amd_start_error_rocm_ok": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 6,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "2e8665694e9c722bc9503ad59e5a588903cccb7592b2844c14d2b7de1bb18fc3"
+   }
+  },
+  "cgroup_depth_bounded_bad_cpuset": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 261,
+    "head": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/self/cgroup"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/d7/d8/d9/d10/d11/d12/d13/d14/d15/d16/d17/d18/d19/d20/d21/d22/d23/d24/d25/d26/d27/d28/d29/d30/d31/d32/d33/d34/d35/d36/d37/d38/d39/d40/d41/d42/d43/d44/d45/d46/d47/d48/d49/d50/d51/d52/d53/d54/d55/d56/d57/d58/d59/d60/d61/d62/d63/d64/d65/d66/d67/d68/d69/cpu.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/d7/d8/d9/d10/d11/d12/d13/d14/d15/d16/d17/d18/d19/d20/d21/d22/d23/d24/d25/d26/d27/d28/d29/d30/d31/d32/d33/d34/d35/d36/d37/d38/d39/d40/d41/d42/d43/d44/d45/d46/d47/d48/d49/d50/d51/d52/d53/d54/d55/d56/d57/d58/d59/d60/d61/d62/d63/d64/d65/d66/d67/d68/d69/memory.current"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/d7/d8/d9/d10/d11/d12/d13/d14/d15/d16/d17/d18/d19/d20/d21/d22/d23/d24/d25/d26/d27/d28/d29/d30/d31/d32/d33/d34/d35/d36/d37/d38/d39/d40/d41/d42/d43/d44/d45/d46/d47/d48/d49/d50/d51/d52/d53/d54/d55/d56/d57/d58/d59/d60/d61/d62/d63/d64/d65/d66/d67/d68/d69/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/d7/d8/d9/d10/d11/d12/d13/d14/d15/d16/d17/d18/d19/d20/d21/d22/d23/d24/d25/d26/d27/d28/d29/d30/d31/d32/d33/d34/d35/d36/d37/d38/d39/d40/d41/d42/d43/d44/d45/d46/d47/d48/d49/d50/d51/d52/d53/d54/d55/d56/d57/d58/d59/d60/d61/d62/d63/d64/d65/d66/d67/d68/d69/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/d7/d8/d9/d10/d11/d12/d13/d14/d15/d16/d17/d18/d19/d20/d21/d22/d23/d24/d25/d26/d27/d28/d29/d30/d31/d32/d33/d34/d35/d36/d37/d38/d39/d40/d41/d42/d43/d44/d45/d46/d47/d48/d49/d50/d51/d52/d53/d54/d55/d56/d57/d58/d59/d60/d61/d62/d63/d64/d65/d66/d67/d68/cpu.max"
+     ]
+    ],
+    "sha256": "e4fb4be376863da606916b74518f6d784a1aba6085be046fdb2139de109606a1",
+    "tail": [
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/d0/d1/d2/d3/d4/d5/d6/d7/d8/d9/d10/d11/d12/d13/d14/d15/d16/d17/d18/d19/d20/d21/d22/d23/d24/d25/d26/d27/d28/d29/d30/d31/d32/d33/d34/d35/d36/d37/d38/d39/d40/d41/d42/d43/d44/d45/d46/d47/d48/d49/d50/d51/d52/d53/d54/d55/d56/d57/d58/d59/d60/d61/d62/d63/d64/d65/d66/d67/d68/d69/cpuset.cpus.effective"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ]
+    ]
+   }
+  },
+  "cgroup_membership_unknown": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 9,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/self/cgroup"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cpu.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.current"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cpuset.cpus.effective"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ]
+    ],
+    "sha256": "c3dadf6d4d5699912c9e2eb9333b7145751cb3e0a2a5b13191bf29c537f144ea"
+   }
+  },
+  "cgroup_traversal_rejected": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 9,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/self/cgroup"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cpu.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.current"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cpuset.cpus.effective"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ]
+    ],
+    "sha256": "c3dadf6d4d5699912c9e2eb9333b7145751cb3e0a2a5b13191bf29c537f144ea"
+   }
+  },
+  "darwin_arm64": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 5,
+    "events": [
+     [
+      "run",
+      [
+       "sysctl",
+       "-n",
+       "hw.logicalcpu",
+       "hw.physicalcpu",
+       "hw.memsize",
+       "machdep.cpu.brand_string"
+      ],
+      {
+       "timeout": 2.0
+      }
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "system_profiler",
+       "SPDisplaysDataType",
+       "-json"
+      ],
+      {
+       "timeout": 5.0
+      }
+     ]
+    ],
+    "sha256": "31837eeb8cacb6a1aa8cbce2cc9d740ce1532ed8c4abd82396db1566e58794b2"
+   }
+  },
+  "darwin_arm64_profiler_down_inferred": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 5,
+    "events": [
+     [
+      "run",
+      [
+       "sysctl",
+       "-n",
+       "hw.logicalcpu",
+       "hw.physicalcpu",
+       "hw.memsize",
+       "machdep.cpu.brand_string"
+      ],
+      {
+       "timeout": 2.0
+      }
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "system_profiler",
+       "SPDisplaysDataType",
+       "-json"
+      ],
+      {
+       "timeout": 5.0
+      }
+     ]
+    ],
+    "sha256": "31837eeb8cacb6a1aa8cbce2cc9d740ce1532ed8c4abd82396db1566e58794b2"
+   }
+  },
+  "darwin_intel_probe_failures": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 5,
+    "events": [
+     [
+      "run",
+      [
+       "sysctl",
+       "-n",
+       "hw.logicalcpu",
+       "hw.physicalcpu",
+       "hw.memsize",
+       "machdep.cpu.brand_string"
+      ],
+      {
+       "timeout": 2.0
+      }
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "system_profiler",
+       "SPDisplaysDataType",
+       "-json"
+      ],
+      {
+       "timeout": 5.0
+      }
+     ]
+    ],
+    "sha256": "31837eeb8cacb6a1aa8cbce2cc9d740ce1532ed8c4abd82396db1566e58794b2"
+   }
+  },
+  "empty_platform_cpu_none_bad_disk": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 0,
+    "events": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   }
+  },
+  "linux_bare_no_psutil": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 6,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "2e8665694e9c722bc9503ad59e5a588903cccb7592b2844c14d2b7de1bb18fc3"
+   }
+  },
+  "linux_container_slurm_nvidia": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 22,
+    "events": [
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/self/cgroup"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/c1/cpu.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/c1/memory.current"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/c1/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/c1/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/cpu.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/memory.current"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/cpu.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/memory.current"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cpu.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.current"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.max"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/memory.high"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/kubepods/pod1/c1/cpuset.cpus.effective"
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "efeff804d5f04bd3e11350da9f6f39841ab7c0ec2de4dbdd7d8c725a9ec8c771"
+   }
+  },
+  "nvidia_fallback_amd_garbage_no_disk": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 6,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "2dfadcfa0e1d22c92771a3065b182f2b9f6df8f802900e1ee2886c414c2de278"
+   }
+  },
+  "nvidia_garbage_truncated_rocm": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 5,
+    "events": [
+     [
+      "read",
+      "/proc/cpuinfo"
+     ],
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ],
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "93ce5e4841e9037a20fde2ecfa3df13d4c075e54edc9d47905cf56ccc7f2ffbf"
+   }
+  },
+  "psutil_zero_total_meminfo_fills": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 2,
+    "events": [
+     [
+      "read",
+      "/sys/fs/cgroup/cgroup.controllers"
+     ],
+     [
+      "read",
+      "/proc/meminfo"
+     ]
+    ],
+    "sha256": "7ad8a2eeccf353945bd614a4ca15e9cb058a5013c8379d123dd9eaf5ad418312"
+   }
+  },
+  "skip_accelerators": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 0,
+    "events": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+   }
+  },
+  "sysconf_fallback_many_gpus": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 3,
+    "events": [
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "dd145083fb92f2102001acd3968aa7f3c62fa80e4a0878858307fe4d790421e1"
+   }
+  },
+  "windows_amd_smi": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 2,
+    "events": [
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "0f776cf14d2717a473a83ff17b4317898f38b2dba6660c81c5f38780feea94d4"
+   }
+  },
+  "windows_rocm_fallback": {
+   "environ_unchanged": true,
+   "probes": {
+    "count": 3,
+    "events": [
+     [
+      "run",
+      [
+       "nvidia-smi",
+       "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
+       "--format=csv,noheader,nounits"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "amd-smi",
+       "static",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ],
+     [
+      "run",
+      [
+       "rocm-smi",
+       "--showproductname",
+       "--showmeminfo",
+       "vram",
+       "--json"
+      ],
+      {
+       "timeout": 4.0
+      }
+     ]
+    ],
+    "sha256": "dd145083fb92f2102001acd3968aa7f3c62fa80e4a0878858307fe4d790421e1"
+   }
+  }
+ },
+ "signature": {
+  "module": "resource_probes.snapshot",
+  "parameters": [
+   [
+    "skip_accelerators",
+    "KEYWORD_ONLY",
+    "bool",
+    "False"
+   ],
+   [
+    "observed_at",
+    "KEYWORD_ONLY",
+    "str | None",
+    "None"
+   ],
+   [
+    "environ",
+    "KEYWORD_ONLY",
+    "Mapping[str, str] | None",
+    "None"
+   ],
+   [
+    "psutil_module",
+    "KEYWORD_ONLY",
+    "Any",
+    "<AUTO sentinel>"
+   ],
+   [
+    "read_text",
+    "KEYWORD_ONLY",
+    "Callable[[Path], str]",
+    "<callable resource_probes.core._read_bounded_text>"
+   ],
+   [
+    "run_command",
+    "KEYWORD_ONLY",
+    "Callable[..., dict[str, Any]]",
+    "<callable resource_probes.commands._run_bounded_command>"
+   ]
+  ],
+  "returns": "dict[str, Any]"
+ }
+}
