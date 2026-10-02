@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.117] — 2026-10-02
+
+- primer-design: move the circular construct map to vector_construct_map.py and split generate_vector_construct_map into drawing steps; artists and PNG bytes unchanged
+
 ## [1.2.116] — 2026-10-02
 
 - primer-design: split PrimerOrderSheet writers (xlsx, macrogen oligo/seq, markdown) into order_sheet_writers.py; behaviour pinned by golden tests

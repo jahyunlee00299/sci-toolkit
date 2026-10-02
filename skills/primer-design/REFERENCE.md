@@ -351,7 +351,9 @@ src/primer_design/
 +-- snapgene_writer.py           # .dna generator
 +-- vector_registry.py           # Vector/RE DB
 +-- vector_dna_config.py         # .dna path mapping
-+-- cloning_report.py            # PNG report
++-- cloning_report.py            # PNG report (re-exports the circular map)
++-- vector_construct_map.py      # circular plasmid construct map
++-- _plot_style.py               # shared plot fonts
 +-- mcp_server.py                # FastMCP server (8 tools)
 +-- clients/                     # project-specific mutagenesis clients (user-supplied, not bundled)
 ```
