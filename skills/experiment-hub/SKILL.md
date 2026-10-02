@@ -110,6 +110,8 @@ reliably catch that bug.
 
 Output: optimization variables (range/current value), experiment matrix (conditions per run + objective), estimated experiment count/duration.
 
+**DoE mode defers to `doe-and-replication`.** For a factorial / fractional / Plackett-Burman / CCD design, a seeded run table, run-order and 96-well plate randomization, or "how many replicates" (technical vs biological, pseudoreplication), generate the matrix there first; then bring the run table back here for the pipetting workbook (Mode 10). This mode keeps only the OFAT-vs-DoE-vs-RSM choice above.
+
 ---
 
 ## Mode 5: Trendline Auto-selection Rules

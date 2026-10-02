@@ -83,6 +83,7 @@ from doctor_lib.checks_env import (  # noqa: E402
     check_hooks_config,
     check_shell_env,
     check_skill_requirements,
+    check_lab_numeric_stack,
     check_gitleaks,
 )
 from doctor_lib.checks_repo import (  # noqa: E402
@@ -128,6 +129,7 @@ def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
         check_dead_automation(root),
         check_connectivity(root),
         check_skill_requirements(root),
+        check_lab_numeric_stack(root),
         check_gitleaks(root),
     ]
     if not quick:
@@ -182,6 +184,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_skill_contract.py", "Agent Skills structural contract (closed frontmatter keys, name=folder, description<=1024, links, scripts compile)"),
     ("tests/test_skill_requirements.py", "per-skill dependency declaration matches the scripts; missing-package report"),
     ("tests/test_gitleaks_layer.py", "gitleaks second layer (absent=WARN, clean=OK, findings=FAIL; config allowlist paths exist)"),
+    ("tests/test_uncertainty_doe_skills.py", "vendored K-Dense scripts on hand-derived lab cases (kcat/Km u, g to mol, 2^3 and CCD run tables, plate layout; skips when pint/uncertainties/pydoe are absent)"),
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.

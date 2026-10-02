@@ -55,6 +55,10 @@ the relevant `references/<topic>.md` file for the full rule table.
 
 ---
 
+Propagating or rounding the numbers that §4–§6 format (`±` from fit covariance, SD vs SEM vs 95% CI wording, unit conversion) is `uncertainty-and-units`; this skill only fixes how they are written.
+
+---
+
 ## Hard "never" rules (apply regardless of which reference file you consulted)
 
 - **Never** leave a species name un-italicized on first mention, and never drop the genus on

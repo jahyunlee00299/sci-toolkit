@@ -142,6 +142,7 @@ Numbers taken from a paper are verified against the paper, not restated from mem
   matrix / pipetting workbook), trendlines (M5), pattern analysis (M6), run-vs-run deltas (M7).
   Its outputs land here as PROT / EXP.
 - **lab-data-analysis** · **stats-workflow** — analysis feeding an EXP or DISC.
+- **doe-and-replication** — the design, seed, pydoe version and replicate level (technical vs independent preparation) belong in the EXP record; **uncertainty-and-units** — what the `±` in a recorded result is.
 - **research-search** · **literature-review** — literature for M1/M2.
 - **research-ideation** — open-ended brainstorming / hypotheses; a hypothesis worth testing
   becomes a PROT or EXP here.

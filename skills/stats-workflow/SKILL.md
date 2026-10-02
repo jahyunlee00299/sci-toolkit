@@ -123,6 +123,8 @@ n = analysis.solve_power(effect_size=0.5, alpha=0.05, power=0.8)
 print(f"Required n per group: {n:.0f}")
 ```
 
+Choosing the effect size (smallest effect of interest first), the sensitivity range, why post-hoc power is not evidence, and the "is n = 3 enough" answer (n = 3 per group detects only d ≈ 3) live in `doe-and-replication` Step 5. What n *counts* (independent preparations, not wells) is decided there too. For `±` and SD/SEM/95% CI wording in reports use `uncertainty-and-units`.
+
 ---
 
 ## Common Pitfalls

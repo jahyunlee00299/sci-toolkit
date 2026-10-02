@@ -106,7 +106,7 @@ R² alone is not evidence. Check:
   (BO proposing conditions beyond the data box), say so explicitly — extrapolation is not validated.
 
 ### Axis 3 — Consistency (units · conservation · SSOT)
-- **Units.** Trace every quantity's units end to end. The single most common lab bug
+- **Units.** (Conversion and `±` propagation with correlated fit parameters: `uncertainty-and-units`, which also ships `check_plausibility.py` for dimensionless-group and typical-range screening.) Trace every quantity's units end to end. The single most common lab bug
   (mM/s apparent-Vmax stored as 1/s kcat → cascade rate off by [E]). Convert, don't assume.
 - **Conservation (mass balance).** Mass and cofactor balance must close (NAD(P)+ + NAD(P)H = const;
   carbon in = out). Pass `mass_balance` to `sci_validate.py` (`t0_total` + measured `species`) and it

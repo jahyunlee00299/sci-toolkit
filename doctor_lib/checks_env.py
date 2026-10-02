@@ -3,6 +3,7 @@ folders, plugin manifest, hooks config, shell environment for hooks."""
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import shutil
 import subprocess
@@ -182,6 +183,37 @@ def check_skill_requirements(root: Path) -> CheckResult:
     return CheckResult(name, STATUS_WARN,
                        f"{len(missing)} skill(s) need packages not installed here — those skills' scripts "
                        f"will fail until installed (see docs/06)", details)
+
+
+# uncertainty-and-units and doe-and-replication need Python 3.12+ (pint 0.26, pydoe 1.5)
+# and these packages. Their scripts import them lazily inside try/except ImportError,
+# so skill_requirements.py deliberately declares none of them; this check is the
+# status report. WARN only: a missing package limits two skills, nothing else.
+LAB_NUMERIC_PYTHON = (3, 12)
+LAB_NUMERIC_PACKAGES = {
+    "pint": "uncertainty-and-units",
+    "uncertainties": "uncertainty-and-units",
+    "pydoe": "doe-and-replication",
+}
+
+
+def check_lab_numeric_stack(root: Path) -> CheckResult:
+    """Report whether the uncertainty / DoE skills can run in this interpreter. Never FAIL."""
+    name = "Uncertainty and DoE skills (Python 3.12+, pint, uncertainties, pydoe)"
+    if not (root / "skills" / "uncertainty-and-units").is_dir() and not (root / "skills" / "doe-and-replication").is_dir():
+        return CheckResult(name, STATUS_OK, "skills not installed here — nothing to check")
+    problems: list[str] = []
+    if sys.version_info[:2] < LAB_NUMERIC_PYTHON:
+        problems.append(f"Python {sys.version_info.major}.{sys.version_info.minor} is older than "
+                        f"{'.'.join(map(str, LAB_NUMERIC_PYTHON))} (pint 0.26 / pydoe 1.5 need 3.12+)")
+    missing = sorted(p for p in LAB_NUMERIC_PACKAGES if importlib.util.find_spec(p) is None)
+    for pkg in missing:
+        problems.append(f"{pkg} not installed (needed by {LAB_NUMERIC_PACKAGES[pkg]}): pip install {pkg}")
+    if not problems:
+        return CheckResult(name, STATUS_OK, "Python and pint/uncertainties/pydoe are all available")
+    return CheckResult(name, STATUS_WARN,
+                       "uncertainty-and-units / doe-and-replication scripts will not run here until fixed "
+                       "(the rest of the toolkit is unaffected; see docs/01)", problems)
 
 
 def check_gitleaks(root: Path) -> CheckResult:

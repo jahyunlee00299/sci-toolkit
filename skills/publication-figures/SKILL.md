@@ -267,6 +267,7 @@ unusual figure type — the score band's meaning differs.
   `python scripts/lab_plot.py --demo --out <dir>` renders one of every plot type
   so you can eyeball the presets before committing to one.
 - `scripts/figure_compare.py` — **Route 5** SSIM/MAE design-similarity check
+- Error bars: what the bar is (SD vs SEM vs 95% CI, and what n counts) is decided in `uncertainty-and-units` ("What the ± means") before it is drawn; replicate level in `doe-and-replication`.
 - `scripts/scheme_render.py`, `pfd_render.py`, `ga_compose.py` — schematic rendering
 
 ## Replaces

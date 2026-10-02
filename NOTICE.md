@@ -49,13 +49,26 @@ Attribution is required by the upstream licenses and is recorded here.
 | `skills/spec-driven-research-dev` | four-phase spec-driven workflow + artifact templates in [github/spec-kit](https://github.com/github/spec-kit) | MIT (Copyright GitHub, Inc.) |
 | `skills/analysis-code-testing` | `plugins/python-development/skills/python-testing-patterns` in [wshobson/agents](https://github.com/wshobson/agents) | MIT (Copyright (c) 2024 Seth Hobson) |
 | `skills/data-quality-checks` | `plugins/data-engineering/skills/data-quality-frameworks` in [wshobson/agents](https://github.com/wshobson/agents) | MIT (Copyright (c) 2024 Seth Hobson) |
+| `skills/uncertainty-and-units` (SKILL.md and references rewritten; six `scripts/` plus `_common.py` vendored, see below) | `skills/uncertainty-and-units` in [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (commit 154988403bb5, 2026-10-01) | MIT (Copyright (c) 2025 K-Dense Inc.) |
+| `skills/doe-and-replication` (SKILL.md and references rewritten; `scripts/doe_designs.py` and `scripts/randomization.py` vendored, see below; sample-size essentials folded in from the upstream statistical-power skill) | experimental-design and statistical-power skills (`skills/experimental-design`, `skills/statistical-power`) in [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) (commit 154988403bb5, 2026-10-01) | MIT (Copyright (c) 2025 K-Dense Inc.) |
 | `skills/avoid-ai-writing/korean-tells.md` (Korean detect-only supplement; the skill itself is vendored upstream MIT) | `skills/humanize-korean/references/ai-tell-taxonomy.md` (Korean AI Tell Taxonomy v2.0) in [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai) | MIT |
 
 The upstream MIT license permits this use and requires the copyright notice be
-retained; that is what this section does. No upstream file is redistributed
-verbatim — what was taken is the discipline (build the feedback loop before the
-hypothesis; rank falsifiable hypotheses; tag debug output; the tautological-
-assertion and internal-coupling test failures), not the text.
+retained; that is what this section does. With one exception (next paragraph),
+no upstream file is redistributed verbatim — what was taken is the discipline
+(build the feedback loop before the hypothesis; rank falsifiable hypotheses; tag
+debug output; the tautological-assertion and internal-coupling test failures),
+not the text.
+
+**The exception — vendored scripts.** Nine Python scripts from K-Dense Inc. are
+redistributed with their logic unchanged: in `skills/uncertainty-and-units/scripts/`
+`_common.py`, `propagate_uncertainty.py`, `uncertainty_budget.py`, `format_result.py`,
+`convert_units.py`, `check_plausibility.py`, `audit_units.py`; in
+`skills/doe-and-replication/scripts/` `doe_designs.py` and `randomization.py`. The only edits
+are a provenance header comment (upstream path, commit, license) and LF line endings. Their
+SKILL.md files, references and examples are this repository's own rewrite (enzyme and HPLC
+examples, the upstream citation boilerplate dropped). The full MIT text, with the copyright
+notice that must accompany the scripts, is in [`licenses/K-Dense-MIT.txt`](licenses/K-Dense-MIT.txt). Each of the two skill folders also carries `LICENSE-K-Dense-MIT.txt`, because the installer copies skills one folder at a time and the notice must travel with every installed copy.
 
 `skills/spec-first-development/SKILL.md` and
 `skills/test-first-development/SKILL.md` take the three-path classification, the
