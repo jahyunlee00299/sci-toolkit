@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.130] — 2026-10-04
+
+- Make golden characterization tests platform-neutral so the Linux CI doctor passes
+
 ## [1.2.129] — 2026-10-04
 
 - experiment-hub: enforce pipette limits and R1/R2 rules, add pipette count and canon-gate, on synthetic fixtures

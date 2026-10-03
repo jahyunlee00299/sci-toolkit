@@ -349,11 +349,17 @@ class PrimerOrderSheet:
     # ── Export: CSV ────────────────────────────────────────────────────
 
     def to_csv(self, output_path: str | Path | None = None) -> Path:
-        """UTF-8 BOM CSV (for Korean-Excel compatibility)."""
+        """UTF-8 BOM CSV with CRLF row endings (for Korean-Excel compatibility).
+
+        The row terminator is pinned to CRLF (RFC 4180, what Excel writes).
+        pandas otherwise defaults to os.linesep, so the same order sheet came
+        out CRLF on Windows and LF on Linux/macOS (measured 2026-10-04: the
+        golden snapshot, written on Windows, failed on the Linux CI runner).
+        """
         output_path = self._resolve_path(output_path, "csv")
 
         df = self.to_dataframe()
-        df.to_csv(str(output_path), index=False, encoding="utf-8-sig")
+        df.to_csv(str(output_path), index=False, encoding="utf-8-sig", lineterminator="\r\n")
         return output_path
 
     # ── Export: Markdown ───────────────────────────────────────────────

@@ -14,6 +14,7 @@ import json
 import os
 import platform
 import shutil
+import signal
 import sys
 import types
 from collections import namedtuple
@@ -439,6 +440,14 @@ def snapshot_cgroup_direct() -> dict:
 # --------------------------------------------------------------------------
 # command runner (real subprocesses, python itself as the fixed argv)
 # --------------------------------------------------------------------------
+# Exit status the OS reports for a process ended by Popen.kill(): TerminateProcess(h, 1)
+# on Windows, -SIGKILL on POSIX. The value is the operating system's, not the probe's;
+# the golden file stores it as KILLED so one snapshot holds on both. Any other return
+# code for a killed case is left raw and still fails the comparison.
+KILLED_RETURNCODE = 1 if os.name == "nt" else -signal.SIGKILL
+KILLED = "<KILLED>"
+
+
 def snapshot_run_command() -> dict:
     py = sys.executable
     cases = {
@@ -454,6 +463,8 @@ def snapshot_run_command() -> dict:
         res = {k: (v.replace("\r\n", "\n") if isinstance(v, str) else v) for k, v in res.items()}
         if name == "truncated":
             res["stdout"] = f"len={len(res['stdout'])}"
+        if name in ("timeout", "truncated") and res.get("returncode") == KILLED_RETURNCODE:
+            res["returncode"] = KILLED
         out[name] = _jsonable(res)
     for name, bad in {"list": ["a"], "empty": (), "non_str": ("a", 1), "empty_item": ("a", "")}.items():
         out["bad_argv_" + name] = _try(dr._run_bounded_command, bad)

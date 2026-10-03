@@ -63,3 +63,11 @@ openpyxl
 # them here keeps that case RUNNING in CI).
 xlwt
 xlrd
+# primer-design's golden characterization (tests/test_characterization.py) also needs
+# primer3-py (restriction_design.json pins primer3's Tm and its >60 nt rejection) and
+# matplotlib (construct_maps.json pins the construct-map artists). Measured 2026-10-04
+# in a clean Linux venv built from this file: without them 3 of those golden tests
+# failed (2 x ModuleNotFoundError: matplotlib, 1 restriction-design drift because the
+# primer3 path was absent); with both installed they pass.
+primer3-py
+matplotlib
