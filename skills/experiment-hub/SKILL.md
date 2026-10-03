@@ -6,6 +6,57 @@ license: MIT
 
 # Experiment Hub
 
+> **HARD RULES - pipetting workbooks (enforced by `reaction_matrix.py validate_config`)**
+> Rationale: **accuracy first, step count second** - and a beginner must be able to follow the sheet.
+> The tag after each rule names the check that enforces it: `check a`-`f` = the letters in
+> `reaction_matrix._check_pipetting_rules`, `check 4` = canon-gate in `validate_config`; `(doc)` = not machine-checked.
+>
+> - **Pipette limits** (defaults = a lab whose smallest pipette is 2.5 uL). Any single pipetting action below
+>   **floor 0.5 uL = FAIL, no xlsx**; 0.5-1.0 uL = WARN (comfort 1.0 uL). Config `"pipettes": {"floor_uL",
+>   "comfort_uL", "resolution_uL", "max_settings_per_tube"}`. [check b]
+> - **Same volume in every tube, as few distinct volumes as possible.** WARN when a component (incl. the DW
+>   top-up) is added at more than one volume across tubes or a tube needs > 4 volume settings; the no-enzyme
+>   control gets WATER in place of the enzyme additions (identical volumes, different liquid);
+>   `"control_water_in_place": false` -> WARN (that control's single DW top-up is an odd volume). [check d]
+> - **Volumes are shown rounded to 0.1 uL** (`pipettes.resolution_uL`); DW re-closes every tube; the
+>   concentration deviation from rounding is reported (WARN > 2 %, FAIL > 5 %). [check e]
+> - **No DW top-up between 0 and the floor.** Such a top-up cannot be pipetted and is never dropped silently:
+>   the common water in MM-A is lowered (by the floor) so every top-up is 0 or >= 0.5 uL and every tube still
+>   closes to the total; a rounding residual of the same kind lowers the per-tube MM-A volume in 0.1 uL steps
+>   (its buffer deviation is reported by the rounding check). [check e; generator + `pipette_count.py`]
+> - **What is checked = what is actually pipetted.** Premix and sub-mix component draws, working-stock draws,
+>   per-tube additions. **Cocktail exception:** enzymes pooled into a common cocktail (same level in every enzyme
+>   tube, classified by `pipette_count.route_enzymes`) are checked by the cocktail volume per tube and their batch
+>   draws, never by their per-tube share; enzymes added individually per tube keep the floor rule. [check b]
+> - **MM-A margin** = n tubes + `"premix": {"extra_rxns": N}` (default 3). A larger N (e.g. 5) can put small
+>   premix draws on the 0.1 uL grid and remove their rounding WARN. [check e reports the effect]
+> - **R1 Common water in MM-A.** The MM-A premix carries the water every tube needs, sized so the tightest
+>   tube closes with 0 uL top-up, or lowered by the rule above (`"common_water_in_mm_a": false` -> WARN; SKIP
+>   when there is no MM-A). [check f]
+> - **R2 Equal-volume working stocks.** Enzyme levels (1x/2x/4x...) are DILUTED WORKING STOCKS -
+>   **dilute with WATER**, not storage buffer - and every tube gets the SAME volume of its level's stock. One
+>   physical enzyme at more than one volume = **FAIL** (0.5 % / 0.005 uL tolerance). "One physical enzyme" =
+>   same `enzyme` alias, or same batch + same lab stock (`source_stock_gL`, else `stock_gL` x `dilution_x`), or
+>   same batch + same name stem (`EnzX` / `EnzX_dil`); batch labels are compared stripped, case-folded, and
+>   with `100001` == `"100001"`. Config `"equal_volume_uL"`; `reaction_matrix.py` expands such a spec itself. [check c]
+> - **Waivers** `"allow_small_volume"` / `"allow_variable_volume"` must be exactly `true` plus a non-empty
+>   `"..._reason"` string (on every entry of that enzyme); anything else is a FAIL ("malformed waiver"). [check a]
+>   `allow_small_volume` waives only the sub-floor volume rule (and turns a 2-5 % rounding deviation of that
+>   enzyme into a waived WARN); a rounding deviation > 5 % stays a FAIL. [checks b, e]
+> - **Canonical constants** must agree with the registry (contradiction = FAIL). [check 4]
+> - **Count the pipetting.** `python pipette_count.py config.json [--compare]`. Verdict for the bundled
+>   synthetic 11-tube design (`tests/synthetic_fixtures.py`, `ev_spec()`; every comparison below reads
+>   **A vs B**, A first): R2 does NOT reduce pipetting steps: **74 vs 88** (A neat stocks vs B equal volume;
+>   with the no-enzyme water-in-place default both get +2: 76 vs 90). The break-even is **about 28-36 tubes
+>   depending on how replicates are added (31 with one-tube increments)**; never when enzyme levels do not
+>   change. The sign flips when working stocks are reused across experiments (prep amortised, run phase only,
+>   A vs B: **61 vs 53**; 63 vs 55 with water-in-place) and for Bmin with each dilution counted as 1 step
+>   (A vs Bmin: **74 vs 72**). What B buys is accuracy, not fewer steps: additions below 1 uL 6 -> 0 and
+>   run-phase volume settings 13 -> 5 in that design. Run `--compare` before claiming "less pipetting". (doc)
+> - **Not finished** until the workbook has the working-stock table (lab stock uL + water uL) and the
+>   per-tube addition table (sheet `Enzyme Additions`, written by `reaction_matrix.py`). (doc; the generator
+>   always writes both)
+
 Records (protocol versions, run logs, discussion, decisions) are kept by `lab-record` — this skill designs and analyses; `lab-record` stores and links. Citation style: APA 7th with DOI (see lab-record §Citations).
 
 Integrated skill for experiment protocol management, condition optimization, experiment proposal, history recording, data visualization, pattern analysis, and experiment comparison.
@@ -23,11 +74,11 @@ Determine the mode from the user request and execute the corresponding procedure
 | **5. Visualization** | "Draw a graph" | Data -> generate graph / Image -> extract data + auto-fit trendline |
 | **6. Pattern Analysis** | "Why these results?" | Variable-result mapping -> Pattern classification -> Quantitative trendline analysis -> Per-variable interpretation -> Causality assessment |
 | **7. Comparison** | "Compare with previous experiment" | Identify changed variables -> Result comparison table -> Calculate delta values -> Trend graph -> Analyze cause of difference |
-| **10. Reaction Matrix** | "Generate a pipetting sheet/workbook", "reaction matrix 만들어줘", multi-condition stock/final/volume table needed | Config JSON (stocks+enzymes+conditions+sampling+timepoints) -> `reaction_matrix.py` -> `validate_config()` (volume closure + concentration + sampling/dead-volume, blocks on FAIL) -> 4-sheet xlsx (Reaction Matrix, Pipetting Guide, Sampling & Fed, Data). See Mode 1a below — this is the default path for ANY pipetting-calculation workbook; do not hand-write openpyxl formulas for this. |
+| **10. Reaction Matrix** | "Generate a pipetting sheet/workbook", "reaction matrix 만들어줘", multi-condition stock/final/volume table needed | Config JSON (stocks+enzymes+conditions+sampling+timepoints) -> `reaction_matrix.py` -> `validate_config()` (volume closure + concentration + sampling/dead-volume + R1/R2 pipetting rules + canon-gate registry check, blocks on FAIL) -> 5-sheet xlsx (Reaction Matrix, Pipetting Guide, Enzyme Additions, Sampling & Fed, Data) + pipette count. See Mode 1a below — this is the default path for ANY pipetting-calculation workbook; do not hand-write openpyxl formulas for this. |
 
 **Auto-chain**: Record(4) -> Comparison(7) -> Pattern Analysis(6) -> Visualization(5) -> Optimization(2)
 
-🔴 **260928**: Mode 10 existed as a working script (`reaction_matrix.py`, self-labeled "Mode 10" in its own docstring) but was never added to this table — an agent reading this file top-to-bottom (as the file's own first line instructs) had no way to discover it, and one didn't: a pipetting workbook got hand-built with raw openpyxl instead, which is how the 260928 ~4% concentration bug (see Mode 1a) got in. Numbering gap (8, 9 unused) kept as-is rather than renumbered, since renumbering risks breaking any other doc/reference to "Mode 10" that already exists elsewhere (e.g. Asana, other skill files) — not worth the silent-breakage risk to close a cosmetic gap.
+🔴 **Why Mode 10 is in this table**: it existed as a working script (`reaction_matrix.py`, self-labeled "Mode 10" in its own docstring) but was never added to this table — an agent reading this file top-to-bottom (as the file's own first line instructs) had no way to discover it, and one didn't: a pipetting workbook got hand-built with raw openpyxl instead, which is how the ~4% concentration bug described in Mode 1a got in. Numbering gap (8, 9 unused) kept as-is rather than renumbered, since renumbering risks breaking any other doc/reference to "Mode 10" that already exists elsewhere (e.g. other skill files or task notes) — not worth the silent-breakage risk to close a cosmetic gap.
 
 > **Branching criteria**: Data/statistics = here (M6/M7), Mechanism/context/literature = lab-record (DISC M1/M2). Mode 1 output is saved as a `lab-record` PROT; Mode 4 output as a `lab-record` EXP.
 
@@ -49,7 +100,7 @@ When writing a protocol, automatically search 3 categories to establish conditio
 
 Protocol format: ID (PROT-{N}), version, reference methods, materials, methods (step-by-step), analysis, safety/disposal, change history.
 
-### Mode 1a: Generating a pipetting-calculation workbook -- mandatory verification (260928)
+### Mode 1a: Generating a pipetting-calculation workbook -- mandatory verification
 
 🔴 **Do not hand-write openpyxl formulas for a multi-component reaction matrix from scratch.** Use
 `reaction_matrix.py` (Mode-10-style config JSON -> xlsx) as the default generator for any
@@ -57,7 +108,7 @@ protocol whose deliverable includes a stock/final/volume pipetting table. It com
 component's volume from ONE consistent basis (the declared total reaction volume) and defines DW
 as the residual, which makes the "wrong reference volume" bug class structurally impossible.
 
-**Why this exists**: on 260928, a pipetting xlsx was hand-built with openpyxl instead of using this
+**Why this exists**: once, a pipetting xlsx was hand-built with openpyxl instead of using this
 script. A later "fix" pass for an unrelated issue accidentally changed the reference volume in a
 buffer-component formula, silently putting 4 reagents ~4% off target across all 90 planned samples.
 It was caught only because someone separately asked for an independent verification pass — not
@@ -78,6 +129,14 @@ check fails — so the class of error that happened is no longer possible to shi
    tube physically holds and nothing would flag it. Also checks `fed_diagnosis` feeds against the
    source condition's *remaining* volume after its own timepoints (a second, easy-to-miss overdraw
    point).
+4. **Canonical constants** -- `canon_gate.py` checks the config against a canonical-constants registry
+   (decided stock/final concentrations, batch labels, enzyme stocks); a contradiction is a FAIL that blocks
+   like the checks above, a differing per-experiment working stock is only a WARN, and a config that names
+   no registry field is BLIND (shown, never a pass). Standalone on any xlsx Params sheet or config:
+   `python canon_gate.py FILE...` (exit 0 / 1 / 2, 2 = BLIND). Registry lookup (first hit wins, `--registry`
+   overrides): `$LAB_CANON_REGISTRY` -> `canonical_constants.toml` next to the checked file -> one next to
+   `canon_gate.py` -> `canonical_constants.example.toml` (synthetic, ships with the skill: copy it and put your
+   own decisions in); none found = BLIND, exit 2. A new decision about a constant goes into the registry first.
 
 Run it directly: `python reaction_matrix.py config.json output.xlsx` — validation output
 prints before generation; a FAIL blocks the file from being written at all.
@@ -90,13 +149,15 @@ throwaway Python script before presenting the workbook as done: read every liter
 with openpyxl, independently recompute (in plain Python, not by re-reading the formula string) what
 every derived cell *should* evaluate to, and diff against what the workbook's formula claims. Do not
 declare a hand-built pipetting workbook finished on the strength of "the formula looks right" —
-that is exactly the self-review that missed the 260928 bug. For anything that will actually be
+that is exactly the self-review that missed that bug. For anything that will actually be
 pipetted at the bench (not just discussed), additionally have it checked independently (a labmate, or a fresh agent session given only
 the config and the workbook) — self-review by the same reasoning that produced the bug does not
 reliably catch that bug.
 
 
-**Suggested workbook convention**: put every fixed-concentration component (buffer, salts, fixed cofactors) into ONE premix: mark them `"type":"buffer"` in the config, never `cofactor`. Only the varied reagents change per tube; DW is the per-tube residual. Enzymes = one stock-only cocktail (n x 1.2), added LAST in a fixed staggered order; solids weighed per tube go in first. Every downstream formula must reference the total-volume cell, never a literal volume. After editing, recalculate with the timeout-guarded `excel_com_guard.py` (see "Pipetting Workbook Verification" below; never a bare win32com call that can hang on a dialog) and compare with an independent Python calculation.
+**Suggested workbook convention**: put every fixed-concentration component (buffer, salts, fixed cofactors) into ONE premix (MM-A): mark them `"type":"buffer"` in the config, never `cofactor`. Only the varied reagents change per tube; the water is split into the common water in MM-A and a per-tube DW top-up (R1). Enzymes held at one level in every tube = one common cocktail (n x 1.2; surplus convention everywhere: MM-A n + `premix.extra_rxns` (default 3), stocks/sub-mixes/cocktails x1.2, +10 uL dead volume per intermediate vessel), added LAST in a fixed staggered order; solids weighed per tube go in first.
+
+**R1/R2 workflow**: the rules, waivers and the pipette-count command are in the HARD RULES box at the top of this file. Config with `"equal_volume_uL"` per enzyme -> `python equal_volume.py spec.json expanded.json` (one pseudo-enzyme per level; `canon_gate` still checks the undiluted `source_stock_gL`; `"diluent": "water"`) -> `python reaction_matrix.py expanded.json out.xlsx` (or pass the spec directly: `reaction_matrix.py` expands it). A level's working stock = `rxn_gL x total_volume / equal_volume_uL` and must not exceed the lab stock; when the top levels of several enzymes need large volumes, the equal volumes can overfill the tube (`pipette_count.py` reports INFEASIBLE) - then use one cocktail per condition from the lab stocks (`--cocktail per_condition_direct`). Worked example: `ev_spec()` in `tests/synthetic_fixtures.py`. Every downstream formula must reference the total-volume cell, never a literal volume. After editing, recalculate with the timeout-guarded `excel_com_guard.py` (see "Pipetting Workbook Verification" below; never a bare win32com call that can hang on a dialog) and compare with an independent Python calculation.
 
 ---
 

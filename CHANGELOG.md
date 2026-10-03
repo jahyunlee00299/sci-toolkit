@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.129] — 2026-10-04
+
+- experiment-hub: enforce pipette limits and R1/R2 rules, add pipette count and canon-gate, on synthetic fixtures
+
 ## [1.2.128] — 2026-10-03
 
 - Ship the K-Dense MIT notice inside each adopted skill folder so installed copies keep it

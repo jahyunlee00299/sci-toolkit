@@ -1522,3 +1522,55 @@ wired-by: config/catalog.json
 wired-by: licenses/K-Dense-MIT.txt
 wired-by: skills/uncertainty-and-units/SKILL.md
 wired-by: skills/doe-and-replication/SKILL.md
+
+## experiment-hub pipetting rules, pipette count and canon-gate (2026-10-04)
+
+**Scope** — sub-feature of `experiment-hub` Mode 10 (layer: sub-feature model +
+cross-cutting validation gate). Ported from the maintainer's working copy and
+sanitised for distribution: `pipette_count.py` (step model, CLI
+`--compare/--steps/--json`), `equal_volume.py` (equal-volume spec -> one
+diluted working stock per level), `canon_gate.py` (canonical-constants gate,
+exit 0/1/2) with a SYNTHETIC `canonical_constants.example.toml`, and
+`reaction_matrix.py` (`validate_config` checks a-f + canon-gate, the
+`Enzyme Additions` sheet, R1 common water in MM-A, `premix.extra_rxns`).
+SKILL.md gains a HARD RULES box whose every rule names the check that enforces it.
+
+**Inputs / outputs** — reaction-matrix config JSON (new optional keys
+`pipettes`, `premix.extra_rxns`, `control_water_in_place`,
+`common_water_in_mm_a`, `enzyme_cocktail`, `equal_volume_uL`, waivers with a
+`*_reason`), an xlsx Params sheet for canon-gate; outputs are the validation
+report (FAIL blocks the xlsx), the 5-sheet workbook and the pipette count.
+Registry lookup: `$LAB_CANON_REGISTRY` -> `canonical_constants.toml` next to
+the checked file -> next to `canon_gate.py` -> the example; none = BLIND.
+
+**Evidence** — `skills/experiment-hub/tests` 110 passed (doctor runs the
+directory as a pytest suite). Every fixture is synthetic
+(`tests/synthetic_fixtures.py`; the Params workbook is generated with openpyxl
+and its creator metadata is the neutral string "synthetic-fixture"). The synthetic 11-tube design
+reproduces the step counts the SKILL.md box quotes (A vs B 74 vs 88, 76 vs 90
+with water-in-place; tie at 28 tubes, B fewer from 31 with one-tube
+increments) and both premix rounding WARNs, which disappear at
+`premix.extra_rxns = 5` (CofactorX draw 1.2 uL, CofactorY 2.0 uL).
+
+**Refutation** — the residual-defect tests (`test_pipette_residual_fixes.py`)
+were first run against the pre-fix code: 15 of 17 failed (the 2 that passed
+are positive controls). Attack table: sub-floor additions, malformed waivers
+(`"false"`, `1`, empty reason), alias and batch-label bypasses of R2 (two names,
+trailing space, case, int vs str, a dilution entry without `source_stock_gL`),
+overfilled and exactly-full tubes, empty configs, no-buffer configs, a DW
+top-up between 0 and the floor, a waiver trying to cover a > 5 % rounding FAIL,
+and an absent registry (BLIND, exit 2, never a pass).
+
+**Deferred risk** — (1) the rounding-stage closure lowers the per-tube MM-A
+volume in 0.1 uL steps, which shifts buffer concentrations by up to one floor
+over the MM-A volume (reported by the rounding check, not hidden). (2) R2's
+name-stem grouping is a heuristic. (3) `dilution_calc.py` (`reaction_matrix.py
+calc`) and the newer structural guards of `pipetting_checks.py` were not part
+of this port. (4) The margins (MM-A n+3, x1.2, +10 uL dead) are planning
+conventions, not measurements.
+
+wired-by: skills/experiment-hub/tests/test_pipette_rules.py
+wired-by: skills/experiment-hub/tests/test_pipette_rule_fixes.py
+wired-by: skills/experiment-hub/tests/test_pipette_residual_fixes.py
+wired-by: skills/experiment-hub/tests/test_canon_gate.py
+wired-by: skills/experiment-hub/SKILL.md

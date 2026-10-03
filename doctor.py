@@ -189,7 +189,7 @@ SELF_TEST_SCRIPTS = [
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.
     ("skills/lab-record/tests", "lab-record pytest suite (ID allocation, lint rules 1-7, trace/impact/open)"),
-    ("skills/experiment-hub/tests", "experiment-hub pytest suite (pipetting checks, Excel COM guard)"),
+    ("skills/experiment-hub/tests", "experiment-hub pytest suite (pipetting checks, Excel COM guard, pipette count, R1/R2 rules, canon-gate)"),
     ("skills/web-scraping/tests", "web-scraping pytest suite (EZproxy scope, PDF pipeline, target safety, GitHub failure surfacing)"),
     ("skills/primer-design/tests", "primer-design pytest suite (iPCR subst/del, RE cloning, colony PCR, expression analysis, order sheet, vector registry)"),
     ("skills/get-available-resources/tests", "get-available-resources pytest suite (golden snapshots of detect_resources over fake hosts, CLI contract)"),

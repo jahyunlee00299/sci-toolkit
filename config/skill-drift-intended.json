@@ -20,10 +20,10 @@
       "declared": "2026-09-24"
     },
     "experiment-hub": {
-      "reason": "toolkit copy sanitized: license MIT, maintainer-specific recipe, workbook IDs, machine wording and personal rule/tool names generalized",
-      "toolkit_fp": "1f8f192f68014952",
-      "runtime_fp": "e24fc0e101b39c1e",
-      "declared": "2026-10-02"
+      "reason": "toolkit copy sanitized: license MIT, synthetic test fixtures and example canon registry instead of the maintainer's lab data, no reaction_matrix calc subcommand (dilution_calc not ported), generic examples and no project history",
+      "toolkit_fp": "007f4ead5c756052",
+      "runtime_fp": "3f385c9340c7f989",
+      "declared": "2026-10-04"
     },
     "generate-image": {
       "reason": "Toolkit is ahead: runtime Related Skills still names scientific-slides and latex-posters, which the toolkit does not ship (it routes to journal-ppt and publication-figures instead), and the toolkit script carries the Windows UTF-8 stdout fix the runtime lacks.",

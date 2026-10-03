@@ -142,9 +142,9 @@
     },
     "experiment-hub": {
       "category": "molbio",
-      "role": "Experiment protocols, condition optimization, history logging, experiment comparison",
+      "role": "Experiment protocols, condition optimization, history logging, experiment comparison, pipetting workbooks with enforced pipette limits, pipette count and a canonical-constants gate",
       "requires": [],
-      "size_kb": 77
+      "size_kb": 166
     },
     "fiducial": {
       "category": "validation",
