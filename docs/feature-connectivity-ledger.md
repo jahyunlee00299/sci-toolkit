@@ -1574,3 +1574,18 @@ wired-by: skills/experiment-hub/tests/test_pipette_rule_fixes.py
 wired-by: skills/experiment-hub/tests/test_pipette_residual_fixes.py
 wired-by: skills/experiment-hub/tests/test_canon_gate.py
 wired-by: skills/experiment-hub/SKILL.md
+
+## 2026-10-04 — journal-ppt re-port: journal-club preset + QC-20 prose gate (skills/, sub-feature)
+
+**Scope.** `skills/journal-ppt/` was the 2026-09-23 five-file snapshot. Re-ported from the runtime copy (the authoring SSOT per `scripts/skill_drift.py`) and scrubbed: it now ships the themes, 23 layouts, `qc_layout`/`qc_numbers`, the journal-club preset (`references/prefs/journal_club.json`, `Deck(prefs="journal_club")`), the `thank_you` layout (54 pt declared on the layout) and `qc_prose.py` (QC-20: notes residue, notes/slide count mismatch, duplicate notes sentences, AI-vocabulary and semicolon headlines, trailing periods, missing Conclusions slide, visible Appendix).
+
+**Inputs / outputs.** in: runtime `journal-ppt` (commit cd8f3fa of the skills repo). out: `skills/journal-ppt/` (37 files, 731 KB with its tests), `config/catalog.json` (role, size_kb), `config/skill-requirements.toml` (pillow added by the scanner), `SHA256SUMS`.
+
+**Evidence.** Ported tree: journal-ppt tests 107 passed (preset, layouts, QC) in the toolkit copy; the runtime suite is 571 passed. `tests/test_skill_references.py`, `test_service_routing.py`, `test_skill_contract.py`, `test_doc_counts.py`, `test_checksums_manifest.py`, `test_doctor_sentinel.py` all pass; `skill_requirements.py --check` matches; `leakgate scan` 0 findings in 39 files.
+
+**What the gate caught that the plan missed.**
+1. The SENTINEL scan failed the first port on three unpublished-research markers (an engineered-enzyme label in `style_spec.md`, another in a `qc_deck.py` comment, a substrate name in a layout test fixture). The port script now rewrites them to neutral labels; the runtime copy keeps its own text.
+2. Reference checks rejected the new S3/S4 usage examples (`assets/scheme1.png`, `assets/fig5.png`) and a `logo_fetch.py` status note; examples now use the allow-listed `assets/fig1.png`, and the logo paragraph keeps the earlier toolkit wording.
+3. Windows line endings in the copied files broke the manifest's LF policy; the port normalizes to LF before hashing.
+
+**Deferred risk**: the optional language gate (QC-19) is not shipped here, so the deck QC reports "language-gate NOT RUN" as a warning, never a pass. The skill tests live inside the skill folder and are not collected by the toolkit's `pytest.ini` (`testpaths = tests`); run them from `skills/journal-ppt`.

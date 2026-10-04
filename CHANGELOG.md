@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.131] — 2026-10-04
+
+- journal-ppt: re-port with journal-club preset and QC-20 prose/notes gate, scrubbed for distribution
+
 ## [1.2.130] — 2026-10-04
 
 - Make golden characterization tests platform-neutral so the Linux CI doctor passes

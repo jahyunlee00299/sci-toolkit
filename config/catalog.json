@@ -173,12 +173,12 @@
     },
     "journal-ppt": {
       "category": "documents",
-      "role": "Academic journal-club and research-seminar PowerPoint decks (DOI/manuscript -> deck) with a runnable QC gate",
+      "role": "Academic journal-club and research-seminar PowerPoint decks (DOI/manuscript -> deck) with a runnable QC gate, a journal-club preset and a prose/notes gate",
       "requires": [
         "pptx",
         "academic-term-rules"
       ],
-      "size_kb": 105
+      "size_kb": 731
     },
     "lab-data-analysis": {
       "category": "data-stats",
