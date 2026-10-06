@@ -1604,3 +1604,15 @@ wired-by: skills/experiment-hub/SKILL.md
 3. The catalog edit by round-tripping JSON reordered unrelated keys; redone as a text insertion.
 
 **Deferred risk**: the two new tool skills depend on a `pip install` from GitHub that this repo cannot test offline; `endnote_library_audit` (axis 5) is not bundled here, so the router lists five axes, not six. Push and release are separate decisions.
+
+## 2026-10-07 — AGENTS.md section 0 trim: less common routes moved to docs (docs/agents/, sub-feature)
+
+**Scope.** The always-read routing table carried nine rarely used rows and two rows for one skill. Nine rows moved verbatim to `docs/agents/00-routing-extra.md` (preprints, DOI collection, patent disclosure, `±` and units, DoE, slides, file conversion, web search, install help) and the two `sequence-verification` rows merged into one. `AGENTS.md` 25,433 to 23,265 bytes.
+
+**Inputs / outputs.** in: `AGENTS.md` section 0. out: the shortened table with one pointer sentence, the new docs file, and `tests/test_agents_routing.py`, which now scans the extra file for dangling skills and scripts exactly as it scans section 0.
+
+**Evidence.** `test_agents_routing.py` passes with the extra file included; the checksum, doc-count, skill-reference and SENTINEL tests pass; `leakgate` clean. Every skill whose row moved keeps its Korean triggers in its own `description:`, which is what the router reads.
+
+**What the gate caught that the plan missed.** The merged row first named `read_coverage.py` without its path, and the test rejected it as a nonexistent file; the row now uses full `sequence-verification/scripts/` paths.
+
+**Deferred risk**: an agent that picks a route only from the table will not see the moved rows unless it follows the pointer sentence or the skill description matches. No usage log exists to measure which rows were rare, so the selection was by judgement.

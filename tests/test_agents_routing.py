@@ -102,6 +102,9 @@ def main():
               "This table is the agent's entry point, so it must exist.")
         return 1
     section = m.group(0)
+    extra = os.path.join(ROOT, "docs", "agents", "00-routing-extra.md")
+    if os.path.isfile(extra):  # rows moved out of §0 are checked exactly like the table
+        section += open(extra, encoding="utf-8").read()
 
     skills = set(os.listdir(SKILLS_DIR))
     tokens = sorted(set(re.findall(r"`([^`]+)`", section)))

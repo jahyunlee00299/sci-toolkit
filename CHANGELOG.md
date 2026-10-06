@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.137] — 2026-10-07
+
+- AGENTS.md: move nine less common routing rows to docs/agents/00-routing-extra.md and merge the two sequence-verification rows; test scans the extra file
+
 ## [1.2.136] — 2026-10-07
 
 - Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
