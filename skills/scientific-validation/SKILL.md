@@ -190,3 +190,7 @@ reject unless a majority fail to refute . One verifier ≠ verification.
 - Building a canonical value from a hand-assembled one-off call instead of the SSOT script.
 - Reading rawdata columns / units by assumption instead of confirming in code.
 ```
+
+## Related skills
+
+- `verification-gates` — run the mechanical gates (`provenance-check`, `regress-check`, `fiducial`) first and hand their output to this judgement pass; Axis 0 here is the housekeeping half of `provenance-check`.

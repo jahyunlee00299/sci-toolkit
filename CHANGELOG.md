@@ -4,6 +4,26 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.136] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.135] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.134] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.133] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.132] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
 ## [1.2.131] — 2026-10-04
 
 - journal-ppt: re-port with journal-club preset and QC-20 prose/notes gate, scrubbed for distribution

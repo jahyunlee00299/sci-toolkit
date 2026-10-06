@@ -235,3 +235,8 @@ and those are one corpus's figures.
 - validating dataframes → pandera
 - pinning regression baselines → pytest-regressions
 - checking whether a package installs → `compat-check` (sibling skill)
+
+## Related skills
+
+- `verification-gates` — which gate holds at which moment, and the shared 0/1/2 contract.
+- `provenance-check` — binds a constant to its dataset; `regress-check` — freezes results. Both are siblings with the same exit codes.

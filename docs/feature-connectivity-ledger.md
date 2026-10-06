@@ -1589,3 +1589,18 @@ wired-by: skills/experiment-hub/SKILL.md
 3. Windows line endings in the copied files broke the manifest's LF policy; the port normalizes to LF before hashing.
 
 **Deferred risk**: the optional language gate (QC-19) is not shipped here, so the deck QC reports "language-gate NOT RUN" as a warning, never a pass. The skill tests live inside the skill folder and are not collected by the toolkit's `pytest.ini` (`testpaths = tests`); run them from `skills/journal-ppt`.
+
+## 2026-10-07 — verification-gates router with provenance-check and regress-check (skills/, cross-cutting)
+
+**Scope.** The toolkit shipped two of the four mechanical gates (`compat-check`, `fiducial`) and no router, so an agent reading `AGENTS.md` had no way to learn which gate holds at which moment or that exit 2 means BLIND. Added `skills/verification-gates/` (router, shared 0/1/2 contract, reporting format), `skills/provenance-check/` and `skills/regress-check/` (install from the public GitHub repos; no source copy). `AGENTS.md` sections 4 and 5 moved verbatim to `docs/agents/` to stay under the Codex read cap.
+
+**Inputs / outputs.** in: the lab's runtime `verification-gates` skill and the two tool READMEs, rewritten in English with lab paths and agent names removed. out: three skill folders, `config/catalog.json` (3 entries, `all` preset 48 to 51), `PROJECT_STRUCTURE.md`, README count 44 to 47, `AGENTS.md` section 0 row "Report any number" now routes to `verification-gates`, `docs/agents/08-verification-routes.md` row, back-links from `fiducial`, `compat-check`, `scientific-validation`.
+
+**Evidence.** `tests/test_agents_routing.py` (every routed skill exists; AGENTS.md 30,820 bytes, was 32,704 against a 32,768 cap), `test_doc_counts.py`, `test_skill_contract.py`, `test_skill_references.py`, `test_skill_sizes.py`, `test_skill_drift.py`, `test_checksums_manifest.py`, `test_doctor_sentinel.py` all exit 0; `leakgate scan` 0 findings in 15 files.
+
+**What the gate caught that the plan missed.**
+1. `AGENTS.md` had 64 bytes of headroom, so the routing edit could not be a new row; it reuses an existing row and two sections moved out.
+2. The first checksum run failed on a CRLF `PROJECT_STRUCTURE.md` written by a helper script and on untracked new skill folders; both are fixed before the commit.
+3. The catalog edit by round-tripping JSON reordered unrelated keys; redone as a text insertion.
+
+**Deferred risk**: the two new tool skills depend on a `pip install` from GitHub that this repo cannot test offline; `endnote_library_audit` (axis 5) is not bundled here, so the router lists five axes, not six. Push and release are separate decisions.

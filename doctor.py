@@ -83,6 +83,7 @@ from doctor_lib.checks_env import (  # noqa: E402
     check_hooks_config,
     check_shell_env,
     check_skill_requirements,
+    check_gate_tools,
     check_lab_numeric_stack,
     check_gitleaks,
 )
@@ -130,6 +131,7 @@ def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
         check_connectivity(root),
         check_skill_requirements(root),
         check_lab_numeric_stack(root),
+        check_gate_tools(root),
         check_gitleaks(root),
     ]
     if not quick:
@@ -160,6 +162,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_si_institutional.py", "SI fetch + institutional links"),
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
     ("tests/test_doc_counts.py", "documented counts match reality"),
+    ("tests/test_gate_wiring.py", "verification gates are wired into doctor and the agent routing (planted missing tools must WARN, never OK)"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
     ("tests/test_sequence_verification.py", "sequence-verification (variant presence/absence, primer codon recovery, reference-map refusals, construct MW)"),
     ("tests/test_stdio.py", "shared UTF-8 stdout helper (cp949 control vs fixed, non-reconfigurable streams, no private reconfigure blocks left)"),

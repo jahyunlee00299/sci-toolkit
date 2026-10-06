@@ -101,6 +101,24 @@
       "pip_package": "compat-check",
       "size_kb": 8
     },
+    "provenance-check": {
+      "category": "data-stats",
+      "role": "gate for a derived constant: it must trace to a declared source file, sha256, measurement date, instrument, valid range and the value actually in use (needs the provenance-check package from GitHub)",
+      "requires": [],
+      "size_kb": 4
+    },
+    "regress-check": {
+      "category": "data-stats",
+      "role": "freeze critical results and fail when a number moves, a tolerance is widened, or a freeze has no recorded reason (needs the regress-check package from GitHub)",
+      "requires": [],
+      "size_kb": 4
+    },
+    "verification-gates": {
+      "category": "data-stats",
+      "role": "router for the mechanical verification gates (compat-check, provenance-check, fiducial, regress-check, canon-gate) with the shared 0/1/2 exit contract",
+      "requires": [],
+      "size_kb": 5
+    },
     "conda-env-manager": {
       "category": "data-stats",
       "role": "conda environment diagnosis, creation, repair, import scanning, version-conflict resolution",
@@ -436,7 +454,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 48 skills",
+      "desc": "All 51 skills",
       "skills": [
         "__ALL__"
       ]
