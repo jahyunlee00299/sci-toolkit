@@ -120,3 +120,61 @@ def test_error_text_maps_com_cverr_ints_and_strings():
     assert excel_com_guard._error_text(5) is None
     assert excel_com_guard._error_text(True) is None
     assert excel_com_guard._col_letters(1) == "A" and excel_com_guard._col_letters(28) == "AB"
+
+
+def test_error_text_accepts_unsigned_hresult():
+    """The same CVErr HRESULT delivered as an unsigned 32-bit int is still an error."""
+    assert excel_com_guard._error_text(-2146826246 + 2**32) == "#N/A"
+    assert excel_com_guard._error_text(2**32 - 1) is None
+
+
+def test_col_letters_boundaries():
+    assert [excel_com_guard._col_letters(n) for n in (26, 27, 52, 53, 702, 703)] == ["Z", "AA", "AZ", "BA", "ZZ", "AAA"]
+
+
+def test_scan_values_offset_range_and_single_cell():
+    """UsedRange need not start at A1, and one cell comes back as a bare scalar, not a tuple."""
+    vals = ((1, -2146826281), ("ok", "#N/A"))
+    assert excel_com_guard._scan_values("S", vals, 3, 2) == [("#DIV/0!", "S!C3"), ("#N/A", "S!C4")]
+    assert excel_com_guard._scan_values("S", -2146826265, 5, 4) == [("#REF!", "S!D5")]
+    assert excel_com_guard._scan_values("S", None, 1, 1) == []
+
+
+def test_com_retry_retries_busy_then_raises_other(monkeypatch):
+    monkeypatch.setattr(excel_com_guard.time, "sleep", lambda s: None)
+    calls = {"n": 0}
+
+    def busy_twice():
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise OSError(-2147418111, "call rejected")
+        return "ok"
+
+    assert excel_com_guard._com_retry(busy_twice) == "ok" and calls["n"] == 3
+
+    def other():
+        calls["n"] += 1
+        raise OSError(-2147352567, "exception occurred")
+
+    calls["n"] = 0
+    try:
+        excel_com_guard._com_retry(other)
+    except OSError:
+        pass
+    else:
+        raise AssertionError("non-busy error must propagate")
+    assert calls["n"] == 1
+
+    calls["n"] = 0
+
+    def always_busy():
+        calls["n"] += 1
+        raise OSError(-2147417846, "retry later")
+
+    try:
+        excel_com_guard._com_retry(always_busy, tries=4)
+    except OSError:
+        pass
+    else:
+        raise AssertionError("exhausted retries must raise")
+    assert calls["n"] == 4

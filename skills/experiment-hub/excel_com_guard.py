@@ -55,8 +55,11 @@ EXCEL_CVERR_CODES = {-2146826281: "#DIV/0!", -2146826246: "#N/A", -2146826259: "
 
 def _error_text(v):
     """Return the Excel error text for a COM cell value, or None."""
-    if isinstance(v, int) and not isinstance(v, bool) and v in EXCEL_CVERR_CODES:
-        return EXCEL_CVERR_CODES[v]
+    if isinstance(v, int) and not isinstance(v, bool):
+        if v >= 2**31:  # the same HRESULT delivered unsigned by another binding
+            v -= 2**32
+        if v in EXCEL_CVERR_CODES:
+            return EXCEL_CVERR_CODES[v]
     if isinstance(v, str):
         for err in EXCEL_ERROR_STRINGS:
             if err in v:
@@ -70,6 +73,23 @@ def _col_letters(n: int) -> str:
         n, r = divmod(n - 1, 26)
         out = chr(65 + r) + out
     return out
+
+
+def _scan_values(sheet_name: str, vals, top_row: int, left_col: int) -> list[tuple[str, str]]:
+    """Pure part of the sheet scan: [(error_text, "Sheet!A1"), ...] in row-major order.
+
+    vals is UsedRange.Value: a 2D tuple, or a bare scalar when the range is one cell.
+    Kept free of COM so the offset and single-cell paths run in a test without Excel.
+    """
+    if not isinstance(vals, tuple):
+        vals = ((vals,),)
+    hits = []
+    for i, row in enumerate(vals):
+        for j, v in enumerate(row):
+            err = _error_text(v)
+            if err:
+                hits.append((err, f"{sheet_name}!{_col_letters(left_col + j)}{top_row + i}"))
+    return hits
 
 
 def _com_retry(fn, tries: int = 20, wait: float = 0.5):
@@ -210,15 +230,10 @@ def _com_worker_main(xlsx_path: str) -> dict:
                 r0 = _com_retry(lambda: used.Row)
                 c0 = _com_retry(lambda: used.Column)
                 vals = _com_retry(lambda: used.Value)
-                if not isinstance(vals, tuple):
-                    vals = ((vals,),)
                 name = _com_retry(lambda: ws.Name)
-                for i, row in enumerate(vals):
-                    for j, v in enumerate(row):
-                        err = _error_text(v)
-                        if err:
-                            errors.setdefault(err, []).append(f"{name}!{_col_letters(c0 + j)}{r0 + i}")
-                            total_errors += 1
+                for err, addr in _scan_values(name, vals, r0, c0):
+                    errors.setdefault(err, []).append(addr)
+                    total_errors += 1
         finally:
             wb2.Close(SaveChanges=False)
 
