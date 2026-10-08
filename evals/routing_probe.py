@@ -28,16 +28,17 @@ turn off dynamic injection and personal skills.
 
 Model
 -----
-Default is `sonnet`. Routing itself still works with haiku, but it frequently
-breaks the output contract (JSON only), so the measurement tool ends up
-noisier than the thing being measured (measured: haiku failed to parse 3 of 7
-cases, sonnet succeeded 7/7). For this measurement, compliance IS signal
-quality.
+Default is `sonnet`. Haiku 4.5 broke the output contract (JSON only) in 3 of
+7 cases, which made the tool noisier than the thing being measured. Haiku 5.5
+(measured 261008, 3 runs) keeps the contract 21/21 at ~1/20-1/180 the cost,
+but misroutes the "작동 안 함" row 2 of 3 times (record=False,
+route=debugging-loop) while sonnet passes 7/7. Use haiku for quick iteration,
+sonnet for the verdict.
 
 Usage
 -----
     python evals/routing_probe.py
-    python evals/routing_probe.py --model haiku      # cheaper, at the cost of parse failures
+    python evals/routing_probe.py --model haiku      # cheap iteration; misroutes the boundary row
 """
 from __future__ import annotations
 
@@ -164,7 +165,7 @@ def ask(prompt: str, sysprompt_path: Path, model: str) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Measure §0 routing firing")
     ap.add_argument("--model", default="sonnet",
-                    help="model to use for the measurement (default sonnet — haiku often breaks the output contract)")
+                    help="model to use for the measurement (default sonnet; haiku 5.5 is cheap but misroutes the 작동 안 함 boundary row)")
     args = ap.parse_args()
 
     print(f"§0 routing firing measurement  (model={args.model})")
