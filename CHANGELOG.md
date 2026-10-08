@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.138] — 2026-10-08
+
+- markitdown example: sonnet-5 -> sonnet-5.5 model id
+
 ## [1.2.137] — 2026-10-07
 
 - AGENTS.md: move nine less common routing rows to docs/agents/00-routing-extra.md and merge the two sequence-verification rows; test scans the extra file
