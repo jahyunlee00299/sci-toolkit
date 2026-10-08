@@ -26,9 +26,9 @@ import os
 import shutil
 import subprocess
 import time
-import urllib.error
-import urllib.request
 from typing import Optional
+
+import sci_http  # noqa: E402  (shared HTTP layer; same dir as this file)
 
 DEFAULT_MODEL = "claude-haiku-5-5"
 API_URL = "https://api.anthropic.com/v1/messages"
@@ -39,10 +39,9 @@ class LLMCallError(RuntimeError):
 
 
 def _http_post(url: str, headers: dict, body: dict, timeout: float) -> dict:
-    req = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"),
-                                 headers=headers, method="POST")
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.load(r)
+    r = sci_http.request(url, method="POST", headers=headers, timeout=timeout,
+                         data=json.dumps(body).encode("utf-8"))
+    return json.loads(r.body)
 
 
 def _run_cli(prompt: str, model: str, timeout: float) -> str:
@@ -92,8 +91,8 @@ def complete(prompt: str, model: str = DEFAULT_MODEL, max_tokens: int = 1024,
                       "out": u.get("output_tokens", 0)})
                 return text
             err = "empty API answer"
-        except urllib.error.HTTPError as e:
-            err = f"HTTP {e.code}"
+        except sci_http.HttpError as e:
+            err = f"HTTP {e.status}"
         except Exception as e:  # network, timeout, bad JSON
             err = type(e).__name__
     if not allow_cli:

@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.142] — 2026-10-08
+
+- llm_call: route HTTP through sci_http; refresh SHA256SUMS
+
 ## [1.2.141] — 2026-10-08
 
 - Add optional llm_call.py helper: Anthropic API when ANTHROPIC_API_KEY is set, claude -p otherwise
