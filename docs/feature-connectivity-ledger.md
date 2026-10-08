@@ -1616,3 +1616,16 @@ wired-by: skills/experiment-hub/SKILL.md
 **What the gate caught that the plan missed.** The merged row first named `read_coverage.py` without its path, and the test rejected it as a nonexistent file; the row now uses full `sequence-verification/scripts/` paths.
 
 **Deferred risk**: an agent that picks a route only from the table will not see the moved rows unless it follows the pointer sentence or the skill description matches. No usage log exists to measure which rows were rare, so the selection was by judgement.
+
+## 2026-10-08 — llm_call.py: optional API-first completion helper (sub-feature)
+
+**Scope.** Lab members running small scripts that ask Claude one plain question had only `claude -p`, which spends subscription quota. Added `scripts/llm_call.py`: Anthropic API when the user's own `ANTHROPIC_API_KEY` is set, `claude -p` otherwise; `LLM_CALL_API=0` forces the CLI; `LLM_CALL_LOG` writes one JSON line per call. Documented for beginners in `docs/03_토큰과_비용.md` section 4-4.
+
+**Inputs / outputs.** in: prompt, model, max_tokens. out: text, or `LLMCallError`. No secrets-store path, no user names, no home paths; stdlib only.
+
+**Evidence.** `tests/test_llm_call.py` (API path, no key, HTTP error, kill switch, all paths fail, log line) passes. `leakgate scan` 0 findings in 5 files.
+
+**What the gate caught that the plan missed.** Haiku 5.5 thinks by default and thinking tokens consume `max_tokens`, which returned an empty text block in the lab's own run; the helper sends `thinking: disabled`.
+
+wired-by: docs/03_토큰과_비용.md
+**Deferred risk**: the real API path is covered by mocks here; it was proven against the live API only in the lab's own copy of the helper.

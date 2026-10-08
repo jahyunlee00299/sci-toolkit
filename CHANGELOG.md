@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.141] — 2026-10-08
+
+- Add optional llm_call.py helper: Anthropic API when ANTHROPIC_API_KEY is set, claude -p otherwise
+
+## [1.2.140] — 2026-10-08
+
+- Add optional llm_call.py helper: Anthropic API when ANTHROPIC_API_KEY is set, claude -p otherwise
+
 ## [1.2.139] — 2026-10-08
 
 - routing_probe: record Haiku 5.5 measurement (contract kept, boundary row misrouted 2/3)

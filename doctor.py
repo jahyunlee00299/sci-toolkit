@@ -162,6 +162,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_si_institutional.py", "SI fetch + institutional links"),
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
     ("tests/test_doc_counts.py", "documented counts match reality"),
+    ("tests/test_llm_call.py", "optional llm_call helper (API path, claude -p fallback, kill switch)"),
     ("tests/test_gate_wiring.py", "verification gates are wired into doctor and the agent routing (planted missing tools must WARN, never OK)"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
     ("tests/test_sequence_verification.py", "sequence-verification (variant presence/absence, primer codon recovery, reference-map refusals, construct MW)"),
