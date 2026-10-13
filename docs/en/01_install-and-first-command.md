@@ -171,6 +171,7 @@ say what you want to do in words.
 ### Looking back
 
 Before the AI changes or creates anything, it will generally ask "Is it okay to do it this way?"
+(How often it asks depends on the permission mode; see section 4 below.)
 - Check the content, and approve if it looks fine,
 - If it doesn't look right, decline or explain again.
 
@@ -178,18 +179,87 @@ At first, keep this confirmation step on and watch alongside it. As you get used
 
 ---
 
-## 4. Common first-day problems
+## 4. Permission settings: handling the "Allow" prompt
+
+The confirmation box the AI shows before it changes a file or runs a command is a **permission request**.
+For the first few days, watching these prompts is the best way to learn what the AI is doing.
+
+### When an allow prompt appears
+
+The prompt says what the AI wants to do (the file it will change, the command it will run), and usually offers these choices.
+
+| Choice | Meaning |
+|---|---|
+| **Yes** | Allow this one time |
+| **Yes, and don't ask again for …** | Don't ask again for the same kind of action |
+| **No** | Decline. You can then ask "why do you want to do this?" |
+
+Before you click, check three things.
+
+- **Which file?** If it wants to change a file outside the working folder, or your original data, decline first and ask why.
+- **Is it deleting something?** If you see `rm`, `del`, or "delete", read it once more.
+- **Is it sending something out?** `git push`, sending mail, and uploads are hard to undo.
+
+If you don't know what a command means, click **No** and ask "what does that command do?"
+Once you understand it, ask again.
+
+How long "don't ask again" lasts depends on the kind of action. A command is remembered for that folder from then on;
+a file edit is remembered only until this conversation ends. ([Official explanation](https://code.claude.com/docs/en/permissions))
+
+### Choosing a permission mode
+
+How often the AI asks is set by the **permission mode**. Change it with the mode selector next to the send button
+in the desktop app, the mode indicator in the VS Code prompt box, or `Shift+Tab` in the terminal.
+
+| Mode | Does without asking | When to use |
+|---|---|---|
+| **Manual** | Reading only | **Start here.** You check every change |
+| **Accept edits** | Reading, editing files | Once you're comfortable, for repetitive work. Other commands still ask |
+| **Plan** | Reading (proposes a plan, changes nothing) | When you want to see "how" before a big task |
+| **Auto** | Most things (a second AI screens risky actions in the background) | When prompts get too frequent |
+| **Bypass permissions** | Everything | **Don't use it.** For isolated test environments only |
+
+Recent versions of the terminal and VS Code can **start in Auto**, so you may see almost no allow prompts.
+Switch to Manual at first and watch. The desktop app remembers the last mode you picked for each folder.
+([Permission modes docs](https://code.claude.com/docs/en/permission-modes))
+
+### Auto-allow and deny rules (optional)
+
+If you keep clicking "Yes" for the same question, you can turn it into a rule. Usually clicking
+"don't ask again" in the prompt saves the rule for you, so you rarely need to write one by hand.
+To write one yourself, put it in the working folder's `.claude/settings.json` (this folder only) or `~/.claude/settings.json` (your whole computer).
+
+```json
+{
+  "permissions": {
+    "allow": ["Bash(git diff *)", "Bash(git log *)"],
+    "deny": ["Bash(git push *)", "Bash(rm -rf *)"]
+  }
+}
+```
+
+- `allow`: runs without asking (the example allows commands that only look at history and change nothing)
+- `deny`: never runs even if asked (the example blocks uploading and deleting a whole folder)
+- `*` means "whatever comes after". A broad rule like `Bash(python *)` effectively lets any code run
+  without asking, so avoid it.
+
+The rule syntax and where settings files live are in the official [permissions](https://code.claude.com/docs/en/permissions)
+and [settings](https://code.claude.com/docs/en/settings) docs.
+
+---
+
+## 5. Common first-day problems
 
 | Symptom | Try this |
 |---|---|
 | I can't log in | Check that it's the right subscription account and that Claude Pro/Max is active. If it still doesn't work, restart the app. |
 | The AI doesn't seem to know our lab's style | Check that the working folder is set to `sci-toolkit` (step 2). |
-| No matter what I ask, it only says "permission is required" | Approve (allow) that request and it will proceed. If the content looks odd, decline. |
+| No matter what I ask, it only says "permission is required" | Approve (allow) that request and it will proceed. If the content looks odd, decline. See section 4 for what to check. |
 | I don't know how to phrase a command | Just write what you want to do casually. If it's ambiguous, the AI will ask you back. |
 
 ---
 
-## 5. Codex tips
+## 6. Codex tips
 
 If you use [Codex](https://developers.openai.com/codex) (OpenAI's similar tool), the big picture is the same.
 
@@ -201,7 +271,7 @@ If you use [Codex](https://developers.openai.com/codex) (OpenAI's similar tool),
 
 ---
 
-## 6. Next steps
+## 7. Next steps
 
 You have now started using an AI agent.
 

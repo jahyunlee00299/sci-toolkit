@@ -1,11 +1,11 @@
-3a0339be44307e4a672d089141ae64745ca7a512d3e9c5e90c06b885613ddd1c *./.claude-plugin/plugin.json
+f925bd5f1fb181a5cfc129fffab63e368f823ab07e1cd4c8ce88aa4f462058c3 *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 bf85658b013a384435aceb801043aaa2efafee781b72d7b4ba19d8a72ea8fe98 *./AGENTS.md
-b40bd11d44059ff2a84acfa5321d51e2d9619a973f4a049dd03f8b9f744ec168 *./CHANGELOG.md
+cd45764788adb61e600100d825f9c952a3b03d269b5a5dd3126ff1fffd5890e7 *./CHANGELOG.md
 2e4c91ac91b8920fc53a5a9ebb283ed00bc29419686676fa96bc09e312737e3f *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -21,7 +21,7 @@ cb73e7b1e9fb0467caa4a694ec310b1a8a2e791e3ca7f3625941f9e7ad3281ad *./config/resea
 901963d9ff1f90c701f188c0b983e3e654a0bb1bc023c0fd072a28a78320d6f5 *./config/skill-drift-intended.json
 15835796bc89d08d2ad99cfea6486835f89311e03b56d8627a25da1ca6e05029 *./config/skill-requirements.toml
 4fc8e62540e13b679f47b2d9219e04eb90399372b2bf97c25b521d54bdc77ddd *./docs/00_시작하기.md
-3d91dd8277775166631c6396f84bf04bcee8e18d4da4f1b4f4d4ce80a72e0894 *./docs/01_설치와_첫_명령.md
+6c165fd2cbddbdc4e6314de41dc995dbb95028f153a34a1935420e9352385c00 *./docs/01_설치와_첫_명령.md
 69b29bfa5974abc84b9191d2ab140ba90cd12ed67c8bb142f2cfca1dcab942ae *./docs/02_API와_MCP.md
 b472c46aca3a5685f98d44fb1945b0a00b02f36bab528e13943f9a02eff07bcd *./docs/03_토큰과_비용.md
 1fdce74b26821da9e40dc8ab41bd996306bf0c6ac6c198f23a05d43811edfba8 *./docs/04_AI에게_규칙주기.md
@@ -47,7 +47,7 @@ e3dc811241c710ffe2092473ea52794fd6fe8786987e6742d0699834f67399ac *./docs/agents/
 e8f69c386883b52f3fe48fd9d8ab296a947a5e7f3a94ca61c9bf85dc56b53dc3 *./docs/agents/10-recording-friction.md
 f70e501c1c96a55ac7e8e67208951bcccef3e94731f90746acc9e53564b24a76 *./docs/agents/11-repository-language.md
 8ca82e33027e9ee41d28a19f84abda1190bfdfcac60fcd676bcbe7b7a0ea99e1 *./docs/en/00_getting-started.md
-67a05d03fd61560c22caea4cc2c02ac608f67ce0c1a03c5026bcb14a5a175f46 *./docs/en/01_install-and-first-command.md
+72125337e497cae82043186086b886afb8707f1c931cf4ffd96da537eb8100f6 *./docs/en/01_install-and-first-command.md
 40d5c6e9648c314da8514de910ad0961e47e51f7ae1af1f1acd102191f70271c *./docs/en/02_api-and-mcp.md
 52a4667c98d8914b7394b9dad8268a2501940d30f37b0876633519ceb9328905 *./docs/en/03_tokens-and-cost.md
 2ba8cbcb4e898a3b36d2449b673139dc6ea392b53eb255ea8acf0c8ba18c7660 *./docs/en/04_giving-ai-rules.md

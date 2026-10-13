@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.156] — 2026-10-14
+
+- docs: add a beginner permission section (allow prompt, permission modes, allow/deny rules) to 01 (ko + en)
+
 ## [1.2.155] — 2026-10-13
 
 - experiment-hub: move Mode 1b, hand-built/publishing detail and workbook verification into references/ to get SKILL.md under the 24 KiB cap
