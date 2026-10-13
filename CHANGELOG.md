@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.143] — 2026-10-13
+
+- sanitize: generic wording and synthetic figures in docs and test fixtures
+
 ## [1.2.142] — 2026-10-08
 
 - llm_call: route HTTP through sci_http; refresh SHA256SUMS
