@@ -20,8 +20,8 @@
       "declared": "2026-09-24"
     },
     "experiment-hub": {
-      "reason": "toolkit copy sanitized: license MIT, synthetic test fixtures and example canon registry instead of the maintainer's lab data, no reaction_matrix calc subcommand (dilution_calc not ported), generic examples and no project history. Not ported (261013): the 261012 Pipetting Guide enzyme-preparation block, default-auto serial dilution and cocktail_dead_volume_uL (their tests need real-run fixtures); the 261013 surplus defaults (x1.0, 5 uL dead) ARE ported.",
-      "toolkit_fp": "77e6a187f432fade",
+      "reason": "toolkit copy sanitized: license MIT, synthetic test fixtures and example canon registry instead of the maintainer's lab data, no reaction_matrix calc subcommand (dilution_calc not ported), no automatic copy of the workbook into a Methods folder (publish_to_methods not ported), generic examples and no project history. Ported 261013: serial dilution (default auto), the Pipetting Guide enzyme-preparation block, cocktail_dead_volume_uL and the x1.0 / 5 uL dead-volume surplus defaults, tested on a synthetic fixture.",
+      "toolkit_fp": "83510ed0ef27e4d4",
       "runtime_fp": "9f48791be1358cef",
       "declared": "2026-10-13"
     },

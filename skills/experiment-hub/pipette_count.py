@@ -100,6 +100,13 @@ def mm_a_extra(cfg: dict) -> int:
     return raw
 
 
+def dead_ul(cfg: dict, vessel: str = "working") -> float:
+    """Dead volume added to an intermediate vessel: config "dead_volume_uL" (default DEAD_UL = 5) for working
+    stocks, "cocktail_dead_volume_uL" (default = dead_volume_uL) for cocktails."""
+    base = float(cfg.get("dead_volume_uL", DEAD_UL))
+    return float(cfg.get("cocktail_dead_volume_uL", base)) if vessel == "cocktail" else base
+
+
 def lab_stock_of(einfo: dict) -> float:
     return float(einfo.get("source_stock_gL", einfo["stock_gL"]))
 
@@ -142,10 +149,10 @@ def enzyme_additions(cfg: dict) -> dict[int, list[dict]]:
     return out
 
 
-def cocktail_scale(per_tube: float, n_tubes: int) -> tuple[float, float]:
-    """(make_uL, scale) of a cocktail made for n_tubes x SURPLUS + DEAD_UL; a component's batch draw is
+def cocktail_scale(per_tube: float, n_tubes: int, dead: float = DEAD_UL) -> tuple[float, float]:
+    """(make_uL, scale) of a cocktail made for n_tubes x SURPLUS + dead (uL); a component's batch draw is
     its per-tube uL x scale."""
-    make = per_tube * n_tubes * SURPLUS + DEAD_UL
+    make = per_tube * n_tubes * SURPLUS + dead
     return make, make / per_tube
 
 
@@ -171,7 +178,7 @@ def route_enzymes(cfg: dict, cocktail: str) -> dict:
     separate: dict[int, list[tuple[str, float]]] = {c["num"]: [] for c in conds}
 
     def ck(name, members, per_tube, comps, water_per_tube=0.0):
-        make, scale = cocktail_scale(per_tube, len(members))
+        make, scale = cocktail_scale(per_tube, len(members), dead_ul(cfg, "cocktail"))
         cocktails.append({"name": name, "members": list(members), "per_tube": per_tube, "comps": dict(comps),
                           "water_per_tube": water_per_tube, "make_uL": make, "scale": scale})
 
@@ -182,7 +189,7 @@ def route_enzymes(cfg: dict, cocktail: str) -> dict:
         sigs = [set((a["source"], round(a["vol"], 6)) for a in adds[t]) for t in enz_tubes]
         common = set.intersection(*sigs) if sigs else set()
         if len(common) >= 2:
-            comps = {s: v for s, v in common}
+            comps = {s: v for s, v in sorted(common)}   # sorted: a set iterates in hash order, the recipe must not
             ck("common cocktail", enz_tubes, sum(comps.values()), comps)
         else:
             common = set()
@@ -322,7 +329,7 @@ def build_plan(cfg_in: dict, cocktail: str | None = None, common_water: bool | N
         e = cfg["enzymes"][src]
         dil = lab_stock_of(e) / float(e["stock_gL"])
         if dil > NEAT_TOL:
-            make = math.ceil(uL + DEAD_UL)
+            make = math.ceil(uL + dead_ul(cfg))
             stock_uL = make / dil
             steps.append(Step("prep", "dilution", f"WS {src}", f"{a['enzyme']} (lab stock)", stock_uL))
             steps.append(Step("prep", "dilution", f"WS {src}", "water", make - stock_uL))
@@ -762,7 +769,8 @@ def main(argv=None) -> int:
     else:
         print(summary_line(s))
         print(f"  margins: MM-A n+{mm_a_extra(plan['config'])}, sub-mix/cocktail x{SURPLUS}, "
-              f"+{DEAD_UL} uL dead per vessel")
+              f"+{dead_ul(plan['config'])} uL dead per working stock, "
+              f"+{dead_ul(plan['config'], 'cocktail')} uL per cocktail")
         if plan["water_common_uL"] < plan["water_common_max_uL"]:
             print(f"  common water lowered from {plan['water_common_max_uL']} to {plan['water_common_uL']} uL/rxn "
                   f"so every DW top-up is 0 or >= the pipette floor")

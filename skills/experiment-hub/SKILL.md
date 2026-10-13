@@ -39,6 +39,20 @@ license: MIT
 >   same `enzyme` alias, or same batch + same lab stock (`source_stock_gL`, else `stock_gL` x `dilution_x`), or
 >   same batch + same name stem (`EnzX` / `EnzX_dil`); batch labels are compared stripped, case-folded, and
 >   with `100001` == `"100001"`. Config `"equal_volume_uL"`; `reaction_matrix.py` expands such a spec itself. [check c]
+> - **R2b Levels are made by SERIAL dilution (default).** Make the HIGHEST level once from lab stock + water, then each
+>   lower level = a transfer from the next higher one + water, so no transfer is a tiny lab-stock draw. Make volumes
+>   are computed bottom-up (what the tubes of that level draw + the transfer for the next lower level + dead volume);
+>   every transfer and lab-stock draw should be >= 2.5 uL. Config `"serial_dilution"`: omitted or `"auto"` = every
+>   enzyme with >= 2 working-stock levels; a list of enzyme names limits it to those; `[]` = independent draws.
+>   Typo = WARN, wrong type = FAIL, a draw < 2.5 uL = WARN, < 0.5 uL = FAIL, a non-2-fold step = INFO. The recipe is
+>   written into the Pipetting Guide blocks 'TUBES TO PREPARE' and 'ENZYME PREPARATION' (A lab stocks with batch and
+>   total draw, B common cocktail, C working-stock / serial levels); `Enzyme Additions` marks the superseded
+>   independent-draw rows. Known gap: `pipette_count` still prices independent draws, so its enzyme lab-stock total
+>   differs slightly from the serial recipe; the Guide block is the bench truth.
+> - **Surplus margins (lab convention).** No percentage overage: stock totals, sub-mixes and cocktails are made for
+>   exactly the tubes that draw from them (`SURPLUS = 1.0`), plus a dead volume per intermediate vessel
+>   (`"dead_volume_uL"` for working stocks, default 5; `"cocktail_dead_volume_uL"`, default = `dead_volume_uL`; raise to
+>   7-9 uL if 5 runs short). MM-A is made for n tubes + `premix.extra_rxns` (default 3).
 > - **Waivers** `"allow_small_volume"` / `"allow_variable_volume"` must be exactly `true` plus a non-empty
 >   `"..._reason"` string (on every entry of that enzyme); anything else is a FAIL ("malformed waiver"). [check a]
 >   `allow_small_volume` waives only the sub-floor volume rule (and turns a 2-5 % rounding deviation of that
