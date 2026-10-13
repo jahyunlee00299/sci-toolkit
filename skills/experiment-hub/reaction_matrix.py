@@ -3,7 +3,8 @@ Reaction Matrix Generator — experiment-hub Mode 10
 Generates optimized experiment Excel files with master mix grouping and pipetting guides.
 
 Usage:
-    python reaction_matrix.py config.json [output.xlsx]
+    python reaction_matrix.py config.json [output.xlsx] [--no-publish]
+    python reaction_matrix.py calc c1v1|topup|topup-conc|df|back ...   # one-off dilution arithmetic (dilution_calc.py)
 
 Config JSON format:
 {
@@ -1478,16 +1479,76 @@ def _enzyme_prep_block(ws, r, plan):
     return r
 
 
+def methods_dir():
+    """The Methods folder every generated workbook is published to: env LAB_METHODS_DIR (tests, other lab members),
+    else the glob stored per computer in ~/.config/experiment-hub.json (key "methods_dir_glob", relative to the home
+    folder, e.g. "OneDrive*/Lab/Methods"). The glob is resolved on the home folder only, never by
+    a recursive walk of OneDrive. None when nothing matches."""
+    import os
+    env = os.environ.get('LAB_METHODS_DIR')
+    if env:
+        return Path(env)
+    cfg = Path.home() / '.config' / 'experiment-hub.json'
+    try:
+        pattern = json.loads(cfg.read_text(encoding='utf-8')).get('methods_dir_glob')
+    except (OSError, ValueError):
+        return None
+    if not pattern:
+        return None
+    for d in sorted(Path.home().glob(pattern)):
+        if d.is_dir():
+            return d
+    return None
+
+
+def publish_to_methods(output):
+    """Copy the generated workbook into the lab Methods folder, if one is configured (opt-in: env
+    LAB_METHODS_DIR or "methods_dir_glob" in ~/.config/experiment-hub.json). A different file of the same name is kept as NAME.BACKUP-YYMMDD-HHMM.xlsx first. Returns
+    (ok, message); never raises."""
+    import datetime
+    import hashlib
+    import shutil
+    try:
+        src = Path(output).resolve()
+        d = methods_dir()
+        if d is None:
+            return True, 'no Methods folder configured (optional: set LAB_METHODS_DIR or "methods_dir_glob" in ~/.config/experiment-hub.json)'
+        if not d.is_dir():
+            return False, f'configured Methods folder not found: {d}'
+        dest = d / src.name
+        if src == dest.resolve():
+            return True, f'already in the Methods folder: {dest}'
+        md5 = lambda f: hashlib.md5(Path(f).read_bytes()).hexdigest()
+        if dest.exists():
+            if md5(dest) == md5(src):
+                return True, f'Methods folder already has the identical file: {dest}'
+            bak = dest.with_name(f'{dest.stem}.BACKUP-{datetime.datetime.now():%y%m%d-%H%M}{dest.suffix}')
+            shutil.move(str(dest), str(bak))
+        shutil.copy2(src, dest)
+        if md5(dest) != md5(src):
+            return False, f'copy to {dest} does not match the source (md5)'
+        return True, f'published to the Methods folder: {dest}'
+    except OSError as exc:
+        return False, f'could not publish ({exc}); the workbook is only at {output}'
+
+
 def main():
+    if len(sys.argv) >= 2 and sys.argv[1] == 'calc':
+        # one-off dilution / top-up / C1V1 questions: same entry point, exact decimal arithmetic
+        from dilution_calc import cli
+        sys.exit(cli(sys.argv[2:]))
     if len(sys.argv) < 2:
-        print('Usage: python reaction_matrix.py config.json [output.xlsx]')
+        print('Usage: python reaction_matrix.py config.json [output.xlsx] [--no-publish]\n'
+              '       python reaction_matrix.py calc {c1v1|topup|topup-conc|df|back} ...  (one-off arithmetic)')
         sys.exit(1)
 
-    config_path = Path(sys.argv[1])
+    flags = {a for a in sys.argv[1:] if a.startswith('--')}
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    config_path = Path(args[0])
     with open(config_path, encoding='utf-8') as f:
         config = json.load(f)
 
-    output = sys.argv[2] if len(sys.argv) > 2 else str(config_path.with_suffix('.xlsx'))
+    output = args[1] if len(args) > 1 else str(config_path.with_suffix('.xlsx'))
 
     import pipette_count
     if isinstance(config, dict) and isinstance(config.get('enzymes'), dict) and 'conditions' in config \
@@ -1512,6 +1573,13 @@ def main():
     print('=== validate_config: all hard checks passed ===')
 
     generate_excel(config, output)
+    if '--no-publish' in flags:
+        print('=== publish skipped (--no-publish) ===')
+        return
+    ok, msg = publish_to_methods(output)
+    print(('=== ' if ok else '=== PUBLISH FAILED: ') + msg + ' ===')
+    if not ok:
+        sys.exit(3)
 
 
 if __name__ == '__main__':

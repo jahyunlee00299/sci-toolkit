@@ -9,5 +9,7 @@ EXAMPLE = Path(__file__).resolve().parent.parent / "canonical_constants.example.
 
 
 @pytest.fixture(autouse=True)
-def _example_registry(monkeypatch):
+def _example_registry(tmp_path_factory, monkeypatch):
     monkeypatch.setenv("LAB_CANON_REGISTRY", str(EXAMPLE))
+    # reaction_matrix.main publishes into a configured Methods folder; never the real one from a test
+    monkeypatch.setenv("LAB_METHODS_DIR", str(tmp_path_factory.mktemp("methods")))

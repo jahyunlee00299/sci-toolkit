@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.146] — 2026-10-13
+
+- experiment-hub: port structural workbook guards, calc subcommand, opt-in Methods publish and workbook-editing rules
+
 ## [1.2.145] — 2026-10-13
 
 - experiment-hub: port serial dilution, enzyme-preparation block and cocktail dead volume, with a synthetic fixture

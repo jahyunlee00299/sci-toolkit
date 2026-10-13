@@ -254,3 +254,162 @@ def sampling_headroom_check(
     finally:
         wb.close()
     return report
+
+# ---------------------------------------------------------------------------
+# Structural guards (added after repeated independent-review rounds on one
+# workbook series). Three regex attempts at these defects produced one miss and 23 false
+# positives; every one of them is a STRUCTURAL property, so these check
+# structure instead of chasing symptom text.
+#
+# `leading_equals_guard` above and `formula_validity_guard` /
+# `constant_formula_guard` below are a PAIR, each covering the other's blind
+# spot:
+#   - leading_equals_guard : text that LOOKS like a formula
+#   - formula_validity / constant_formula : a formula where text or a constant
+#     belonged
+# The cell that once made a workbook unopenable passed leading_equals_guard
+# with 0 findings.
+#
+# Run order (structure before arithmetic): cache_freshness -> formula_validity
+# -> constant_formula -> dead_input_cell -> volume_closure -> concentration ->
+# sampling. `volume_closure_check` reports "uncomputed formula cell(s) - run a
+# COM recalc first" when caches are empty, which is a confusing proxy for
+# "nobody recalculated"; cache_freshness_guard says that directly, so it leads.
+# ---------------------------------------------------------------------------
+
+import re as _re
+import zipfile as _zipfile
+
+_FUNC = _re.compile(r"[A-Z][A-Z0-9.]*\s*\(")
+_REF = _re.compile(r"(?:'[^']+'!)?\$?[A-Z]{1,3}\$?\d+")
+_STRLIT = _re.compile(r'"[^"]*"')
+
+
+def cache_freshness_guard(path: Path, min_filled_ratio: float = 0.5) -> CheckReport:
+    """Report whether Excel has actually recalculated this file.
+
+    An openpyxl save strips calcChain.xml and empties every cached <v>, so a
+    "COM recalculation passed" claim made before such a save is void. The file
+    still opens correctly (calcPr fullCalcOnLoad), but every openpyxl-based
+    check downstream then reads None instead of a number.
+    """
+    report = CheckReport()
+    with _zipfile.ZipFile(path) as z:
+        names = z.namelist()
+        has_chain = any("calcChain" in n for n in names)
+        formulas = filled = 0
+        for n in (n for n in names if n.startswith("xl/worksheets/sheet")):
+            xml = z.read(n).decode("utf-8", "replace")
+            formulas += len(_re.findall(r"<f[ >]", xml))
+            filled += len(_re.findall(r"</f><v>[^<]", xml))  # openpyxl writes an EMPTY <v></v>
+    ratio = (filled / formulas) if formulas else 1.0
+    if not has_chain:
+        report.add("-", "-", "calcChain.xml missing: Excel has not recalculated this file "
+                             "since the last non-Excel save")
+    if formulas and ratio < min_filled_ratio:
+        report.add("-", "-", f"only {filled}/{formulas} formula caches filled ({ratio:.0%}) "
+                             f"- openpyxl-based checks will read None")
+    return report
+
+
+def formula_validity_guard(path: Path) -> CheckReport:
+    """Flag formulas holding tokens that are neither function, reference, number
+    nor operator.
+
+    The motivating case was a note written into a cell as
+    '= 100/1000 x 50e-3 x 112.09': 'x' is not an Excel operator and the spaces
+    act as intersection operators, so the file would not open at all.
+    String literals are stripped first, or prose inside quotes would be flagged.
+    """
+    report = CheckReport()
+    wb = load_workbook(path, data_only=False)
+    try:
+        for name in wb.sheetnames:
+            for row in wb[name].iter_rows():
+                for cell in row:
+                    v = cell.value
+                    if not (isinstance(v, str) and v.startswith("=")):
+                        continue
+                    body = _STRLIT.sub(" ", v[1:])
+                    body = _FUNC.sub(" ", body)
+                    body = _REF.sub(" ", body)
+                    leftover = _re.sub(r"[\d.,:;()\[\]{}+\-*/^%&<>=!\s$]", "", body)
+                    if leftover:
+                        report.add(name, cell.coordinate,
+                                   f"formula holds non-operator token(s) {leftover!r}: {v!r}")
+    finally:
+        wb.close()
+    return report
+
+
+def constant_formula_guard(path: Path) -> CheckReport:
+    """Flag formulas whose body is a bare number, such as '=9' or '=27'.
+
+    They look live and are not: a reader edits one and nothing changes, while
+    the number that actually drives the sheet stays hard-coded elsewhere.
+    """
+    report = CheckReport()
+    wb = load_workbook(path, data_only=False)
+    try:
+        for name in wb.sheetnames:
+            for row in wb[name].iter_rows():
+                for cell in row:
+                    v = cell.value
+                    if isinstance(v, str) and _re.fullmatch(r"=\s*[\d.]+\s*", v):
+                        report.add(name, cell.coordinate,
+                                   f"constant disguised as a formula: {v!r}")
+    finally:
+        wb.close()
+    return report
+
+
+def dead_input_cell_guard(path: Path, max_populated: int = 4) -> CheckReport:
+    """Flag labelled input cells that no formula references (in-degree 0).
+
+    One workbook set a premix-scale cell to 36 while every volume below it still
+    multiplied by the literal 13, then added a note telling the reader to change
+    that cell - an actively wrong instruction.
+
+    Two things keep the false-positive rate usable:
+      1. cross-sheet prefixes ('Reaction Matrix'!$B$39) must be parsed, or the
+         parameter cells they point at get reported as dead themselves;
+      2. rows with more than `max_populated` filled cells are skipped - those are
+         data tables, whose numbers are legitimately unreferenced. This single
+         rule took the prototype from 16 findings to 5.
+    Advisory by default; promote to error once a per-workbook whitelist exists.
+    """
+    report = CheckReport()
+    wb = load_workbook(path, data_only=False)
+    try:
+        referenced: set = set()
+        for name in wb.sheetnames:
+            for row in wb[name].iter_rows():
+                for cell in row:
+                    v = cell.value
+                    if not (isinstance(v, str) and v.startswith("=")):
+                        continue
+                    for m in _REF.finditer(_STRLIT.sub(" ", v)):
+                        ref = m.group(0)
+                        sheet, _, addr = ref.rpartition("!")
+                        sheet = sheet.strip("'") or name
+                        referenced.add((sheet, addr.replace("$", "")))
+        for name in wb.sheetnames:
+            ws = wb[name]
+            for row in ws.iter_rows():
+                populated = [c for c in row if c.value is not None]
+                if len(populated) > max_populated:
+                    continue
+                for cell in populated:
+                    if not isinstance(cell.value, (int, float)):
+                        continue
+                    label = ws.cell(cell.row, 1).value
+                    if not isinstance(label, str) or not label.strip():
+                        continue
+                    if (name, cell.coordinate) not in referenced:
+                        report.add(name, cell.coordinate,
+                                   f"input cell {label.strip()!r} = {cell.value} is referenced by "
+                                   f"no formula - changing it does nothing",
+                                   severity="warning")
+    finally:
+        wb.close()
+    return report
