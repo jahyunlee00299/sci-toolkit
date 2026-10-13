@@ -1,9 +1,9 @@
 > English translation of [04_AI에게_규칙주기.md](../04_AI에게_규칙주기.md). The Korean original is canonical; if they differ, the Korean version wins.
 
-# 04. Giving the AI Rules — What Are CLAUDE.md and AGENTS.md?
+# 04. Giving the AI Rules: What Are CLAUDE.md and AGENTS.md?
 
 This document is a guide for beginners who wonder,
-**"Why do I need to create something like a rules file for an AI agent?"**
+"Why do I need to create something like a rules file for an AI agent?"
 You only need to understand the concept; you don't have to write a rules file yourself right now.
 
 ---
@@ -17,7 +17,7 @@ What would happen if a new researcher started work on the first day with no expl
 - They might accidentally overwrite an important original file,
 - And you'd have to explain "please do it this way" from scratch every single time.
 
-A **rules file (CLAUDE.md / AGENTS.md)** is like writing down "this is how our lab works" in advance
+A rules file (CLAUDE.md / AGENTS.md) is like writing down "this is how our lab works" in advance
 and leaving it on this new researcher's desk. The AI automatically reads this file before starting work
 and tries to follow the rules written in it.
 
@@ -29,9 +29,9 @@ and tries to follow the rules written in it.
 
 ## 2. What's the difference between CLAUDE.md and AGENTS.md?
 
-- **CLAUDE.md** — the file name that Claude Code automatically reads from a project folder.
+- CLAUDE.md: the file name that Claude Code automatically reads from a project folder.
   If you use Claude Code, save it under this name.
-- **AGENTS.md** — a name recognized in common not only by Claude Code but also by other AI agent tools such as Codex.
+- AGENTS.md: a name recognized in common not only by Claude Code but also by other AI agent tools such as Codex.
   Use it when writing "shared rules" that aren't tied to a specific tool.
 
 You can keep both files in the same project. For example, `CLAUDE.md` can say only briefly,
@@ -39,7 +39,7 @@ You can keep both files in the same project. For example, `CLAUDE.md` can say on
 separately maintained for each tool is a hassle, it's convenient to gather the content
 in one place and have the other file point to it.
 
-**Where do you put them?** Usually at the top of the project folder (the repository you're working in), that is,
+Place them at the top of the project folder (the repository you're working in), that is,
 the root directory. The AI automatically finds and reads them when it starts work in that folder.
 
 ---
@@ -53,15 +53,15 @@ makes it easy to organize.
 
 These are things that must be followed automatically every time unless there are special circumstances. Examples:
 "Write new code in small, function-sized pieces," "Re-check important calculation results
-against the original data." The AI can simply follow these without asking a person each time.
+against the original data." The AI follows these without asking a person each time.
 
 ### (2) Ask first (hard to undo, or ambiguous)
 
 These are things where the AI must first get a person's confirmation: "Is it okay to proceed this way?"
 They usually have one of the following two characteristics.
 
-- **Hard to undo** — deleting a file permanently, overwriting without a backup, etc.
-- **Ambiguous default** — there are several options and it's hard for the AI to judge on its own
+- Hard to undo: deleting a file permanently, overwriting without a backup, etc.
+- Ambiguous default: there are several options and it's hard for the AI to judge on its own
   which is right.
 
 ### (3) Never do (prohibitions)
@@ -69,7 +69,7 @@ They usually have one of the following two characteristics.
 These are things that must not be done under any instruction, even if you hear
 "It's fine, just do it." Examples: writing a password or API key directly into code
 and uploading it to a repository, or running a deletion command that can't be forcibly undone
-without confirmation. At this level it's not "if at all possible" but "absolutely."
+without confirmation. At this level the rules are absolute.
 
 > If you write rules down divided into these three levels, the AI can tell for itself:
 > "This is something I can just do," "This I should ask about first," "This I must not do at all."
@@ -78,9 +78,9 @@ without confirmation. At this level it's not "if at all possible" but "absolutel
 
 ## 4. A very small example (general content only)
 
-Below is **a very small, general example that could apply to any project.**
-It is not content containing a specific lab or personal information, but
-a sample to show the concept. You can copy it and use it as is, or adapt it to our situation.
+Below is a very small, general example that could apply to any project.
+It contains no specific lab or personal information.
+It is a sample to show the concept. You can copy it and use it as is, or adapt it to our situation.
 
 ```markdown
 # CLAUDE.md example
@@ -102,7 +102,7 @@ a sample to show the concept. You can copy it and use it as is, or adapt it to o
 - Accidentally overwriting an important original file without confirmation.
 ```
 
-Even just these three short sections are already quite useful. Don't try to write it perfectly from the start;
+These three short sections are already useful. Don't try to write it perfectly from the start;
 as you work, every time you think, "Ah, I should have said this in advance," just add one more line.
 
 ---
@@ -111,11 +111,11 @@ as you work, every time you think, "Ah, I should have said this in advance," jus
 
 The sci-toolkit you're using right now already has files like these.
 
-- **`AGENTS.md`** (the toolkit's top-level folder) — it lays out the general rules that apply
+- `AGENTS.md` (the toolkit's top-level folder): it lays out the general rules that apply
   in common no matter which AI agent tool you use. It contains the order in which a request
   should be handled (the routing table), code quality principles, result verification
   principles, safety standards (the list of things never to do), and so on.
-- **`CLAUDE.md`** (in the same location) — a short file for Claude Code that
+- `CLAUDE.md` (in the same location): a short file for Claude Code that
   points to `AGENTS.md` and adds only a few Claude Code-specific items.
 
 You don't need to edit these files yourself right now. But when you become curious about "Why does the AI
@@ -125,7 +125,7 @@ the "0. Routing" table at the very front of `AGENTS.md` shows at a glance which 
 so skimming it when you're curious can help.
 
 If you need a rules file when starting a new project, you can also copy `AGENTS.md` as is
-and adapt it to our situation — that's why the very top of that file says
+and adapt it to our situation. That's why the very top of that file says
 "written so it can be used generally, without personal information or institution names."
 
 ---

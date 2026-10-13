@@ -1,8 +1,8 @@
 > English translation of [09_원격서버에서_쓰기.md](../09_원격서버에서_쓰기.md). The Korean original is canonical; if they differ, the Korean version wins.
 
-# 09. Using It on a Remote Server — Lab Shared Server · HPC · Cloud
+# 09. Using It on a Remote Server: Lab Shared Server · HPC · Cloud
 
-Read this document when you want to run Claude Code **on a computer other than your laptop**.
+Read this document when you want to run Claude Code on a computer other than your laptop.
 
 These are the cases it covers.
 
@@ -12,13 +12,13 @@ These are the cases it covers.
 - The work needs to keep running even when you turn off your laptop
 
 > The connection details for the lab shared server and HPC (address, account, key) are not included in this distribution.
-> Use the information you received from your lab or IT office. **Do not store connection details inside this folder.**
+> Use the information you received from your lab or IT office. Do not store connection details inside this folder.
 
 ---
 
-## 0. First check — do you really need remote?
+## 0. First check: do you really need remote?
 
-Remote brings hassle before it brings convenience. In the cases below, just do it **on your laptop**.
+Remote brings hassle before it brings convenience. In the cases below, do it on your laptop.
 
 | Situation | Recommendation |
 |---|---|
@@ -30,27 +30,27 @@ Remote brings hassle before it brings convenience. In the cases below, just do i
 
 ---
 
-## 1. Method A — VS Code Remote-SSH (most recommended)
+## 1. Method A: VS Code Remote-SSH (most recommended)
 
-This approach lets you open and use the remote server's files **right on your own VS Code screen**.
+This approach lets you open and use the remote server's files right on your own VS Code screen.
 It is much more comfortable than using a terminal alone, and the Claude Code extension also runs on the remote side as is.
 
-1. Install **`Remote - SSH`** (made by Microsoft) from the VS Code extensions.
+1. Install `Remote - SSH` (made by Microsoft) from the VS Code extensions.
 2. `F1` → `Remote-SSH: Connect to Host...` → enter the server address
    (format: `username@server-address`, for example user `hong` on server `server.example.ac.kr`)
 3. Log in with a password or an SSH key.
-4. Once connected, **a new window is attached to the remote server**.
+4. Once connected, a new window is attached to the remote server.
    Open a folder here, install and log in to the Claude Code extension, and you're done.
 
-> You may need to **install the extension separately on the remote side**.
+> You may need to install the extension separately on the remote side.
 > If VS Code shows an "Install in SSH: server-name" button, press it.
 
-What makes this approach convenient is that file browsing, editing, the terminal, and Claude are all on one screen.
+File browsing, editing, the terminal, and Claude are all on one screen.
 You can check result figures in a preview right on the spot.
 
 ---
 
-## 2. Method B — SSH in from a terminal and use the CLI
+## 2. Method B: SSH in from a terminal and use the CLI
 
 For when you don't use VS Code, or are only doing light work.
 
@@ -87,10 +87,10 @@ python install/install.py --preset data-figures --apply
 
 ---
 
-## 3. Long jobs — keep them running even if the connection drops
+## 3. Long jobs: keep them running even if the connection drops
 
-With SSH, **when the connection drops, whatever was running dies with it.** If you close your laptop or
-the Wi-Fi drops, a calculation that had been running for hours is lost. Here is how to prevent that.
+With SSH, when the connection drops, whatever was running dies with it. If you close your laptop or
+the Wi-Fi drops, a calculation that had been running for hours is lost.
 
 ### tmux (recommended)
 
@@ -124,17 +124,17 @@ scp username@server-address:~/project/figure.png .        # one file
 scp -r username@server-address:~/project/results ./       # a whole folder
 ```
 
-If you use VS Code Remote-SSH, you can just **drag them over** in the file explorer.
+If you use VS Code Remote-SSH, you can just drag them over in the file explorer.
 
 ---
 
 ## 5. Cautions on HPC (clusters)
 
-A university HPC is usually split into **login nodes** and **compute nodes**.
+A university HPC is usually split into login nodes and compute nodes.
 
 - **Do not run heavy computation on the login node.** It harms other users,
   and administrators may forcibly kill the process.
-- Heavy jobs must be **submitted to the job scheduler** (SLURM, etc.).
+- Heavy jobs must be submitted to the job scheduler (SLURM, etc.).
 
 ```bash
 sbatch my_job.sh        # submit a job to SLURM
@@ -142,22 +142,22 @@ squeue -u $USER         # check the status of my jobs
 ```
 
 If you tell Claude Code "turn this analysis into a SLURM job script," it will write
-one in the form of `my_job.sh`. However, **partition names, time limits, and resource request amounts
-differ by university**, so also give it the IT office's guide documents.
+one in the form of `my_job.sh`. However, partition names, time limits, and resource request amounts
+differ by university, so also give it the IT office's guide documents.
 
 If you want to check the compute resources first, use the `get-available-resources` skill, which surveys
 CPU, GPU, memory, and disk and tells you which strategy fits.
 
 ---
 
-## 6. Security — things you must follow
+## 6. Security: things you must follow
 
-- **Do not store connection details (address, account, password, SSH key) inside this toolkit folder.**
+- Do not store connection details (address, account, password, SSH key) inside this toolkit folder.
   This folder gets copied around between people.
 - Keep SSH keys in `~/.ssh/`, and using a key instead of a password is safer.
 - **Do not leave personal API keys in plain text on a shared server.** Other users can see them.
   Use environment variables or a file with restricted permissions (`chmod 600`).
-- The shared folders on a shared server **may have other people's data mixed in.**
+- The shared folders on a shared server may have other people's data mixed in.
   Before having the AI read a whole folder, check what is inside it first.
 - Check whether there is any data that must not leave the lab under lab policy.
   If you cannot tell, ask your advisor or a senior first.

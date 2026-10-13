@@ -1,9 +1,9 @@
 > English translation of [06_기능별_준비물.md](../06_기능별_준비물.md). The Korean original is canonical; if they differ, the Korean version wins.
 
-# 06. Requirements by Feature — "What do I need to prepare to use this feature?"
+# 06. Requirements by Feature: "What do I need to prepare to use this feature?"
 
-> Bottom line first: **most features work right away with no preparation, just with your subscription login.**
-> Only a few need an API key or a separate installation, and even those usually have a **free workaround**.
+> Bottom line first: most features work right away with no preparation, with only your subscription login.
+> Only a few need an API key or a separate installation, and even those usually have a free workaround.
 > This document is a one-page checklist of "what each feature requires."
 
 Related earlier documents: for concepts see [02_api-and-mcp](02_api-and-mcp.md), for external service integration and security see
@@ -23,7 +23,7 @@ Each feature needs something different, but there are only four kinds.
 | 🔌 **MCP connection** | You need to "connect" the service in the app, or run a small server | Medium |
 | 🛠 **Local tool** | A program must be installed on your computer (LibreOffice, etc.) | Medium |
 
-> Most are 🟢. In the tables below, just pay attention to the ones that are not 🟢.
+> Most are 🟢. In the tables below, pay attention to the ones that are not 🟢.
 
 ---
 
@@ -31,7 +31,7 @@ Each feature needs something different, but there are only four kinds.
 
 ### 🟢 Features that just work (nothing to prepare)
 
-These features work right away with only your subscription login. **Most features belong here.**
+These features work right away with only your subscription login. Most features belong here.
 
 | Feature (skill) | What it does | Notes |
 |---|---|---|
@@ -56,8 +56,8 @@ These features work right away with only your subscription login. **Most feature
 | `literature-review` | Literature review document | Optional | Semantic Scholar has a free tier (key recommended). Search and document generation themselves work |
 
 > 🔑 For how to enter a key, see [02_api-and-mcp](02_api-and-mcp.md) and the connector's
-> `config/credentials.example.json` approach (environment variables). **If you are not in a hurry, we recommend trying the
-> free route first, without a key.**
+> `config/credentials.example.json` approach (environment variables). If you are not in a hurry, we recommend trying the
+> free route first, without a key.
 
 ### 🔌 Features that need an MCP connection
 
@@ -66,7 +66,7 @@ These features work right away with only your subscription login. **Most feature
 | `primer-design` | Run a local MCP server (`python -m src.primer_design.mcp_server`) | **Required** — this skill works as an MCP server |
 
 > For what MCP is, see the "standard plug" analogy in [02_api-and-mcp](02_api-and-mcp.md).
-> primer-design only works when the primer design tool is running as a small server — the setup is in that skill's
+> primer-design only works when the primer design tool is running as a small server. The setup is in that skill's
 > SKILL.md. If you're not sure, ask your administrator, "How do I turn on the primer-design MCP?"
 
 ### 🛠 Features that need a local program installed
@@ -88,35 +88,34 @@ These features work right away with only your subscription login. **Most feature
 
 ## 3. What about external services (mail, GitHub, Asana, Notion, calendar, sheets)?
 
-These are not skills but **integrations**, so they are covered separately in [05_external-services](05_external-services.md).
-In summary:
-- **Connection**: the REST connectors in `scripts/connectors/` are the default → 🔑 (token), or for calendar and sheets, OAuth
+These are integrations, not skills, so they are covered separately in [05_external-services](05_external-services.md):
+- Connection: the REST connectors in `scripts/connectors/` are the default → 🔑 (token), or for calendar and sheets, OAuth
   with one-time consent. The app's "Connect" button (MCP) is a last resort only for exploratory work that REST cannot replace.
-- **To use them from scripts**: the connectors in `scripts/connectors/` + `config/credentials.json` (environment variables).
-- ⭐ **Outgoing actions stop at the draft** — things like sending or deleting mail always require confirmation / a double lock.
+- To use them from scripts: the connectors in `scripts/connectors/` + `config/credentials.json` (environment variables).
+- Outgoing actions stop at the draft. Sending or deleting mail always requires confirmation / a double lock.
 
 ---
 
 ## 3-2. How big is it?
 
-The **entire distribution is only about 5MB** (it fits on a USB stick as is). Installing selectively makes it even smaller.
+The entire distribution is about 5MB (it fits on a USB stick as is). Installing selectively makes it even smaller.
 Running `python install/install.py --list` shows the size of each feature and preset.
 
-- **On the heavy side**: `docx` (1.4MB) · `xlsx` (1.2MB) · `primer-design` (697KB) — these three are the big ones.
-- **Most others**: very light, at 4 to 130KB.
-- **Preset examples**: manuscript writing 820KB · literature survey 281KB · data and figures 332KB · document work 2.8MB · everything 5MB.
+- On the heavy side: `docx` (1.4MB) · `xlsx` (1.2MB) · `primer-design` (697KB). These three are the big ones.
+- Most others: very light, at 4 to 130KB.
+- Preset examples: manuscript writing 820KB · literature survey 281KB · data and figures 332KB · document work 2.8MB · everything 5MB.
 
-> There is almost no need to worry about size — it is 5MB even all together. The purpose of picking and choosing is less about size than about
+> Size is almost never a concern: it is 5MB even all together. Picking and choosing is mainly about
 > "not cluttering things with features you don't use."
 
 ---
 
 ## 4. So what should I do first?
 
-1. **Prepare nothing**, and start with the 🟢 features while just logged in to your subscription
-   (paper search, statistics, data analysis, figures, and so on — this is most of them).
+1. Prepare nothing, and start with the 🟢 features while logged in to your subscription
+   (paper search, statistics, data analysis, figures, and so on; this covers most features).
 2. If a feature says "a key is needed / turn on a server," find its row in this document's tables and
-   first check **whether there is a free workaround**. There usually is.
+   first check whether there is a free workaround. There usually is.
 3. Prepare only the keys and installations you really need, as the need arises. There is no need to get everything ready in advance.
 
 If you get stuck, capture the relevant row of this document's tables and ask a lab senior (the administrator).
@@ -125,8 +124,8 @@ If you get stuck, capture the relevant row of this document's tables and ask a l
 
 ## One-line summary
 
-- **Almost everything is 🟢 and works right away with a subscription alone** — there is nothing to prepare in advance.
-- 🔑 **API keys** are needed for only a few (research-search paid backends, markitdown images, literature-review) — most have a **free workaround**.
-- 🔌 **MCP** is about `primer-design` (local server, required).
-- 🛠 **Local installation** is only `xlsx`/`docx` (LibreOffice), `literature-review` (LaTeX for PDF), and `endnote` (EndNote).
-- Principle: **prepare only that feature's requirements when you need it** — don't gather everything from the start.
+- Almost everything is 🟢 and works right away with a subscription alone. There is nothing to prepare in advance.
+- 🔑 API keys are needed for only a few (research-search paid backends, markitdown images, literature-review). Most have a free workaround.
+- 🔌 MCP is about `primer-design` (local server, required).
+- 🛠 Local installation is only `xlsx`/`docx` (LibreOffice), `literature-review` (LaTeX for PDF), and `endnote` (EndNote).
+- Principle: prepare only that feature's requirements when you need it. Do not gather everything from the start.

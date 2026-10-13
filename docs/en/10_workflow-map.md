@@ -1,8 +1,8 @@
 > English translation of [10_전체_워크플로우_지도.md](../10_전체_워크플로우_지도.md). The Korean original is canonical; if they differ, the Korean version wins.
 
-# 10. Full Workflow Map — How This Toolkit Actually Runs
+# 10. Full Workflow Map: How This Toolkit Actually Runs
 
-The earlier documents were about "how to install and get started." This document is about **"which path does my task take?"**
+The earlier documents were about "how to install and get started." This document is about "which path does my task take?"
 Once you understand the structure, you can tell right away when the AI heads down the wrong road.
 
 ---
@@ -22,7 +22,7 @@ This package has three layers. Their roles differ, so don't mix them up.
                 ─ The gates that must pass before anyone says "it's done"
 ```
 
-**Key point**: ① decides the path, ② does the work, and **③ must pass before it counts as finished**.
+Key point: ① decides the path, ② does the work, and **③ must pass before it counts as finished**.
 In this toolkit, saying "done" without ③ is not done.
 
 ---
@@ -49,7 +49,7 @@ Run the designated tools
 Report to the user (with evidence)
 ```
 
-If the AI leaves this path and says "I just read the file and looked at it by eye," it is **going the wrong way**.
+If the AI leaves this path and says "I just read the file and looked at it by eye," it is going the wrong way.
 In that case, tell it "AGENTS.md §0의 경로대로 해줘" (“follow the path in AGENTS.md §0”).
 
 ---
@@ -60,17 +60,17 @@ The full table is in `AGENTS.md` §0. Here are the ones you'll use most.
 
 | What you want to do | What to use | What must pass before you finish |
 |---|---|---|
-| Find papers | `research-search` | 🔒 `scripts/doi_verify.py` — actually catches made-up DOIs and retracted papers |
+| Find papers | `research-search` | 🔒 `scripts/doi_verify.py`: catches made-up DOIs and retracted papers |
 | Collect references + OA PDFs | `scripts/ref_fetch.py` | 🔒 Report the mismatched and not-found items in the report exactly as they are |
 | Write or revise a manuscript | `manuscript-pipeline` | 🔒 Terminology lint + number consistency + `body_typo_lint.py` (units/notation) |
-| **Edit a Word file** | `docx` → `incremental_edit.py` | 🔒 `docx_preflight.py` + `word_validate.py` on the output file |
-| **Live-edit a Word file that is open** | `docx` → `word_live_edit.py` | Re-read the edited part afterwards to confirm |
-| Extract text from Word | 🔒 `manuscript_text.py --count-only` **first** | If tracked changes exist, the ordinary method silently drops text |
+| Edit a Word file | `docx` → `incremental_edit.py` | 🔒 `docx_preflight.py` + `word_validate.py` on the output file |
+| Live-edit a Word file that is open | `docx` → `word_live_edit.py` | Re-read the edited part afterwards to confirm |
+| Extract text from Word | 🔒 `manuscript_text.py --count-only` first | If tracked changes exist, the ordinary method silently drops text |
 | Insert citations | `endnote-citation-injection` | 🔒 `doi_verify.py --bibtex` + `endnote_biblio_check.py` |
 | Make a figure | `publication-figures` | 🔒 `figure_lint.py` + recompute the numbers from the raw data |
-| Analyze data | `lab-data-analysis` → `stats-workflow` | 🔒 `assumption_check.py` — checks normality and equal variance and names the test to use |
+| Analyze data | `lab-data-analysis` → `stats-workflow` | 🔒 `assumption_check.py`: checks normality and equal variance and names the test to use |
 | Model fitting / optimization | the relevant skill → `scientific-validation` | 🔒 `sci_validate.py` (mass balance, physical plausibility) |
-| **Put a number into a document** | — | 🔒 Recompute from the original script/raw data |
+| Put a number into a document | — | 🔒 Recompute from the original script/raw data |
 | Send mail, issues, tasks | `scripts/connectors/` | 🔒 **Drafts only.** A human does the sending |
 | Installation isn't working | `doctor.py` | 🔒 Until it shows `PASS` |
 
@@ -80,7 +80,7 @@ The full table is in `AGENTS.md` §0. Here are the ones you'll use most.
 
 ## 4. Why some things are scripts and others are documents
 
-The criterion is **"can it be written down as a rule?"** Even for an easily reversible mistake,
+The criterion is "can it be written down as a rule?" Even for an easily reversible mistake,
 if a check can be built reliably, we build it as a script.
 
 | | Enforced by a script | Guided by a document (guide) |
@@ -90,18 +90,18 @@ if a check can be built reliably, we build it as a script.
 | **Why** | Both people and AI mistakenly believe "I checked it." A script doesn't get tired | If a machine makes the call for you, it actually gets it wrong |
 
 At first we assumed "if the cost of a mistake is low, a document is enough," but most of the
-things we left as documents on that basis **turned out to be machine-checkable.** So the following three
+things we left as documents on that basis turned out to be machine-checkable. So the following three
 were moved from documents to scripts.
 
-- **Whether a DOI really exists** (`scripts/doi_verify.py`) — a made-up DOI can't be told apart by eye.
+- Whether a DOI really exists (`scripts/doi_verify.py`): a made-up DOI can't be told apart by eye.
   You have to actually ask both CrossRef and OpenAlex, and a machine is far better at that.
-- **Statistical assumptions** (`stats-workflow/scripts/assumption_check.py`) — judging
+- Statistical assumptions (`stats-workflow/scripts/assumption_check.py`): judging
   "it looks normally distributed" is often wrong. Running Shapiro-Wilk and Levene and choosing the test from
   the result is an entirely mechanical procedure.
-- **Terminology and unit notation** (`manuscript-pipeline/scripts/body_typo_lint.py`) —
+- Terminology and unit notation (`manuscript-pipeline/scripts/body_typo_lint.py`):
   things like `50ul`, `n=3`, `NAD+` have clear rules. It is more accurate than skimming by eye.
 
-On the other hand, **"how to interpret this result"** stays a document. Reducing it to a rule
+On the other hand, "how to interpret this result" stays a document. Reducing it to a rule
 would force wrong answers instead.
 
 > When you can't decide: **"Could I write this rule down so someone else could follow it exactly?"**
@@ -128,12 +128,12 @@ What `doctor.py` runs:
 | `test_doi_verify.py` | Whether DOI verification actually catches fake DOIs |
 | `test_assumption_check.py` | Whether the statistics tool names the right test on data where the answer is known |
 
-The important point is that **the checking tools are tested too**. If a gate quietly breaks,
+The checking tools are tested too. If a gate quietly breaks,
 every deliverable that gate was guarding goes out unchecked.
 
 ### When you edit this toolkit yourself
 
-If you added a skill or edited a document, **be sure** to run the following again.
+If you added a skill or edited a document, run the following again.
 
 ```bash
 python scripts/make_checksums.py --apply   # refresh the file list and hashes

@@ -3,9 +3,9 @@
 # 14. Making Your Terminal Readable
 
 If the logs look smeared together, Korean tables don't line up with ASCII headers, and the tabs you opened at the same time
-all look identical so you can't tell which one failed — this document fixes those three.
+all look identical so you can't tell which one failed, this document fixes those three.
 
-This is not a matter of taste. Whether you notice a wrong number or let it slip by is decided here.
+Whether you notice a wrong number or let it slip by is decided here, so this is more than a matter of taste.
 
 ```bash
 python scripts/terminal_setup.py            # preview (writes nothing)
@@ -14,7 +14,7 @@ python scripts/terminal_setup.py --verify   # confirm it actually took effect
 python scripts/terminal_setup.py --revert   # undo
 ```
 
-Without `--apply` it **writes nothing.** Every file it touches is first copied to a timestamped
+Without `--apply` it writes nothing. Every file it touches is first copied to a timestamped
 `.bak`, and `--revert` restores it.
 
 ---
@@ -23,25 +23,25 @@ Without `--apply` it **writes nothing.** Every file it touches is first copied t
 
 | | Details |
 |---|---|
-| Color scheme | Catppuccin Mocha — defined in `schemes` and applied to profiles |
+| Color scheme | Catppuccin Mocha: defined in `schemes` and applied to profiles |
 | Font | The best one installed (D2Coding → Cascadia → Consolas) |
 | Tab color | A different color per profile type (PowerShell, cmd, WSL, SSH, ...) |
 | Readability | Automatic contrast adjustment, bold text distinction, cursor shape |
 | History | PowerShell = PSReadLine prediction / bash = `.inputrc` prefix search |
 
-If a value already exists, it **is not overwritten.** Profiles whose colors you picked yourself are left alone.
+If a value already exists, it is not overwritten. Profiles whose colors you picked yourself are left alone.
 
 ---
 
-## If you use WSL — half of it is already done
+## If you use WSL: half of it is already done
 
-What draws the WSL window is not Linux but **Windows Terminal.**
+What draws the WSL window is not Linux but Windows Terminal.
 
-So the color scheme, font, and tab color **are inherited as-is** from the Windows-side settings.
+So the color scheme, font, and tab color are inherited as-is from the Windows-side settings.
 You don't need to install a font on Linux or create a separate scheme. Apply it once on Windows and
 the WSL tabs look better too.
 
-The only thing bash truly lacks is **history prediction**, so on the Linux side the only thing
+The only thing bash lacks is history prediction, so on the Linux side the only thing
 this script creates is a single `~/.inputrc`.
 
 ```
@@ -65,17 +65,17 @@ Windows Terminal accepts things like this without a word.
 "font": { "face": "D2Coding Nerd Font" }  // OK even if no such font exists
 ```
 
-No warning, no log. It just draws with the defaults, and to the user it looks like
-"the setting didn't take effect." We actually ran into both of these while writing this repository.
+No warning, no log. It draws with the defaults, and to the user it looks like
+"the setting didn't take effect." We ran into both of these while writing this repository.
 
 So this script
 
-- **does not use** a scheme name that isn't defined,
-- uses a font only **after** asking the OS "do you have that name?",
+- does not use a scheme name that isn't defined,
+- uses a font only after asking the OS "do you have that name?",
 - and `--verify` re-checks both.
 
 > **Font-name trap**: the name you download and the name the OS calls it are different.
-> It is not `D2Coding Nerd Font` but **`D2Coding ligature`.**
+> It is not `D2Coding Nerd Font` but `D2Coding ligature`.
 > To check: `python scripts/terminal_setup.py --verify`
 
 ### 2. PowerShell 5.1 only half works
@@ -86,7 +86,7 @@ So this script
 | Plugin prediction (AI-style suggestions) | **Doesn't work** | Works |
 | ListView | Needs PSReadLine 2.2.6+ | Same |
 
-5.1 ships with PSReadLine **2.0.0** and doesn't update itself. To use ListView,
+5.1 ships with PSReadLine 2.0.0 and doesn't update itself. To use ListView,
 you have to upgrade the module.
 
 ```powershell
@@ -96,7 +96,7 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser
 Install-Module PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck
 ```
 
-The profile block this script inserts **turns ListView off by itself** if the version is too low and
+The profile block this script inserts turns ListView off by itself if the version is too low and
 applies only the rest. It doesn't raise an error.
 
 ---
@@ -106,7 +106,7 @@ applies only the rest. It doesn't raise an error.
 If red text appears every time you run a script, the prediction settings are the cause.
 
 A shell run through a pipe (= every script and hook) has no console buffer, so
-**both** `PredictionSource` and `PredictionViewStyle` throw exceptions.
+both `PredictionSource` and `PredictionViewStyle` throw exceptions.
 
 The block this script inserts first checks that it's a real console before proceeding.
 
@@ -124,7 +124,7 @@ If you edited your profile by hand, use the same guard.
 
 ## Telling tabs apart when you have many
 
-A per-profile color tells you **which shell** it is. To tell apart several sessions launched with the same shell,
+A per-profile color tells you which shell it is. To tell apart several sessions launched with the same shell,
 add a color at launch time.
 
 ```powershell
@@ -132,7 +132,7 @@ wt -w 0 new-tab -p "Windows PowerShell" --tabColor "#89B4FA" --title "run-3"
 ```
 
 `--tabColor` overrides the profile value. If an automation script hands out a palette in rotation, one per session,
-you can take in both axes, **which shell × which run**, at a glance.
+you can take in both axes, which shell × which run, at a glance.
 
 > In PowerShell, a `;` in a `wt` argument is taken as a command separator. Escape it with a
 > backtick. If you split the window, you also need to give `--tabColor` separately to the splitting subcommand
@@ -142,15 +142,15 @@ you can take in both axes, **which shell × which run**, at a glance.
 
 ## If Korean is garbled or tables don't line up
 
-- **Widths are off** → Use a D2Coding-family font. Korean is designed to be exactly
+- Widths are off → Use a D2Coding-family font. Korean is designed to be exactly
   twice the width of Latin, so tables line up. Cascadia and JetBrains Mono have no Korean at all, so they fall back to a
   system font, and the widths break at that point.
   Install: https://github.com/naver/d2-coding-font
-- **Still garbled** → Windows Terminal has an unresolved Korean rendering issue
+- Still garbled → Windows Terminal has an unresolved Korean rendering issue
   ([microsoft/terminal#16778](https://github.com/microsoft/terminal/issues/16778)).
   It's a width-calculation problem, so it is hard to avoid entirely with a font alone.
-- **Korean inside a `.ps1` is garbled** → PowerShell 5.1 reads a `.ps1` without a BOM using the ANSI code page. Save
-  it as **UTF-8 with BOM.**
+- Korean inside a `.ps1` is garbled → PowerShell 5.1 reads a `.ps1` without a BOM using the ANSI code page. Save
+  it as UTF-8 with BOM.
 
 ---
 

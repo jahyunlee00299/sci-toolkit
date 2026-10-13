@@ -1,34 +1,34 @@
 > English translation of [03_토큰과_비용.md](../03_토큰과_비용.md). The Korean original is canonical; if they differ, the Korean version wins.
 
-# 03. Tokens and Cost — Why Some Conversations Cost More and Others Less
+# 03. Tokens and Cost: Why Some Conversations Cost More and Others Less
 
-This document explains the concept of the **token**, which you must understand when using Claude (and most LLM tools).
+This document explains the concept of the token, which you must understand when using Claude (and most LLM tools).
 Once you understand tokens, you can answer questions like "Why did that last question take so long?" and "Why is my usage so high this month?" on your own.
 
 ---
 
-## 1. What is a token? — "A piece of text, which is money"
+## 1. What is a token? ("A piece of text, which is money")
 
-An AI model doesn't read a sentence as a whole. It cuts the sentence into small pieces called **tokens** and processes those.
+An AI model doesn't read a sentence as a whole. It cuts the sentence into small pieces called tokens and processes those.
 
 - A token can be a whole word, part of a word, or a single space or punctuation mark.
-- In English, roughly "one word ≈ 1 to 1.3 tokens," but **Korean tends to be split into finer, character-level pieces**, so it is common for a sentence with the same meaning to produce more tokens than in English.
+- In English, roughly "one word ≈ 1 to 1.3 tokens," but Korean tends to be split into finer, character-level pieces, so it is common for a sentence with the same meaning to produce more tokens than in English.
 - A rough feel (the exact count differs by model, but this gives you a sense):
   - `"안녕하세요"` ("hello" in Korean) → roughly 3 to 5 tokens
   - `"Hello"` → roughly 1 to 2 tokens
 
-**Why is this the same as "money"?**
+How tokens become cost:
 
-AI services usually set prices based on **the number of input tokens + the number of output tokens**. That is:
+AI services usually set prices based on the number of input tokens + the number of output tokens. That is:
 
-- The question I sent, the code I attached, the whole conversation history → **input tokens**
-- What the AI answered → **output tokens**
+- The question I sent, the code I attached, the whole conversation history → input tokens
+- What the AI answered → output tokens
 
-Cost arises for the sum of the two. So you can understand number of tokens = money. It is especially important that if you paste a long document whole and ask a question, that entire document is counted as input tokens every time.
+Cost arises for the sum of the two, so the number of tokens is the cost. If you paste a long document whole and ask a question, that entire document is counted as input tokens every time.
 
 ### Why does a session get more expensive the longer it goes?
 
-To "remember" earlier conversation, a conversational AI **feeds the entire conversation so far back into the model on every turn.** That is:
+To "remember" earlier conversation, a conversational AI feeds the entire conversation so far back into the model on every turn. That is:
 
 - 1st question: input = 1 question
 - 2nd question: input = question 1 + answer 1 + question 2 (cumulative total)
@@ -38,7 +38,7 @@ So the longer a session goes, the more the input tokens per turn snowball. (Ther
 
 ---
 
-## 2. How do I see my usage? — `/usage`
+## 2. How do I see my usage? (`/usage`)
 
 Claude Code (Claude used in the terminal) lets you check your current usage and limits with the `/usage` command.
 
@@ -52,7 +52,7 @@ When you enter this, you can see information roughly like the following.
 - What percentage of your limit remains
 - When the limit resets
 
-**Tips for beginners**
+Tips for beginners
 
 - Always check the exact numbers directly with `/usage`. Rather than judging by "it feels like I used a lot/a little," it is important to build the habit of looking at measured values.
 - If your usage suddenly spikes, it is usually one of the following.
@@ -62,76 +62,76 @@ When you enter this, you can see information roughly like the following.
 
 ---
 
-## 3. How to use it sparingly — 3 habits for beginners
+## 3. How to use it sparingly: 3 habits for beginners
 
 ### (1) Give simple jobs to a cheaper model
 
 Models come in tiers. They are commonly divided into "light and fast models" and "heavy and smart models," and the price difference is considerable.
 
-- **Simple tasks** (typo checks, simple summaries, reading one file and answering, format conversion) → a cheap, fast model is enough.
-- **Hard tasks** (complex code refactoring, design decisions that span multiple files, rigorous logical verification) → you need a smarter but more expensive model.
+- Simple tasks (typo checks, simple summaries, reading one file and answering, format conversion) → a cheap, fast model is enough.
+- Hard tasks (complex code refactoring, design decisions that span multiple files, rigorous logical verification) → you need a smarter but more expensive model.
 
-In other words, **you don't need to use the most expensive model for every question.** Just choosing a model that fits the difficulty of the task changes your costs greatly.
+You don't need to use the most expensive model for every question. Choosing a model that fits the difficulty of the task changes your costs greatly.
 
 ### (2) Split long sessions
 
 If you ask all sorts of things in a single chat window all day, then because of the "cumulative input tokens" problem explained earlier, each turn gets more expensive the further you go.
 
-- It is good to **move to a new session** at the point where the topic changes, or when one stage of work ends.
+- It is good to move to a new session at the point where the topic changes, or when one stage of work ends.
 - Example: when "fixing a code bug" is done, start a new session for the next job, "writing a document."
 - If previous context that is no longer needed (e.g., an error log that is already resolved, file contents you no longer use) keeps piling up mid-conversation, it is cheaper and faster to wrap up the session and start fresh.
 
 ### (3) Before pasting, ask once: "Do I need all of this?"
 
-- Show **only the relevant part**, not the whole file
-- Paste **only the part where the error occurred**, not the whole log
+- Show only the relevant part, not the whole file
+- Paste only the part where the error occurred, not the whole log
 - Start fresh for a conversation that already has its answer
 
-Following just these three can greatly cut unnecessary waste of tokens (= money).
+Following these three habits cuts unnecessary token (= money) waste.
 
 ---
 
 ## 4. (Reference) How we use these principles in tool automation
 
-Below is a **publicly shareable** explanation of how this project actually uses the token/cost concepts in automation. It does not include actual usage figures, billing/settlement information, or personal server scripts.
+Below is a publicly shareable explanation of how this project actually uses the token/cost concepts in automation. It does not include actual usage figures, billing/settlement information, or personal server scripts.
 
-### 4-1. The principle of measuring tokens — "read the session logs directly"
+### 4-1. The principle of measuring tokens: "read the session logs directly"
 
-Tools such as Claude Code store conversation sessions locally as log files (JSONL format — a file that records one message per line as JSON). Inside these logs, the number of input/output tokens used on each turn is recorded too.
+Tools such as Claude Code store conversation sessions locally as log files (JSONL format: a file that records one message per line as JSON). Inside these logs, the number of input/output tokens used on each turn is recorded too.
 
-That means "How many tokens did I use in this session?" can be answered not by estimation but by **parsing the log files and totaling the actual numbers.** What the `/usage` command shows is, in the end, a summary of this kind of measured data. The key is the principle of "not judging by feel, but reading the recorded facts."
+That means "How many tokens did I use in this session?" can be answered not by estimation but by parsing the log files and totaling the actual numbers. What the `/usage` command shows is, in the end, a summary of this kind of measured data. The key is the principle of "not judging by feel, but reading the recorded facts."
 
-### 4-2. The idea of model routing — "place the model that fits the difficulty of the job"
+### 4-2. The idea of model routing: "place the model that fits the difficulty of the job"
 
 Before handing off a task, first judge "is this job easy or hard?"
 
-- **Easy jobs** (simple lookups, checking one file, routine repetitive work) → assign to a cheap, fast model
-- **Hard jobs** (design decisions across multiple files, adversarial verification, and other work needing deep reasoning such as diagnosing physical/logical validity) → assign to a more powerful model
+- Easy jobs (simple lookups, checking one file, routine repetitive work) → assign to a cheap, fast model
+- Hard jobs (design decisions across multiple files, adversarial verification, and other work needing deep reasoning such as diagnosing physical/logical validity) → assign to a more powerful model
 
-Assigning different models by task difficulty like this is called **model routing**. For people, it is the same principle as "simple inquiries go to a new hire, complex decisions go to an expert." This keeps overall quality while lowering the average cost.
+Assigning different models by task difficulty like this is called model routing. For people, it is the same principle as "simple inquiries go to a new hire, complex decisions go to an expert." This keeps overall quality while lowering the average cost.
 
-### 4-3. The idea of a verification gate — "don't trust a result as is; check it once more"
+### 4-3. The idea of a verification gate: "don't trust a result as is; check it once more"
 
-**If the same party that produced a result (code, calculation, text) reviews it themselves, they easily miss their own mistakes.** So for important deliverables, we make them pass through a separate, independent checking step. This is called a **verification gate**.
+If the same party that produced a result (code, calculation, text) reviews it themselves, they easily miss their own mistakes. So for important deliverables, we make them pass through a separate, independent checking step. This is called a verification gate.
 
-The core idea is simple.
+The procedure has three steps.
 
 1. Produce the result
 2. Check it again with an independent view (one not stuck in the same context)
 3. If there's no problem, it passes; if there is, send it back and fix it
 
-This procedure matters especially for work that is hard to undo (e.g., an email that is actually sent), where numbers must be exact (e.g., calculation results), or where mistakes accumulate and become hard to find later, as with code. Saving cost matters, but **trusting a wrong result and moving on is the bigger cost in the long run**, so the principle is not to finish everything with only a cheap model or a single check, but to put in a verification step where it is needed.
+This procedure matters especially for work that is hard to undo (e.g., an email that is actually sent), where numbers must be exact (e.g., calculation results), or where mistakes accumulate and become hard to find later, as with code. Saving cost matters, but trusting a wrong result and moving on is the bigger cost in the long run, so the principle is not to finish everything with only a cheap model or a single check, but to put in a verification step where it is needed.
 
-### 4-4. (Optional) When calling Claude from a script — "the API if you have a key, `claude -p` if not"
+### 4-4. (Optional) When calling Claude from a script: "the API if you have a key, `claude -p` if not"
 
-Sometimes a script you wrote needs to ask Claude **one simple question**, such as "summarize this text in one line." There are two ways to call it.
+Sometimes a script you wrote needs to ask Claude one simple question, such as "summarize this text in one line." There are two ways to call it.
 
 | Method | Where the charge comes from | What you need |
 |---|---|---|
-| Anthropic API | Deducted from my **API credits** for what I use (a small model usually costs well under 1 won per request) | `ANTHROPIC_API_KEY` environment variable |
-| `claude -p` | Consumes my **Claude subscription limit** (a base setup-token overhead is added even for small jobs) | Claude Code logged in as usual |
+| Anthropic API | Deducted from my API credits for what I use (a small model usually costs well under 1 won per request) | `ANTHROPIC_API_KEY` environment variable |
+| `claude -p` | Consumes my Claude subscription limit (a base setup-token overhead is added even for small jobs) | Claude Code logged in as usual |
 
-`scripts/llm_call.py` chooses between these automatically. If a key exists it uses the API first, and if there is no key, credits have run out, or the internet is unstable, it falls back to `claude -p`. **It works even without a key, so setting one is not required.**
+`scripts/llm_call.py` chooses between these automatically. If a key exists it uses the API first, and if there is no key, credits have run out, or the internet is unstable, it falls back to `claude -p`. It works even without a key, so setting one is not required.
 
 ```python
 import sys; sys.path.insert(0, "scripts")

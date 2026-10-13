@@ -1,13 +1,13 @@
 > English translation of [08_아사나_연동_가이드.md](../08_아사나_연동_가이드.md). The Korean original is canonical; if they differ, the Korean version wins.
 
-# 08. Asana Integration Guide — Letting the AI Read Your Task List and Create New Tasks/Comments
+# 08. Asana Integration Guide: Letting the AI Read Your Task List and Create New Tasks/Comments
 
-> One-line summary: **Reading (me/tasks) is free; creating tasks/comments/subtasks happens only when you add --write; there is no complete or delete feature at all.**
+> One-line summary: Reading (me/tasks) is free; creating tasks/comments/subtasks happens only when you add --write; there is no complete or delete feature at all.
 
 This document explains, at a beginner's level, how to use `scripts/connectors/asana_connector.py` to let the AI read your Asana
-**My Tasks (Task) list** and to create new tasks, comments, and subtasks.
+My Tasks (Task) list and to create new tasks, comments, and subtasks.
 The big principles of connection and security were already covered in [05_external-services](05_external-services.md), so this document
-focuses on the "Asana" case, especially **the problem of formatting breaking**.
+focuses on the "Asana" case, especially the problem of formatting breaking.
 
 ---
 
@@ -15,53 +15,53 @@ focuses on the "Asana" case, especially **the problem of formatting breaking**.
 
 If you manage tasks (Tasks) in Asana, this integration lets the AI do the following.
 
-1. **Read**: ask "what tasks do I have?" and the AI looks them up directly in Asana and tells you.
-2. **Create a task**: say "make this one task" and it creates a new task.
-3. **Add a comment**: it leaves progress updates or notes as comments on an existing task.
-4. **Create a subtask**: it breaks a big task into detailed steps as subtasks.
+1. Read: ask "what tasks do I have?" and the AI looks them up directly in Asana and tells you.
+2. Create a task: say "make this one task" and it creates a new task.
+3. Add a comment: it leaves progress updates or notes as comments on an existing task.
+4. Create a subtask: it breaks a big task into detailed steps as subtasks.
 
-Reading always runs immediately (unlike the write actions in 2, 3, and 4), but **write actions (creating tasks/comments/subtasks)
+Reading always runs immediately (unlike the write actions in 2, 3, and 4), but write actions (creating tasks/comments/subtasks)
 only show a preview (dry-run) by default, and to actually run them you must explicitly
-attach a flag called `--write`.** (It is in the same vein as document 05's "outgoing actions stop at the draft" principle.)
+attach a flag called `--write`. (It is in the same vein as document 05's "outgoing actions stop at the draft" principle.)
 
-> **Why this connector is better than MCP — a real case**: Asana's MCP task-creation
+> Why this connector is better than MCP, a real case: Asana's MCP task-creation
 > tool only makes a "preview card," and the task is actually created only after you click a confirm button on screen once more.
 > That confirm click can be skipped depending on the kind of session, and in that case the AI replies "I made it," but nothing is actually
-> created in Asana — a silent failure that looked like success but in fact nothing happened. This connector's `--write` approach has no such ambiguous middle state:
-> without it, it is certainly only a preview; with it, it is certainly created. If you used MCP, always query again with `tasks`
+> created in Asana. It is a silent failure that looks like success. This connector's `--write` approach has no such ambiguous middle state:
+> without it, it is only a preview; with it, it is created. If you used MCP, always query again with `tasks`
 > right after creation to confirm it actually took effect.
 
-One more thing — **assigning a task to someone other than yourself (`--assignee`), or leaving a comment, is an
-"outward action" that others can see.** In these cases the connector shows an extra notice.
+Assigning a task to someone other than yourself (`--assignee`), or leaving a comment, is an
+"outward action" that others can see. In these cases the connector shows an extra notice.
 
-This script **has no feature to complete or delete tasks at all.** You can let it read and create without worrying about accidentally deleting
+This script has no feature to complete or delete tasks at all. You can let it read and create without worrying about accidentally deleting
 or completing someone else's task.
 
 ---
 
-## 2. Preparation — Get an Asana Personal Access Token (PAT)
+## 2. Preparation: Get an Asana Personal Access Token (PAT)
 
 To use the Asana API you need to issue a "Personal Access Token."
-Using the analogy from `docs/en/02_api-and-mcp.md`, the **token = access pass**.
+Using the analogy from `docs/en/02_api-and-mcp.md`, the token = access pass.
 
-1. Log in at `app.asana.com` in your browser, then go to the profile icon at the top right → **"My Settings"**
-   (shown as **"내 설정(My Settings)"** in the Korean UI).
-2. Go to the **"Apps"** tab → click **"Manage Developer Apps"** at the bottom
-   (shown as **"앱(Apps)"** and **"개발자 앱 관리(Manage Developer Apps)"** in the Korean UI).
-3. Press **"Create New Personal Access Token"** and give it a name
-   (an easy-to-recognize name, such as "sci-toolkit-connector"). (Korean UI: **"새 개인 액세스 토큰 만들기(Create New Personal Access Token)"**.)
-4. After it is created, the token string is shown only once. This is the **access pass** — copy it right there.
+1. Log in at `app.asana.com` in your browser, then go to the profile icon at the top right → "My Settings"
+   (shown as "내 설정(My Settings)" in the Korean UI).
+2. Go to the "Apps" tab → click "Manage Developer Apps" at the bottom
+   (shown as "앱(Apps)" and "개발자 앱 관리(Manage Developer Apps)" in the Korean UI).
+3. Press "Create New Personal Access Token" and give it a name
+   (an easy-to-recognize name, such as "sci-toolkit-connector"). (Korean UI: "새 개인 액세스 토큰 만들기(Create New Personal Access Token)".)
+4. After it is created, the token string is shown only once. This is the access pass. Copy it right there.
 5. Register this token in one of the two ways below.
    - Paste it into the `asana.token` slot of `config/credentials.json` (this file is excluded from distribution and commits), or
    - Set the environment variable `SCITK_ASANA_TOKEN` and write something like `"token": "ENV:SCITK_ASANA_TOKEN"` in `credentials.json`
-     (the token value itself is not left in the file, which is safer — see `docs/en/05_external-services.md`).
+     (the token value itself is not left in the file, which is safer; see `docs/en/05_external-services.md`).
 
 > Do not paste the token into the chat window. It is exactly document 05's "token = access pass" principle.
 
 ### Finding your workspace gid
 
-Most commands in Asana need a **workspace gid** (the unique number of the workspace you belong to).
-You don't have to find it yourself — run the `me` command and the connector shows you the list of workspaces you belong to
+Most commands in Asana need a workspace gid (the unique number of the workspace you belong to).
+You don't have to find it yourself. Run the `me` command and the connector shows you the list of workspaces you belong to
 with their names and gids.
 
 ```bash
@@ -112,17 +112,17 @@ python scripts/connectors/asana_connector.py add-subtask --parent <TASK_GID> --n
 ```
 
 If you run the `tasks` command without `--workspace`, instead of an error it shows you the list of available
-workspaces — you can get started even without knowing the gid.
+workspaces, so you can get started even without knowing the gid.
 
 `add-task` also takes `--notes` (description) and `--assignee` (owner, `me` or another person's gid/email).
-If you give `--assignee` a value other than `me`, a notice appears first saying "this task is being assigned to someone else — it is an
+If you give `--assignee` a value other than `me`, a notice appears first saying "this task is being assigned to someone else; it is an
 outward action."
 
 ---
 
-## 4. ⭐⭐ The most important section — why comment/subtask formatting breaks, and the fix
+## 4. The most important section: why comment/subtask formatting breaks, and the fix
 
-This is exactly the problem users actually ran into often: when you send a formatted comment straight to the Asana API,
+Users often ran into this problem: when you send a formatted comment straight to the Asana API,
 the "formatting often goes wrong" or it even produces an error. This connector is built to
 block those traps automatically.
 
@@ -146,7 +146,7 @@ python scripts/connectors/asana_connector.py add-comment --task <TASK_GID> \
 
 (The text reads: "<strong>Result summary</strong>: progress 80%, the next step is analysis.")
 
-When you attach `--html`, the connector internally **automatically validates and corrects** Asana's `html_text` formatting rules.
+When you attach `--html`, the connector internally automatically validates and corrects Asana's `html_text` formatting rules.
 Asana's formatting rules have 4 traps that beginners easily fall into without knowing it.
 
 | # | Trap | What happens | What the connector does |
@@ -156,7 +156,7 @@ Asana's formatting rules have 4 traps that beginners easily fall into without kn
 | (c) | Line breaks use the special code `&#10;`, not an ordinary line break (Enter) | Just putting in Enter breaks the formatting | The connector **automatically converts** the line breaks (Enter) you typed into `&#10;` |
 | (d) | The `'→'` (arrow symbol) character is absolutely forbidden | Including it makes the request fail with an XML parsing error | If the connector finds `→`, it **blocks it before running** and tells you "replace it with `->` or a word" |
 
-And the allowed tags are only **some**: `<strong>` (bold), `<em>` (italic), `<u>` (underline), `<code>`, `<a>` (link),
+And the allowed tags are only some: `<strong>` (bold), `<em>` (italic), `<u>` (underline), `<code>`, `<a>` (link),
 `<ul>`/`<ol>`/`<li>` (lists), `<h1>`/`<h2>` (headings), and `<table>`/`<tr>`/`<td>`.
 Using any other tag may be rejected on Asana's side, so we recommend keeping formatting within this list.
 
@@ -171,10 +171,10 @@ python scripts/connectors/asana_connector.py add-subtask --parent <TASK_GID> \
 
 ### The problem of Korean text getting garbled
 
-In the past, when the Asana API was called directly with a tool like `curl`, Korean text on Windows could be garbled — sent as
+In the past, when the Asana API was called directly with a tool like `curl`, Korean text on Windows could be garbled, sent as
 escape codes like `\uXXXX`, or with a mismatched encoding. This connector is built to always specify
-`ensure_ascii=False` + `charset=utf-8` in the request, so **Korean task
-names, comments, and descriptions are sent as is without being garbled.** This is handled automatically, so you don't need to
+`ensure_ascii=False` + `charset=utf-8` in the request, so Korean task
+names, comments, and descriptions are sent as is without being garbled. This is handled automatically, so you don't need to
 worry about it.
 
 ### Conclusion
@@ -185,14 +185,14 @@ worry about it.
 
 ---
 
-## 5. ⭐ Safety principles
+## 5. Safety principles
 
-- **Reading (`me`/`tasks`) can be run freely at any time.** It changes nothing.
-- **Writing (`add-task`/`add-comment`/`add-subtask`), unless you attach `--write`,** only prints a preview (JSON) of what would be
+- Reading (`me`/`tasks`) can be run freely at any time. It changes nothing.
+- Writing (`add-task`/`add-comment`/`add-subtask`), unless you attach `--write`, only prints a preview (JSON) of what would be
   created and nothing actually happens.
-- **Assigning to someone else (`--assignee`) or leaving a comment is an "outward action"** — since teammates
-  will actually see it, we recommend checking the preview content once more before attaching `--write`.
-- **A task complete (complete) or delete (delete) feature is intentionally absent from this script.** If you need that,
+- Assigning to someone else (`--assignee`) or leaving a comment is an "outward action": teammates
+  will see it, so we recommend checking the preview content once more before attaching `--write`.
+- A task complete (complete) or delete (delete) feature is intentionally absent from this script. If you need that,
   do it directly in Asana.
 
 ---
@@ -216,7 +216,7 @@ worry about it.
 
 ## 7. One-line summary
 
-- Asana integration = **reading (me/tasks) is free, creating tasks/comments/subtasks needs `--write`, and complete/delete are not there at all.**
+- Asana integration = reading (me/tasks) is free, creating tasks/comments/subtasks needs `--write`, and complete/delete are not there at all.
 - If you need a formatted comment, use `--html` (or `--html-notes`); Asana's fussy rules such as no `<p>`, `&#10;` line breaks, and
   no `→` are followed automatically by the connector or blocked before running.
-- For a short ordinary comment, plain `--text` is enough — Korean text is also sent as is without being garbled.
+- For a short ordinary comment, plain `--text` is enough; Korean text is also sent as is without being garbled.
