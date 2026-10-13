@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.144] — 2026-10-13
+
+- experiment-hub: no percentage overage, 5 uL dead volume default; refresh checksums and drift declaration
+
 ## [1.2.143] — 2026-10-13
 
 - sanitize: generic wording and synthetic figures in docs and test fixtures

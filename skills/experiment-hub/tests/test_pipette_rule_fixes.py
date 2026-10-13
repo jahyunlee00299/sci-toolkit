@@ -253,7 +253,7 @@ def test_d7_workbook_surplus_labels(tmp_path):
             for sn in wb.sheetnames}
     allv = [v for vs in flat.values() for v in vs]
     assert not any("x1.1" in v or "*1.1," in v for v in allv)
-    assert any("total (x1.2)" in v for v in flat["Reaction Matrix"])
+    assert any(f"total (x{pc.SURPLUS:g})" in v for v in flat["Reaction Matrix"])
     for sn in ("Reaction Matrix", "Enzyme Additions"):
         assert rm.SURPLUS_NOTE in flat[sn], sn
 

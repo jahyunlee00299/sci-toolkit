@@ -129,8 +129,10 @@ def analyze_master_mixes(config):
 
 
 def surplus_note(extra_rxns=3):
+    import pipette_count
     return (f'Surplus convention (one everywhere): MM-A premix = n tubes + {extra_rxns} reactions; stock totals, '
-            f'sub-mixes and cocktails x1.2; +10 uL dead volume per intermediate vessel (working stock, cocktail).')
+            f'sub-mixes and cocktails x{pipette_count.SURPLUS:g}; +{pipette_count.DEAD_UL:g} uL dead volume per '
+            f'intermediate vessel (working stock, cocktail).')
 
 
 SURPLUS_NOTE = surplus_note()   # default margin (config "premix": {"extra_rxns": 3})

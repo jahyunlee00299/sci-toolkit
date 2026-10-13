@@ -19,8 +19,8 @@ Counting rules
 Volume margins (parameters, printed with every report)
   MM-A is made for n_tubes + extra reactions (config "premix": {"extra_rxns": N}, default 3, as
   reaction_matrix.generate_excel does; a larger N can make the premix draws land on the 0.1 uL grid); a sub-mix or a
-  cocktail for count x SURPLUS (1.2); every intermediate vessel (working stock, cocktail) gets +DEAD uL
-  (10) on top, and a working stock is made in whole microlitres (ceil). Lab-stock consumption sums the
+  cocktail for count x SURPLUS (1.0, i.e. no % overage); every intermediate vessel (working stock, cocktail) gets +DEAD uL
+  (5; config "dead_volume_uL" 7-9 if 5 runs short) on top, and a working stock is made in whole microlitres (ceil). Lab-stock consumption sums the
   draws from each undiluted lab stock: direct per-tube additions x SURPLUS, plus the draws that build
   premixes, sub-mixes, working stocks and cocktails.
 
@@ -52,8 +52,8 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
-SURPLUS = 1.2
-DEAD_UL = 10.0
+SURPLUS = 1.0          # no percentage overage: the leftover is the dead volume only (261013 user decision)
+DEAD_UL = 5.0
 MM_A_EXTRA_RXNS = 3
 EPS_UL = 5e-4          # a residual below this is "nothing to pipette"
 NEAT_TOL = 1.005       # a "dilution" below 0.5 % (under pipetting accuracy) is used neat, no prep step
