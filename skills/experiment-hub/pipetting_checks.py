@@ -301,7 +301,7 @@ def cache_freshness_guard(path: Path, min_filled_ratio: float = 0.5) -> CheckRep
         for n in (n for n in names if n.startswith("xl/worksheets/sheet")):
             xml = z.read(n).decode("utf-8", "replace")
             formulas += len(_re.findall(r"<f[ >]", xml))
-            filled += len(_re.findall(r"</f><v>[^<]", xml))  # openpyxl writes an EMPTY <v></v>
+            filled += len(_re.findall(r"</f><v>[^<]", xml))  # openpyxl writes an EMPTY <v></v> or <v />
     ratio = (filled / formulas) if formulas else 1.0
     if not has_chain:
         report.add("-", "-", "calcChain.xml missing: Excel has not recalculated this file "

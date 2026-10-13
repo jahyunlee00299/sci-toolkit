@@ -1,5 +1,6 @@
 """Structural guards in pipetting_checks.py, the opt-in Methods-folder publish and the `calc` entry point of
 reaction_matrix.py. Every workbook here is synthetic and built in tmp_path."""
+import re
 import shutil
 import subprocess
 import sys
@@ -50,7 +51,8 @@ def test_cache_freshness_passes_recalculated_file(tmp_path):
         for item in zin.infolist():
             data = zin.read(item.filename)
             if item.filename.startswith("xl/worksheets/sheet"):
-                data = data.replace(b"</f><v></v>", b"</f><v>3</v>").replace(b"</f></c>", b"</f><v>3</v></c>")
+                # openpyxl writes the empty cache as <v></v> with lxml and as <v /> without it (clean CI venv)
+                data = re.sub(rb"</f>(?:<v></v>|<v ?/>)?</c>", b"</f><v>3</v></c>", data)
             zout.writestr(item, data)
         zout.writestr("xl/calcChain.xml", '<calcChain><c r="A3" i="1"/></calcChain>')
     assert pc.cache_freshness_guard(dst).ok
