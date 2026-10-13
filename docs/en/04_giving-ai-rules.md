@@ -10,7 +10,7 @@ You only need to understand the concept; you don't have to write a rules file yo
 
 ## 1. Why do you need a rules file?
 
-In document 00, we compared an AI agent to "a new researcher seated in front of my computer."
+In [document 00](00_getting-started.md), we compared an AI agent to "a new researcher seated in front of my computer."
 What would happen if a new researcher started work on the first day with no explanation at all?
 
 - They wouldn't know how our lab organizes files, so they'd save things in the wrong places,
@@ -29,9 +29,9 @@ and tries to follow the rules written in it.
 
 ## 2. What's the difference between CLAUDE.md and AGENTS.md?
 
-- CLAUDE.md: the file name that Claude Code automatically reads from a project folder.
+- [CLAUDE.md](https://code.claude.com/docs/en/memory): the file name that Claude Code automatically reads from a project folder.
   If you use Claude Code, save it under this name.
-- AGENTS.md: a name recognized in common not only by Claude Code but also by other AI agent tools such as Codex.
+- AGENTS.md: a name recognized in common not only by Claude Code but also by other AI agent tools such as [Codex](https://developers.openai.com/codex).
   Use it when writing "shared rules" that aren't tied to a specific tool.
 
 You can keep both files in the same project. For example, `CLAUDE.md` can say only briefly,
@@ -140,4 +140,4 @@ and adapt it to our situation. That's why the very top of that file says
 | What are this toolkit's rules files? | `AGENTS.md` (shared rules) + `CLAUDE.md` (a short guide for Claude Code) in the top-level folder |
 | What should I do right now? | You don't have to do anything. Open the two files when you're curious |
 
-The next document (05) explains how this toolkit connects with external services (mail, Notion, Asana, etc.).
+[The next document (05)](05_external-services.md) explains how this toolkit connects with external services (mail, Notion, Asana, etc.).

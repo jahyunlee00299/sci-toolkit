@@ -23,11 +23,11 @@ Without `--apply` it writes nothing. Every file it touches is first copied to a 
 
 | | Details |
 |---|---|
-| Color scheme | Catppuccin Mocha: defined in `schemes` and applied to profiles |
-| Font | The best one installed (D2Coding → Cascadia → Consolas) |
+| Color scheme | [Catppuccin Mocha](https://github.com/catppuccin/windows-terminal): defined in `schemes` and applied to profiles |
+| Font | The best one installed ([D2Coding](https://github.com/naver/d2-coding-font) → [Cascadia](https://github.com/microsoft/cascadia-code) → Consolas) |
 | Tab color | A different color per profile type (PowerShell, cmd, WSL, SSH, ...) |
 | Readability | Automatic contrast adjustment, bold text distinction, cursor shape |
-| History | PowerShell = PSReadLine prediction / bash = `.inputrc` prefix search |
+| History | PowerShell = [PSReadLine](https://github.com/PowerShell/PSReadLine) prediction / bash = `.inputrc` prefix search |
 
 If a value already exists, it is not overwritten. Profiles whose colors you picked yourself are left alone.
 
@@ -35,7 +35,7 @@ If a value already exists, it is not overwritten. Profiles whose colors you pick
 
 ## If you use WSL: half of it is already done
 
-What draws the WSL window is not Linux but Windows Terminal.
+What draws the [WSL](https://learn.microsoft.com/en-us/windows/wsl/) window is not Linux but [Windows Terminal](https://learn.microsoft.com/en-us/windows/terminal/).
 
 So the color scheme, font, and tab color are inherited as-is from the Windows-side settings.
 You don't need to install a font on Linux or create a separate scheme. Apply it once on Windows and

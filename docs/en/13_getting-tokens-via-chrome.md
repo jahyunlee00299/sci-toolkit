@@ -5,8 +5,8 @@
 > Claude takes you right to the correct settings screen, but **clicking the "Generate" button and copying the
 > value are always done by you.** Claude never reads or stores the token value on your behalf.
 
-`docs/07_notion-guide.md` and `docs/08_asana-guide.md` explain how to find each menu by hand.
-If Claude Code has a Chrome MCP connection, you can cut down on the effort of hunting for menus. What
+[`docs/07_notion-guide.md`](07_notion-guide.md) and [`docs/08_asana-guide.md`](08_asana-guide.md) explain how to find each menu by hand.
+If Claude Code has a [Chrome MCP connection](https://code.claude.com/docs/en/chrome) (the [Chrome Web Store](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) extension), you can cut down on the effort of hunting for menus. What
 matters is how far to automate and where the human has to take over.
 
 ---
@@ -15,7 +15,7 @@ matters is how far to automate and where the human has to take over.
 
 - A GitHub/Notion/Asana token is shown on screen only once, right after it is generated, and can't be viewed again.
 - If Claude reads the screen and repeats that value in chat, **the token is left in the conversation history** at that moment.
-  That is, in effect, the same as the "pasting a token into the chat window" that `docs/05_external-services.md` §2 forbids.
+  That is, in effect, the same as the "pasting a token into the chat window" that [`docs/05_external-services.md`](05_external-services.md) §2 forbids.
 - Pressing the "generate token" button is also an action that changes account settings, so it isn't the kind of thing
   Claude should press on its own.
 - Claude can't judge whose account is logged in. A screenshot shows whether the page is logged in,
@@ -42,15 +42,15 @@ So the roles are divided like this.
 
 | Service | Shortcut URL | Notes |
 |---|---|---|
-| GitHub (classic PAT) | `https://github.com/settings/tokens/new?scopes=repo&description=sci-toolkit` | The `scopes` parameter can pre-check scopes. If you only need repository access, `repo` is enough |
-| GitHub (fine-grained, safer) | `https://github.com/settings/personal-access-tokens/new` | Issue with minimum permissions by choosing repositories one by one (recommended), though scopes are not pre-filled |
-| Notion | `https://www.notion.so/my-integrations/new` | A personal account is enough; whether the workspace is shared doesn't matter. After creating it, a separate step is needed to share it with the target database (Connections): `docs/07` §3 |
-| Asana | `https://app.asana.com/0/developer-console` | A screen where the "Create new personal access token" button is immediately visible |
-| Gmail (app password) | `https://myaccount.google.com/apppasswords` | The menu only appears if 2-step verification is turned on. You issue a new app password, not your login password (see §5) |
+| [GitHub (classic PAT)](https://github.com/settings/tokens/new?scopes=repo&description=sci-toolkit) | `https://github.com/settings/tokens/new?scopes=repo&description=sci-toolkit` | The `scopes` parameter can pre-check scopes. If you only need repository access, `repo` is enough |
+| [GitHub (fine-grained, safer)](https://github.com/settings/personal-access-tokens/new) | `https://github.com/settings/personal-access-tokens/new` | Issue with minimum permissions by choosing repositories one by one (recommended), though scopes are not pre-filled |
+| [Notion](https://www.notion.so/my-integrations/new) | `https://www.notion.so/my-integrations/new` | A personal account is enough; whether the workspace is shared doesn't matter. After creating it, a separate step is needed to share it with the target database (Connections): [`docs/07`](07_notion-guide.md) §3 |
+| [Asana](https://app.asana.com/0/developer-console) | `https://app.asana.com/0/developer-console` | A screen where the "Create new personal access token" button is immediately visible |
+| [Gmail (app password)](https://myaccount.google.com/apppasswords) | `https://myaccount.google.com/apppasswords` | The menu only appears if 2-step verification is turned on. You issue a new app password, not your login password (see §5) |
 
 This table covers only the "one token and you're done" services (GitHub/Notion/Asana/Gmail app password).
 Google Calendar/Drive use an OAuth login flow (consent screen), not a PAT, so the procedure is completely
-different from this table and outside the scope of this document. Follow `docs/05_external-services.md` §4-4 and the
+different from this table and outside the scope of this document. Follow [`docs/05_external-services.md`](05_external-services.md) §4-4 and the
 "Calendar / shared spreadsheets" section of `scripts/connectors/README.md` (there is no connector
 yet, so for now it is handled with the MCP connect button).
 
@@ -114,7 +114,7 @@ shortcut above (`myaccount.google.com/apppasswords`), but two things differ.
 The first time you try this, you will almost always get stuck on the following three things, so know them in advance.
 
 - The `python` command doesn't work (the "term is not recognized" error): this is common when "Add to PATH" was not
-  checked while installing Python on Windows, or when you use a distribution like Anaconda that isn't
+  checked while installing [Python on Windows](https://www.python.org/downloads/windows/), or when you use a distribution like Anaconda that isn't
   on PATH by default. In that case, try `py` first instead of `python` (it is a launcher that is almost always
   installed alongside Python on Windows, so it is likely to be on PATH):
   ```

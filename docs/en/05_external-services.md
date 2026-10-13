@@ -25,7 +25,7 @@ After reading this document you will know three things.
 
 ## 1. If a REST connector exists, use it first
 
-As explained in `docs/en/02_api-and-mcp.md`, MCP is "a standard plug format that connects an AI to external services,"
+As explained in [`docs/en/02_api-and-mcp.md`](02_api-and-mcp.md), [MCP](https://code.claude.com/docs/en/mcp) is "a standard plug format that connects an AI to external services,"
 and it connects with one button. It is easy, but the price is a pathway into
 your whole account that stays open all the time. It is open even when it has nothing to do with the current task, and it is hard
 to check its scope by eye or to switch it on and off per task. So this toolkit avoids MCP connections and sets the order
@@ -112,7 +112,7 @@ solves the problem by splitting it into two files: `config/credentials.json` (th
 
 ### Be especially careful with GitHub: the original repository (fork) problem
 
-Some lab code is made by "copying (forking)" someone else's public repository and modifying it for our own use.
+Some lab code is made by "[copying (forking)](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/fork-a-repo)" someone else's public repository and modifying it for our own use.
 In that case the repository may still carry a link to the "original (upstream)."
 
 - Risk of accidentally making unpublished research public: the original repository is usually public to the whole world.
@@ -162,7 +162,7 @@ and personal mail (for example, Gmail). The principle is the same for both.
 - Connection: use `scripts/connectors/mail_connector.py` (IMAP/SMTP). Issue an app password for your mail and
   register it with `python scripts/connectors/register_token.py mail --account work` (or
   `personal`), or register it through an environment variable (`SCITK_MAIL_WORK_PASSWORD` and so on).
-  To be guided through the issuing screen with Chrome, see `docs/en/13_getting-tokens-via-chrome.md` §5; for the detailed
+  To be guided through the issuing screen with Chrome, see [`docs/en/13_getting-tokens-via-chrome.md`](13_getting-tokens-via-chrome.md) §5; for the detailed
   structure, see `scripts/connectors/README.md` §1. Once you've decided to use the connector, you can disconnect that mail service's MCP
   connection.
 - Reading (search, viewing): reading and organizing your own inbox is a safe task, and the AI can do it right away.
@@ -172,8 +172,8 @@ and personal mail (for example, Gmail). The principle is the same for both.
 
 ### 4-2. GitHub (code repositories)
 
-- Connection: use `scripts/connectors/github_connector.py`. Issue a minimum-permission token (Personal Access Token)
-  in your GitHub account settings and register it through the `SCITK_GITHUB_TOKEN` environment variable.
+- Connection: use `scripts/connectors/github_connector.py`. Issue a minimum-permission [token (Personal Access Token)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+  in your [GitHub account settings](https://github.com/settings/personal-access-tokens) and register it through the `SCITK_GITHUB_TOKEN` environment variable.
   Follow the principles in chapter 2 above for the token you issue (do not paste it into the chat window, do not put it in code).
   Once you've moved to the connector, you can disconnect the GitHub MCP connection.
 - Reading (viewing code, checking issues): a safe task that can be done right away.
@@ -185,7 +185,7 @@ and personal mail (for example, Gmail). The principle is the same for both.
 
 - Connection: use `scripts/connectors/asana_connector.py` / `notion_connector.py` (and
   `notion_db_connector.py`). Issue a personal token in each service's settings and
-  register it as `SCITK_ASANA_TOKEN` / `SCITK_NOTION_TOKEN`. Once you've moved to the connector, you can
+  register it as `SCITK_ASANA_TOKEN` / `SCITK_NOTION_TOKEN` (see [07_notion-guide](07_notion-guide.md) and [08_asana-guide](08_asana-guide.md) for the details). Once you've moved to the connector, you can
   disconnect the Asana/Notion MCP connections.
 - Reading (checking my to-dos, searching documents): a safe task that can be done right away.
 - Writing (creating/editing to-dos, editing documents): documents that are personal notes only you see, or drafts, are fine to create right away.
@@ -197,7 +197,7 @@ and personal mail (for example, Gmail). The principle is the same for both.
 
 - Connection: use `scripts/connectors/calendar_connector.py` / `sheets_connector.py`.
   Like the other connectors, they work with only the standard library (`urllib`), so no separate installation is
-  needed. Authentication is OAuth: a browser login consent screen appears only the first time, and after that
+  needed. Authentication is [OAuth](https://developers.google.com/identity/protocols/oauth2): a browser login consent screen appears only the first time, and after that
   `scripts/connectors/_google_auth.py` refreshes automatically with the refresh token, with no library. The setting keys, as before, are
   `google.oauth_client_path` / `google.token_cache_path` in `config/credentials.json`. If you already have a Google token file in the standard format
   (`access_token`/`refresh_token`/`expiry_date`), point
@@ -237,13 +237,13 @@ In a word: reading is always fine; anything that goes out to others or is hard t
 
 ## 6. Codex tips
 
-- The same principles apply when other AI coding tools, Codex included, are connected to GitHub, mail, calendar, and so on:
+- The same principles apply when other AI coding tools, [Codex](https://developers.openai.com/codex) included, are connected to GitHub, mail, calendar, and so on:
   if a REST connector exists, use it first; if not, use an MCP/token connection; and hard-to-undo actions like
   sending, deleting, or assigning always go through human confirmation.
 - In particular, the "do not push to the original (upstream) repository" principle for GitHub must be followed the same way whichever AI tool you use.
   A different tool does not change the principle.
 - If you use several AI tools together, writing rules such as "mail always stops at a draft" and "pushing to the original repository only after confirmation"
-  into the `AGENTS.md`/`CLAUDE.md` explained in `docs/en/04_giving-ai-rules.md` keeps the principles in place even when the tool changes.
+  into the `AGENTS.md`/`CLAUDE.md` explained in [`docs/en/04_giving-ai-rules.md`](04_giving-ai-rules.md) keeps the principles in place even when the tool changes.
 
 ---
 

@@ -27,25 +27,25 @@ The sci-toolkit is a toolbox that gathers the tasks labs do often so that an age
 
 ## 3. What is Claude Code?
 
-Claude Code is a program that lets you use Anthropic's AI, "Claude," as an agent. It is the base program of this toolbox, and you can think of it as the place where the assistant described above lives.
+[Claude Code](https://code.claude.com/docs/en/overview) is a program that lets you use [Anthropic](https://www.anthropic.com)'s AI, "Claude," as an agent. It is the base program of this toolbox, and you can think of it as the place where the assistant described above lives.
 
 There are several ways to use it, but for beginners the desktop app is the easiest.
 
 | Method | What it looks like | Recommendation |
 |---|---|---|
-| Desktop app | Opens in a window like an ordinary program, and you chat | Choose this if you're new |
-| Terminal (the black window) | You type commands on a text-only screen | After you get comfortable |
+| [Desktop app](https://code.claude.com/docs/en/desktop-quickstart) | Opens in a window like an ordinary program, and you chat | Choose this if you're new |
+| [Terminal (the black window)](https://code.claude.com/docs/en/quickstart) | You type commands on a text-only screen | After you get comfortable |
 
 ### Steps to get started
 
-1. Install the Claude desktop app and log in. (If you don't have an account, ask your lab's point person.)
+1. Install the [Claude desktop app](https://claude.com/download) and log in. (If you don't have an account, ask your lab's point person. Plans are listed on the [pricing page](https://claude.com/pricing).)
 2. In the app, choose the folder you want to work in. It's like telling the assistant, "Work at this bench."
 3. In the chat box, type what you want to do in your everyday words. For example:
    - "Read the Excel files in this folder and tell me what data they contain."
    - "Plot the concentration-over-time data as a graph."
-4. When the agent shows you what it intends to do, check it and click Allow.
+4. When the agent shows you what it intends to do, check it and click Allow. ([About permissions](https://code.claude.com/docs/en/permissions))
 
-> If you want to use Codex: OpenAI's Codex works the same way. Open your working folder in the app or terminal and ask in words just the same. However, the names and locations of the settings files are a little different, so check with your lab's point person or the other guides in `docs`.
+> If you want to use Codex: OpenAI's [Codex](https://developers.openai.com/codex) works the same way. Open your working folder in the [app](https://developers.openai.com/codex/app) or [terminal](https://developers.openai.com/codex/cli) and ask in words just the same. However, the names and locations of the settings files are a little different, so see [Codex's AGENTS.md guide](https://developers.openai.com/codex/guides/agents-md) and [04. Giving AI rules](04_giving-ai-rules.md).
 
 ## 4. If you're new, remember just these
 
@@ -64,6 +64,6 @@ There are several ways to use it, but for beginners the desktop app is the easie
 
 ## 6. Next step
 
-When you're ready, move on to the next document. For your first time, we recommend trying a single small file in this order: "read it → organize it → plot it." After a few tries it will come naturally.
+When you're ready, move on to the next document, [01. Install and first command](01_install-and-first-command.md). For your first time, we recommend trying a single small file in this order: "read it → organize it → plot it." After a few tries it will come naturally.
 
 If you get stuck, ask a labmate or your point person.

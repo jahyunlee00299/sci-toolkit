@@ -2,7 +2,7 @@
 
 # 10. Full Workflow Map: How This Toolkit Actually Runs
 
-The earlier documents were about "how to install and get started." This document is about "which path does my task take?"
+The earlier documents were about "[how to install and get started](01_install-and-first-command.md)." This document is about "which path does my task take?"
 Once you understand the structure, you can tell right away when the AI heads down the wrong road.
 
 ---
@@ -71,8 +71,8 @@ The full table is in `AGENTS.md` §0. Here are the ones you'll use most.
 | Analyze data | `lab-data-analysis` → `stats-workflow` | 🔒 `assumption_check.py`: checks normality and equal variance and names the test to use |
 | Model fitting / optimization | the relevant skill → `scientific-validation` | 🔒 `sci_validate.py` (mass balance, physical plausibility) |
 | Put a number into a document | — | 🔒 Recompute from the original script/raw data |
-| Send mail, issues, tasks | `scripts/connectors/` | 🔒 **Drafts only.** A human does the sending |
-| Installation isn't working | `doctor.py` | 🔒 Until it shows `PASS` |
+| [Send mail, issues, tasks](05_external-services.md) | `scripts/connectors/` | 🔒 **Drafts only.** A human does the sending |
+| [Installation isn't working](01_install-and-first-command.md) | `doctor.py` | 🔒 Until it shows `PASS` |
 
 🔒 = a gate enforced by a script. Don't judge by eye; run it and look at the exit code.
 
@@ -160,6 +160,6 @@ which is why we made `test_skill_references.py` check it automatically.
 
 ## Next documents
 
-- Detailed usage of each skill → `skills/<name>/SKILL.md`
-- Full AI operating rules → `AGENTS.md`
+- Detailed usage of each [skill](https://code.claude.com/docs/en/skills) → `skills/<name>/SKILL.md`
+- Full [AI operating rules](04_giving-ai-rules.md) → `AGENTS.md`
 - Using it on a remote server → [09_remote-server](09_remote-server.md)

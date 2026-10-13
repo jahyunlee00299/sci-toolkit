@@ -14,7 +14,7 @@ misuse something at the same spot, the tool is at fault, not the users.
 
 ## The easiest way: just say it
 
-Talk to Claude Code as you normally would.
+Talk to [Claude Code](https://code.claude.com/docs/en/overview) as you normally would.
 
 > "docx 표 편집이 자꾸 실패하는데 이거 좀 불편해요" (“Table editing in docx keeps failing, and it's a real hassle”)
 > "이런 기능이 있으면 좋겠는데 없네요" (“I wish there were a feature like this, but there isn't”)
@@ -151,7 +151,7 @@ python scripts/feedback_log.py export --github --repo owner/name --write
 ```
 
 Without `--write` it only previews (AGENTS.md §9 draft-first).
-Each issue automatically gets the record ID, timestamp, OS, and Python/Claude Code versions attached,
+Each [issue](https://github.com/jahyunlee00299/sci-toolkit/issues) automatically gets the record ID, timestamp, OS, and Python/Claude Code versions attached,
 so you can start reproducing without asking again. File paths, user names, and
 host names are not collected.
 

@@ -17,7 +17,7 @@ API (Application Programming Interface) sounds difficult, but the analogy is ver
 - Instead, you make a request at the order window, saying "I'll have this," and the kitchen prepares it and hands it out through the window.
 - This "order form and procedure" is the API. In other words, it is a set of agreed rules for programs to talk to each other (the window's manual).
 
-For example, the "Claude API" works like this:
+For example, the "[Claude API](https://platform.claude.com/docs/en/api/overview)" works like this:
 
 > When my program sends an order slip saying "answer this question" to Anthropic's order window,
 > the Anthropic server (the kitchen) produces the answer and sends it back.
@@ -34,7 +34,7 @@ It is a way for code to place and receive orders automatically, rather than a pe
 
 ## 2. What is MCP? ("A standard plug specification")
 
-MCP (Model Context Protocol) is a concept one step beyond the API.
+[MCP (Model Context Protocol)](https://modelcontextprotocol.io) is a concept one step beyond the API.
 
 > MCP = a standard plug (outlet) specification that works anywhere in the world
 
@@ -48,7 +48,7 @@ In other words, MCP is "a standard specification for connecting an AI to externa
 ### What a beginner needs to know
 
 - Ordinary users almost never need to build an MCP themselves.
-- When you click a "Connect this service" button in a tool such as the Claude Desktop app or Claude Code, you are using a connection that has already been built to the MCP spec.
+- When you click a "Connect this service" button in a tool such as the [Claude Desktop](https://claude.com/download) app or [Claude Code](https://code.claude.com/docs/en/mcp), you are using a connection that has already been built to the MCP spec.
 - An MCP connection is a channel that is always on across your whole account. Once connected, the AI can
   reach that service at any time, and it is hard to see with your own eyes exactly how much scope is open for this task,
   or to switch it off and on per task.
@@ -87,7 +87,7 @@ To use an API (that is, to use the order window), you need to verify your identi
 
 | Category | Monthly subscription (flat-rate) | API key (pay-as-you-go) |
 |---|---|---|
-| Billing | A fixed amount every month (e.g., Claude Pro/Max, ChatGPT Plus) | Billed for what you use (calculated in tokens) |
+| Billing | A fixed amount every month (e.g., [Claude Pro/Max](https://claude.com/pricing), ChatGPT Plus) | Billed for what you use (calculated in tokens) |
 | Predicting cost | Easy: the same amount every month | Hard: swings with usage |
 | Fit for beginners | Very suitable | Requires programming knowledge, with a management burden |
 | Risk if you slip up | Almost none | Unexpectedly large costs possible from a leaked key, an infinite-loop script, etc. |
@@ -131,7 +131,7 @@ Practical principle: avoid MCP and use REST connectors by default:
 
 ## 6. A short note on Codex
 
-- Codex is an AI tool (agent) made by OpenAI that helps write code. It is included in a ChatGPT subscription (Plus or higher), or you can also use it separately through the API.
+- [Codex](https://developers.openai.com/codex) is an AI tool (agent) made by OpenAI that helps write code. It is included in a ChatGPT subscription (Plus or higher), or you can also use it separately through the API.
 - The principles in this document apply to Codex equally: for general code writing or asking questions, using it within a ChatGPT subscription is enough, and issuing and using a separate API key is an advanced option to consider only "when you want to integrate it automatically into my program/pipeline."
 - Even when you use Claude Code and Codex together, "subscription-based use" is the default for each, and you add API integration only when needed.
 

@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.153] — 2026-10-13
+
+- docs: link external products and cross-referenced docs in the beginner guides (ko + en)
+
 ## [1.2.152] — 2026-10-13
 
 - docs/en: strip AI writing patterns (em dashes, bold overuse, filler) from the English beginner docs

@@ -5,7 +5,7 @@
 ## First: document work just works
 
 "이 워드 파일 고쳐줘" (“fix this Word file”), "PDF에서 표 뽑아줘" (“pull the tables out of this PDF”), "엑셀로 정리해줘" (“organize this in Excel”): just say it the usual way.
-The ability to handle document files is provided on the Claude Code side, so this toolkit does not need to fill that role.
+The ability to handle document files is provided on the [Claude Code](https://code.claude.com/docs/en/overview) side, so this toolkit does not need to fill that role.
 
 This document explains why you don't see those skill folders in the repository,
 and describes the lab's own tools that are included anyway.

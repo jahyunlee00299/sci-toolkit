@@ -15,7 +15,7 @@ API(Application Programming Interface)는 어렵게 들리지만, 비유하면 �
 - 대신 **주문창구**에 "이거 주세요"라고 요청하면, 주방에서 만들어서 창구로 내어줍니다.
 - 이 "주문 양식과 절차"가 바로 API입니다. 즉, **프로그램끼리 대화하는 정해진 규칙(창구 매뉴얼)**입니다.
 
-예를 들어 "Claude API"는 —
+예를 들어 "[Claude API](https://platform.claude.com/docs/ko/api/overview)"는 —
 
 > 내 프로그램이 "이 질문에 답해줘"라는 주문서를 Anthropic의 주문창구로 보내면,
 > Anthropic 서버(주방)가 답변을 만들어서 돌려주는 것
@@ -32,7 +32,7 @@ API(Application Programming Interface)는 어렵게 들리지만, 비유하면 �
 
 ## 2. MCP란? — "표준 플러그 규격"
 
-MCP(Model Context Protocol)는 API보다 한 단계 더 나아간 개념입니다.
+[MCP(Model Context Protocol)](https://modelcontextprotocol.io)는 API보다 한 단계 더 나아간 개념입니다.
 
 > **MCP = 전 세계 어디서나 통하는 표준 플러그(콘센트) 규격**
 
@@ -46,7 +46,7 @@ MCP(Model Context Protocol)는 API보다 한 단계 더 나아간 개념입니�
 ### 초심자가 알아야 할 것
 
 - 일반 사용자는 MCP를 직접 만들 일이 거의 없습니다.
-- Claude Desktop 앱이나 Claude Code 같은 도구에서 "이 서비스 연결하기" 버튼을 누르면, 이미 MCP 규격으로 만들어진 연결을 그냥 **가져다 쓰는 것**뿐입니다.
+- [Claude Desktop](https://claude.com/download) 앱이나 [Claude Code](https://code.claude.com/docs/ko/mcp) 같은 도구에서 "이 서비스 연결하기" 버튼을 누르면, 이미 MCP 규격으로 만들어진 연결을 그냥 **가져다 쓰는 것**뿐입니다.
 - MCP 연결은 **계정 전체에 항상 켜져 있는 통로**입니다. 한 번 연결해두면 AI가 그 서비스에
   언제든 접근할 수 있고, 이번 작업에 정확히 어떤 범위까지 열려 있는지 눈으로 확인하거나
   작업 단위로 껐다 켰다 하기가 어렵습니다.
@@ -85,7 +85,7 @@ API를 쓰려면(즉, 주문창구를 이용하려면) 신원 확인이 필요�
 
 | 구분 | 월 구독(정액제) | API 키(종량과금) |
 |---|---|---|
-| 요금 방식 | 매달 정해진 금액 고정 (예: Claude Pro/Max, ChatGPT Plus) | **쓴 만큼** 과금 (토큰 단위로 계산) |
+| 요금 방식 | 매달 정해진 금액 고정 (예: [Claude Pro/Max](https://claude.com/pricing), ChatGPT Plus) | **쓴 만큼** 과금 (토큰 단위로 계산) |
 | 요금 예측 | 쉬움 — 매달 똑같은 금액 | **어려움** — 사용량 따라 널뛰기 |
 | 초심자 적합성 | 매우 적합 | 프로그래밍 지식 필요, 관리 부담 있음 |
 | 실수 시 위험 | 거의 없음 | **키 유출·무한루프 스크립트 등으로 예상 밖의 큰 비용** 발생 가능 |
@@ -131,7 +131,7 @@ API를 쓰려면(즉, 주문창구를 이용하려면) 신원 확인이 필요�
 
 ## 6. Codex에 대한 짧은 메모
 
-- **Codex**는 OpenAI가 만든, 코드 작성을 돕는 AI 도구(에이전트)입니다. ChatGPT 구독(Plus 이상)에 포함되어 있거나, 별도로 API를 통해 쓸 수도 있습니다.
+- **[Codex](https://developers.openai.com/codex)**는 OpenAI가 만든, 코드 작성을 돕는 AI 도구(에이전트)입니다. ChatGPT 구독(Plus 이상)에 포함되어 있거나, 별도로 API를 통해 쓸 수도 있습니다.
 - 이 문서의 원칙은 Codex에도 동일하게 적용됩니다: **일반적으로 코드를 짜거나 질문하는 용도라면 ChatGPT 구독 안에서 쓰는 것으로 충분**하며, API 키를 따로 발급받아 쓰는 것은 "내 프로그램/파이프라인에 자동으로 연동하고 싶을 때"만 고려하는 **고급 옵션**입니다.
 - Claude Code와 Codex를 함께 쓰는 경우에도, 각자 "구독 기반 사용"이 기본이고 API 연동은 필요할 때만 추가하면 됩니다.
 

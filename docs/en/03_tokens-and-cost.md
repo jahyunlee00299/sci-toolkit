@@ -19,7 +19,7 @@ An AI model doesn't read a sentence as a whole. It cuts the sentence into small 
 
 How tokens become cost:
 
-AI services usually set prices based on the number of input tokens + the number of output tokens. That is:
+AI services usually [set prices](https://platform.claude.com/docs/en/about-claude/pricing) based on the number of input tokens + the number of output tokens. That is:
 
 - The question I sent, the code I attached, the whole conversation history → input tokens
 - What the AI answered → output tokens
@@ -40,7 +40,7 @@ So the longer a session goes, the more the input tokens per turn snowball. (Ther
 
 ## 2. How do I see my usage? (`/usage`)
 
-Claude Code (Claude used in the terminal) lets you check your current usage and limits with the `/usage` command.
+Claude Code (Claude used in the terminal) lets you check your [current usage and limits](https://code.claude.com/docs/en/costs) with the `/usage` command.
 
 ```
 /usage
@@ -66,7 +66,7 @@ Tips for beginners
 
 ### (1) Give simple jobs to a cheaper model
 
-Models come in tiers. They are commonly divided into "light and fast models" and "heavy and smart models," and the price difference is considerable.
+[Models come in tiers](https://code.claude.com/docs/en/model-config). They are commonly divided into "light and fast models" and "heavy and smart models," and the price difference is considerable.
 
 - Simple tasks (typo checks, simple summaries, reading one file and answering, format conversion) → a cheap, fast model is enough.
 - Hard tasks (complex code refactoring, design decisions that span multiple files, rigorous logical verification) → you need a smarter but more expensive model.
@@ -140,7 +140,7 @@ print(complete("다음 문장을 한 줄로 요약해줘: ...", max_tokens=200))
 ```
 (The prompt string above is Korean for “Summarize the following sentence in one line: ...”.)
 
-- You issue the key yourself in the Anthropic console (console.anthropic.com) and put it in the `ANTHROPIC_API_KEY` environment variable. **Do not paste the key into code, documents, or chat.**
+- You issue the key yourself in the [Anthropic console (console.anthropic.com)](https://console.anthropic.com/) and put it in the `ANTHROPIC_API_KEY` environment variable. **Do not paste the key into code, documents, or chat.**
 - If you set the environment variable `LLM_CALL_API=0`, it skips the API and always uses `claude -p`.
 - If you set the environment variable `LLM_CALL_LOG=file path`, one line per call (which route was used, and the token count) is recorded.
 - Using tools, touching files, and running skills are not what this helper is for. For those, use `claude -p` directly.

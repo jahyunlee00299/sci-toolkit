@@ -22,7 +22,7 @@ If you manage tasks (Tasks) in Asana, this integration lets the AI do the follow
 
 Reading always runs immediately (unlike the write actions in 2, 3, and 4), but write actions (creating tasks/comments/subtasks)
 only show a preview (dry-run) by default, and to actually run them you must explicitly
-attach a flag called `--write`. (It is in the same vein as document 05's "outgoing actions stop at the draft" principle.)
+attach a flag called `--write`. (It is in the same vein as [document 05](05_external-services.md)'s "outgoing actions stop at the draft" principle.)
 
 > Why this connector is better than MCP, a real case: Asana's MCP task-creation
 > tool only makes a "preview card," and the task is actually created only after you click a confirm button on screen once more.
@@ -41,10 +41,10 @@ or completing someone else's task.
 
 ## 2. Preparation: Get an Asana Personal Access Token (PAT)
 
-To use the Asana API you need to issue a "Personal Access Token."
-Using the analogy from `docs/en/02_api-and-mcp.md`, the token = access pass.
+To use the [Asana API](https://developers.asana.com/docs) you need to issue a "[Personal Access Token](https://developers.asana.com/docs/personal-access-token)."
+Using the analogy from [`docs/en/02_api-and-mcp.md`](02_api-and-mcp.md), the token = access pass.
 
-1. Log in at `app.asana.com` in your browser, then go to the profile icon at the top right → "My Settings"
+1. Log in at [`app.asana.com`](https://app.asana.com) in your browser, then go to the profile icon at the top right → "My Settings"
    (shown as "내 설정(My Settings)" in the Korean UI).
 2. Go to the "Apps" tab → click "Manage Developer Apps" at the bottom
    (shown as "앱(Apps)" and "개발자 앱 관리(Manage Developer Apps)" in the Korean UI).
@@ -54,7 +54,7 @@ Using the analogy from `docs/en/02_api-and-mcp.md`, the token = access pass.
 5. Register this token in one of the two ways below.
    - Paste it into the `asana.token` slot of `config/credentials.json` (this file is excluded from distribution and commits), or
    - Set the environment variable `SCITK_ASANA_TOKEN` and write something like `"token": "ENV:SCITK_ASANA_TOKEN"` in `credentials.json`
-     (the token value itself is not left in the file, which is safer; see `docs/en/05_external-services.md`).
+     (the token value itself is not left in the file, which is safer; see [`docs/en/05_external-services.md`](05_external-services.md)).
 
 > Do not paste the token into the chat window. It is exactly document 05's "token = access pass" principle.
 
@@ -147,7 +147,7 @@ python scripts/connectors/asana_connector.py add-comment --task <TASK_GID> \
 (The text reads: "<strong>Result summary</strong>: progress 80%, the next step is analysis.")
 
 When you attach `--html`, the connector internally automatically validates and corrects Asana's `html_text` formatting rules.
-Asana's formatting rules have 4 traps that beginners easily fall into without knowing it.
+[Asana's formatting rules](https://developers.asana.com/docs/rich-text) have 4 traps that beginners easily fall into without knowing it.
 
 | # | Trap | What happens | What the connector does |
 |---|---|---|---|

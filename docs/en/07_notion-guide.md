@@ -19,7 +19,7 @@ this integration lets the AI do two things.
 1. Read: ask "what to-dos are in progress right now?" and the AI looks it up directly in the Notion DB and tells you.
 2. Add (draft-like): say "add this one to-do" and the AI creates a new item. By default, though, this action only
    shows a preview; to actually add it, you must explicitly attach a flag called `--write`.
-   (It is in the same vein as document 05's "outgoing actions stop at the draft" principle: a hard-to-undo action gets one more confirmation.)
+   (It is in the same vein as [document 05](05_external-services.md)'s "outgoing actions stop at the draft" principle: a hard-to-undo action gets one more confirmation.)
 
 This script has no delete feature at all. You can let it read and add without worrying about accidental deletion.
 
@@ -27,17 +27,17 @@ This script has no delete feature at all. You can let it read and add without wo
 
 ## 2. Preparation 1: Create a Notion Integration and get a token
 
-To use the Notion API you have to create something called an "Integration." Using the analogy from `docs/en/02_api-and-mcp.md`,
+To use the [Notion API](https://developers.notion.com) you have to create something called an "Integration." Using the analogy from [`docs/en/02_api-and-mcp.md`](02_api-and-mcp.md),
 an Integration = the counter that issues your access pass.
 
-1. In your browser, go to `notion.so/my-integrations`.
+1. In your browser, go to [`notion.so/my-integrations`](https://www.notion.so/profile/integrations).
 2. Click "New integration" and give it a name (an easy-to-recognize name, such as "sci-toolkit-connector").
 3. After it is created, an "Internal Integration Token" (a secret token string) appears. This is the access pass.
 4. Register this token in one of the two ways below.
    - Paste it into the `notion.token` slot of `config/credentials.json` (this file is excluded from distribution and commits), or
    - Set the environment variable `SCITK_NOTION_TOKEN` and write something like `"token": "ENV:SCITK_NOTION_TOKEN"` in `credentials.json` (the token value itself is not left in the file, which is safer).
 
-> Do not paste the token into the chat window. It is exactly document 05's "token = access pass" principle.
+> Do not paste the token into the chat window. It is exactly [document 05](05_external-services.md)'s "token = access pass" principle.
 
 ---
 
@@ -47,7 +47,7 @@ Even after creating the Integration and registering the token, there are many ca
 There is one reason.
 
 > A Notion Integration by default "cannot see any DB." For every DB you want it to see, you have to
-> share it individually (Connections), saying "this Integration is allowed to look here."
+> share it individually ([Connections](https://www.notion.com/help/add-and-manage-connections-with-the-api)), saying "this Integration is allowed to look here."
 
 Here is how.
 
@@ -136,7 +136,7 @@ python scripts/connectors/notion_db_connector.py add-row \
 - Reading (`list-dbs`/`schema`/`query`) can be run freely at any time.
 - Adding an item (`add-row`) only shows a preview of what would be created unless you attach `--write`.
 - When adding to a DB that others also see (a team-shared DB), we recommend checking the preview content
-  once more before attaching `--write`. This is document 05's principle of "get confirmation for actions that affect others."
+  once more before attaching `--write`. This is [document 05](05_external-services.md)'s principle of "get confirmation for actions that affect others."
 - This script cannot delete or archive items. If you need to delete, do it
   directly in Notion (this is intentional design).
 

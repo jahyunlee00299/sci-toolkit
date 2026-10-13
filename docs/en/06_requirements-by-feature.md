@@ -35,14 +35,14 @@ These features work right away with only your subscription login. Most features 
 
 | Feature (skill) | What it does | Notes |
 |---|---|---|
-| `research-lookup` | Paper lookup (OpenAlex+PubMed) | Free, no key needed (the skill states this itself) |
+| `research-lookup` | Paper lookup ([OpenAlex](https://openalex.org)+[PubMed](https://pubmed.ncbi.nlm.nih.gov)) | Free, no key needed (the skill states this itself) |
 | `openalex-database` | OpenAlex paper DB | Fully open, no key needed |
 | `pubmed-database` | PubMed search | Works without a key (a key only improves speed; optional) |
-| `biorxiv-database` | Preprint search (bioRxiv, medRxiv, arXiv) | Free, no key or sign-up needed |
+| `biorxiv-database` | Preprint search ([bioRxiv](https://www.biorxiv.org), medRxiv, arXiv) | Free, no key or sign-up needed |
 | `stats-workflow` | Statistical tests and reporting | Python packages only |
 | `scientific-validation` | Validity check of results | Standard library |
 | `academic-term-rules` | Terminology and notation rules | Rules document (nothing to run) |
-| `lab-data-analysis` | Lab data analysis and safety information | PubChem free API |
+| `lab-data-analysis` | Lab data analysis and safety information | [PubChem](https://pubchem.ncbi.nlm.nih.gov) free API |
 | `paper-extract` | Extract tables, figures, and body text from papers | Already-installed libraries |
 | `research-ideation` | Ideas and hypotheses | Pure thinking workflow |
 | `research-search` | Search meta-router (papers, preprints, web) | All free, no key needed |
@@ -52,8 +52,8 @@ These features work right away with only your subscription login. Most features 
 
 | Feature | What is needed | Required? | Free workaround |
 |---|---|---|---|
-| `markitdown` | File → Markdown | Optional | Basic conversion is **completely free**. Only the AI image-description feature needs an OPENROUTER key |
-| `literature-review` | Literature review document | Optional | Semantic Scholar has a free tier (key recommended). Search and document generation themselves work |
+| `markitdown` | File → Markdown | Optional | Basic conversion is **completely free**. Only the AI image-description feature needs an [OPENROUTER](https://openrouter.ai) key |
+| `literature-review` | Literature review document | Optional | [Semantic Scholar](https://www.semanticscholar.org/product/api) has a free tier (key recommended). Search and document generation themselves work |
 
 > 🔑 For how to enter a key, see [02_api-and-mcp](02_api-and-mcp.md) and the connector's
 > `config/credentials.example.json` approach (environment variables). If you are not in a hurry, we recommend trying the
@@ -73,11 +73,11 @@ These features work right away with only your subscription login. Most features 
 
 | Feature | What to install | When it is needed |
 |---|---|---|
-| `xlsx` | **LibreOffice** | When recalculating or verifying Excel formulas (not needed for simple reading/writing) |
-| `docx` | `pandoc`, **LibreOffice**, (final verification on Windows + MS Word) | Document conversion, applying tracked changes, final corruption check |
-| `literature-review` | `pandoc` + LaTeX (xelatex) | **Only when producing PDF output** (not needed for Markdown output) |
-| `endnote-citation-injection` | **EndNote 2025 + library file** | This feature itself depends on EndNote |
-| `publication-figures` | `scikit-image` (pip) | Only for figure reconstruction (Route 5) |
+| `xlsx` | **[LibreOffice](https://www.libreoffice.org)** | When recalculating or verifying Excel formulas (not needed for simple reading/writing) |
+| `docx` | [`pandoc`](https://pandoc.org), **LibreOffice**, (final verification on Windows + MS Word) | Document conversion, applying tracked changes, final corruption check |
+| `literature-review` | `pandoc` + [LaTeX](https://www.latex-project.org) (xelatex) | **Only when producing PDF output** (not needed for Markdown output) |
+| `endnote-citation-injection` | **[EndNote](https://endnote.com) 2025 + library file** | This feature itself depends on EndNote |
+| `publication-figures` | [`scikit-image`](https://scikit-image.org) (pip) | Only for figure reconstruction (Route 5) |
 | `uncertainty-and-units` | Python 3.12+ and `pint`, `uncertainties` (pip) | When running the error-propagation and unit-conversion scripts (see [document 01](01_install-and-first-command.md)) |
 | `doe-and-replication` | Python 3.12+ and `pydoe`, `pandas` (pip) | When building experimental design tables (factorial and central composite designs) |
 

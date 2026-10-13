@@ -11,7 +11,7 @@
 ## 0. Checklist
 
 - A computer (Windows and Mac both work)
-- A Claude subscription account (Pro or Max). If you don't have one, subscribe first at [claude.ai](https://claude.ai).
+- A Claude subscription account ([Pro or Max](https://claude.com/pricing)). If you don't have one, subscribe first at [claude.ai](https://claude.ai).
   You **do not need** an API key. (For why, see [02_api-and-mcp](02_api-and-mcp.md).)
 - This toolkit folder (`sci-toolkit`): the folder this document is in.
 
@@ -19,7 +19,7 @@
 
 ## 1. Install Claude Code
 
-There are three ways to use Claude Code. All three are the same Claude Code,
+There are three ways to use [Claude Code](https://code.claude.com/docs/en/overview). All three are the same Claude Code,
 you log in with the same subscription account, and this toolkit is layered on in exactly the same way.
 The only difference is "where you chat."
 
@@ -39,21 +39,21 @@ The only difference is "where you chat."
 1. Go to [claude.ai/download](https://claude.ai/download).
 2. Download and install the version for your computer (Windows / Mac).
    (Like any ordinary program: download → run → click "Next," and you're done.)
-3. After installing, open the app and log in with your own Claude account.
+3. After installing, open the app and log in with your own Claude account. ([Get started with the desktop app](https://code.claude.com/docs/en/desktop-quickstart))
 
 > That's all. Click the icon → log in → the chat box appears.
 
 ### Method B: VS Code extension (if you work with code and data in VS Code)
 
-If you're already working on Python scripts or data in VS Code, this is the most convenient.
+If you're already working on Python scripts or data in [VS Code](https://code.visualstudio.com/), this is the most convenient.
 The AI can see the file you're editing right away, and you can see the results of its changes directly in the editor.
 
 1. Open VS Code and click the Extensions icon (four squares) on the left.
-2. Type `Claude Code` in the search box and Install the one made by Anthropic.
+2. Type `Claude Code` in the search box and Install [the one made by Anthropic](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code).
 3. After it's installed, reopen the window and log in with your Claude account as prompted.
 4. Open `sci-toolkit` as your working folder (File → Open Folder).
 
-> If you use a JetBrains IDE (such as PyCharm), there is a plugin with the same name.
+> If you use a [JetBrains](https://code.claude.com/docs/en/jetbrains) IDE (such as PyCharm), there is a plugin with the same name.
 > Search for `Claude Code` in the plugin marketplace.
 
 ### Method C: Terminal (CLI)
@@ -64,7 +64,7 @@ Use this method if you're comfortable with the terminal, or if you'll use it on 
 npm install -g @anthropic-ai/claude-code
 ```
 
-After installing, type `claude` in any folder to run it.
+After installing, type `claude` in any folder to run it. ([Official setup guide](https://code.claude.com/docs/en/setup))
 (If you don't have `npm`, install Node.js first from [nodejs.org](https://nodejs.org).)
 
 For how to use it on a remote server, see [09_remote-server](09_remote-server.md).
@@ -122,7 +122,7 @@ You can also just tell Claude Code, "Run doctor.py and tell me the result."
 ### Python version: Uncertainty/units and experimental design features need 3.12 or later
 
 Two features, `uncertainty-and-units` (error propagation, unit conversion, ± notation) and `doe-and-replication` (experimental design, replicate counts, plate layout),
-require Python 3.12 or later. This is because the library they use (`pint`) can be installed only from 3.12 onward.
+require [Python](https://www.python.org/downloads/) 3.12 or later. This is because the library they use (`pint`) can be installed only from 3.12 onward.
 You can check your Python version with `python --version` in the terminal. If it is lower than 3.12, only these two features are unavailable,
 and the rest work as usual. You can install the required packages in one line.
 
@@ -191,7 +191,7 @@ At first, keep this confirmation step on and watch alongside it. As you get used
 
 ## 5. Codex tips
 
-If you use Codex (OpenAI's similar tool), the big picture is the same.
+If you use [Codex](https://developers.openai.com/codex) (OpenAI's similar tool), the big picture is the same.
 
 - Installation: turn on Codex in a ChatGPT subscription (Plus or higher) environment, or install the CLI as instructed.
 - Layering on this toolkit: if you open the `sci-toolkit` folder as your working folder, Codex automatically reads `AGENTS.md`.

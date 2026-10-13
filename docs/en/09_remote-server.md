@@ -33,9 +33,9 @@ Remote brings hassle before it brings convenience. In the cases below, do it on 
 ## 1. Method A: VS Code Remote-SSH (most recommended)
 
 This approach lets you open and use the remote server's files right on your own VS Code screen.
-It is much more comfortable than using a terminal alone, and the Claude Code extension also runs on the remote side as is.
+It is much more comfortable than using a terminal alone, and the [Claude Code extension](https://code.claude.com/docs/en/vs-code) also runs on the remote side as is.
 
-1. Install `Remote - SSH` (made by Microsoft) from the VS Code extensions.
+1. Install [`Remote - SSH`](https://code.visualstudio.com/docs/remote/ssh) (made by Microsoft) from the VS Code extensions.
 2. `F1` → `Remote-SSH: Connect to Host...` → enter the server address
    (format: `username@server-address`, for example user `hong` on server `server.example.ac.kr`)
 3. Log in with a password or an SSH key.
@@ -60,7 +60,7 @@ cd /path/to/my/project          # move to the folder to work in
 claude                          # run Claude Code
 ```
 
-If the server doesn't have Claude Code, install it first.
+If the server doesn't have Claude Code, [install it](https://code.claude.com/docs/en/setup) first.
 
 ```bash
 npm install -g @anthropic-ai/claude-code
@@ -89,7 +89,7 @@ python install/install.py --preset data-figures --apply
 
 ## 3. Long jobs: keep them running even if the connection drops
 
-With SSH, when the connection drops, whatever was running dies with it. If you close your laptop or
+With [SSH](https://www.openssh.com), when the connection drops, whatever was running dies with it. If you close your laptop or
 the Wi-Fi drops, a calculation that had been running for hours is lost.
 
 ### tmux (recommended)
@@ -134,7 +134,7 @@ A university HPC is usually split into login nodes and compute nodes.
 
 - **Do not run heavy computation on the login node.** It harms other users,
   and administrators may forcibly kill the process.
-- Heavy jobs must be submitted to the job scheduler (SLURM, etc.).
+- Heavy jobs must be submitted to the job scheduler ([SLURM](https://slurm.schedmd.com/quickstart.html), etc.).
 
 ```bash
 sbatch my_job.sh        # submit a job to SLURM
@@ -169,7 +169,7 @@ CPU, GPU, memory, and disk and tells you which strategy fits.
 | Symptom | Cause / fix |
 |---|---|
 | `claude: command not found` | Not installed on the server, or not on the PATH. Run `npm install -g @anthropic-ai/claude-code` and log in again |
-| The connection keeps dropping | Use tmux (section 3). Adding `ServerAliveInterval 60` to your SSH config also helps |
+| The connection keeps dropping | Use [tmux](https://github.com/tmux/tmux/wiki) (section 3). Adding `ServerAliveInterval 60` to your SSH config also helps |
 | The login is lost every time | Once you log in on the server, it persists. If your home directory is reset every time, ask the IT office |
 | Korean text is garbled | Add `export LANG=ko_KR.UTF-8` or `LC_ALL=C.UTF-8` to `~/.bashrc` |
 | Figures don't get drawn | Because the server has no display. Use `matplotlib.use("Agg")` in matplotlib and save to a file |
