@@ -4,6 +4,22 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.150] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.149] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.148] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.147] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
 ## [1.2.146] — 2026-10-13
 
 - experiment-hub: port structural workbook guards, calc subcommand, opt-in Methods publish and workbook-editing rules
