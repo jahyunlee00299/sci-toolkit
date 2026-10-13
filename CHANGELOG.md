@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.155] — 2026-10-13
+
+- experiment-hub: move Mode 1b, hand-built/publishing detail and workbook verification into references/ to get SKILL.md under the 24 KiB cap
+
+## [1.2.154] — 2026-10-13
+
+- experiment-hub: make the recalculated-file test match openpyxl's <v /> empty cache (no lxml, as in CI)
+
 ## [1.2.153] — 2026-10-13
 
 - docs: link external products and cross-referenced docs in the beginner guides (ko + en)
