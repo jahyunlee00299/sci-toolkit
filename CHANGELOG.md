@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.157] — 2026-10-14
+
+- statusline-usage: add a status line skill (model, context use, 5h and weekly limits with reset times) with a dependency-free bash script and fixture tests
+
 ## [1.2.156] — 2026-10-14
 
 - docs: add a beginner permission section (allow prompt, permission modes, allow/deny rules) to 01 (ko + en)

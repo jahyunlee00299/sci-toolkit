@@ -189,6 +189,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_skill_requirements.py", "per-skill dependency declaration matches the scripts; missing-package report"),
     ("tests/test_gitleaks_layer.py", "gitleaks second layer (absent=WARN, clean=OK, findings=FAIL; config allowlist paths exist)"),
     ("tests/test_uncertainty_doe_skills.py", "vendored K-Dense scripts on hand-derived lab cases (kcat/Km u, g to mol, 2^3 and CCD run tables, plate layout; skips when pint/uncertainties/pydoe are absent)"),
+    ("tests/test_statusline_usage.py", "statusline-usage script output on every fixture (bash always, PowerShell when present; skips when the interpreter is absent)"),
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.
