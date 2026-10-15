@@ -167,7 +167,7 @@ def lint_script(path: Path) -> dict:
         "suptitle": [], "condition_label": [],
         "caption_style": [],
     }
-    is_theme_module = path.name in ("theme.py", "aesthetic_helpers.py")
+    is_theme_module = path.name in ("theme.py", "aesthetic_helpers.py", "paper_theme.py")
     # A schematic/construct diagram (SBOL glyph artwork) is not a data plot,
     # so it is exempt from style rules (hardcoded hex/fontsize, layout
     # manager). Glyph-specific colors (backbone/promoter/RBS/zebra) and the
@@ -234,7 +234,7 @@ def lint_script(path: Path) -> dict:
     for ln_no in savefig_calls:
         # a savefig call can span multiple lines, so check ±2 lines combined
         ctx = " ".join(lines[max(0, ln_no - 1):ln_no + 2])
-        has_dpi = "dpi=300" in ctx.replace(" ", "") or "dpi=300" in ctx
+        has_dpi = any(int(d) >= 300 for d in re.findall(r"dpi\s*=\s*(\d+)", ctx))  # 300 or higher (600 for line art)
         has_bbox = "bbox_inches" in ctx and "tight" in ctx
         if not (has_dpi and has_bbox):
             savefig_issues.append({"line": ln_no, "has_dpi300": has_dpi, "has_bbox_tight": has_bbox})

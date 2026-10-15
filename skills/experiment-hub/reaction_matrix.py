@@ -3,7 +3,8 @@ Reaction Matrix Generator — experiment-hub Mode 10
 Generates optimized experiment Excel files with master mix grouping and pipetting guides.
 
 Usage:
-    python reaction_matrix.py config.json [output.xlsx]
+    python reaction_matrix.py config.json [output.xlsx] [--no-publish]
+    python reaction_matrix.py calc c1v1|topup|topup-conc|df|back ...   # one-off dilution arithmetic (dilution_calc.py)
 
 Config JSON format:
 {
@@ -128,9 +129,14 @@ def analyze_master_mixes(config):
     return mm_a, sub_mixes, groups
 
 
-def surplus_note(extra_rxns=3):
+def surplus_note(extra_rxns=3, dead=5.0, cocktail_dead=None):
+    import pipette_count
+    cocktail_dead = dead if cocktail_dead is None else cocktail_dead
+    vessel = ('+%g uL dead volume per intermediate vessel (working stock, cocktail)' % dead
+              if cocktail_dead == dead else
+              '+%g uL dead volume per working stock, +%g uL per cocktail' % (dead, cocktail_dead))
     return (f'Surplus convention (one everywhere): MM-A premix = n tubes + {extra_rxns} reactions; stock totals, '
-            f'sub-mixes and cocktails x1.2; +10 uL dead volume per intermediate vessel (working stock, cocktail).')
+            f'sub-mixes and cocktails x{pipette_count.SURPLUS:g}; {vessel}.')
 
 
 SURPLUS_NOTE = surplus_note()   # default margin (config "premix": {"extra_rxns": 3})
@@ -385,6 +391,7 @@ def _check_pipetting_rules(config, report):
     if not plan['feasible']:
         report.append('SKIP rounding / volume settings: a tube is over-filled -- fix the volume closure FAIL first')
         _check_r1(config, report, pc)
+        ok = _check_serial(config, report, pc) and ok
         return ok
     rp = pc.rounded_plan(plan)
     vs = pc.volume_settings(rp)
@@ -448,6 +455,52 @@ def _check_pipetting_rules(config, report):
                       f'deviation {worst * 100:.2f} %')
 
     _check_r1(config, report, pc)
+    ok = _check_serial(config, report, pc) and ok
+    return ok
+
+
+def _check_serial(config, report, pc):
+    """g. config "serial_dilution": a list of enzyme names that have a working-stock ladder (>= 2 levels);
+    a typo or a wrong type silently fell back to independent draws (adversarial review 261012)."""
+    if 'serial_dilution' not in config or config['serial_dilution'] == 'auto':
+        return True
+    sd = config['serial_dilution']
+    if not isinstance(sd, list) or not all(isinstance(x, str) for x in sd):
+        report.append(f"FAIL serial_dilution must be a list of enzyme names, got {sd!r}")
+        return False
+    try:
+        plan = pc.build_plan(config)
+    except Exception as exc:   # the other checks report the cause
+        report.append(f"SKIP serial_dilution check ({exc})")
+        return True
+    levels = defaultdict(int)
+    for w in plan['working']:
+        levels[w['enzyme']] += 1
+    for name in dict.fromkeys(sd):
+        if levels.get(name, 0) < 2:
+            report.append(f"WARN serial_dilution: {name!r} has {levels.get(name, 0)} working-stock level(s) "
+                          f"(need >= 2, name as in 'enzymes'); falling back to independent draws")
+    applied = [n for n in dict.fromkeys(sd) if levels.get(n, 0) >= 2]
+    if not applied:
+        report.append('INFO serial_dilution: nothing applied')
+        return True
+    ok = True
+    floor, ideal = 0.5, 2.5   # SKILL.md R2b: every transfer and lab-stock draw >= 2.5 uL; < 0.5 uL is below any pipette
+    for enz, rows in _serial_recipes(plan).items():
+        for k, row in enumerate(rows):
+            if row['src_uL'] < floor:
+                report.append(f"FAIL serial_dilution {row['stock']}: transfer {row['src_uL']:.2f} uL from "
+                              f"{row['src']} is below the {floor} uL pipette floor")
+                ok = False
+            elif row['src_uL'] < ideal:
+                report.append(f"WARN serial_dilution {row['stock']}: transfer {row['src_uL']:.2f} uL from "
+                              f"{row['src']} is below the {ideal} uL smallest lab pipette (R2b)")
+            if k:
+                step = rows[k - 1]['working_gL'] / row['working_gL']
+                if abs(step - 2.0) > 0.05:
+                    report.append(f"INFO serial_dilution {row['stock']}: {step:.2f}-fold step from {row['src']} "
+                                  f"(R2b prefers 2-fold)")
+    report.append('PASS serial_dilution: ' + ', '.join(applied) if ok else 'FAIL serial_dilution: see above')
     return ok
 
 
@@ -678,7 +731,7 @@ def generate_excel(config, output_path):
     common_water = bool(config.get('common_water_in_mm_a', True))
     pc_plan = pipette_count.build_plan(config)
     extra_rxns = pipette_count.mm_a_extra(config)
-    note = surplus_note(extra_rxns)
+    note = surplus_note(extra_rxns, pipette_count.dead_ul(config), pipette_count.dead_ul(config, 'cocktail'))
     pc_sum = pipette_count.summarize(pc_plan)
     res = pipette_count.limits(config)['resolution_uL']
 
@@ -745,7 +798,7 @@ def generate_excel(config, output_path):
     enz_rows = {}
     for ename in enz_names:
         einfo = enzymes[ename]
-        dc(ws, r, 1, f'{ename} ({einfo["batch"]})', N, LT)
+        dc(ws, r, 1, f'{ename} ({einfo.get("batch", "n/a")})', N, LT)
         dc(ws, r, 2, einfo['stock_gL'])
         for i, lv in enumerate(level_list):
             dc(ws, r, 3 + i, einfo['rxn_gL'].get(lv, ''))
@@ -981,6 +1034,8 @@ def generate_excel(config, output_path):
             '+'.join(get_column_letter(dw_ci + 1 + i) + str(r) for i in range(len(enz_names))))
         r += 1
 
+    r = _enzyme_prep_block(ws2, r + 1, pc_plan)
+
     for c in range(1, len(vol_cols) + 1):
         ws2.column_dimensions[get_column_letter(c)].width = 12
     ws2.column_dimensions['A'].width = 8
@@ -1139,8 +1194,9 @@ def _enzyme_additions_sheet(wb, plan, summ, date):
     r = 4
     res = pipette_count.limits(plan['config'])['resolution_uL']
     rq = lambda x: round(round(x / res) * res, 4)
-    dc(ws, 3, 1, surplus_note(pipette_count.mm_a_extra(plan["config"])), NOTE, LT)
-    dc(ws, r, 1, 'ENZYME WORKING STOCKS - dilute the lab stock with WATER (same volume of a level\'s stock in every tube)', S, LT)
+    cfg_ = plan["config"]
+    dc(ws, 3, 1, surplus_note(pipette_count.mm_a_extra(cfg_), pipette_count.dead_ul(cfg_), pipette_count.dead_ul(cfg_, "cocktail")), NOTE, LT)
+    dc(ws, r, 1, 'ENZYME WORKING STOCKS - only enzymes whose level differs between tubes: dilute the lab stock with WATER (same volume of a level\'s stock in every tube); cocktail enzymes are taken NEAT from the lab stock', S, LT)
     r += 1
     heads = ['Working stock', 'Enzyme', 'Lab stock (g/L)', 'Dilution (x)', 'Working (g/L)', 'uL per tube',
              'Needed (uL)', 'Make (uL)', 'Lab stock (uL)', 'water (uL)']
@@ -1150,6 +1206,12 @@ def _enzyme_additions_sheet(wb, plan, summ, date):
     r += 1
     if not plan['working']:
         dc(ws, r, 1, 'none - every enzyme is taken from its lab stock', N, LT)
+        r += 1
+    ser = [e for e in _serial_names(cfg_, plan['working']) if any(w['enzyme'] == e for w in plan['working'])]
+    if ser:
+        dc(ws, r, 1, f"SUPERSEDED for {', '.join(ser)}: these levels are made by SERIAL dilution (Pipetting Guide, "
+                     f"block C). Ignore the 'Make', 'Lab stock (uL)' and 'water (uL)' columns of those rows; only "
+                     f"'uL per tube' applies.", NOTE, LT)
         r += 1
     for wk in plan['working']:
         vals = [wk['working_stock'], wk['enzyme'], round(wk['lab_gL'], 4), round(wk['dilution_x'], 4),
@@ -1164,7 +1226,7 @@ def _enzyme_additions_sheet(wb, plan, summ, date):
         if s.kind == 'cocktail':
             cocktails[s.target].append(s)
     if cocktails:
-        dc(ws, r, 1, f'ENZYME COCKTAILS (n x {pipette_count.SURPLUS} + {pipette_count.DEAD_UL:g} uL dead)', S, LT)
+        dc(ws, r, 1, f'ENZYME COCKTAILS (n x {pipette_count.SURPLUS} + {pipette_count.dead_ul(plan["config"], "cocktail"):g} uL dead)', S, LT)
         r += 1
         for c, h in enumerate(['Cocktail', 'Component', 'uL to combine'], 1):
             ws.cell(row=r, column=c, value=h)
@@ -1222,16 +1284,271 @@ def _enzyme_additions_sheet(wb, plan, summ, date):
         ws.column_dimensions[get_column_letter(c)].width = w
 
 
+def _serial_names(cfg, working):
+    """Enzymes whose working-stock levels are made by serial dilution. Config "serial_dilution": omitted or "auto"
+    = every enzyme with >= 2 working-stock levels (default since 261013: a concentration series is a serial
+    dilution wherever it can be); a list of names = only those; [] = independent draws for all."""
+    sd = cfg.get('serial_dilution', 'auto')
+    if sd == 'auto':
+        levels = defaultdict(int)
+        for w in working:
+            levels[w['enzyme']] += 1
+        return [e for e in levels if levels[e] >= 2]
+    return list(sd)
+
+
+def _serial_recipes(plan):
+    """Serial-dilution recipes (enzymes from _serial_names; default auto = every enzyme with >= 2 levels): the highest level is made
+    from the lab stock, every lower level from the next higher one (water is the diluent), so no transfer is
+    a tiny lab-stock draw. Returns {enzyme: [row, ...]} highest level first; row = dict(stock, make_uL,
+    src, src_uL, water_uL, working_gL, per_tube, lab_uL)."""
+    import math, pipette_count
+    cfg = plan['config']
+    dead = pipette_count.dead_ul(cfg)
+    out = {}
+    for enz in _serial_names(cfg, plan['working']):
+        rows = sorted((w for w in plan['working'] if w['enzyme'] == enz), key=lambda w: -w['working_gL'])
+        if not rows:
+            continue
+        make, draw = [0.0] * len(rows), [0.0] * len(rows)   # draw[k] = uL of level k-1 taken to make level k
+        nxt = 0.0
+        for k in range(len(rows) - 1, -1, -1):
+            make[k] = math.ceil(rows[k]['needed_uL'] + dead + nxt)
+            if k:
+                draw[k] = make[k] * rows[k]['working_gL'] / rows[k - 1]['working_gL']
+                nxt = draw[k]
+        res_rows = []
+        for k, w in enumerate(rows):
+            top = k == 0
+            src_uL = make[k] * w['working_gL'] / w['lab_gL'] if top else draw[k]
+            res_rows.append({'stock': w['working_stock'], 'make_uL': make[k],
+                             'src': 'lab stock' if top else rows[k - 1]['working_stock'],
+                             'src_uL': src_uL, 'water_uL': make[k] - src_uL, 'working_gL': w['working_gL'],
+                             'per_tube': w['uL_per_tube'], 'lab_uL': src_uL if top else 0.0})
+        out[enz] = res_rows
+    return out
+
+
+def _enzyme_prep_block(ws, r, plan):
+    """Pipetting Guide blocks 'TUBES TO PREPARE' and 'ENZYME PREPARATION (make before the run)': the enzyme
+    stock table (batch = purification date, lab stock g/L, TOTAL lab stock to take for every use), the
+    cocktail recipe(s) and the working-stock recipes. SKILL.md: a workbook without them is not finished.
+    Returns the next free row."""
+    import math
+    import pipette_count
+    cfg = plan['config']
+    res = pipette_count.limits(cfg)['resolution_uL']
+    rq = lambda x: round(math.floor(x / res + 0.5 + 1e-9) * res, 4)   # half-up (6.25 -> 6.3), not banker's
+    route, V = plan['route'], cfg['total_volume_uL']
+    einfo = cfg['enzymes']
+
+    def is_ws(source):
+        e = einfo.get(source)
+        return bool(e) and pipette_count.lab_stock_of(e) / float(e['stock_gL']) > pipette_count.NEAT_TOL
+
+    def info(source):
+        a = route['src_info'].get(source)
+        real = a['enzyme'] if a else source.replace(' (lab stock)', '')
+        e = einfo.get(source) or einfo.get(real) or {}
+        return real, e.get('batch', 'n/a'), (pipette_count.lab_stock_of(e) if e else None)
+
+    dc(ws, r, 1, 'TUBES TO PREPARE (label before the run)', S, LT)
+    r += 1
+    labels = '; '.join(f"#{c['num']} {c.get('label', c.get('note', ''))}".strip() for c in cfg['conditions'])
+    dc(ws, r, 1, f"{len(cfg['conditions'])} empty tubes ({V:g} uL reactions): {labels}", N, LT)
+    r += 1
+    if plan['weighings']:
+        w = '; '.join(f"#{t} {solid} {mg} mg" for t, solid, mg in plan['weighings'])
+        dc(ws, r, 1, f'Weigh first, one per tube (solid, not pipetting): {w}', N, LT)
+        r += 1
+    inp = {t: v for t, v in plan['water_in_place'].items() if v}
+    if inp:
+        dc(ws, r, 1, f"No-enzyme tube(s) {', '.join('#%s' % t for t in inp)}: WATER in the same volumes and order "
+                     f"as the enzyme additions of the other tubes.", N, LT)
+        r += 1
+    r += 1
+
+    dc(ws, r, 1, 'ENZYME PREPARATION (make before the run)', T, LT)
+    r += 1
+    dc(ws, r, 1, 'Cocktail enzymes are taken NEAT from the lab stock; a working stock is lab stock + WATER. '
+                 'Batch = purification date of the stock tube to use.', NOTE, LT)
+    r += 1
+
+    cock_use = defaultdict(float)
+    for ck in route['cocktails']:
+        for src, v in ck['comps'].items():
+            if not is_ws(src):   # a diluted working stock in a cocktail is priced by its own lab draw (block C)
+                cock_use[info(src)[0]] += v * ck['scale']
+    direct_use = defaultdict(float)
+    for lst in route['separate'].values():
+        for src, v in lst:
+            if not is_ws(src) and not src.startswith(('cocktail', 'common cocktail')):
+                direct_use[info(src)[0]] += v * pipette_count.SURPLUS
+    serial = _serial_recipes(plan)
+    ws_use = defaultdict(float)
+    for wk in plan['working']:
+        if wk['enzyme'] not in serial:
+            ws_use[wk['enzyme']] += wk['lab_stock_uL']
+    for enz, rows_ in serial.items():
+        ws_use[enz] += sum(x['lab_uL'] for x in rows_)
+    names = [n for n in dict.fromkeys(list(cock_use) + list(direct_use) + list(ws_use))]
+
+    dc(ws, r, 1, 'A) LAB STOCKS TO TAKE - total volume per enzyme for the whole run', S, LT)
+    r += 1
+    heads = ['Enzyme', 'Batch', 'Lab stock (g/L)', 'Total to take (uL)', 'of which cocktail (uL)',
+             'of which working stock (uL)', 'of which direct to tubes (uL)']
+    for c, h in enumerate(heads, 1):
+        ws.cell(row=r, column=c, value=h)
+    hdr(ws, r, len(heads))
+    r += 1
+    for n in names:
+        _, batch, lab_gL = info(n)
+        e = next((v for k, v in einfo.items() if pipette_count.real_name(k, v) == n), {})
+        batch = e.get('batch', batch)
+        lab_gL = pipette_count.lab_stock_of(e) if e else lab_gL
+        dc(ws, r, 1, n, B, LT); dc(ws, r, 2, batch, N, LT); dc(ws, r, 3, round(lab_gL, 4) if lab_gL else '')
+        dc(ws, r, 4, rq(cock_use.get(n, 0) + ws_use.get(n, 0) + direct_use.get(n, 0)), B)
+        dc(ws, r, 5, rq(cock_use[n]) if n in cock_use else '')
+        dc(ws, r, 6, rq(ws_use[n]) if n in ws_use else '')
+        dc(ws, r, 7, rq(direct_use[n]) if n in direct_use else '')
+        r += 1
+    r += 1
+
+    for ck in route['cocktails']:
+        dead = pipette_count.dead_ul(cfg, 'cocktail')
+        dc(ws, r, 1, f"B) {ck['name'].upper()} - combine the stocks below in ONE tube (neat unless marked WORKING STOCK) ({len(ck['members'])} "
+                     f"enzyme tubes x {pipette_count.SURPLUS:g} + {dead:g} uL dead = {rq(ck['make_uL'])} uL)", S, LT)
+        r += 1
+        heads = ['Component', 'Batch', 'Lab stock (g/L)', 'uL per tube', 'uL to combine']
+        for c, h in enumerate(heads, 1):
+            ws.cell(row=r, column=c, value=h)
+        hdr(ws, r, len(heads))
+        r += 1
+        first = r
+        for src, v in ck['comps'].items():
+            real, batch, lab_gL = info(src)
+            if is_ws(src):   # not a neat stock: name the working stock and its own g/L
+                real, lab_gL = f'{src} (WORKING STOCK, see C)', float(einfo[src]['stock_gL'])
+            dc(ws, r, 1, real, B, LT); dc(ws, r, 2, batch, N, LT)
+            dc(ws, r, 3, round(lab_gL, 4) if lab_gL else '')
+            dc(ws, r, 4, rq(v)); dc(ws, r, 5, rq(v * ck['scale']))
+            r += 1
+        dc(ws, r, 1, 'TOTAL (sum of rounded draws)', B, LT)
+        fml(ws, r, 4, f'=SUM(D{first}:D{r-1})').font = B
+        fml(ws, r, 5, f'=SUM(E{first}:E{r-1})').font = B
+        r += 1
+        dc(ws, r, 1, f"Add {rq(ck['per_tube'])} uL of this cocktail to each of tubes "
+                     f"{', '.join('#%s' % m for m in ck['members'])} (LAST, 1-1.5 min between tubes).", NOTE, LT)
+        r += 2
+
+    for enz, rows_ in serial.items():
+        dc(ws, r, 1, f'C) {enz} LEVELS BY SERIAL DILUTION, highest level first (water is the diluent; every '
+                     f'transfer is a pipettable volume)', S, LT)
+        r += 1
+        heads = ['Working stock', 'Batch', 'Working (g/L)', 'Make (uL)', 'Take from', 'Take (uL)', 'Water (uL)',
+                 'uL per tube']
+        for c, h in enumerate(heads, 1):
+            ws.cell(row=r, column=c, value=h)
+        hdr(ws, r, len(heads))
+        r += 1
+        for x in rows_:
+            vals = [x['stock'], info(x['stock'])[1], round(x['working_gL'], 4), x['make_uL'], x['src'],
+                    rq(x['src_uL']), rq(x['make_uL'] - rq(x['src_uL'])), rq(x['per_tube'])]   # water closes the rounded take
+            for c, v in enumerate(vals, 1):
+                dc(ws, r, c, v, N, LT if c in (1, 2, 5) else CT)
+            r += 1
+        r += 1
+    rest = [w for w in plan['working'] if w['enzyme'] not in serial]
+    if rest:
+        dc(ws, r, 1, 'C) WORKING STOCKS (lab stock + WATER)', S, LT)
+        r += 1
+        heads = ['Working stock', 'Enzyme', 'Batch', 'Working (g/L)', 'Make (uL)', 'Lab stock (uL)', 'Water (uL)',
+                 'uL per tube']
+        for c, h in enumerate(heads, 1):
+            ws.cell(row=r, column=c, value=h)
+        hdr(ws, r, len(heads))
+        r += 1
+        for wk in rest:
+            _, batch, _ = info(wk['working_stock'])
+            vals = [wk['working_stock'], wk['enzyme'], batch, round(wk['working_gL'], 4), wk['make_uL'],
+                    rq(wk['lab_stock_uL']), rq(wk['water_uL']), rq(wk['uL_per_tube'])]
+            for c, v in enumerate(vals, 1):
+                dc(ws, r, c, v, N, LT if c <= 3 else CT)
+            r += 1
+        r += 1
+    return r
+
+
+def methods_dir():
+    """The Methods folder every generated workbook is published to: env LAB_METHODS_DIR (tests, other lab members),
+    else the glob stored per computer in ~/.config/experiment-hub.json (key "methods_dir_glob", relative to the home
+    folder, e.g. "OneDrive*/Lab/Methods"). The glob is resolved on the home folder only, never by
+    a recursive walk of OneDrive. None when nothing matches."""
+    import os
+    env = os.environ.get('LAB_METHODS_DIR')
+    if env:
+        return Path(env)
+    cfg = Path.home() / '.config' / 'experiment-hub.json'
+    try:
+        pattern = json.loads(cfg.read_text(encoding='utf-8')).get('methods_dir_glob')
+    except (OSError, ValueError):
+        return None
+    if not pattern:
+        return None
+    for d in sorted(Path.home().glob(pattern)):
+        if d.is_dir():
+            return d
+    return None
+
+
+def publish_to_methods(output):
+    """Copy the generated workbook into the lab Methods folder, if one is configured (opt-in: env
+    LAB_METHODS_DIR or "methods_dir_glob" in ~/.config/experiment-hub.json). A different file of the same name is kept as NAME.BACKUP-YYMMDD-HHMM.xlsx first. Returns
+    (ok, message); never raises."""
+    import datetime
+    import hashlib
+    import shutil
+    try:
+        src = Path(output).resolve()
+        d = methods_dir()
+        if d is None:
+            return True, 'no Methods folder configured (optional: set LAB_METHODS_DIR or "methods_dir_glob" in ~/.config/experiment-hub.json)'
+        if not d.is_dir():
+            return False, f'configured Methods folder not found: {d}'
+        dest = d / src.name
+        if src == dest.resolve():
+            return True, f'already in the Methods folder: {dest}'
+        md5 = lambda f: hashlib.md5(Path(f).read_bytes()).hexdigest()
+        if dest.exists():
+            if md5(dest) == md5(src):
+                return True, f'Methods folder already has the identical file: {dest}'
+            bak = dest.with_name(f'{dest.stem}.BACKUP-{datetime.datetime.now():%y%m%d-%H%M}{dest.suffix}')
+            shutil.move(str(dest), str(bak))
+        shutil.copy2(src, dest)
+        if md5(dest) != md5(src):
+            return False, f'copy to {dest} does not match the source (md5)'
+        return True, f'published to the Methods folder: {dest}'
+    except OSError as exc:
+        return False, f'could not publish ({exc}); the workbook is only at {output}'
+
+
 def main():
+    if len(sys.argv) >= 2 and sys.argv[1] == 'calc':
+        # one-off dilution / top-up / C1V1 questions: same entry point, exact decimal arithmetic
+        from dilution_calc import cli
+        sys.exit(cli(sys.argv[2:]))
     if len(sys.argv) < 2:
-        print('Usage: python reaction_matrix.py config.json [output.xlsx]')
+        print('Usage: python reaction_matrix.py config.json [output.xlsx] [--no-publish]\n'
+              '       python reaction_matrix.py calc {c1v1|topup|topup-conc|df|back} ...  (one-off arithmetic)')
         sys.exit(1)
 
-    config_path = Path(sys.argv[1])
+    flags = {a for a in sys.argv[1:] if a.startswith('--')}
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    config_path = Path(args[0])
     with open(config_path, encoding='utf-8') as f:
         config = json.load(f)
 
-    output = sys.argv[2] if len(sys.argv) > 2 else str(config_path.with_suffix('.xlsx'))
+    output = args[1] if len(args) > 1 else str(config_path.with_suffix('.xlsx'))
 
     import pipette_count
     if isinstance(config, dict) and isinstance(config.get('enzymes'), dict) and 'conditions' in config \
@@ -1256,6 +1573,13 @@ def main():
     print('=== validate_config: all hard checks passed ===')
 
     generate_excel(config, output)
+    if '--no-publish' in flags:
+        print('=== publish skipped (--no-publish) ===')
+        return
+    ok, msg = publish_to_methods(output)
+    print(('=== ' if ok else '=== PUBLISH FAILED: ') + msg + ' ===')
+    if not ok:
+        sys.exit(3)
 
 
 if __name__ == '__main__':

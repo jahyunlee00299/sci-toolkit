@@ -1629,3 +1629,128 @@ wired-by: skills/experiment-hub/SKILL.md
 
 wired-by: docs/03_토큰과_비용.md
 **Deferred risk**: the real API path is covered by mocks here; it was proven against the live API only in the lab's own copy of the helper.
+
+---
+
+## Refactor batch 4 (2026-10-03) — the three oversized functions left after batches 2 and 3
+
+Branch `sci-toolkit/refactor/decompose-large-fns-261002`, cut from origin/main 27a053a.
+Every unit is two commits: a golden made on the UNSPLIT code (generated twice,
+byte-identical), then the split, which leaves the golden untouched. All changes stay
+inside one skill folder each, so `install.py --skills <name>` copies still work;
+`experiment-hub` was out of scope.
+
+### Unit 1 — get-available-resources: `collect_snapshot`
+
+**Scope** — `scripts/resource_probes/snapshot.py`. CLI path, flags, JSON schema and
+every name `detect_resources.py` re-exports are unchanged.
+
+**Before the split** — the value golden (`detect_resources.json`, 18 hosts plus the
+empty-platform case) already executed 94 of the 95 lines of `collect_snapshot`; the one
+it missed was the `psutil_module` default (import on demand). What it cannot see is
+pinned by the new `tests/golden/collect_snapshot.json`
+(`tests/collect_snapshot_trace.py`): the order of every file read and command run per
+host (with the keyword arguments the probe passed), that the caller's `environ` is not
+modified, the default-argument branches (psutil imported on demand and missing,
+`environ=None` reading os.environ while os.environ carries a Slurm job, `environ={}` NOT
+falling back to it, `observed_at` from the clock and `observed_at=""` falling back to
+it), that emptying one result cannot change the next call, and the signature.
+
+**Change** — `collect_snapshot` 125 -> 59 lines. New stage functions in `snapshot.py`:
+`_ProbeContext` (a frozen parameter object for the host identity, the injected I/O and
+the two record lists), `_resolve_psutil`, `_detect_mac_sysctl`, `_detect_cpu_counts`,
+`_detect_cgroup`, `_cpu_section`, `_accelerator_section`, `_sort_records`,
+`_assemble_snapshot`. The probe order is the original one (host CPU, process CPU, cgroup,
+scheduler, memory, accelerators, disk).
+
+**Evidence / refutation** — the 14 golden tests pass unchanged (the 15th is the
+pre-existing Linux failure of the `run_command` group). The old value golden executes 94
+of the 95 lines of the unsplit function, the new scenarios all 95; after the split every
+line of `collect_snapshot` and of its eight helpers is executed. Ten mutations of the
+unsplit function: the first round let one live (`observed_at=""` kept as the stamp), and
+an empty `environ` falling back to os.environ would only have shown on a machine that
+happens to export a Slurm or GPU variable, so the default-argument scenarios now run
+with a Slurm job in os.environ and the golden was regenerated from the ORIGINAL function;
+then all ten were caught. The old value golden alone catches four of the ten; the six it
+cannot see are the probe order (twice), a mutated `environ`, the two default fallbacks and
+a `privacy` block shared across calls.
+
+### Unit 2 — primer-design: `RestrictionCloningDesigner.recommend_re_pair`
+
+**Scope** — `restriction_cloning_mode.py`. `mcp_cloning_tools.recommend_re_pair` is a
+28-line wrapper that delegates to this method and needed no change; its signature and
+delegation are pinned.
+
+**Before the split** — the only existing checks on the method were one sortedness test
+and four scenarios in the MCP golden, which skips without the `mcp` package. The new
+`tests/golden/re_pair.json` (`tests/characterization_re_pair.py`) pins: all seven
+registered vectors x six inserts x `prefer_hf` (hash of the result exactly as returned,
+so key order and list order count), the full lists for four of them, three vector-name
+aliases, a SYNTHETIC registry (the module's enzyme and buffer tables, `get_vector` and
+`check_reading_frame` swapped for scripted ones) that reaches every branch real data
+cannot (unknown enzyme, equal positions, no buffer record, the 75% boundary on both
+enzymes, HF on one side or both, truthy non-bool frame flags) together with the exact
+arguments of every `check_reading_frame` call, the error cases, and that the module
+tables are not modified.
+
+**Change** — `recommend_re_pair` 130 -> 32 lines (17 without the docstring):
+`_candidate_re_pairs` (the pair walk and the internal-site filter),
+`_score_re_pair`, `_score_buffers`, `_score_reading_frame`, `_score_hf_variants`. One
+dead local (`hf_available`, never read) is dropped.
+
+**Evidence / refutation** — 83 passed in the primer-design suite (75 before + 8 new), the
+same two environment failures as before, `re_pair.json` untouched; 81/81 lines executed
+before the split, every line of every new helper after. 26 mutations of the unsplit
+method: the first round let two live (the 75% boundary on the 3' enzyme, a `frame_ok`
+that returns the raw flag), so a boundary enzyme and truthy non-bool frame answers were
+added; then 26/26 were caught, against 1/26 by the pre-existing tests. 11 further
+mutations of the split code were all caught.
+
+### Unit 3 — primer-design: the cloning report (`generate_cloning_report`)
+
+**Scope** — `cloning_report.py`. `generate_cloning_report` itself was already 52 lines
+(37 without the docstring), a four-panel orchestrator; the oversized code on its path was
+`_draw_construct_map` (192 lines) and `_draw_qc_table` (138), so those were split. Its
+signature, return value and the re-export of `generate_vector_construct_map` are unchanged.
+
+**Before the split** — `tests/golden/cloning_report.json`
+(`tests/characterization_report.py`) feeds the report 23 literal design results, plus 3
+that cannot be drawn (the dict `design()` returns, so the snapshot needs neither primer3
+nor the design code), and
+records for every panel the text list, the element counts and a hash of the full detail
+(positions, colours, sizes, weights, styles, box styles of every patch and text), the
+full element lists for two scenarios, what the report hands to `Figure.savefig`, the
+return value, the directories and files it creates, that the input is not modified, and
+one pinned oddity: a failure while drawing skips `plt.close()`, so that figure stays
+open. Scenarios cover the 3-warning and "+N more" cut, the 90-character
+topology boundary, empty and absent frame checks, missing QC, every tail-width branch.
+
+**Change** — `_draw_qc_table` 138 -> 16 lines, `_draw_construct_map` 192 -> 6. New in
+`cloning_report.py`: `_draw_panel_frame` (the 10 x 10 card and title the three panels
+repeated), `_QcGrid`, `_qc_cell_data`, `_qc_grid`, `_draw_qc_header_row`,
+`_draw_qc_data_rows`, `_verdict_colors`, `_draw_qc_footer`, `_construct_bar_widths`,
+`_draw_construct_box`, `_draw_construct_bar` (largest, 46 lines), `_draw_reading_frame_info`,
+`_draw_junction_status`, `_draw_frame_details`, `_draw_legend`. One dead assignment (the
+proportional insert width, overwritten before use) is dropped.
+
+**Evidence / refutation** — the 30 report tests pass unchanged and every line of the
+report's drawing functions and of the new helpers is executed; the 23 real PNGs rendered from the same inputs are
+byte-identical before and after (sha256, same machine and matplotlib). 27 mutations of the
+unsplit drawing code (a recoloured cell, a moved box, a changed threshold, a dropped
+italic, a reversed legend) were all caught, against 0/27 by the pre-existing tests;
+18 mutations of the split code were all caught.
+
+**Deferred** — `design()` (171 lines), `_build_sections` (83) and `_draw_single_primer`
+(78) are still the longest functions in primer-design. `cloning_report.py` still imports
+`mpatches`, `Arc` and `Wedge` without using them (left from moving the circular map).
+On a machine without primer3, `mcp`, `xlwt` or psutil, and with Linux line endings, three
+pre-existing self-tests fail before this branch (`order_sheet` CSV newlines,
+`restriction_design` QC fields, the killed-process return code in `detect_resources`);
+they fail identically after it.
+
+wired-by: skills/get-available-resources/tests/test_collect_snapshot_characterization.py
+wired-by: skills/primer-design/tests/test_re_pair_characterization.py
+wired-by: skills/primer-design/tests/test_report_characterization.py
+wired-by: skills/get-available-resources/scripts/resource_probes/snapshot.py
+wired-by: skills/primer-design/src/primer_design/restriction_cloning_mode.py
+wired-by: skills/primer-design/src/primer_design/cloning_report.py

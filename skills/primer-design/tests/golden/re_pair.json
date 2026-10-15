@@ -1,0 +1,6073 @@
+{
+ "delegation": {
+  "wrapper_equals_designer": {
+   "pET-21a(+)|hf=False": true,
+   "pET-28a(+)|hf=True": true,
+   "pMAL-c6T|hf=True": true
+  },
+  "wrapper_error": [
+   "raised",
+   "ValueError",
+   "Unknown vector: 'no-such-vector'. Available: pET-21a(+), pET-28a(+), pMAL-c6T, pETDuet-1:MCS1, pETDuet-1:MCS2, pACYCDuet-1:MCS1, pACYCDuet-1:MCS2"
+  ],
+  "wrapper_parameters": [
+   [
+    "insert_seq",
+    "str",
+    "<class 'inspect._empty'>"
+   ],
+   [
+    "vector_name",
+    "str",
+    "<class 'inspect._empty'>"
+   ],
+   [
+    "prefer_hf",
+    "bool",
+    "True"
+   ]
+  ]
+ },
+ "errors": {
+  "empty_insert_is_valid": {
+   "n": 36,
+   "pairs": [
+    "NdeI>NheI:8",
+    "NdeI>BamHI:8",
+    "NdeI>EcoRI:8",
+    "NdeI>SacI:8",
+    "NdeI>SalI:8",
+    "NdeI>HindIII:8",
+    "NdeI>NotI:8",
+    "NheI>BamHI:8",
+    "NheI>EcoRI:8",
+    "NheI>SacI:8",
+    "NheI>SalI:8",
+    "NheI>HindIII:8",
+    "NheI>NotI:8",
+    "NheI>XhoI:8",
+    "BamHI>EcoRI:8",
+    "BamHI>SacI:8",
+    "BamHI>SalI:8",
+    "BamHI>HindIII:8",
+    "BamHI>NotI:8",
+    "BamHI>XhoI:8",
+    "EcoRI>SacI:8",
+    "EcoRI>SalI:8",
+    "EcoRI>HindIII:8",
+    "EcoRI>NotI:8",
+    "EcoRI>XhoI:8",
+    "SacI>SalI:8",
+    "SacI>HindIII:8",
+    "SacI>NotI:8",
+    "SacI>XhoI:8",
+    "SalI>HindIII:8",
+    "SalI>NotI:8",
+    "SalI>XhoI:8",
+    "HindIII>NotI:8",
+    "HindIII>XhoI:8",
+    "NdeI>XhoI:7",
+    "NotI>XhoI:6"
+   ],
+   "sha256": "cc4ae0bb3071a95f1d0a6db5e9797c175b55e0cafae0b64977469203c92ebaab",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "insert_is_none": [
+   "raised",
+   "AttributeError",
+   "'NoneType' object has no attribute 'upper'"
+  ],
+  "unknown_vector": [
+   "raised",
+   "ValueError",
+   "Unknown vector: 'no-such-vector'. Available: pET-21a(+), pET-28a(+), pMAL-c6T, pETDuet-1:MCS1, pETDuet-1:MCS2, pACYCDuet-1:MCS1, pACYCDuet-1:MCS2"
+  ],
+  "vector_is_none": [
+   "raised",
+   "AttributeError",
+   "'NoneType' object has no attribute 'lower'"
+  ]
+ },
+ "registry": {
+  "aliases": {
+   "PET 28A (+)": {
+    "n": 28,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>BamHI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NdeI>XhoI:7",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "0805625126a81995dab6e05b2e470d19d210b0035741c731faa2efc523502f1f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET28a": {
+    "n": 28,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>BamHI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NdeI>XhoI:7",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "0805625126a81995dab6e05b2e470d19d210b0035741c731faa2efc523502f1f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pet-28a(+)": {
+    "n": 28,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>BamHI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NdeI>XhoI:7",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "0805625126a81995dab6e05b2e470d19d210b0035741c731faa2efc523502f1f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "petduet1:mcs2": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   }
+  },
+  "default_prefer_hf": true,
+  "detailed": {
+   "pET-21a(+)|hf=False": {
+    "keys": [
+     "re_5prime",
+     "re_3prime",
+     "buffer",
+     "double_digest_ok",
+     "frame_ok",
+     "score",
+     "reason"
+    ],
+    "recommendations": [
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "BamHI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SacI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SacI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "HindIII",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "HindIII",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "XhoI",
+      "re_5prime": "NotI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch",
+      "score": 5
+     }
+    ]
+   },
+   "pET-28a(+)|hf=True": {
+    "keys": [
+     "re_5prime",
+     "re_3prime",
+     "buffer",
+     "double_digest_ok",
+     "frame_ok",
+     "score",
+     "reason"
+    ],
+    "recommendations": [
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NheI",
+      "re_5prime": "NdeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "BamHI",
+      "re_5prime": "NdeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SacI",
+      "re_5prime": "NdeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "NdeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "NdeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "NdeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "BamHI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, BamHI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SacI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, SacI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, SalI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF, NotI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "NheI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NheI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SacI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, SacI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, SalI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, NotI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF, SalI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF, NotI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "SacI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SacI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, NotI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "NotI",
+      "re_5prime": "HindIII",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: HindIII-HF, NotI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "HindIII",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "NdeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+      "score": 7
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "XhoI",
+      "re_5prime": "NotI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: NotI-HF",
+      "score": 6
+     }
+    ]
+   },
+   "pETDuet-1:MCS2|hf=True": {
+    "keys": [
+     "re_5prime",
+     "re_3prime",
+     "buffer",
+     "double_digest_ok",
+     "frame_ok",
+     "score",
+     "reason"
+    ],
+    "recommendations": [
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "XhoI",
+      "re_5prime": "KpnI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: KpnI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "EcoRV",
+      "re_5prime": "MfeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: MfeI-HF, EcoRV-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "KpnI",
+      "re_5prime": "MfeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: MfeI-HF, KpnI-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "XhoI",
+      "re_5prime": "MfeI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: MfeI-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "KpnI",
+      "re_5prime": "EcoRV",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: EcoRV-HF, KpnI-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "XhoI",
+      "re_5prime": "EcoRV",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: EcoRV-HF",
+      "score": 6
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "MfeI",
+      "re_5prime": "BglII",
+      "reason": "Sequential digest recommended; Frame mismatch; HF available: MfeI-HF",
+      "score": 1
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "EcoRV",
+      "re_5prime": "BglII",
+      "reason": "Sequential digest recommended; Frame mismatch; HF available: EcoRV-HF",
+      "score": 1
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "KpnI",
+      "re_5prime": "BglII",
+      "reason": "Sequential digest recommended; Frame mismatch; HF available: KpnI-HF",
+      "score": 1
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "FseI",
+      "re_5prime": "MfeI",
+      "reason": "Sequential digest recommended; Frame mismatch; HF available: MfeI-HF",
+      "score": 1
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "FseI",
+      "re_5prime": "EcoRV",
+      "reason": "Sequential digest recommended; Frame mismatch; HF available: EcoRV-HF",
+      "score": 1
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "KpnI",
+      "re_5prime": "FseI",
+      "reason": "Sequential digest recommended; Frame mismatch; HF available: KpnI-HF",
+      "score": 1
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "FseI",
+      "re_5prime": "BglII",
+      "reason": "Sequential digest recommended; Frame mismatch",
+      "score": 0
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "XhoI",
+      "re_5prime": "BglII",
+      "reason": "Sequential digest recommended; Frame mismatch",
+      "score": 0
+     },
+     {
+      "buffer": null,
+      "double_digest_ok": false,
+      "frame_ok": false,
+      "re_3prime": "XhoI",
+      "re_5prime": "FseI",
+      "reason": "Sequential digest recommended; Frame mismatch",
+      "score": 0
+     }
+    ]
+   },
+   "pMAL-c6T|hf=True": {
+    "keys": [
+     "re_5prime",
+     "re_3prime",
+     "buffer",
+     "double_digest_ok",
+     "frame_ok",
+     "score",
+     "reason"
+    ],
+    "recommendations": [
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "EcoRV",
+      "re_5prime": "NotI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, EcoRV-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "NotI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, SalI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "BamHI",
+      "re_5prime": "NotI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, BamHI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "NotI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: NotI-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "SalI",
+      "re_5prime": "EcoRV",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: EcoRV-HF, SalI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "BamHI",
+      "re_5prime": "EcoRV",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: EcoRV-HF, BamHI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "EcoRV",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: EcoRV-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "BamHI",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, BamHI-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: SalI-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": true,
+      "re_3prime": "HindIII",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: BamHI-HF, HindIII-HF",
+      "score": 8
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "PstI",
+      "re_5prime": "NotI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: NotI-HF, PstI-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "PstI",
+      "re_5prime": "EcoRV",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: EcoRV-HF, PstI-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "PstI",
+      "re_5prime": "SalI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: SalI-HF, PstI-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "PstI",
+      "re_5prime": "BamHI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: BamHI-HF, PstI-HF",
+      "score": 6
+     },
+     {
+      "buffer": "CutSmart",
+      "double_digest_ok": true,
+      "frame_ok": false,
+      "re_3prime": "HindIII",
+      "re_5prime": "PstI",
+      "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Frame mismatch; HF available: PstI-HF, HindIII-HF",
+      "score": 6
+     }
+    ]
+   }
+  },
+  "matrix": {
+   "pACYCDuet-1:MCS1|all_sites|hf=False": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pACYCDuet-1:MCS1|all_sites|hf=True": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pACYCDuet-1:MCS1|empty|hf=False": {
+    "n": 28,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>EcoRI:5",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "EcoRI>SacI:5",
+     "EcoRI>AscI:5",
+     "EcoRI>PstI:5",
+     "EcoRI>SalI:5",
+     "EcoRI>HindIII:5",
+     "EcoRI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "45dc73a8b127ba41bd8dc3d366300ca6304fc67048cb78dceddba41df3eefb71",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|empty|hf=True": {
+    "n": 28,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>EcoRI:6",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "EcoRI>SacI:6",
+     "EcoRI>AscI:6",
+     "EcoRI>PstI:6",
+     "EcoRI>SalI:6",
+     "EcoRI>HindIII:6",
+     "EcoRI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "3490d97467eed57cd4cfa53cd797c87491a2431428fb95b2f19895aa3563b74d",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|spaced_lowercase|hf=False": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "b106e91c2303e376a752045a3b887b4340bdc2bb78c8733a6866933c5b1633e9",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|spaced_lowercase|hf=True": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "dc4669a13e1bb38c737d8cfeb0033f2cfbf390f46de48b8c6e66174c44a311c8",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|test_insert|hf=False": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "b106e91c2303e376a752045a3b887b4340bdc2bb78c8733a6866933c5b1633e9",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|test_insert|hf=True": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "dc4669a13e1bb38c737d8cfeb0033f2cfbf390f46de48b8c6e66174c44a311c8",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|with_bamhi|hf=False": {
+    "n": 15,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "ccb0e6d349f52b549012219decdb4e8a00bc3fb8b782a6d4f3327f89c91eaf3e",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|with_bamhi|hf=True": {
+    "n": 15,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "0c9c77e73bf5454680c28a5b3d9876a4835490614ac045e683f3e1f9a042230e",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|with_xhoi|hf=False": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "b106e91c2303e376a752045a3b887b4340bdc2bb78c8733a6866933c5b1633e9",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS1|with_xhoi|hf=True": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "dc4669a13e1bb38c737d8cfeb0033f2cfbf390f46de48b8c6e66174c44a311c8",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|all_sites|hf=False": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pACYCDuet-1:MCS2|all_sites|hf=True": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pACYCDuet-1:MCS2|empty|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|empty|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|spaced_lowercase|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|spaced_lowercase|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|test_insert|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|test_insert|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|with_bamhi|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|with_bamhi|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|with_xhoi|hf=False": {
+    "n": 10,
+    "pairs": [
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "EcoRV>KpnI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0"
+    ],
+    "sha256": "8083e55d3c5565466fa4e7e4ab687c12507c59f2ec478b1b7505bee8544fea5f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pACYCDuet-1:MCS2|with_xhoi|hf=True": {
+    "n": 10,
+    "pairs": [
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "EcoRV>KpnI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0"
+    ],
+    "sha256": "49b29525d80b342835b0c116289465f1af6a9651d7effc84747a179ffb5e189c",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|all_sites|hf=False": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pET-21a(+)|all_sites|hf=True": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pET-21a(+)|empty|hf=False": {
+    "n": 28,
+    "pairs": [
+     "NheI>BamHI:7",
+     "NheI>EcoRI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "BamHI>EcoRI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "BamHI>XhoI:7",
+     "EcoRI>SacI:7",
+     "EcoRI>SalI:7",
+     "EcoRI>HindIII:7",
+     "EcoRI>NotI:7",
+     "EcoRI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "4a5b778eb342ce2ff9b559e6beb822b1c9117a26e617fe69bf75bb38d25aefe4",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|empty|hf=True": {
+    "n": 28,
+    "pairs": [
+     "NheI>BamHI:8",
+     "NheI>EcoRI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>EcoRI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "EcoRI>SacI:8",
+     "EcoRI>SalI:8",
+     "EcoRI>HindIII:8",
+     "EcoRI>NotI:8",
+     "EcoRI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "d65bd59b3b8e397ca69418d176fac048d9c299d8080740f181a1a65d1e45735c",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|spaced_lowercase|hf=False": {
+    "n": 21,
+    "pairs": [
+     "NheI>BamHI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "BamHI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "5ea5578b53dad28390936483a919fba4c671dbb54b1789033bf28099ce810670",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|spaced_lowercase|hf=True": {
+    "n": 21,
+    "pairs": [
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "fcf9c9277ba7b2124b0b4756a730478632d9ab5ed7f8d50871056390131e2dfe",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|test_insert|hf=False": {
+    "n": 21,
+    "pairs": [
+     "NheI>BamHI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "BamHI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "5ea5578b53dad28390936483a919fba4c671dbb54b1789033bf28099ce810670",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|test_insert|hf=True": {
+    "n": 21,
+    "pairs": [
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "fcf9c9277ba7b2124b0b4756a730478632d9ab5ed7f8d50871056390131e2dfe",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|with_bamhi|hf=False": {
+    "n": 15,
+    "pairs": [
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "2759db5b02f7c2f0f1726ff8468fd7b2f1647f750169870e3ff6d0788bc02c14",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|with_bamhi|hf=True": {
+    "n": 15,
+    "pairs": [
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "c1f8b648a289038eb3901feabe00416dacc96e8ce87ab54887df2950da630bd5",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|with_xhoi|hf=False": {
+    "n": 15,
+    "pairs": [
+     "NheI>BamHI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7"
+    ],
+    "sha256": "d94d7f5a259fe6193393184a533867c5dba29dd72a9871ed0f88b7f4851d52d4",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-21a(+)|with_xhoi|hf=True": {
+    "n": 15,
+    "pairs": [
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8"
+    ],
+    "sha256": "60ed37a338548a25405465e8b184966fb9f154dee543ece9481968b6b1570222",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|all_sites|hf=False": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pET-28a(+)|all_sites|hf=True": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pET-28a(+)|empty|hf=False": {
+    "n": 36,
+    "pairs": [
+     "NdeI>NheI:7",
+     "NdeI>BamHI:7",
+     "NdeI>EcoRI:7",
+     "NdeI>SacI:7",
+     "NdeI>SalI:7",
+     "NdeI>HindIII:7",
+     "NdeI>NotI:7",
+     "NdeI>XhoI:7",
+     "NheI>BamHI:7",
+     "NheI>EcoRI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "BamHI>EcoRI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "BamHI>XhoI:7",
+     "EcoRI>SacI:7",
+     "EcoRI>SalI:7",
+     "EcoRI>HindIII:7",
+     "EcoRI>NotI:7",
+     "EcoRI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "6c9cc5de119dadce12ea533c0094395de6093a01bd326b06cf001d39f5f6169f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|empty|hf=True": {
+    "n": 36,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>BamHI:8",
+     "NdeI>EcoRI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>BamHI:8",
+     "NheI>EcoRI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>EcoRI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "EcoRI>SacI:8",
+     "EcoRI>SalI:8",
+     "EcoRI>HindIII:8",
+     "EcoRI>NotI:8",
+     "EcoRI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NdeI>XhoI:7",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "cc4ae0bb3071a95f1d0a6db5e9797c175b55e0cafae0b64977469203c92ebaab",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|spaced_lowercase|hf=False": {
+    "n": 28,
+    "pairs": [
+     "NdeI>NheI:7",
+     "NdeI>BamHI:7",
+     "NdeI>SacI:7",
+     "NdeI>SalI:7",
+     "NdeI>HindIII:7",
+     "NdeI>NotI:7",
+     "NdeI>XhoI:7",
+     "NheI>BamHI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "BamHI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "12067b4d9bfe7a7b2ed6ba7afdc5fbc0f04d687e236af3121cc8d9c3f81b9966",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|spaced_lowercase|hf=True": {
+    "n": 28,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>BamHI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NdeI>XhoI:7",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "0805625126a81995dab6e05b2e470d19d210b0035741c731faa2efc523502f1f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|test_insert|hf=False": {
+    "n": 28,
+    "pairs": [
+     "NdeI>NheI:7",
+     "NdeI>BamHI:7",
+     "NdeI>SacI:7",
+     "NdeI>SalI:7",
+     "NdeI>HindIII:7",
+     "NdeI>NotI:7",
+     "NdeI>XhoI:7",
+     "NheI>BamHI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "BamHI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "12067b4d9bfe7a7b2ed6ba7afdc5fbc0f04d687e236af3121cc8d9c3f81b9966",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|test_insert|hf=True": {
+    "n": 28,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>BamHI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "BamHI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NdeI>XhoI:7",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "0805625126a81995dab6e05b2e470d19d210b0035741c731faa2efc523502f1f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|with_bamhi|hf=False": {
+    "n": 21,
+    "pairs": [
+     "NdeI>NheI:7",
+     "NdeI>SacI:7",
+     "NdeI>SalI:7",
+     "NdeI>HindIII:7",
+     "NdeI>NotI:7",
+     "NdeI>XhoI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "NheI>XhoI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SacI>XhoI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "SalI>XhoI:7",
+     "HindIII>NotI:7",
+     "HindIII>XhoI:7",
+     "NotI>XhoI:5"
+    ],
+    "sha256": "0e76b8d7f70f5f593b52a458fca93938fdad00fbd2e3a8e33aaf517b6f1ee7c3",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|with_bamhi|hf=True": {
+    "n": 21,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "NheI>XhoI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SacI>XhoI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "SalI>XhoI:8",
+     "HindIII>NotI:8",
+     "HindIII>XhoI:8",
+     "NdeI>XhoI:7",
+     "NotI>XhoI:6"
+    ],
+    "sha256": "0d89e9aba8f1fd24c9e5281cd6422f93a774534c115c21a12770d41cc455f2e5",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|with_xhoi|hf=False": {
+    "n": 21,
+    "pairs": [
+     "NdeI>NheI:7",
+     "NdeI>BamHI:7",
+     "NdeI>SacI:7",
+     "NdeI>SalI:7",
+     "NdeI>HindIII:7",
+     "NdeI>NotI:7",
+     "NheI>BamHI:7",
+     "NheI>SacI:7",
+     "NheI>SalI:7",
+     "NheI>HindIII:7",
+     "NheI>NotI:7",
+     "BamHI>SacI:7",
+     "BamHI>SalI:7",
+     "BamHI>HindIII:7",
+     "BamHI>NotI:7",
+     "SacI>SalI:7",
+     "SacI>HindIII:7",
+     "SacI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7"
+    ],
+    "sha256": "05b95e6c69418a677192cd8c0aea90a6506fca5c531098826512298cc025fdc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pET-28a(+)|with_xhoi|hf=True": {
+    "n": 21,
+    "pairs": [
+     "NdeI>NheI:8",
+     "NdeI>BamHI:8",
+     "NdeI>SacI:8",
+     "NdeI>SalI:8",
+     "NdeI>HindIII:8",
+     "NdeI>NotI:8",
+     "NheI>BamHI:8",
+     "NheI>SacI:8",
+     "NheI>SalI:8",
+     "NheI>HindIII:8",
+     "NheI>NotI:8",
+     "BamHI>SacI:8",
+     "BamHI>SalI:8",
+     "BamHI>HindIII:8",
+     "BamHI>NotI:8",
+     "SacI>SalI:8",
+     "SacI>HindIII:8",
+     "SacI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8"
+    ],
+    "sha256": "3c0ebb17105579a0d845299fa92b271c5e714a63d1f8c92b64e9afd820eb415f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|all_sites|hf=False": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pETDuet-1:MCS1|all_sites|hf=True": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pETDuet-1:MCS1|empty|hf=False": {
+    "n": 28,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>EcoRI:5",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "EcoRI>SacI:5",
+     "EcoRI>AscI:5",
+     "EcoRI>PstI:5",
+     "EcoRI>SalI:5",
+     "EcoRI>HindIII:5",
+     "EcoRI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "45dc73a8b127ba41bd8dc3d366300ca6304fc67048cb78dceddba41df3eefb71",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|empty|hf=True": {
+    "n": 28,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>EcoRI:6",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "EcoRI>SacI:6",
+     "EcoRI>AscI:6",
+     "EcoRI>PstI:6",
+     "EcoRI>SalI:6",
+     "EcoRI>HindIII:6",
+     "EcoRI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "3490d97467eed57cd4cfa53cd797c87491a2431428fb95b2f19895aa3563b74d",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|spaced_lowercase|hf=False": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "b106e91c2303e376a752045a3b887b4340bdc2bb78c8733a6866933c5b1633e9",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|spaced_lowercase|hf=True": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "dc4669a13e1bb38c737d8cfeb0033f2cfbf390f46de48b8c6e66174c44a311c8",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|test_insert|hf=False": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "b106e91c2303e376a752045a3b887b4340bdc2bb78c8733a6866933c5b1633e9",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|test_insert|hf=True": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "dc4669a13e1bb38c737d8cfeb0033f2cfbf390f46de48b8c6e66174c44a311c8",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|with_bamhi|hf=False": {
+    "n": 15,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "ccb0e6d349f52b549012219decdb4e8a00bc3fb8b782a6d4f3327f89c91eaf3e",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|with_bamhi|hf=True": {
+    "n": 15,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "0c9c77e73bf5454680c28a5b3d9876a4835490614ac045e683f3e1f9a042230e",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|with_xhoi|hf=False": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:7",
+     "PstI>HindIII:7",
+     "PstI>NotI:7",
+     "SalI>HindIII:7",
+     "SalI>NotI:7",
+     "HindIII>NotI:7",
+     "BamHI>SacI:5",
+     "BamHI>AscI:5",
+     "BamHI>PstI:5",
+     "BamHI>SalI:5",
+     "BamHI>HindIII:5",
+     "BamHI>NotI:5",
+     "SacI>AscI:5",
+     "SacI>PstI:5",
+     "SacI>SalI:5",
+     "SacI>HindIII:5",
+     "SacI>NotI:5",
+     "AscI>PstI:5",
+     "AscI>SalI:5",
+     "AscI>HindIII:5",
+     "AscI>NotI:5"
+    ],
+    "sha256": "b106e91c2303e376a752045a3b887b4340bdc2bb78c8733a6866933c5b1633e9",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS1|with_xhoi|hf=True": {
+    "n": 21,
+    "pairs": [
+     "PstI>SalI:8",
+     "PstI>HindIII:8",
+     "PstI>NotI:8",
+     "SalI>HindIII:8",
+     "SalI>NotI:8",
+     "HindIII>NotI:8",
+     "BamHI>SacI:6",
+     "BamHI>AscI:6",
+     "BamHI>PstI:6",
+     "BamHI>SalI:6",
+     "BamHI>HindIII:6",
+     "BamHI>NotI:6",
+     "SacI>AscI:6",
+     "SacI>PstI:6",
+     "SacI>SalI:6",
+     "SacI>HindIII:6",
+     "SacI>NotI:6",
+     "AscI>PstI:6",
+     "AscI>SalI:6",
+     "AscI>HindIII:6",
+     "AscI>NotI:6"
+    ],
+    "sha256": "dc4669a13e1bb38c737d8cfeb0033f2cfbf390f46de48b8c6e66174c44a311c8",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|all_sites|hf=False": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pETDuet-1:MCS2|all_sites|hf=True": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pETDuet-1:MCS2|empty|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|empty|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|spaced_lowercase|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|spaced_lowercase|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|test_insert|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|test_insert|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|with_bamhi|hf=False": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:7",
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "MfeI>XhoI:5",
+     "EcoRV>KpnI:5",
+     "EcoRV>XhoI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "BglII>XhoI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "38f7d1bf4260450eafcafccc20ed9bb2cf4cbd578ff659531b31f34c0f8fd902",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|with_bamhi|hf=True": {
+    "n": 15,
+    "pairs": [
+     "KpnI>XhoI:8",
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "MfeI>XhoI:6",
+     "EcoRV>KpnI:6",
+     "EcoRV>XhoI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0",
+     "BglII>XhoI:0",
+     "FseI>XhoI:0"
+    ],
+    "sha256": "77b20b66d1f91d8c848efc3dca682ef3e309de86c2436ee79480e7a08d4aefc6",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|with_xhoi|hf=False": {
+    "n": 10,
+    "pairs": [
+     "MfeI>EcoRV:5",
+     "MfeI>KpnI:5",
+     "EcoRV>KpnI:5",
+     "BglII>MfeI:0",
+     "BglII>EcoRV:0",
+     "BglII>FseI:0",
+     "BglII>KpnI:0",
+     "MfeI>FseI:0",
+     "EcoRV>FseI:0",
+     "FseI>KpnI:0"
+    ],
+    "sha256": "8083e55d3c5565466fa4e7e4ab687c12507c59f2ec478b1b7505bee8544fea5f",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pETDuet-1:MCS2|with_xhoi|hf=True": {
+    "n": 10,
+    "pairs": [
+     "MfeI>EcoRV:6",
+     "MfeI>KpnI:6",
+     "EcoRV>KpnI:6",
+     "BglII>MfeI:1",
+     "BglII>EcoRV:1",
+     "BglII>KpnI:1",
+     "MfeI>FseI:1",
+     "EcoRV>FseI:1",
+     "FseI>KpnI:1",
+     "BglII>FseI:0"
+    ],
+    "sha256": "49b29525d80b342835b0c116289465f1af6a9651d7effc84747a179ffb5e189c",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|all_sites|hf=False": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pMAL-c6T|all_sites|hf=True": {
+    "n": 0,
+    "pairs": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "types": [
+     "list",
+     []
+    ]
+   },
+   "pMAL-c6T|empty|hf=False": {
+    "n": 21,
+    "pairs": [
+     "NotI>EcoRV:7",
+     "NotI>SalI:7",
+     "NotI>BamHI:7",
+     "NotI>EcoRI:7",
+     "NotI>HindIII:7",
+     "EcoRV>SalI:7",
+     "EcoRV>BamHI:7",
+     "EcoRV>EcoRI:7",
+     "EcoRV>HindIII:7",
+     "SalI>BamHI:7",
+     "SalI>EcoRI:7",
+     "SalI>HindIII:7",
+     "BamHI>EcoRI:7",
+     "BamHI>HindIII:7",
+     "EcoRI>HindIII:7",
+     "NotI>PstI:5",
+     "EcoRV>PstI:5",
+     "SalI>PstI:5",
+     "BamHI>PstI:5",
+     "EcoRI>PstI:5",
+     "PstI>HindIII:5"
+    ],
+    "sha256": "574c152fad7074146064c50e6d33573424f48189ac447215df4b26b0e385e25b",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|empty|hf=True": {
+    "n": 21,
+    "pairs": [
+     "NotI>EcoRV:8",
+     "NotI>SalI:8",
+     "NotI>BamHI:8",
+     "NotI>EcoRI:8",
+     "NotI>HindIII:8",
+     "EcoRV>SalI:8",
+     "EcoRV>BamHI:8",
+     "EcoRV>EcoRI:8",
+     "EcoRV>HindIII:8",
+     "SalI>BamHI:8",
+     "SalI>EcoRI:8",
+     "SalI>HindIII:8",
+     "BamHI>EcoRI:8",
+     "BamHI>HindIII:8",
+     "EcoRI>HindIII:8",
+     "NotI>PstI:6",
+     "EcoRV>PstI:6",
+     "SalI>PstI:6",
+     "BamHI>PstI:6",
+     "EcoRI>PstI:6",
+     "PstI>HindIII:6"
+    ],
+    "sha256": "f6f67d54e2207489982815d46c67e521cd87fb50ad2760b7b43661678ba49750",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|spaced_lowercase|hf=False": {
+    "n": 15,
+    "pairs": [
+     "NotI>EcoRV:7",
+     "NotI>SalI:7",
+     "NotI>BamHI:7",
+     "NotI>HindIII:7",
+     "EcoRV>SalI:7",
+     "EcoRV>BamHI:7",
+     "EcoRV>HindIII:7",
+     "SalI>BamHI:7",
+     "SalI>HindIII:7",
+     "BamHI>HindIII:7",
+     "NotI>PstI:5",
+     "EcoRV>PstI:5",
+     "SalI>PstI:5",
+     "BamHI>PstI:5",
+     "PstI>HindIII:5"
+    ],
+    "sha256": "bf016334c6b8d6673af1fbbaf07034dd79cb05cdcb4d433e876e0e3721e3c29a",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|spaced_lowercase|hf=True": {
+    "n": 15,
+    "pairs": [
+     "NotI>EcoRV:8",
+     "NotI>SalI:8",
+     "NotI>BamHI:8",
+     "NotI>HindIII:8",
+     "EcoRV>SalI:8",
+     "EcoRV>BamHI:8",
+     "EcoRV>HindIII:8",
+     "SalI>BamHI:8",
+     "SalI>HindIII:8",
+     "BamHI>HindIII:8",
+     "NotI>PstI:6",
+     "EcoRV>PstI:6",
+     "SalI>PstI:6",
+     "BamHI>PstI:6",
+     "PstI>HindIII:6"
+    ],
+    "sha256": "6e62a7679332a1d57b36fdbd81e8ccee7c870017c2f87c3e44c7dd940761a528",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|test_insert|hf=False": {
+    "n": 15,
+    "pairs": [
+     "NotI>EcoRV:7",
+     "NotI>SalI:7",
+     "NotI>BamHI:7",
+     "NotI>HindIII:7",
+     "EcoRV>SalI:7",
+     "EcoRV>BamHI:7",
+     "EcoRV>HindIII:7",
+     "SalI>BamHI:7",
+     "SalI>HindIII:7",
+     "BamHI>HindIII:7",
+     "NotI>PstI:5",
+     "EcoRV>PstI:5",
+     "SalI>PstI:5",
+     "BamHI>PstI:5",
+     "PstI>HindIII:5"
+    ],
+    "sha256": "bf016334c6b8d6673af1fbbaf07034dd79cb05cdcb4d433e876e0e3721e3c29a",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|test_insert|hf=True": {
+    "n": 15,
+    "pairs": [
+     "NotI>EcoRV:8",
+     "NotI>SalI:8",
+     "NotI>BamHI:8",
+     "NotI>HindIII:8",
+     "EcoRV>SalI:8",
+     "EcoRV>BamHI:8",
+     "EcoRV>HindIII:8",
+     "SalI>BamHI:8",
+     "SalI>HindIII:8",
+     "BamHI>HindIII:8",
+     "NotI>PstI:6",
+     "EcoRV>PstI:6",
+     "SalI>PstI:6",
+     "BamHI>PstI:6",
+     "PstI>HindIII:6"
+    ],
+    "sha256": "6e62a7679332a1d57b36fdbd81e8ccee7c870017c2f87c3e44c7dd940761a528",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|with_bamhi|hf=False": {
+    "n": 10,
+    "pairs": [
+     "NotI>EcoRV:7",
+     "NotI>SalI:7",
+     "NotI>HindIII:7",
+     "EcoRV>SalI:7",
+     "EcoRV>HindIII:7",
+     "SalI>HindIII:7",
+     "NotI>PstI:5",
+     "EcoRV>PstI:5",
+     "SalI>PstI:5",
+     "PstI>HindIII:5"
+    ],
+    "sha256": "40f343a2081f617bb39206f6ce8096540b844563bf5bffd86b2a45cf9f24938b",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|with_bamhi|hf=True": {
+    "n": 10,
+    "pairs": [
+     "NotI>EcoRV:8",
+     "NotI>SalI:8",
+     "NotI>HindIII:8",
+     "EcoRV>SalI:8",
+     "EcoRV>HindIII:8",
+     "SalI>HindIII:8",
+     "NotI>PstI:6",
+     "EcoRV>PstI:6",
+     "SalI>PstI:6",
+     "PstI>HindIII:6"
+    ],
+    "sha256": "cf10bea6f15ffa79fc69746682df70db8b79faeb53a14c6295cfcf04f24d86aa",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|with_xhoi|hf=False": {
+    "n": 15,
+    "pairs": [
+     "NotI>EcoRV:7",
+     "NotI>SalI:7",
+     "NotI>BamHI:7",
+     "NotI>HindIII:7",
+     "EcoRV>SalI:7",
+     "EcoRV>BamHI:7",
+     "EcoRV>HindIII:7",
+     "SalI>BamHI:7",
+     "SalI>HindIII:7",
+     "BamHI>HindIII:7",
+     "NotI>PstI:5",
+     "EcoRV>PstI:5",
+     "SalI>PstI:5",
+     "BamHI>PstI:5",
+     "PstI>HindIII:5"
+    ],
+    "sha256": "bf016334c6b8d6673af1fbbaf07034dd79cb05cdcb4d433e876e0e3721e3c29a",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   },
+   "pMAL-c6T|with_xhoi|hf=True": {
+    "n": 15,
+    "pairs": [
+     "NotI>EcoRV:8",
+     "NotI>SalI:8",
+     "NotI>BamHI:8",
+     "NotI>HindIII:8",
+     "EcoRV>SalI:8",
+     "EcoRV>BamHI:8",
+     "EcoRV>HindIII:8",
+     "SalI>BamHI:8",
+     "SalI>HindIII:8",
+     "BamHI>HindIII:8",
+     "NotI>PstI:6",
+     "EcoRV>PstI:6",
+     "SalI>PstI:6",
+     "BamHI>PstI:6",
+     "PstI>HindIII:6"
+    ],
+    "sha256": "6e62a7679332a1d57b36fdbd81e8ccee7c870017c2f87c3e44c7dd940761a528",
+    "types": [
+     "list",
+     [
+      "dict"
+     ]
+    ]
+   }
+  },
+  "tables_unchanged": true
+ },
+ "signature": {
+  "is_plain_method": true,
+  "parameters": [
+   [
+    "self",
+    "POSITIONAL_OR_KEYWORD",
+    "<class 'inspect._empty'>",
+    "<required>"
+   ],
+   [
+    "insert_seq",
+    "POSITIONAL_OR_KEYWORD",
+    "str",
+    "<required>"
+   ],
+   [
+    "vector_name",
+    "POSITIONAL_OR_KEYWORD",
+    "str",
+    "<required>"
+   ],
+   [
+    "prefer_hf",
+    "POSITIONAL_OR_KEYWORD",
+    "bool",
+    "True"
+   ]
+  ],
+  "returns": "list[dict]"
+ },
+ "synthetic": {
+  "cut_by_aaai|hf=False": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 54,
+   "pairs": [
+    "EeeI>IiiI:7",
+    "EeeI>JjjI:7",
+    "DddI>IiiI:7",
+    "DddI>JjjI:7",
+    "DddI>KkkI:7",
+    "IiiI>JjjI:7",
+    "IiiI>KkkI:7",
+    "JjjI>KkkI:7",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>IiiI:5",
+    "BbbI>JjjI:5",
+    "BbbI>KkkI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>IiiI:5",
+    "CccI>JjjI:5",
+    "CccI>KkkI:5",
+    "CccI>NnnI:5",
+    "EeeI>KkkI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "IiiI>NnnI:5",
+    "JjjI>NnnI:5",
+    "KkkI>NnnI:5",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>IiiI:2",
+    "FffI>JjjI:2",
+    "FffI>KkkI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>IiiI:2",
+    "HhhI>JjjI:2",
+    "HhhI>KkkI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "IiiI>LllI:2",
+    "JjjI>LllI:2",
+    "KkkI>LllI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "59b03443e80e8a237514982d69f2c72aaf0146be44424a9d9e6fe894ac80eafa",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "cut_by_aaai|hf=True": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 54,
+   "pairs": [
+    "EeeI>IiiI:8",
+    "EeeI>JjjI:8",
+    "DddI>IiiI:8",
+    "DddI>JjjI:8",
+    "DddI>KkkI:8",
+    "IiiI>JjjI:8",
+    "IiiI>KkkI:8",
+    "JjjI>KkkI:8",
+    "BbbI>IiiI:6",
+    "BbbI>JjjI:6",
+    "BbbI>KkkI:6",
+    "CccI>IiiI:6",
+    "CccI>JjjI:6",
+    "CccI>KkkI:6",
+    "EeeI>KkkI:6",
+    "IiiI>NnnI:6",
+    "JjjI>NnnI:6",
+    "KkkI>NnnI:6",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>NnnI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "FffI>IiiI:3",
+    "FffI>JjjI:3",
+    "FffI>KkkI:3",
+    "HhhI>IiiI:3",
+    "HhhI>JjjI:3",
+    "HhhI>KkkI:3",
+    "IiiI>LllI:3",
+    "JjjI>LllI:3",
+    "KkkI>LllI:3",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "3f61008680f38c7340388e669093eceb14fabec29346b0b946a3d7e12ed0219f",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "cut_by_fffi_and_kkki|hf=False": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 44,
+   "pairs": [
+    "EeeI>IiiI:7",
+    "EeeI>JjjI:7",
+    "DddI>IiiI:7",
+    "DddI>JjjI:7",
+    "IiiI>JjjI:7",
+    "AaaI>BbbI:5",
+    "AaaI>EeeI:5",
+    "AaaI>DddI:5",
+    "AaaI>IiiI:5",
+    "AaaI>JjjI:5",
+    "AaaI>NnnI:5",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>IiiI:5",
+    "BbbI>JjjI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>IiiI:5",
+    "CccI>JjjI:5",
+    "CccI>NnnI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "IiiI>NnnI:5",
+    "JjjI>NnnI:5",
+    "AaaI>CccI:3",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "AaaI>HhhI:2",
+    "AaaI>LllI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "HhhI>IiiI:2",
+    "HhhI>JjjI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "IiiI>LllI:2",
+    "JjjI>LllI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "AaaI>BbbI",
+    "AaaI>CccI",
+    "AaaI>EeeI",
+    "AaaI>DddI",
+    "AaaI>HhhI",
+    "AaaI>IiiI",
+    "AaaI>JjjI",
+    "AaaI>LllI",
+    "AaaI>NnnI",
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "64f5b0a3aaee3308037648cb97c66fb02f1b8d8202db5de0a9d48ec51ef1771f",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "cut_by_fffi_and_kkki|hf=True": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 44,
+   "pairs": [
+    "EeeI>IiiI:8",
+    "EeeI>JjjI:8",
+    "DddI>IiiI:8",
+    "DddI>JjjI:8",
+    "IiiI>JjjI:8",
+    "AaaI>IiiI:6",
+    "AaaI>JjjI:6",
+    "BbbI>IiiI:6",
+    "BbbI>JjjI:6",
+    "CccI>IiiI:6",
+    "CccI>JjjI:6",
+    "IiiI>NnnI:6",
+    "JjjI>NnnI:6",
+    "AaaI>BbbI:5",
+    "AaaI>EeeI:5",
+    "AaaI>DddI:5",
+    "AaaI>NnnI:5",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>NnnI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "AaaI>CccI:3",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "HhhI>IiiI:3",
+    "HhhI>JjjI:3",
+    "IiiI>LllI:3",
+    "JjjI>LllI:3",
+    "AaaI>HhhI:2",
+    "AaaI>LllI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "AaaI>BbbI",
+    "AaaI>CccI",
+    "AaaI>EeeI",
+    "AaaI>DddI",
+    "AaaI>HhhI",
+    "AaaI>IiiI",
+    "AaaI>JjjI",
+    "AaaI>LllI",
+    "AaaI>NnnI",
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "9b5fb6bf7cdb7ce87127e7cb4676431190335158c28dc610e6f3d1e3a616dcba",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "plain|hf=False": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 65,
+   "pairs": [
+    "EeeI>IiiI:7",
+    "EeeI>JjjI:7",
+    "DddI>IiiI:7",
+    "DddI>JjjI:7",
+    "DddI>KkkI:7",
+    "IiiI>JjjI:7",
+    "IiiI>KkkI:7",
+    "JjjI>KkkI:7",
+    "AaaI>BbbI:5",
+    "AaaI>EeeI:5",
+    "AaaI>DddI:5",
+    "AaaI>IiiI:5",
+    "AaaI>JjjI:5",
+    "AaaI>KkkI:5",
+    "AaaI>NnnI:5",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>IiiI:5",
+    "BbbI>JjjI:5",
+    "BbbI>KkkI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>IiiI:5",
+    "CccI>JjjI:5",
+    "CccI>KkkI:5",
+    "CccI>NnnI:5",
+    "EeeI>KkkI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "IiiI>NnnI:5",
+    "JjjI>NnnI:5",
+    "KkkI>NnnI:5",
+    "AaaI>CccI:3",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "AaaI>FffI:2",
+    "AaaI>HhhI:2",
+    "AaaI>LllI:2",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>IiiI:2",
+    "FffI>JjjI:2",
+    "FffI>KkkI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>IiiI:2",
+    "HhhI>JjjI:2",
+    "HhhI>KkkI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "IiiI>LllI:2",
+    "JjjI>LllI:2",
+    "KkkI>LllI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "AaaI>BbbI",
+    "AaaI>CccI",
+    "AaaI>EeeI",
+    "AaaI>DddI",
+    "AaaI>FffI",
+    "AaaI>HhhI",
+    "AaaI>IiiI",
+    "AaaI>JjjI",
+    "AaaI>KkkI",
+    "AaaI>LllI",
+    "AaaI>NnnI",
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "recommendations": [
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "DddI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "DddI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "DddI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "IiiI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "IiiI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "JjjI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible",
+     "score": 7
+    },
+    {
+     "buffer": "B1",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BbbI",
+     "re_5prime": "AaaI",
+     "reason": "Same buffer (B1); Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "EeeI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "DddI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "EeeI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "DddI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "EeeI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "KkkI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Both 100% in CutSmart; Frame mismatch",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "DddI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "IiiI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "JjjI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "KkkI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "CccI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Frame mismatch",
+     "score": 3
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "CccI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Frame mismatch",
+     "score": 3
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "DddI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Frame check N/A",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "AaaI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "AaaI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "AaaI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "BbbI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "BbbI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "BbbI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "CccI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "CccI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "CccI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "EeeI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "EeeI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "EeeI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "DddI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "DddI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "DddI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "FffI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "FffI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "IiiI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "JjjI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "KkkI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "LllI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    }
+   ],
+   "sha256": "8957d67725d69c8245fc9cbffd52fbccaef2d5b8d7349f1efb927ecff3adc019",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "plain|hf=True": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 65,
+   "pairs": [
+    "EeeI>IiiI:8",
+    "EeeI>JjjI:8",
+    "DddI>IiiI:8",
+    "DddI>JjjI:8",
+    "DddI>KkkI:8",
+    "IiiI>JjjI:8",
+    "IiiI>KkkI:8",
+    "JjjI>KkkI:8",
+    "AaaI>IiiI:6",
+    "AaaI>JjjI:6",
+    "AaaI>KkkI:6",
+    "BbbI>IiiI:6",
+    "BbbI>JjjI:6",
+    "BbbI>KkkI:6",
+    "CccI>IiiI:6",
+    "CccI>JjjI:6",
+    "CccI>KkkI:6",
+    "EeeI>KkkI:6",
+    "IiiI>NnnI:6",
+    "JjjI>NnnI:6",
+    "KkkI>NnnI:6",
+    "AaaI>BbbI:5",
+    "AaaI>EeeI:5",
+    "AaaI>DddI:5",
+    "AaaI>NnnI:5",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>NnnI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "AaaI>CccI:3",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "FffI>IiiI:3",
+    "FffI>JjjI:3",
+    "FffI>KkkI:3",
+    "HhhI>IiiI:3",
+    "HhhI>JjjI:3",
+    "HhhI>KkkI:3",
+    "IiiI>LllI:3",
+    "JjjI>LllI:3",
+    "KkkI>LllI:3",
+    "AaaI>FffI:2",
+    "AaaI>HhhI:2",
+    "AaaI>LllI:2",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "AaaI>BbbI",
+    "AaaI>CccI",
+    "AaaI>EeeI",
+    "AaaI>DddI",
+    "AaaI>FffI",
+    "AaaI>HhhI",
+    "AaaI>IiiI",
+    "AaaI>JjjI",
+    "AaaI>KkkI",
+    "AaaI>LllI",
+    "AaaI>NnnI",
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "recommendations": [
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Both 100% in CutSmart; Reading frame compatible; HF available: IiiI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Both 100% in CutSmart; Reading frame compatible; HF available: JjjI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "DddI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: IiiI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "DddI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: JjjI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "DddI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: KkkI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "IiiI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: IiiI-HF, JjjI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "IiiI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: IiiI-HF, KkkI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "JjjI",
+     "reason": "Same buffer (CutSmart); Both 100% in CutSmart; Reading frame compatible; HF available: JjjI-HF, KkkI-HF",
+     "score": 8
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: IiiI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: JjjI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: KkkI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: IiiI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: JjjI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: KkkI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: IiiI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: JjjI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: KkkI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "KkkI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Both 100% in CutSmart; Frame mismatch; HF available: KkkI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "IiiI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: IiiI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "JjjI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: JjjI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "KkkI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible; HF available: KkkI-HF",
+     "score": 6
+    },
+    {
+     "buffer": "B1",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "BbbI",
+     "re_5prime": "AaaI",
+     "reason": "Same buffer (B1); Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "EeeI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "DddI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "EeeI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "DddI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "EeeI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "EeeI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "DddI",
+     "reason": "Both >= 75% in CutSmart; Reading frame compatible",
+     "score": 5
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "CccI",
+     "re_5prime": "AaaI",
+     "reason": "Both >= 75% in CutSmart; Frame mismatch",
+     "score": 3
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "CccI",
+     "re_5prime": "BbbI",
+     "reason": "Both >= 75% in CutSmart; Frame mismatch",
+     "score": 3
+    },
+    {
+     "buffer": "CutSmart",
+     "double_digest_ok": true,
+     "frame_ok": false,
+     "re_3prime": "DddI",
+     "re_5prime": "CccI",
+     "reason": "Both >= 75% in CutSmart; Frame check N/A",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible; HF available: IiiI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible; HF available: JjjI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible; HF available: KkkI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "IiiI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible; HF available: IiiI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "JjjI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible; HF available: JjjI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "KkkI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible; HF available: KkkI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "IiiI",
+     "reason": "Reading frame compatible; HF available: IiiI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "JjjI",
+     "reason": "Reading frame compatible; HF available: JjjI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "KkkI",
+     "reason": "Reading frame compatible; HF available: KkkI-HF",
+     "score": 3
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "AaaI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "AaaI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "AaaI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "BbbI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "BbbI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "BbbI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "CccI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "CccI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "CccI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "EeeI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "EeeI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "EeeI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "FffI",
+     "re_5prime": "DddI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "DddI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "DddI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "HhhI",
+     "re_5prime": "FffI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "FffI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "FffI",
+     "reason": "Sequential digest recommended; Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "LllI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "HhhI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    },
+    {
+     "buffer": null,
+     "double_digest_ok": false,
+     "frame_ok": true,
+     "re_3prime": "NnnI",
+     "re_5prime": "LllI",
+     "reason": "Reading frame compatible",
+     "score": 2
+    }
+   ],
+   "sha256": "7119c714ab6c99ede8c7a6ce164aa47a1809e84bfaeb8973b62f353e305e6eec",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "spaced_lowercase_equals_plain": true,
+  "spaced_lowercase|hf=False": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 65,
+   "pairs": [
+    "EeeI>IiiI:7",
+    "EeeI>JjjI:7",
+    "DddI>IiiI:7",
+    "DddI>JjjI:7",
+    "DddI>KkkI:7",
+    "IiiI>JjjI:7",
+    "IiiI>KkkI:7",
+    "JjjI>KkkI:7",
+    "AaaI>BbbI:5",
+    "AaaI>EeeI:5",
+    "AaaI>DddI:5",
+    "AaaI>IiiI:5",
+    "AaaI>JjjI:5",
+    "AaaI>KkkI:5",
+    "AaaI>NnnI:5",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>IiiI:5",
+    "BbbI>JjjI:5",
+    "BbbI>KkkI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>IiiI:5",
+    "CccI>JjjI:5",
+    "CccI>KkkI:5",
+    "CccI>NnnI:5",
+    "EeeI>KkkI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "IiiI>NnnI:5",
+    "JjjI>NnnI:5",
+    "KkkI>NnnI:5",
+    "AaaI>CccI:3",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "AaaI>FffI:2",
+    "AaaI>HhhI:2",
+    "AaaI>LllI:2",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>IiiI:2",
+    "FffI>JjjI:2",
+    "FffI>KkkI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>IiiI:2",
+    "HhhI>JjjI:2",
+    "HhhI>KkkI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "IiiI>LllI:2",
+    "JjjI>LllI:2",
+    "KkkI>LllI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "AaaI>BbbI",
+    "AaaI>CccI",
+    "AaaI>EeeI",
+    "AaaI>DddI",
+    "AaaI>FffI",
+    "AaaI>HhhI",
+    "AaaI>IiiI",
+    "AaaI>JjjI",
+    "AaaI>KkkI",
+    "AaaI>LllI",
+    "AaaI>NnnI",
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "8957d67725d69c8245fc9cbffd52fbccaef2d5b8d7349f1efb927ecff3adc019",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "spaced_lowercase|hf=True": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 65,
+   "pairs": [
+    "EeeI>IiiI:8",
+    "EeeI>JjjI:8",
+    "DddI>IiiI:8",
+    "DddI>JjjI:8",
+    "DddI>KkkI:8",
+    "IiiI>JjjI:8",
+    "IiiI>KkkI:8",
+    "JjjI>KkkI:8",
+    "AaaI>IiiI:6",
+    "AaaI>JjjI:6",
+    "AaaI>KkkI:6",
+    "BbbI>IiiI:6",
+    "BbbI>JjjI:6",
+    "BbbI>KkkI:6",
+    "CccI>IiiI:6",
+    "CccI>JjjI:6",
+    "CccI>KkkI:6",
+    "EeeI>KkkI:6",
+    "IiiI>NnnI:6",
+    "JjjI>NnnI:6",
+    "KkkI>NnnI:6",
+    "AaaI>BbbI:5",
+    "AaaI>EeeI:5",
+    "AaaI>DddI:5",
+    "AaaI>NnnI:5",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>NnnI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "AaaI>CccI:3",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "FffI>IiiI:3",
+    "FffI>JjjI:3",
+    "FffI>KkkI:3",
+    "HhhI>IiiI:3",
+    "HhhI>JjjI:3",
+    "HhhI>KkkI:3",
+    "IiiI>LllI:3",
+    "JjjI>LllI:3",
+    "KkkI>LllI:3",
+    "AaaI>FffI:2",
+    "AaaI>HhhI:2",
+    "AaaI>LllI:2",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "AaaI>BbbI",
+    "AaaI>CccI",
+    "AaaI>EeeI",
+    "AaaI>DddI",
+    "AaaI>FffI",
+    "AaaI>HhhI",
+    "AaaI>IiiI",
+    "AaaI>JjjI",
+    "AaaI>KkkI",
+    "AaaI>LllI",
+    "AaaI>NnnI",
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "7119c714ab6c99ede8c7a6ce164aa47a1809e84bfaeb8973b62f353e305e6eec",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "spaced_site_equals_cut_by_aaai": true,
+  "spaced_site|hf=False": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 54,
+   "pairs": [
+    "EeeI>IiiI:7",
+    "EeeI>JjjI:7",
+    "DddI>IiiI:7",
+    "DddI>JjjI:7",
+    "DddI>KkkI:7",
+    "IiiI>JjjI:7",
+    "IiiI>KkkI:7",
+    "JjjI>KkkI:7",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>IiiI:5",
+    "BbbI>JjjI:5",
+    "BbbI>KkkI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>IiiI:5",
+    "CccI>JjjI:5",
+    "CccI>KkkI:5",
+    "CccI>NnnI:5",
+    "EeeI>KkkI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "IiiI>NnnI:5",
+    "JjjI>NnnI:5",
+    "KkkI>NnnI:5",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>IiiI:2",
+    "FffI>JjjI:2",
+    "FffI>KkkI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>IiiI:2",
+    "HhhI>JjjI:2",
+    "HhhI>KkkI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "IiiI>LllI:2",
+    "JjjI>LllI:2",
+    "KkkI>LllI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "59b03443e80e8a237514982d69f2c72aaf0146be44424a9d9e6fe894ac80eafa",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "spaced_site|hf=True": {
+   "keys": [
+    "re_5prime",
+    "re_3prime",
+    "buffer",
+    "double_digest_ok",
+    "frame_ok",
+    "score",
+    "reason"
+   ],
+   "n": 54,
+   "pairs": [
+    "EeeI>IiiI:8",
+    "EeeI>JjjI:8",
+    "DddI>IiiI:8",
+    "DddI>JjjI:8",
+    "DddI>KkkI:8",
+    "IiiI>JjjI:8",
+    "IiiI>KkkI:8",
+    "JjjI>KkkI:8",
+    "BbbI>IiiI:6",
+    "BbbI>JjjI:6",
+    "BbbI>KkkI:6",
+    "CccI>IiiI:6",
+    "CccI>JjjI:6",
+    "CccI>KkkI:6",
+    "EeeI>KkkI:6",
+    "IiiI>NnnI:6",
+    "JjjI>NnnI:6",
+    "KkkI>NnnI:6",
+    "BbbI>EeeI:5",
+    "BbbI>DddI:5",
+    "BbbI>NnnI:5",
+    "CccI>EeeI:5",
+    "CccI>NnnI:5",
+    "EeeI>NnnI:5",
+    "DddI>NnnI:5",
+    "BbbI>CccI:3",
+    "CccI>DddI:3",
+    "FffI>IiiI:3",
+    "FffI>JjjI:3",
+    "FffI>KkkI:3",
+    "HhhI>IiiI:3",
+    "HhhI>JjjI:3",
+    "HhhI>KkkI:3",
+    "IiiI>LllI:3",
+    "JjjI>LllI:3",
+    "KkkI>LllI:3",
+    "BbbI>FffI:2",
+    "BbbI>HhhI:2",
+    "BbbI>LllI:2",
+    "CccI>FffI:2",
+    "CccI>HhhI:2",
+    "CccI>LllI:2",
+    "EeeI>FffI:2",
+    "EeeI>HhhI:2",
+    "EeeI>LllI:2",
+    "DddI>FffI:2",
+    "DddI>HhhI:2",
+    "DddI>LllI:2",
+    "FffI>HhhI:2",
+    "FffI>LllI:2",
+    "FffI>NnnI:2",
+    "HhhI>LllI:2",
+    "HhhI>NnnI:2",
+    "LllI>NnnI:2"
+   ],
+   "reading_frame_call_shapes": {
+    "insert_has_atg": [
+     true
+    ],
+    "insert_has_stop": [
+     false
+    ],
+    "keyword_sets": [
+     [
+      "insert_has_atg",
+      "insert_has_stop",
+      "re_3prime",
+      "re_5prime",
+      "vector_name"
+     ]
+    ],
+    "vector_name": [
+     "synthetic"
+    ]
+   },
+   "reading_frame_pairs": [
+    "BbbI>CccI",
+    "BbbI>EeeI",
+    "BbbI>DddI",
+    "BbbI>FffI",
+    "BbbI>HhhI",
+    "BbbI>IiiI",
+    "BbbI>JjjI",
+    "BbbI>KkkI",
+    "BbbI>LllI",
+    "BbbI>NnnI",
+    "CccI>EeeI",
+    "CccI>DddI",
+    "CccI>FffI",
+    "CccI>HhhI",
+    "CccI>IiiI",
+    "CccI>JjjI",
+    "CccI>KkkI",
+    "CccI>LllI",
+    "CccI>NnnI",
+    "EeeI>FffI",
+    "EeeI>HhhI",
+    "EeeI>IiiI",
+    "EeeI>JjjI",
+    "EeeI>KkkI",
+    "EeeI>LllI",
+    "EeeI>NnnI",
+    "DddI>FffI",
+    "DddI>HhhI",
+    "DddI>IiiI",
+    "DddI>JjjI",
+    "DddI>KkkI",
+    "DddI>LllI",
+    "DddI>NnnI",
+    "FffI>HhhI",
+    "FffI>IiiI",
+    "FffI>JjjI",
+    "FffI>KkkI",
+    "FffI>LllI",
+    "FffI>NnnI",
+    "HhhI>IiiI",
+    "HhhI>JjjI",
+    "HhhI>KkkI",
+    "HhhI>LllI",
+    "HhhI>NnnI",
+    "IiiI>JjjI",
+    "IiiI>KkkI",
+    "IiiI>LllI",
+    "IiiI>NnnI",
+    "JjjI>KkkI",
+    "JjjI>LllI",
+    "JjjI>NnnI",
+    "KkkI>LllI",
+    "KkkI>NnnI",
+    "LllI>NnnI"
+   ],
+   "sha256": "3f61008680f38c7340388e669093eceb14fabec29346b0b946a3d7e12ed0219f",
+   "types": [
+    "list",
+    [
+     "dict"
+    ]
+   ]
+  },
+  "tables_unchanged": true
+ }
+}

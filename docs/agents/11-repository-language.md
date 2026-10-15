@@ -33,7 +33,10 @@ not "clean them up":
    purpose. Korean filenames included — they are referenced by path from
    `README.md` and from code, so renaming them breaks those links. Reference
    docs *about* the repo's machinery (`docs/feature-connectivity-ledger.md`)
-   are not onboarding docs and follow the English rule.
+   are not onboarding docs and follow the English rule. English translations
+   of the onboarding docs live in `docs/en/` (English filenames); the Korean
+   originals stay canonical, so a change to a Korean doc should be mirrored in
+   its `docs/en/` counterpart in the same commit.
 
 Everything outside those five is prose and gets translated.
 

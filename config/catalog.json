@@ -359,6 +359,12 @@
       "requires": [],
       "size_kb": 7
     },
+    "statusline-usage": {
+      "category": "validation",
+      "role": "Claude Code status line: model, context-window use, 5-hour and weekly rate-limit use with reset times; dependency-free bash script plus a PowerShell twin",
+      "requires": [],
+      "size_kb": 12
+    },
     "token-efficient-routing": {
       "category": "validation",
       "role": "Agent/model routing -- assigns work to the cheapest adequate tier (3 gates: spawn, tier, structure; gate-hook patterns; log-based tuning)",
@@ -454,7 +460,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 51 skills",
+      "desc": "All 52 skills",
       "skills": [
         "__ALL__"
       ]

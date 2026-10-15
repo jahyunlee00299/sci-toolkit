@@ -1,0 +1,4936 @@
+{
+ "reports": {
+  "default_gene_name_str_path_new_dir": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "fa06ccc1c158af80f6c7df1930ebc10d9d906ace31857fe7605dc36047ac5924",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: Insert    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "268e476f570b05affd719cf90d9c03b79ac99c11958cc63c335d4c02cd15a253",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "Insert CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "default_gene_name_str_path_new_dir.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "frame_check_empty_dict": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 14,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "8425a8798d24aaf7f10b7ab9f429144fb3dd19bb00a7a07d16fa6a4f1f670d2a",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading frame: (no vector specified)",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "frame_check_empty_dict.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "frame_flags_absent_no_linkers_with_report_text": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 17,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "2add0220bf11e133de55462171845fb0db7fa7a272a5fa2e63bd64fd587ab0b6",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✗ 5' junction",
+       "✗ 3' junction",
+       "short",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "frame_flags_absent_no_linkers_with_report_text.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "huge_insert_both_tails_min_width": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "aca062e803193c36f8bf58d27afa932b3a95ec4e3b5807ad143469763526af6c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 5000 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "2fc9801aee0c039d5b5a33734a9d72fccee5124e124915caad3daab1440f9f40",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (5000 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 5020 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "huge_insert_both_tails_min_width.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "insert_len_missing": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "9c7f092da4ed2dd294b1335c146e0be0cf63047c9fdc3c99116e59f5ad0b893c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 0 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "9038990978a3884314a3d9588a31c3f252363e8ba7b2f8a9f1aaf6a9dc4c3c69",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (0 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 20 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "insert_len_missing.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "long_sequences": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "384f70458e228641843af1cff4a1613b5609e3d91aaadb5880c2ff46c9efd447",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: LongGene    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 8,
+      "n_texts": 22,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "f2ecc0c60ca3cae13d87c8a360a95871f2eacfd28841af299777866d01373cdd",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (6bp)",
+       "GGGGGG",
+       "BamHI",
+       "GGATCC",
+       "spacer",
+       "TTTTTT...TTTTT",
+       "annealing (30bp)",
+       "ACGTAC...CGTAC",
+       "3'",
+       "5'-ACGTACGTACACGTACGTACACGTACGTACACGTA...ACACGTACGTACACGTACGTACACGTACGTAC-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-ACGTACGTACACGTACGTACACGTACGTACACGTA...CGTACGTACACGTACGTACACGTACGTACACG-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "47440be8f9e44865042869bc9065122c01bffb581479f845aad4a419b43def6f",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "30 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "e8f74e8b658c84a510877432886b81e6d836c80b4e401617567e25621597f1df",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "LongGene CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 265 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "long_sequences.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "missing_3prime_enzyme_fails_in_header": {
+   "file_written": false,
+   "open_figures_after": 1,
+   "raised": [
+    "KeyError",
+    "'re_3prime'"
+   ]
+  },
+  "missing_forward_tm_fails_in_architecture": {
+   "file_written": false,
+   "open_figures_after": 1,
+   "raised": [
+    "KeyError",
+    "'f_tm'"
+   ]
+  },
+  "missing_r_tail_fails_in_construct_map": {
+   "file_written": false,
+   "open_figures_after": 1,
+   "raised": [
+    "KeyError",
+    "'r_tail'"
+   ]
+  },
+  "mixed_frame_empty_topology_3prime_linker_only": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 17,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "ffe524ef5adb53d8d9396dcafedbc2dbf1ad88b6025fd601d7019f731faf0aab",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✗ 3' junction",
+       "5' linker: N/A    3' linker: XYZ",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "mixed_frame_empty_topology_3prime_linker_only.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "no_frame_check": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 14,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "8425a8798d24aaf7f10b7ab9f429144fb3dd19bb00a7a07d16fa6a4f1f670d2a",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading frame: (no vector specified)",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "no_frame_check.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "only_forward_tail_narrow": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "0cb43645a591a7679fd614be20fbf85914dd0a1b6a31ca371053c476ffb7ef46",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 40 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "468ba16da15083316de1d69431f70e9eaa2b87083bcddf4e27a62d22ec3ffedf",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (40 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 62 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "only_forward_tail_narrow.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "only_reverse_tail_narrow": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "0cb43645a591a7679fd614be20fbf85914dd0a1b6a31ca371053c476ffb7ef46",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 40 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "406482092f3e1cf158a417b60f1636fabf900e15ba4de2a4e9ac316a50fab2ed",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (40 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 62 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "only_reverse_tail_narrow.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "out_of_frame_long_topology_5prime_linker_only": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "d7733f0753625e874e1fe513158b6f63290df79d5e50fe2e9a5913fe42e49d53",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✗ 5' junction",
+       "✗ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP] [a topology li...",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: N/A",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "out_of_frame_long_topology_5prime_linker_only.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "pet28a_full": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.0, 0.0, 0.0, 0.0], \"fc\": [0.0824, 0.3961, 0.7529, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [1.0, 1.0], \"xy\": [0.0, 0.0], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "1c221211bd1591f5d4f48d753e28d26ddf38813bd33fb367eb1ec20aa0dd6d32",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"#FFFFFF\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [0.5, 0.62], \"rotation\": 0.0, \"size\": 16.0, \"style\": \"normal\", \"text\": \"RE Cloning Primer Design Report\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#FFFFFF\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [0.5, 0.2], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"Gene: GeneX    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: GeneX    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.1, \"rounding_size\": null}, \"ec\": [0.8784, 0.8784, 0.8784, 1.0], \"fc\": [0.9804, 0.9804, 0.9804, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [10.0, 10.0], \"xy\": [0.0, 0.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.6902, 0.7451, 0.7725, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1355, 0.8], \"xy\": [0.6, 7.1], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.7032, 0.8], \"xy\": [1.7355, 7.1], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.2588, 0.6471, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [5.9613, 0.8], \"xy\": [3.4387, 7.1], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.6902, 0.7451, 0.7725, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1, 0.8], \"xy\": [0.6, 2.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.65, 0.8], \"xy\": [1.7, 2.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.2588, 0.6471, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [6.05, 0.8], \"xy\": [3.35, 2.6], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 9.1], \"rotation\": 0.0, \"size\": 11.0, \"style\": \"normal\", \"text\": \"Forward Primer  (31 nt,  Tm = 63.0\\u00b0C,  GC = 42.9%)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"right\", \"pos\": [0.25, 7.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"5'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.1677, 7.55], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"prot (4bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [1.1677, 6.85], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"GCGC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.5871, 7.55], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"BamHI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [2.5871, 6.85], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"GGATCC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [6.4194, 7.55], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"annealing (21bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [6.4194, 6.85], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"ATGAAA...TTCTG\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [9.55, 7.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#888888\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 6.3], \"rotation\": 0.0, \"size\": 7.0, \"style\": \"normal\", \"text\": \"5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 4.6], \"rotation\": 0.0, \"size\": 11.0, \"style\": \"normal\", \"text\": \"Reverse Primer  (32 nt,  Tm = 64.4\\u00b0C,  GC = 45.5%)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"right\", \"pos\": [0.25, 3.0], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"5'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.15, 3.05], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"prot (4bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [1.15, 2.35], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"GCGC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.525, 3.05], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"XhoI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [2.525, 2.35], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"CTCGAG\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [6.375, 3.05], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"annealing (22bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [6.375, 2.35], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"TTATTC...CTTTC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [9.55, 3.0], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#888888\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 1.8], \"rotation\": 0.0, \"size\": 7.0, \"style\": \"normal\", \"text\": \"5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.1, \"rounding_size\": null}, \"ec\": [0.8784, 0.8784, 0.8784, 1.0], \"fc\": [0.9804, 0.9804, 0.9804, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [10.0, 10.0], \"xy\": [0.0, 0.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.5328, 1.2], \"xy\": [0.5, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [2.0328, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [0.9754, 1.2], \"xy\": [3.1475, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [4.123, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [5.2377, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.3934, 1.2], \"xy\": [6.3525, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.2541, 1.2], \"xy\": [7.7459, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.5328, 1.2], \"xy\": [0.5, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [2.0328, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.9754, 1.2], \"xy\": [3.1475, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [4.123, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [5.2377, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.3934, 1.2], \"xy\": [6.3525, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.7843, 0.902, 0.7882, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.2541, 1.2], \"xy\": [7.7459, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.5328, 1.2], \"xy\": [0.5, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [2.0328, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.9754, 1.2], \"xy\": [3.1475, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [4.123, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [5.2377, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.3934, 1.2], \"xy\": [6.3525, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.7843, 0.902, 0.7882, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.2541, 1.2], \"xy\": [7.7459, 4.6], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 9.2], \"rotation\": 0.0, \"size\": 12.0, \"style\": \"normal\", \"text\": \"Quality Control\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.2664, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Primer\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.5902, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Tm (\\u00b0C)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [3.6352, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"GC%\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [4.6803, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Length\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.7951, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Anneal\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [7.0492, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Hairpin Tm\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.373, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Verdict\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.2664, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Forward\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.5902, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"63.0\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [3.6352, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"42.9\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [4.6803, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"31 nt\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.7951, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"21 bp\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [7.0492, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"0.0\\u00b0C\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#2E7D32\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.373, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"PASS\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.2664, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Reverse\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.5902, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"64.4\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [3.6352, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"45.5\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [4.6803, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"32 nt\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.7951, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"22 bp\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [7.0492, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"40.5\\u00b0C\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#2E7D32\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.373, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"PASS\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555555\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.5, 3.8], \"rotation\": 0.0, \"size\": 9.5, \"style\": \"normal\", \"text\": \"Annealing temp: 64.0\\u00b0C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6\\u00b0C\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.1, \"rounding_size\": null}, \"ec\": [0.8784, 0.8784, 0.8784, 1.0], \"fc\": [0.9804, 0.9804, 0.9804, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [10.0, 10.0], \"xy\": [0.0, 0.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.2, 0.2, 0.2, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [0.6, 1.0], \"xy\": [1.0, 6.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.2, 0.2, 0.2, 1.0], \"fc\": [0.4, 0.7333, 0.4157, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [6.8, 1.0], \"xy\": [1.6, 6.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.2, 0.2, 0.2, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [0.6, 1.0], \"xy\": [8.4, 6.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.6902, 0.7451, 0.7725, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [0.5, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [2.0, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [1.0, 0.8784, 0.5098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [3.5, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.2588, 0.6471, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [5.0, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.4, 0.7333, 0.4157, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [6.5, 0.55], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "2964a5f09d0242dafb5ada9275e8c9e6fb44b59463d55504f9f1aa03ad290ae3",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 9.2], \"rotation\": 0.0, \"size\": 12.0, \"style\": \"normal\", \"text\": \"Cloning Construct (PCR Product)\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.3, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"BamHI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.0, 6.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"GeneX CDS (243 bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.7, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"XhoI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"arrowprops\": {\"arrowstyle\": \"->\", \"color\": \"#888\", \"connectionstyle\": \"arc3,rad=0\", \"lw\": 1.5}, \"color\": \"black\", \"family\": [\"sans-serif\"], \"ha\": \"left\", \"pos\": [0.85, 6.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"\", \"type\": \"Annotation\", \"va\": \"baseline\", \"weight\": \"normal\", \"xy\": [9.15, 6.5], \"xytext\": [0.85, 6.5], \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"right\", \"pos\": [0.65, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"5'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [9.35, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [5.0, 5.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"PCR product: 263 bp\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 3.6], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"Reading Frame:\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#4CAF50\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [3.0, 3.6], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"\\u2713 5' junction\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#4CAF50\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [5.5, 3.6], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"\\u2713 3' junction\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 2.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#777\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 2.0], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.9, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"Protection\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [2.4, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"RE site\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [3.9, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"Spacer\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [5.4, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"Annealing\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [6.9, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"CDS\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "GeneX CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "pet28a_full.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "qc_missing_and_unknown_verdict": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "f0569da082490db23d67117987a96c374dfaa31aebac74cd42accb2c7c1a018f",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "N/A°C",
+       "N/A",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "N/A°C",
+       "CHECK",
+       "Annealing temp: N/A°C    |    Heterodimer: dG = N/A kcal/mol, Tm = N/A°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "97af0e8954c66132f8c7186cd42a7f50c873441f365097ba009aa5b6b76f62d8",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "qc_missing_and_unknown_verdict.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "qc_warning_and_fail": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "7c9fbc30713a42a88530de912982b75e8f9e0ad9d55a73d0b38e8ebbb13915cc",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "WARNING",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "FAIL",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "97af0e8954c66132f8c7186cd42a7f50c873441f365097ba009aa5b6b76f62d8",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "qc_warning_and_fail.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "short_insert_wide_tails": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "b2483f0990a864ed5809193aacc74b13eaebdf01b3dabb1219770e02f0f485bb",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 30 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "6c54c3fca53550c8209eb2c49b38c635e471ee4d005ebcaec520aefbce19bd90",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (30 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 50 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "short_insert_wide_tails.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "spacer_keys_absent": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "97af0e8954c66132f8c7186cd42a7f50c873441f365097ba009aa5b6b76f62d8",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "spacer_keys_absent.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "stop_codon_spacers_no_protection": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.0, 0.0, 0.0, 0.0], \"fc\": [0.0824, 0.3961, 0.7529, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [1.0, 1.0], \"xy\": [0.0, 0.0], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "d3977386592a60cb3d626ca2f5db54a371eb6dab530abf9156f2169bc301a981",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"#FFFFFF\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [0.5, 0.62], \"rotation\": 0.0, \"size\": 16.0, \"style\": \"normal\", \"text\": \"RE Cloning Primer Design Report\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#FFFFFF\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [0.5, 0.2], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"Gene: GeneY    Insert: 243 bp    RE: NheI / NotI    Date: <date>\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: GeneY    Insert: 243 bp    RE: NheI / NotI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 8,
+      "n_texts": 22,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.1, \"rounding_size\": null}, \"ec\": [0.8784, 0.8784, 0.8784, 1.0], \"fc\": [0.9804, 0.9804, 0.9804, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [10.0, 10.0], \"xy\": [0.0, 0.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.8207, 0.8], \"xy\": [0.6, 7.1], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [1.0, 0.8784, 0.5098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [0.6069, 0.8], \"xy\": [2.4207, 7.1], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.2588, 0.6471, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [6.3724, 0.8], \"xy\": [3.0276, 7.1], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [2.0114, 0.8], \"xy\": [0.6, 2.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [1.0, 0.8784, 0.5098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [0.5029, 0.8], \"xy\": [2.6114, 2.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [1.0, 0.4392, 0.2627, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [0.7543, 0.8], \"xy\": [3.1143, 2.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.3333, 0.3333, 0.3333, 1.0], \"fc\": [0.2588, 0.6471, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [5.5314, 0.8], \"xy\": [3.8686, 2.6], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "e054b2818f248501c72f5e8f1def4b29b5f8979b6cf95dcdac26af3656169418",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 9.1], \"rotation\": 0.0, \"size\": 11.0, \"style\": \"normal\", \"text\": \"Forward Primer  (31 nt,  Tm = 63.0\\u00b0C,  GC = 42.9%)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"right\", \"pos\": [0.25, 7.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"5'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.5103, 7.55], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"NheI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [1.5103, 6.85], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"GCTAGC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.7241, 7.55], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"spacer\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [2.7241, 6.85], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"GC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [6.2138, 7.55], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"annealing (21bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [6.2138, 6.85], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"ATGAAA...TTCTG\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [9.55, 7.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#888888\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 6.3], \"rotation\": 0.0, \"size\": 7.0, \"style\": \"normal\", \"text\": \"5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 4.6], \"rotation\": 0.0, \"size\": 11.0, \"style\": \"normal\", \"text\": \"Reverse Primer  (32 nt,  Tm = 64.4\\u00b0C,  GC = 45.5%)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"right\", \"pos\": [0.25, 3.0], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"5'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.6057, 3.05], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"NotI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [1.6057, 2.35], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"GCGGCCGC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.8629, 3.05], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"spacer\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [2.8629, 2.35], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"AA\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [3.4914, 3.05], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"stop(RC)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [3.4914, 2.35], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"TTA\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [6.6343, 3.05], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"annealing (22bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [6.6343, 2.35], \"rotation\": 0.0, \"size\": 6.5, \"style\": \"normal\", \"text\": \"TTATTC...CTTTC\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [9.55, 3.0], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#888888\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 1.8], \"rotation\": 0.0, \"size\": 7.0, \"style\": \"normal\", \"text\": \"5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "NheI",
+       "GCTAGC",
+       "spacer",
+       "GC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "NotI",
+       "GCGGCCGC",
+       "spacer",
+       "AA",
+       "stop(RC)",
+       "TTA",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.1, \"rounding_size\": null}, \"ec\": [0.8784, 0.8784, 0.8784, 1.0], \"fc\": [0.9804, 0.9804, 0.9804, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [10.0, 10.0], \"xy\": [0.0, 0.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.5328, 1.2], \"xy\": [0.5, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [2.0328, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [0.9754, 1.2], \"xy\": [3.1475, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [4.123, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [5.2377, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.3934, 1.2], \"xy\": [6.3525, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.149, 0.1961, 0.2196, 1.0], \"fc\": [0.2157, 0.2784, 0.3098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.8, \"type\": \"FancyBboxPatch\", \"wh\": [1.2541, 1.2], \"xy\": [7.7459, 7.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.5328, 1.2], \"xy\": [0.5, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [2.0328, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.9754, 1.2], \"xy\": [3.1475, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [4.123, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [5.2377, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [1.0, 1.0, 1.0, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.3934, 1.2], \"xy\": [6.3525, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.7843, 0.902, 0.7882, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.2541, 1.2], \"xy\": [7.7459, 5.8], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.5328, 1.2], \"xy\": [0.5, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [2.0328, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.9754, 1.2], \"xy\": [3.1475, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [4.123, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.1148, 1.2], \"xy\": [5.2377, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.9608, 0.9608, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.3934, 1.2], \"xy\": [6.3525, 4.6], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Square\", \"pad\": 0.0}, \"ec\": [0.8, 0.8, 0.8, 1.0], \"fc\": [0.7843, 0.902, 0.7882, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [1.2541, 1.2], \"xy\": [7.7459, 4.6], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 9.2], \"rotation\": 0.0, \"size\": 12.0, \"style\": \"normal\", \"text\": \"Quality Control\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.2664, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Primer\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.5902, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Tm (\\u00b0C)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [3.6352, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"GC%\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [4.6803, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Length\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.7951, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Anneal\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [7.0492, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Hairpin Tm\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.373, 7.6], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Verdict\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.2664, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Forward\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.5902, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"63.0\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [3.6352, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"42.9\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [4.6803, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"31 nt\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.7951, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"21 bp\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [7.0492, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"0.0\\u00b0C\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#2E7D32\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.373, 6.4], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"PASS\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.2664, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"Reverse\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [2.5902, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"64.4\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [3.6352, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"45.5\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [4.6803, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"32 nt\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.7951, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"22 bp\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#333333\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [7.0492, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"40.5\\u00b0C\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#2E7D32\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.373, 5.2], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"PASS\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555555\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.5, 3.8], \"rotation\": 0.0, \"size\": 9.5, \"style\": \"normal\", \"text\": \"Annealing temp: 64.0\\u00b0C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6\\u00b0C\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 10,
+      "n_texts": 19,
+      "patch_elements": [
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.1, \"rounding_size\": null}, \"ec\": [0.8784, 0.8784, 0.8784, 1.0], \"fc\": [0.9804, 0.9804, 0.9804, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [10.0, 10.0], \"xy\": [0.0, 0.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.2, 0.2, 0.2, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [0.6, 1.0], \"xy\": [1.0, 6.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.2, 0.2, 0.2, 1.0], \"fc\": [0.4, 0.7333, 0.4157, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [6.8, 1.0], \"xy\": [1.6, 6.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.2, 0.2, 0.2, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 1.0, \"type\": \"FancyBboxPatch\", \"wh\": [0.6, 1.0], \"xy\": [8.4, 6.0], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.6902, 0.7451, 0.7725, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [0.5, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.9373, 0.3255, 0.3137, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [2.0, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [1.0, 0.8784, 0.5098, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [3.5, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.2588, 0.6471, 0.9608, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [5.0, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [1.0, 0.4392, 0.2627, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [6.5, 0.55], \"z\": 1}",
+       "{\"alpha\": null, \"boxstyle\": {\"class\": \"Round\", \"pad\": 0.02, \"rounding_size\": null}, \"ec\": [0.6, 0.6, 0.6, 1.0], \"fc\": [0.4, 0.7333, 0.4157, 1.0], \"fill\": true, \"ls\": \"solid\", \"lw\": 0.5, \"type\": \"FancyBboxPatch\", \"wh\": [0.3, 0.3], \"xy\": [8.0, 0.55], \"z\": 1}"
+      ],
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "89412b8dd1d73301cbb6be1459a1357d9946cb7d26d83941e439d3d5aa3d2d94",
+      "text_elements": [
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 9.2], \"rotation\": 0.0, \"size\": 12.0, \"style\": \"normal\", \"text\": \"Cloning Construct (PCR Product)\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [1.3, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"NheI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [5.0, 6.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"GeneY CDS (243 bp)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"white\", \"family\": [\"DejaVu Sans\"], \"ha\": \"center\", \"pos\": [8.7, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"NotI\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"arrowprops\": {\"arrowstyle\": \"->\", \"color\": \"#888\", \"connectionstyle\": \"arc3,rad=0\", \"lw\": 1.5}, \"color\": \"black\", \"family\": [\"sans-serif\"], \"ha\": \"left\", \"pos\": [0.85, 6.5], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"\", \"type\": \"Annotation\", \"va\": \"baseline\", \"weight\": \"normal\", \"xy\": [9.15, 6.5], \"xytext\": [0.85, 6.5], \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"right\", \"pos\": [0.65, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"5'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [9.35, 6.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"3'\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"center\", \"pos\": [5.0, 5.5], \"rotation\": 0.0, \"size\": 9.0, \"style\": \"normal\", \"text\": \"PCR product: 264 bp\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"black\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.4, 3.6], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"Reading Frame:\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"bold\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#4CAF50\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [3.0, 3.6], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"\\u2713 5' junction\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#4CAF50\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [5.5, 3.6], \"rotation\": 0.0, \"size\": 10.0, \"style\": \"normal\", \"text\": \"\\u2713 3' junction\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#666\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 2.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"[T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#777\", \"family\": [\"DejaVu Sans Mono\"], \"ha\": \"left\", \"pos\": [0.4, 2.0], \"rotation\": 0.0, \"size\": 8.0, \"style\": \"normal\", \"text\": \"5' linker: MAS    3' linker: AAALEHHHHHH\", \"type\": \"Text\", \"va\": \"baseline\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [0.9, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"Protection\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [2.4, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"RE site\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [3.9, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"Spacer\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [5.4, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"Annealing\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [6.9, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"Stop(RC)\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}",
+       "{\"alpha\": null, \"color\": \"#555\", \"family\": [\"DejaVu Sans\"], \"ha\": \"left\", \"pos\": [8.4, 0.7], \"rotation\": 0.0, \"size\": 7.5, \"style\": \"normal\", \"text\": \"CDS\", \"type\": \"Text\", \"va\": \"center\", \"weight\": \"normal\", \"z\": 3}"
+      ],
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "NheI",
+       "GeneY CDS (243 bp)",
+       "NotI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 264 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[T7-tag] (NheI) [ATG-INSERT-STOP] (NotI)",
+       "5' linker: MAS    3' linker: AAALEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "Stop(RC)",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "stop_codon_spacers_no_protection.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "topology_91_chars": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "7f213f570bd07104979d7f6aa1efa6a411634d1ad052a23b9164c0ed14aaf439",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT...",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "topology_91_chars.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "topology_exactly_90_chars": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "ac1237dc1238eb76b817b3c14da6bee22e68a631f7461888f6aff8a7484f5101",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "topology_exactly_90_chars.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "warnings_exactly_three": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 24,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "cce3d7afa294ea891f7fdd76affe5c4c7343b35c680677ea1364de37e2b9c4fd",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C",
+       "Warnings: warning number 1; warning number 2; warning number 3"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "97af0e8954c66132f8c7186cd42a7f50c873441f365097ba009aa5b6b76f62d8",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "warnings_exactly_three.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "warnings_four": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 24,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "1fc8e7e8d31cec45017e5774026e448b00bc799be68be974584cd5a9ac8cfb05",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C",
+       "Warnings: warning number 1; warning number 2; warning number 3 (+1 more)"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "97af0e8954c66132f8c7186cd42a7f50c873441f365097ba009aa5b6b76f62d8",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "warnings_four.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "warnings_overflow": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "36cdabe387a5109a1362b3ebeeb2181039835f0b1282dd87dc3e77a434f3fc9c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 243 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 24,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "958ecca11e8509bff11c18e8cd036b8fb08d04189e5b48dd5b1c6cdf6994b81c",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C",
+       "Warnings: warning number 1; warning number 2; warning number 3 (+2 more)"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "97af0e8954c66132f8c7186cd42a7f50c873441f365097ba009aa5b6b76f62d8",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (243 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 263 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "warnings_overflow.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  },
+  "zero_insert_empty_tails": {
+   "design_result_unmodified": true,
+   "figure": {
+    "facecolor": [
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "panels": [
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 1,
+      "n_texts": 2,
+      "position": [
+       0.04,
+       0.8849,
+       0.92,
+       0.0751
+      ],
+      "sha256": "9c7f092da4ed2dd294b1335c146e0be0cf63047c9fdc3c99116e59f5ad0b893c",
+      "texts": [
+       "RE Cloning Primer Design Report",
+       "Gene: G    Insert: 0 bp    RE: BamHI / XhoI    Date: <date>"
+      ],
+      "xlim": [
+       0.0,
+       1.0
+      ],
+      "ylim": [
+       0.0,
+       1.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 7,
+      "n_texts": 20,
+      "position": [
+       0.04,
+       0.5356,
+       0.92,
+       0.3004
+      ],
+      "sha256": "a2a3534d0e66e25257bfa1f31a7b9a50b03bdf4bb584fab8f6aaee411b3d64d0",
+      "texts": [
+       "Forward Primer  (31 nt,  Tm = 63.0°C,  GC = 42.9%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "BamHI",
+       "GGATCC",
+       "annealing (21bp)",
+       "ATGAAA...TTCTG",
+       "3'",
+       "5'-GCGCGGATCCATGAAAGCTGCCATTGTTCTG-3'",
+       "Reverse Primer  (32 nt,  Tm = 64.4°C,  GC = 45.5%)",
+       "5'",
+       "prot (4bp)",
+       "GCGC",
+       "XhoI",
+       "CTCGAG",
+       "annealing (22bp)",
+       "TTATTC...CTTTC",
+       "3'",
+       "5'-GCGCCTCGAGTTATTCCACATCGGTCGCTTTC-3'"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 22,
+      "n_texts": 23,
+      "position": [
+       0.04,
+       0.2935,
+       0.92,
+       0.1931
+      ],
+      "sha256": "b01755b5c766509fe4a65916290ac56515f6def540bed6be7d79080b4dd4cbef",
+      "texts": [
+       "Quality Control",
+       "Primer",
+       "Tm (°C)",
+       "GC%",
+       "Length",
+       "Anneal",
+       "Hairpin Tm",
+       "Verdict",
+       "Forward",
+       "63.0",
+       "42.9",
+       "31 nt",
+       "21 bp",
+       "0.0°C",
+       "PASS",
+       "Reverse",
+       "64.4",
+       "45.5",
+       "32 nt",
+       "22 bp",
+       "40.5°C",
+       "PASS",
+       "Annealing temp: 64.0°C    |    Heterodimer: dG = -5.5 kcal/mol, Tm = 14.6°C"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     },
+     {
+      "axis_off": true,
+      "counts": {
+       "collections": 0,
+       "images": 0,
+       "lines": 0
+      },
+      "n_patches": 9,
+      "n_texts": 18,
+      "position": [
+       0.04,
+       0.03,
+       0.92,
+       0.2146
+      ],
+      "sha256": "49fd9211533d6743a2f3ad45037980ed28cd486a60d1e1cd156da66501cf9219",
+      "texts": [
+       "Cloning Construct (PCR Product)",
+       "BamHI",
+       "G CDS (0 bp)",
+       "XhoI",
+       "",
+       "5'",
+       "3'",
+       "PCR product: 0 bp",
+       "Reading Frame:",
+       "✓ 5' junction",
+       "✓ 3' junction",
+       "[N-His6] [Thrombin] [T7-tag] (BamHI) [ATG-INSERT] (XhoI) [C-His6] [STOP]",
+       "5' linker: MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGS    3' linker: LEHHHHHH",
+       "Protection",
+       "RE site",
+       "Spacer",
+       "Annealing",
+       "CDS"
+      ],
+      "xlim": [
+       0.0,
+       10.0
+      ],
+      "ylim": [
+       0.0,
+       10.0
+      ]
+     }
+    ],
+    "size": [
+     16.0,
+     11.0
+    ]
+   },
+   "file_name": "zero_insert_empty_tails.png",
+   "file_written": true,
+   "header_has_todays_date": true,
+   "kwargs": {
+    "bbox_inches": "tight",
+    "dpi": 150,
+    "facecolor": "white"
+   },
+   "open_figures_after": 0,
+   "parent_dir_exists": true,
+   "positional": [
+    "str"
+   ],
+   "returned_the_given_path": true,
+   "returned_type": "PosixPath"
+  }
+ }
+}

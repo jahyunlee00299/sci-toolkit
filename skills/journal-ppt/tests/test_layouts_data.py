@@ -48,7 +48,7 @@ def figs(tmp_path_factory):
 
 TILES5 = [
     dict(label="Space-time yield", value="12.4", unit="g/L/h", delta="+38 % vs wild type",
-         note="UDH variant K12, 30 °C, 5 mM NAD+", span=3),
+         note="Enzyme variant K12, 30 °C, 5 mM NAD+", span=3),
     dict(label="Conversion", value="94.1", unit="%", delta="+6.2 pp", note="24 h, 200 mM substrate"),
     dict(label="Total turnover number", value="1,850", unit="", note="NAD+ recycled by NOX"),
     dict(label="Half-life at 40 °C", value="7.5", unit="h", delta="x2.1", note="Measured by activity loss"),

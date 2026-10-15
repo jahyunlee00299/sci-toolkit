@@ -22,6 +22,9 @@ Data sources:
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from itertools import combinations
+
 from Bio.Seq import Seq
 
 from .subst_primer_mode import iPCRDesignerBase
@@ -453,114 +456,135 @@ class RestrictionCloningDesigner(iPCRDesignerBase):
         list[dict] : a list of recommended RE pairs, sorted by descending score
         """
         insert_seq = insert_seq.upper().replace(" ", "")
-        vec = get_vector(vector_name)
-        re_sites = vec["re_sites"]
+        re_sites = get_vector(vector_name)["re_sites"]
 
-        # RE list present in the vector's MCS (in positional order)
-        re_list = sorted(re_sites.items(), key=lambda x: x[1])
-
-        recommendations = []
-
-        for i, (re5_name, re5_pos) in enumerate(re_list):
-            for re3_name, re3_pos in re_list[i + 1:]:
-                # 5' RE must be upstream of 3' RE
-                if re5_pos >= re3_pos:
-                    continue
-
-                # fetch RE info
-                if re5_name not in RESTRICTION_ENZYMES:
-                    continue
-                if re3_name not in RESTRICTION_ENZYMES:
-                    continue
-
-                re5_rec = RESTRICTION_ENZYMES[re5_name]["recognition"]
-                re3_rec = RESTRICTION_ENZYMES[re3_name]["recognition"]
-
-                # skip if the RE site occurs inside the insert
-                if _find_all_occurrences(insert_seq, re5_rec):
-                    continue
-                if _find_all_occurrences(insert_seq, re3_rec):
-                    continue
-
-                # Scoring
-                score = 0
-                reasons = []
-
-                # Double digest compatibility (same buffer >= 75%)
-                buf5 = self._get_buffer_info(re5_name)
-                buf3 = self._get_buffer_info(re3_name)
-                double_digest_ok = False
-                buffer_name = None
-
-                if buf5 and buf3:
-                    if buf5["buffer"] == buf3["buffer"]:
-                        double_digest_ok = True
-                        buffer_name = buf5["buffer"]
-                        score += 3
-                        reasons.append(f"Same buffer ({buffer_name})")
-                    elif (buf5["activity_cutsmart"] >= 75
-                          and buf3["activity_cutsmart"] >= 75):
-                        double_digest_ok = True
-                        buffer_name = "CutSmart"
-                        score += 3
-                        reasons.append("Both >= 75% in CutSmart")
-                    else:
-                        reasons.append("Sequential digest recommended")
-
-                # CutSmart buffer
-                if buf5 and buf3:
-                    if (buf5["activity_cutsmart"] == 100
-                            and buf3["activity_cutsmart"] == 100):
-                        score += 2
-                        reasons.append("Both 100% in CutSmart")
-
-                # Reading frame compatibility
-                frame_ok = False
-                try:
-                    fc = check_reading_frame(
-                        vector_name=vector_name,
-                        re_5prime=re5_name,
-                        re_3prime=re3_name,
-                        insert_has_atg=True,
-                        insert_has_stop=False,
-                    )
-                    if fc["in_frame_5prime"] and fc["in_frame_3prime"]:
-                        frame_ok = True
-                        score += 2
-                        reasons.append("Reading frame compatible")
-                    else:
-                        reasons.append("Frame mismatch")
-                except ValueError:
-                    reasons.append("Frame check N/A")
-
-                # HF version available
-                hf_available = False
-                if prefer_hf:
-                    hf5 = f"{re5_name}-HF" in RE_BUFFER_INFO
-                    hf3 = f"{re3_name}-HF" in RE_BUFFER_INFO
-                    if hf5 or hf3:
-                        hf_available = True
-                        score += 1
-                        hf_names = []
-                        if hf5:
-                            hf_names.append(f"{re5_name}-HF")
-                        if hf3:
-                            hf_names.append(f"{re3_name}-HF")
-                        reasons.append(f"HF available: {', '.join(hf_names)}")
-
-                recommendations.append({
-                    "re_5prime": re5_name,
-                    "re_3prime": re3_name,
-                    "buffer": buffer_name,
-                    "double_digest_ok": double_digest_ok,
-                    "frame_ok": frame_ok,
-                    "score": score,
-                    "reason": "; ".join(reasons),
-                })
+        recommendations = [
+            self._score_re_pair(vector_name, re5_name, re3_name, prefer_hf)
+            for re5_name, re3_name in self._candidate_re_pairs(re_sites, insert_seq)
+        ]
 
         # Sort by score descending
         recommendations.sort(key=lambda x: -x["score"])
         return recommendations
+
+    # ── recommend_re_pair() building blocks ──────────────────────────────
+
+    @staticmethod
+    def _candidate_re_pairs(re_sites: dict[str, int], insert_seq: str) -> Iterator[tuple[str, str]]:
+        """Usable (5' RE, 3' RE) pairs of a vector's MCS, in positional order.
+
+        The 5' RE must lie upstream of the 3' RE; a pair is dropped when either
+        enzyme has no record or its recognition site occurs inside the insert.
+        """
+        # RE list present in the vector's MCS (in positional order)
+        re_list = sorted(re_sites.items(), key=lambda x: x[1])
+
+        for (re5_name, re5_pos), (re3_name, re3_pos) in combinations(re_list, 2):
+            # 5' RE must be upstream of 3' RE
+            if re5_pos >= re3_pos:
+                continue
+
+            # fetch RE info
+            if re5_name not in RESTRICTION_ENZYMES:
+                continue
+            if re3_name not in RESTRICTION_ENZYMES:
+                continue
+
+            re5_rec = RESTRICTION_ENZYMES[re5_name]["recognition"]
+            re3_rec = RESTRICTION_ENZYMES[re3_name]["recognition"]
+
+            # skip if the RE site occurs inside the insert
+            if _find_all_occurrences(insert_seq, re5_rec):
+                continue
+            if _find_all_occurrences(insert_seq, re3_rec):
+                continue
+
+            yield re5_name, re3_name
+
+    def _score_re_pair(self, vector_name: str, re5_name: str, re3_name: str,
+                       prefer_hf: bool) -> dict:
+        """Score one candidate pair: buffer compatibility, reading frame, HF variants."""
+        digest_points, digest_reasons, double_digest_ok, buffer_name = \
+            self._score_buffers(re5_name, re3_name)
+        frame_points, frame_reason, frame_ok = \
+            self._score_reading_frame(vector_name, re5_name, re3_name)
+        hf_points, hf_reasons = self._score_hf_variants(re5_name, re3_name, prefer_hf)
+
+        return {
+            "re_5prime": re5_name,
+            "re_3prime": re3_name,
+            "buffer": buffer_name,
+            "double_digest_ok": double_digest_ok,
+            "frame_ok": frame_ok,
+            "score": digest_points + frame_points + hf_points,
+            "reason": "; ".join([*digest_reasons, frame_reason, *hf_reasons]),
+        }
+
+    def _score_buffers(self, re5_name: str,
+                       re3_name: str) -> tuple[int, list[str], bool, str | None]:
+        """Double-digest rules: (points, reasons, double_digest_ok, buffer to digest in)."""
+        buf5 = self._get_buffer_info(re5_name)
+        buf3 = self._get_buffer_info(re3_name)
+        if not (buf5 and buf3):
+            return 0, [], False, None
+
+        score = 0
+        reasons: list[str] = []
+        double_digest_ok = False
+        buffer_name = None
+
+        # Double digest compatibility (same buffer >= 75%)
+        if buf5["buffer"] == buf3["buffer"]:
+            double_digest_ok = True
+            buffer_name = buf5["buffer"]
+            score += 3
+            reasons.append(f"Same buffer ({buffer_name})")
+        elif (buf5["activity_cutsmart"] >= 75
+              and buf3["activity_cutsmart"] >= 75):
+            double_digest_ok = True
+            buffer_name = "CutSmart"
+            score += 3
+            reasons.append("Both >= 75% in CutSmart")
+        else:
+            reasons.append("Sequential digest recommended")
+
+        # CutSmart buffer
+        if (buf5["activity_cutsmart"] == 100
+                and buf3["activity_cutsmart"] == 100):
+            score += 2
+            reasons.append("Both 100% in CutSmart")
+
+        return score, reasons, double_digest_ok, buffer_name
+
+    @staticmethod
+    def _score_reading_frame(vector_name: str, re5_name: str,
+                             re3_name: str) -> tuple[int, str, bool]:
+        """Reading-frame rule: (points, reason, frame_ok); a ValueError means N/A."""
+        try:
+            fc = check_reading_frame(
+                vector_name=vector_name,
+                re_5prime=re5_name,
+                re_3prime=re3_name,
+                insert_has_atg=True,
+                insert_has_stop=False,
+            )
+        except ValueError:
+            return 0, "Frame check N/A", False
+        if fc["in_frame_5prime"] and fc["in_frame_3prime"]:
+            return 2, "Reading frame compatible", True
+        return 0, "Frame mismatch", False
+
+    @staticmethod
+    def _score_hf_variants(re5_name: str, re3_name: str,
+                           prefer_hf: bool) -> tuple[int, list[str]]:
+        """HF rule: one point and a reason naming the HF variants that exist."""
+        if not prefer_hf:
+            return 0, []
+        hf_names = [f"{name}-HF" for name in (re5_name, re3_name)
+                    if f"{name}-HF" in RE_BUFFER_INFO]
+        if not hf_names:
+            return 0, []
+        return 1, [f"HF available: {', '.join(hf_names)}"]
 
     # ── Internal helpers ─────────────────────────────────────────────────
 

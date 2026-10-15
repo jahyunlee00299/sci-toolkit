@@ -1,6 +1,6 @@
 ---
 name: experiment-hub
-description: Integrated skill for experiment protocol management, condition optimization, experiment proposal, history recording, experiment comparison, and pipetting/reaction-matrix workbook generation (stock/final/volume calculations, master-mix grouping, sampling & dead-volume checks). Use when planning, recording, or reviewing lab experiments, or generating a pipetting sheet / reaction matrix / 파이펫팅 시트. For analyzing data from completed experiments use lab-data-analysis; for statistical testing of results use stats-workflow; for primer/cloning design use primer-design.
+description: Integrated skill for experiment protocol management, condition optimization, experiment proposal, history recording, experiment comparison, and pipetting/reaction-matrix workbook generation (stock/final/volume calculations, master-mix grouping, sampling & dead-volume checks) and one-off dilution / top-up / C1V1 arithmetic via `reaction_matrix.py calc` (희석배수, 더 넣어야 하는 양). Use when planning, recording, or reviewing lab experiments, or generating a pipetting sheet / reaction matrix / 파이펫팅 시트. For analyzing data from completed experiments use lab-data-analysis; for statistical testing of results use stats-workflow; for primer/cloning design use primer-design.
 license: MIT
 ---
 
@@ -33,12 +33,30 @@ license: MIT
 > - **R1 Common water in MM-A.** The MM-A premix carries the water every tube needs, sized so the tightest
 >   tube closes with 0 uL top-up, or lowered by the rule above (`"common_water_in_mm_a": false` -> WARN; SKIP
 >   when there is no MM-A). [check f]
-> - **R2 Equal-volume working stocks.** Enzyme levels (1x/2x/4x...) are DILUTED WORKING STOCKS -
->   **dilute with WATER**, not storage buffer - and every tube gets the SAME volume of its level's stock. One
+> - **R2 Equal-volume working stocks (only where a level varies).** A diluted working stock exists ONLY for an
+>   enzyme whose level differs between tubes (1x/2x/4x...). An enzyme held at the SAME level in every enzyme
+>   tube goes into the common cocktail straight from its NEAT lab stock: no working stock, no dilution step, and
+>   a per-tube share below the 2.5 uL pipette is fine because the cocktail volume per tube and the pooled batch
+>   draws are what get pipetted and checked (do not put `equal_volume_uL` on such an enzyme). For the enzymes that
+>   DO vary: **dilute with WATER**, not storage buffer - and every tube gets the SAME volume of its level's stock. One
 >   physical enzyme at more than one volume = **FAIL** (0.5 % / 0.005 uL tolerance). "One physical enzyme" =
 >   same `enzyme` alias, or same batch + same lab stock (`source_stock_gL`, else `stock_gL` x `dilution_x`), or
 >   same batch + same name stem (`EnzX` / `EnzX_dil`); batch labels are compared stripped, case-folded, and
 >   with `100001` == `"100001"`. Config `"equal_volume_uL"`; `reaction_matrix.py` expands such a spec itself. [check c]
+> - **R2b Levels are made by SERIAL dilution (default).** Make the HIGHEST level once from lab stock + water, then each
+>   lower level = a transfer from the next higher one + water, so no transfer is a tiny lab-stock draw. Make volumes
+>   are computed bottom-up (what the tubes of that level draw + the transfer for the next lower level + dead volume);
+>   every transfer and lab-stock draw should be >= 2.5 uL. Config `"serial_dilution"`: omitted or `"auto"` = every
+>   enzyme with >= 2 working-stock levels; a list of enzyme names limits it to those; `[]` = independent draws.
+>   Typo = WARN, wrong type = FAIL, a draw < 2.5 uL = WARN, < 0.5 uL = FAIL, a non-2-fold step = INFO. The recipe is
+>   written into the Pipetting Guide blocks 'TUBES TO PREPARE' and 'ENZYME PREPARATION' (A lab stocks with batch and
+>   total draw, B common cocktail, C working-stock / serial levels); `Enzyme Additions` marks the superseded
+>   independent-draw rows. Known gap: `pipette_count` still prices independent draws, so its enzyme lab-stock total
+>   differs slightly from the serial recipe; the Guide block is the bench truth.
+> - **Surplus margins (lab convention).** No percentage overage: stock totals, sub-mixes and cocktails are made for
+>   exactly the tubes that draw from them (`SURPLUS = 1.0`), plus a dead volume per intermediate vessel
+>   (`"dead_volume_uL"` for working stocks, default 5; `"cocktail_dead_volume_uL"`, default = `dead_volume_uL`; raise to
+>   7-9 uL if 5 runs short). MM-A is made for n tubes + `premix.extra_rxns` (default 3).
 > - **Waivers** `"allow_small_volume"` / `"allow_variable_volume"` must be exactly `true` plus a non-empty
 >   `"..._reason"` string (on every entry of that enzyme); anything else is a FAIL ("malformed waiver"). [check a]
 >   `allow_small_volume` waives only the sub-floor volume rule (and turns a 2-5 % rounding deviation of that
@@ -53,9 +71,17 @@ license: MIT
 >   A vs B: **61 vs 53**; 63 vs 55 with water-in-place) and for Bmin with each dilution counted as 1 step
 >   (A vs Bmin: **74 vs 72**). What B buys is accuracy, not fewer steps: additions below 1 uL 6 -> 0 and
 >   run-phase volume settings 13 -> 5 in that design. Run `--compare` before claiming "less pipetting". (doc)
-> - **Not finished** until the workbook has the working-stock table (lab stock uL + water uL) and the
->   per-tube addition table (sheet `Enzyme Additions`, written by `reaction_matrix.py`). (doc; the generator
->   always writes both)
+> - **Not finished** until the Pipetting Guide has (a) 'TUBES TO PREPARE' (empty tubes to label), (b) 'ENZYME
+>   PREPARATION' (A lab stocks with batch and total draw, B common-cocktail recipe, C working-stock / serial-dilution
+>   recipe) and (c) the per-tube additions (cocktail uL, which working-stock level and uL), written in the real bench
+>   order: MM-A and the varied reagents first, any reagent that must go in late kept separate, enzymes LAST.
+>   `reaction_matrix.py` writes all of these; a hand-built sheet must have them too. The rounding-check and
+>   pipette-count results are printed by the generator: report them in the reply. (doc)
+>
+> **Reference format**: `reaction_matrix.py` output IS the lab format (5 sheets: Reaction Matrix, Pipetting Guide,
+> Enzyme Additions, Sampling & Fed, Data). Do not restyle it or build a "simpler" sheet by hand; if a copy made
+> elsewhere looks different (e.g. a Pipetting Guide that stops after the per-tube table, without the TUBES TO
+> PREPARE / ENZYME PREPARATION blocks), that copy is an older toolkit version: `git pull` and regenerate.
 
 Records (protocol versions, run logs, discussion, decisions) are kept by `lab-record` — this skill designs and analyses; `lab-record` stores and links. Citation style: APA 7th with DOI (see lab-record §Citations).
 
@@ -141,21 +167,19 @@ check fails — so the class of error that happened is no longer possible to shi
 Run it directly: `python reaction_matrix.py config.json output.xlsx` — validation output
 prints before generation; a FAIL blocks the file from being written at all.
 
-**When the design does not fit `reaction_matrix.py`'s config shape** (e.g., a saturated-stock-blend
-design like splitting a common mix into "additive-saturated" and "plain" halves and recombining at
-different ratios — `reaction_matrix.py` has no concept of that) — hand-building formulas is still
-sometimes necessary, but the same three checks are then **mandatory to run manually** in a
-throwaway Python script before presenting the workbook as done: read every literal Params value
-with openpyxl, independently recompute (in plain Python, not by re-reading the formula string) what
-every derived cell *should* evaluate to, and diff against what the workbook's formula claims. Do not
-declare a hand-built pipetting workbook finished on the strength of "the formula looks right" —
-that is exactly the self-review that missed that bug. For anything that will actually be
-pipetted at the bench (not just discussed), additionally have it checked independently (a labmate, or a fresh agent session given only
-the config and the workbook) — self-review by the same reasoning that produced the bug does not
-reliably catch that bug.
+**Design outside the config shape** (e.g. a saturated-stock blend): hand-built formulas are allowed only if the
+three checks above are re-run by hand in a throwaway script and the bench workbook is checked independently.
+**Publishing** to a Methods folder (`LAB_METHODS_DIR`) is optional; exit 3 = NOT published, say so.
+Full procedure for both: [references/workbook_generation.md](references/workbook_generation.md).
 
+### Mode 1b: one-off pipetting / dilution arithmetic -- `reaction_matrix.py calc` is the only path
 
-**Suggested workbook convention**: put every fixed-concentration component (buffer, salts, fixed cofactors) into ONE premix (MM-A): mark them `"type":"buffer"` in the config, never `cofactor`. Only the varied reagents change per tube; the water is split into the common water in MM-A and a per-tube DW top-up (R1). Enzymes held at one level in every tube = one common cocktail (n x 1.2; surplus convention everywhere: MM-A n + `premix.extra_rxns` (default 3), stocks/sub-mixes/cocktails x1.2, +10 uL dead volume per intermediate vessel), added LAST in a fixed staggered order; solids weighed per tube go in first.
+Every volume, top-up, C1V1 or dilution-factor number that goes to the bench comes from
+`reaction_matrix.py` (workbook for a design, `calc` for a one-off), never from prose arithmetic; quote the
+printed formula line in the reply. Exit 2 = impossible as posed: report it, do not pick a number.
+Commands, the restate-first rule and the DF rules: [references/calc_arithmetic.md](references/calc_arithmetic.md).
+
+**Suggested workbook convention**: put every fixed-concentration component (buffer, salts, fixed cofactors) into ONE premix (MM-A): mark them `"type":"buffer"` in the config, never `cofactor`. Only the varied reagents change per tube; the water is split into the common water in MM-A and a per-tube DW top-up (R1). Enzymes held at one level in every tube = one common cocktail (n x 1.0; surplus convention everywhere: MM-A n + `premix.extra_rxns` (default 3), stocks/sub-mixes/cocktails x1.0 i.e. no percentage overage, +5 uL dead volume per intermediate vessel, raise `dead_volume_uL` to 7-9 if 5 runs short), added LAST in a fixed staggered order; solids weighed per tube go in first.
 
 **R1/R2 workflow**: the rules, waivers and the pipette-count command are in the HARD RULES box at the top of this file. Config with `"equal_volume_uL"` per enzyme -> `python equal_volume.py spec.json expanded.json` (one pseudo-enzyme per level; `canon_gate` still checks the undiluted `source_stock_gL`; `"diluent": "water"`) -> `python reaction_matrix.py expanded.json out.xlsx` (or pass the spec directly: `reaction_matrix.py` expands it). A level's working stock = `rxn_gL x total_volume / equal_volume_uL` and must not exceed the lab stock; when the top levels of several enzymes need large volumes, the equal volumes can overfill the tube (`pipette_count.py` reports INFEASIBLE) - then use one cocktail per condition from the lab stocks (`--cocktail per_condition_direct`). Worked example: `ev_spec()` in `tests/synthetic_fixtures.py`. Every downstream formula must reference the total-volume cell, never a literal volume. After editing, recalculate with the timeout-guarded `excel_com_guard.py` (see "Pipetting Workbook Verification" below; never a bare win32com call that can hang on a dialog) and compare with an independent Python calculation.
 
@@ -203,30 +227,14 @@ Causality strength: 5 stars (dose-response + mechanism + reproducibility) to 1 s
 
 ## Pipetting Workbook Verification (win32com-hang-safe)
 
-For repeated validation/editing of pipetting-protocol xlsx files (e.g. one
-numbered workbook series), do NOT re-open Excel via win32com for every check — a COM
-call that hits a modal dialog blocks forever with no in-process timeout
-(measured: 44+ min Not-Responding, required manual taskkill, which also
-rolled the file back to its last save). Use the two-stage split instead:
-
-1. **Pure-calculation checks** (`pipetting_checks.py`) — volume closure,
-   concentration re-derivation, sampling headroom, and the leading-`=`
-   text-cell guard. openpyxl only, no Excel opened, works on any platform.
-2. **Final COM pass** (`excel_com_guard.py`, Windows only) — exactly one
-   Excel-COM round trip (full recalculation + error-cell scan), run in a
-   child process under an external `subprocess` timeout so a modal-dialog
-   hang is force-killed instead of freezing the session.
-
-Driver CLI: `verify_pipetting_workbook.py CONFIG.json [--recalc] [--timeout SEC]`
-— runs stage 1 always, stage 2 only with `--recalc`. See that file's
-docstring for the CONFIG.json shape. Tests: `tests/test_pipetting_checks.py`,
-`tests/test_excel_com_guard.py` (`python -m pytest tests/ -v`).
-
-For general xlsx formula recalculation outside this pipetting-specific use
-case (LibreOffice-based, cross-platform, no COM), use `Skill(xlsx)`'s
-recalc script instead — this module's COM path exists specifically
-because the pipetting workbooks are edited live in Windows Excel and need
-Excel's own calculation engine, not LibreOffice's.
+Never re-open Excel via win32com for every check (a modal dialog hangs COM forever). Stage 1 =
+`pipetting_checks.py` (openpyxl only); stage 2 = one `excel_com_guard.py` pass under a subprocess timeout.
+Driver: `verify_pipetting_workbook.py CONFIG.json [--recalc] [--timeout SEC]`. Structural guards run first:
+`cache_freshness_guard → formula_validity_guard → constant_formula_guard → dead_input_cell_guard`, then the
+numeric checks. 🔴 Four editing rules: prove a downstream cell moved after an input change; an openpyxl save
+voids every earlier COM-recalc claim; never write a note as text starting with `=`; back up the
+Excel-recalculated record, not the working copy. Full text, measurements and the guard table:
+[references/workbook_verification.md](references/workbook_verification.md).
 
 ## Skill Integration
 

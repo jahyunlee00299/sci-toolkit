@@ -7,7 +7,7 @@ workflow ends in a **verification gate** — it doesn't stop at "it ran," it
 stops after "confirmed the result is correct."
 
 ```
-47 skills · 48 regression tests · 7 safety guards
+48 skills · 50 regression tests · 7 safety guards
 python doctor.py   ->   15 checks · 0 FAIL
 ```
 
@@ -16,9 +16,9 @@ research content is filtered out by a mechanical check (`doctor.py` SENTINEL).
 
 | I am… | start here |
 |---|---|
-| 초심자, not sure what's what | [docs/00_시작하기](docs/00_시작하기.md) (Getting Started) |
+| 초심자, not sure what's what | [docs/00_시작하기](docs/00_시작하기.md) (Getting Started) · English: [docs/en/00_getting-started](docs/en/00_getting-started.md) |
 | just want to install first | [QUICKSTART.md](QUICKSTART.md) — install only the skills you need |
-| want to understand how it works | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) (Full Workflow Map) |
+| want to understand how it works | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) (Full Workflow Map) · English: [docs/en/10_workflow-map](docs/en/10_workflow-map.md) |
 | the AI keeps going off track | [AGENTS.md](AGENTS.md) §0 routing table -> say "follow §0" |
 | want to work with Word/PDF/PPT/Excel | just ask — it's a built-in Claude Code capability. See the [module list](#module-list) |
 | found something annoying while using it | [docs/11_불편한점_남기기](docs/11_불편한점_남기기.md) (Filing Feedback) — say it and it's recorded automatically |
@@ -168,8 +168,8 @@ this order:
 | `config/catalog.json` | Skill catalog SSOT (categories, dependencies, size, presets) |
 | `hooks/` | 7 safety guards — secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
 | `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
-| `docs/` | 15 초심자 docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome) |
-| `tests/` | 48 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, connector install bundle, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer, patent numeric-claim arithmetic gate, vendored uncertainty/DoE scripts on hand-derived lab cases). `doctor.py` runs all of them automatically |
+| `docs/` | 15 초심자 docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome); English translations in `docs/en/` |
+| `tests/` | 50 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, connector install bundle, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer, patent numeric-claim arithmetic gate, vendored uncertainty/DoE scripts on hand-derived lab cases, statusline script output on every fixture, paper figure theme). `doctor.py` runs all of them automatically |
 | `doctor.py` | Integrity/environment check (`doctor_lib/` holds the checks). `PASS` means it's ready; `--offline` keeps every self-test off the network |
 | `evals/` | Headless measurement of whether routing **actually fires** (slow, costs money — run manually) |
 | `scripts/capability_diff.py` | After a skill gets rewritten, structurally diffs **whether a capability quietly disappeared** |

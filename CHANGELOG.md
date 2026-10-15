@@ -4,6 +4,66 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.157] — 2026-10-14
+
+- statusline-usage: add a status line skill (model, context use, 5h and weekly limits with reset times) with a dependency-free bash script and fixture tests
+
+## [1.2.156] — 2026-10-14
+
+- docs: add a beginner permission section (allow prompt, permission modes, allow/deny rules) to 01 (ko + en)
+
+## [1.2.155] — 2026-10-13
+
+- experiment-hub: move Mode 1b, hand-built/publishing detail and workbook verification into references/ to get SKILL.md under the 24 KiB cap
+
+## [1.2.154] — 2026-10-13
+
+- experiment-hub: make the recalculated-file test match openpyxl's <v /> empty cache (no lxml, as in CI)
+
+## [1.2.153] — 2026-10-13
+
+- docs: link external products and cross-referenced docs in the beginner guides (ko + en)
+
+## [1.2.152] — 2026-10-13
+
+- docs/en: strip AI writing patterns (em dashes, bold overuse, filler) from the English beginner docs
+
+## [1.2.151] — 2026-10-13
+
+- docs/en: strip AI writing patterns (em dashes, bold overuse, filler) from the English beginner docs
+
+## [1.2.150] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.149] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.148] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.147] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.146] — 2026-10-13
+
+- experiment-hub: port structural workbook guards, calc subcommand, opt-in Methods publish and workbook-editing rules
+
+## [1.2.145] — 2026-10-13
+
+- experiment-hub: port serial dilution, enzyme-preparation block and cocktail dead volume, with a synthetic fixture
+
+## [1.2.144] — 2026-10-13
+
+- experiment-hub: no percentage overage, 5 uL dead volume default; refresh checksums and drift declaration
+
+## [1.2.143] — 2026-10-13
+
+- sanitize: generic wording and synthetic figures in docs and test fixtures
+
 ## [1.2.142] — 2026-10-08
 
 - llm_call: route HTTP through sci_http; refresh SHA256SUMS

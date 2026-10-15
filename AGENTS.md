@@ -15,7 +15,9 @@ finalizing any artifact a skill produced.
 **Language.** When the user writes in a non-English language, reason in that language too, keep code and
 identifiers in English, and never replace a language's accented characters with ASCII.
 
-> **Claude Code** reads `CLAUDE.md`, not this file; this repo's short `CLAUDE.md` points here.
+> **Claude Code** reads `CLAUDE.md`, not this file; this repo's short `CLAUDE.md` points here. In your own
+> project, either symlink it (`ln -s AGENTS.md CLAUDE.md`) or make a `CLAUDE.md` containing the single line
+> `@AGENTS.md` (Claude Code's import syntax) so both tools share one rule file.
 > **Codex**: the guards in `hooks/` do **not** run under Codex unless you wire them, so the seven rules they
 > enforce are rules you follow by reading them. Patterns and wiring: **[`CODEX.md`](CODEX.md)**; read it
 > before any destructive or outward action.

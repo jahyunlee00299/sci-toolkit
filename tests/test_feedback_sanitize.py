@@ -21,7 +21,7 @@ moment on.
   · 260706  Undisclosed E-factor research and mentees' real names
             were pushed tracked under research-lookup/sources/ in
             claude-scientific-skills. The same incident also surfaced
-            undisclosed MPSP figures ($137.42/$84.09/88.3%).
+            research MPSP figures (synthetic here) ($123.45/$98.76/77.7%).
   · 260807  Distribution v1.2.0's docs claimed the species-prefixed enzyme
             names were removed, yet it shipped with them and the full
             cascade ODE intact, because doctor.py's SENTINEL scan never
@@ -82,9 +82,9 @@ MUST_FLAG = [
 
     # ── 260706 undisclosed-figure family (MPSP, yield) ──────────────────
     ("undisclosed MPSP dollar figure",
-     "MPSP 가 $137.42 으로 나오는데 이 계산이 맞는지 모르겠어요"),
+     "MPSP 가 $123.45 으로 나오는데 이 계산이 맞는지 모르겠어요"),
     ("undisclosed yield percentage",
-     "전환율 88.3% 데이터를 넣으면 피팅이 발산합니다"),
+     "전환율 77.7% 데이터를 넣으면 피팅이 발산합니다"),
     ("titer g/L",
      "titer 12.4 g/L 인 run 에서만 실패해요"),
     # 🔴 The shape that actually got through the 260807 adversarial check.
@@ -244,7 +244,7 @@ def test_entry_level() -> None:
     print("\n[FIELD] fields other than what must also be scanned")
     for field in ("what", "expected", "actual", "note"):
         entry = {"what": "표 편집이 실패합니다"}
-        entry[field] = "MPSP $137.42 에서 실패"
+        entry[field] = "MPSP $123.45 에서 실패"
         hits = scan_entry(entry)
         check(f"field {field} scanned", bool(hits),
               f"missed the undisclosed figure placed in {field}")

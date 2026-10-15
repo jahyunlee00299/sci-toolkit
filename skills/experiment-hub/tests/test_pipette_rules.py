@@ -56,9 +56,9 @@ def test_toy_design_a_hand_count():
 def test_toy_design_b_hand_count():
     plan = pc.build_plan(toy_b())
     s = pc.summarize(plan)
-    # E1 [1x] working stock: 2 tubes x 4 uL x 1.2 + 10 dead -> 20 uL = 10 uL lab stock + 10 uL water; E1 [2x] is neat
+    # E1 [1x] working stock: 2 tubes x 4 uL x 1.0 + 5 dead -> 13 uL = 6.5 uL lab stock + 6.5 uL water; E1 [2x] is neat
     assert [(w["working_stock"], w["make_uL"], w["lab_stock_uL"], w["water_uL"]) for w in plan["working"]] == \
-        [("E1 [1x]", 20, 10.0, 10.0)]
+        [("E1 [1x]", 13, 6.5, 6.5)]
     assert (s["prep_steps"], s["prep_mixes"], s["run_steps"], s["total_steps"], s["total_ops"]) == (6, 3, 13, 19, 22)
     assert (s["dw_steps_with_r1"], s["dw_steps_without_r1"]) == (1, 3)
 
