@@ -216,6 +216,36 @@ def check_lab_numeric_stack(root: Path) -> CheckResult:
                        "(the rest of the toolkit is unaffected; see docs/01)", problems)
 
 
+# The four verification tools run as their own CLI (the skills carry no source), so
+# skill_requirements.py cannot see them. module -> (skill, install command).
+GATE_TOOLS = {
+    "compat_check": ("compat-check", 'pip install "git+https://github.com/jahyunlee00299/compat-check"'),
+    "fiducial": ("fiducial", "pip install fiducial-check"),
+    "provenance_check": ("provenance-check", 'pip install "git+https://github.com/jahyunlee00299/provenance-check"'),
+    "regress_check": ("regress-check", 'pip install "git+https://github.com/jahyunlee00299/regress-check"'),
+}
+
+
+def check_gate_tools(root: Path) -> CheckResult:
+    """Report which verification-gate tools are installed. Never FAIL.
+
+    Zero installed is a WARN too, never an OK: a gate that cannot run has not passed.
+    """
+    name = "Verification gate tools (fiducial, provenance-check, regress-check, compat-check)"
+    shipped = {m: v for m, v in GATE_TOOLS.items() if (root / "skills" / v[0]).is_dir()}
+    if not shipped:
+        return CheckResult(name, STATUS_OK, "gate skills not installed here - nothing to check")
+    missing = sorted(m for m in shipped if importlib.util.find_spec(m) is None
+                     and shutil.which(shipped[m][0]) is None)
+    if not missing:
+        return CheckResult(name, STATUS_OK, f"all {len(shipped)} gate tool(s) are installed")
+    details = [f"{shipped[m][0]} not installed: {shipped[m][1]}" for m in missing]
+    return CheckResult(name, STATUS_WARN,
+                       f"{len(missing)} of {len(shipped)} gate tool(s) missing - those gates are BLIND here "
+                       "(exit 2 semantics: not a pass); skills/verification-gates/SKILL.md says which gate holds when",
+                       details)
+
+
 def check_gitleaks(root: Path) -> CheckResult:
     """Second secret-scan layer: gitleaks with .gitleaks.toml, when the binary is present.
 

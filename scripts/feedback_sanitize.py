@@ -133,9 +133,9 @@ def _assignment_value(matched: str) -> str:
 
 
 # ── Axis 2: undisclosed research figures ──────────────────────────────────
-# Measured 260706 — an undisclosed MPSP ($137.42/$84.09) and yield (88.3%)
-# were left in a skill file and pushed. The judgment isn't "is this a
-# number" but **a number carrying a research unit.** A version number
+# Observed once — a research MPSP ($123.45/$98.76) and a yield (77.7%)
+# were left in a skill file and pushed (values here are synthetic). The
+# judgment isn't "is this a number" but **a number carrying a research unit.** A version number
 # (3.11), a count (3 items), a duration (10 min), memory (8GB) must always
 # pass.
 RESEARCH_UNIT_RE = re.compile(

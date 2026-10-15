@@ -1,0 +1,12 @@
+{
+  "name": "journal_club",
+  "_comment": "Measured presenter preferences from a 2026 TEA journal club (five rounds of user corrections). Deck(prefs='journal_club') applies them; qc_prose.py enforces the checkable ones.",
+  "caption": {"pt": 12, "italic": false, "bold": false, "align": "center", "own_paper_source_line": false, "explicit_line_break": true},
+  "slide_text": {"trailing_period": false, "min_pt_beside_figure": 16, "references_keep_period": true},
+  "figure": {"align": "center", "fill_to_floor": true, "side_text": false},
+  "title_slide": {"kicker": "JOURNAL CLUB  |  {date}", "kicker_on_content_slides": false},
+  "closing": {"style": "thank_you_only", "headline": "Thank you", "subline": "for listening. Please ask me anything.", "kicker": false},
+  "structure": ["title", "background", "reactions", "methods", "results", "discussion", "conclusions", "references", "thank_you", "appendix_hidden"],
+  "appendix": {"title_prefix": "Appendix: ", "hidden": true, "contents": ["strengths and limitations", "questions for discussion"]},
+  "notes": {"language": "ko", "forbid_process_residue": true}
+}

@@ -40,6 +40,9 @@ HTTPX_HINT = re.compile(re.escape(chr(92)) + "nFor more information check: [^" +
 PARSE_FAIL = re.compile(r"PDF parsing failed: [A-Za-z]+")
 SIZE = re.compile(r'"size_bytes": [0-9]+')
 TS = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:\+00:00|Z)?")
+# argparse's "invalid choice" message lists the choices as repr() ('a', 'b') in older
+# CPython 3.12 patch releases and bare (a, b) in newer ones; only the quoting differs
+CHOICES = re.compile(r"\(choose from ([^)]*)\)")
 
 
 def _jsonable(obj):
@@ -74,9 +77,16 @@ def norm(obj, tmp: Path | None = None):
     # Match the home directory with ANY run of separators between its parts: repr() inside
     # json.dumps quadruples Windows backslashes, which a fixed list of variants missed and
     # leaked the local username into the golden file.
-    parts = [re.escape(p) for p in Path.home().parts if p not in ("/", "\\")]
+    # The root separator of a POSIX home ("/home/runner") belongs to the home path too:
+    # leaving it out turned "/home/runner/.claude" into "/<HOME>/.claude" on Linux while a
+    # Windows home (drive letter first, no leading separator) gave "<HOME>/.claude"
+    # (measured on the Linux CI runner, 2026-10-04).
+    home = Path.home()
+    parts = [re.escape(p) for p in home.parts if p not in ("/", "\\")]
     parts[0] = parts[0].rstrip("\\\\/") if parts else parts
-    text = re.sub(r"[\\/]*".join(parts) if parts else r"(?!)", "<HOME>", text)
+    root = r"[\\/]+" if home.anchor in ("/", "\\") else ""
+    text = re.sub(root + r"[\\/]*".join(parts) if parts else r"(?!)", "<HOME>", text)
+    text = CHOICES.sub(lambda m: "(choose from " + m.group(1).replace("'", "") + ")", text)
     text = TS.sub("<TS>", text)
     text = text.replace(BS2, "/")
     text = HTTPX_HINT.sub("", text)

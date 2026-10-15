@@ -1746,13 +1746,13 @@
    "stdout": "hi\n"
   },
   "timeout": {
-   "returncode": 1,
+   "returncode": "<KILLED>",
    "status": "timeout",
    "stderr": "",
    "stdout": ""
   },
   "truncated": {
-   "returncode": 1,
+   "returncode": "<KILLED>",
    "status": "truncated",
    "stderr": "",
    "stdout": "len=100"

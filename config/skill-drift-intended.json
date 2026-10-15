@@ -20,10 +20,10 @@
       "declared": "2026-09-24"
     },
     "experiment-hub": {
-      "reason": "toolkit copy sanitized: license MIT, maintainer-specific recipe, workbook IDs, machine wording and personal rule/tool names generalized",
-      "toolkit_fp": "1f8f192f68014952",
-      "runtime_fp": "e24fc0e101b39c1e",
-      "declared": "2026-10-02"
+      "reason": "toolkit copy sanitized: license MIT, synthetic test fixtures and example canon registry instead of the maintainer's lab data, generic examples and no project history; publishing to a Methods folder is opt-in (nothing configured = skipped, not exit 3). Ported 261013: serial dilution (default auto), the Pipetting Guide enzyme-preparation block, cocktail_dead_volume_uL, the x1.0 / 5 uL dead-volume surplus defaults, the reaction_matrix calc subcommand (dilution_calc), the structural workbook guards in pipetting_checks (with the empty-cache count fix) and the workbook-editing rules, tested on synthetic fixtures (tests/test_structural_guards.py).",
+      "toolkit_fp": "613f119b87f47a8a",
+      "runtime_fp": "9f48791be1358cef",
+      "declared": "2026-10-13"
     },
     "generate-image": {
       "reason": "Toolkit is ahead: runtime Related Skills still names scientific-slides and latex-posters, which the toolkit does not ship (it routes to journal-ppt and publication-figures instead), and the toolkit script carries the Windows UTF-8 stdout fix the runtime lacks.",

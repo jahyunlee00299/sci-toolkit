@@ -1,0 +1,323 @@
+{
+ "title": "Synthetic example: Enzyme X at x1 / x4 / x8, n = 3, 1-48 h (equal-volume stocks)",
+ "date": "260101",
+ "total_volume_uL": 50,
+ "temperature_C": 30,
+ "timepoints": [
+  "1 h",
+  "2 h",
+  "4 h",
+  "8 h",
+  "24 h",
+  "48 h"
+ ],
+ "stocks": {
+  "Buffer pH 7.0": {
+   "conc_mM": 1000,
+   "type": "buffer",
+   "final_mM": 200
+  },
+  "Salt-1": {
+   "conc_mM": 1000,
+   "type": "buffer",
+   "final_mM": 5
+  },
+  "Salt-2": {
+   "conc_mM": 100,
+   "type": "buffer",
+   "final_mM": 1
+  },
+  "Cofactor-1": {
+   "conc_mM": 100,
+   "type": "buffer",
+   "final_mM": 0.25
+  },
+  "Cofactor-2": {
+   "conc_mM": 10,
+   "type": "buffer",
+   "final_mM": 0.015
+  },
+  "Substrate-S": {
+   "conc_mM": 1000,
+   "type": "substrate"
+  },
+  "Substrate-P": {
+   "conc_mM": 1800,
+   "type": "substrate"
+  }
+ },
+ "enzymes": {
+  "EnzA": {
+   "batch": "batch-ref",
+   "stock_gL": 12.0,
+   "rxn_gL": {
+    "1x": 1.0,
+    "0x": 0.0
+   }
+  },
+  "EnzB": {
+   "batch": "batch-ref",
+   "stock_gL": 14.0,
+   "rxn_gL": {
+    "1x": 0.2,
+    "0x": 0.0
+   }
+  },
+  "EnzC": {
+   "batch": "batch-ref",
+   "stock_gL": 3.0,
+   "rxn_gL": {
+    "1x": 0.1,
+    "0x": 0.0
+   }
+  },
+  "EnzD": {
+   "batch": "260102",
+   "stock_gL": 39.0,
+   "rxn_gL": {
+    "1x": 0.2,
+    "0x": 0.0
+   }
+  },
+  "EnzE": {
+   "batch": "260103",
+   "stock_gL": 3.0,
+   "rxn_gL": {
+    "1x": 0.2,
+    "0x": 0.0
+   }
+  },
+  "EnzX": {
+   "batch": "260104",
+   "stock_gL": 68.0,
+   "equal_volume_uL": 4,
+   "rxn_gL": {
+    "1x": 0.5,
+    "4x": 2.0,
+    "8x": 4.0
+   }
+  },
+  "EnzY": {
+   "batch": "260102",
+   "stock_gL": 40.0,
+   "rxn_gL": {
+    "1x": 1.0,
+    "2x": 2.0,
+    "4x": 4.0,
+    "0x": 0.0
+   }
+  }
+ },
+ "conditions": [
+  {
+   "group": "A reference",
+   "label": "EnzX x1 (0.5 g/L) R1",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "1x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 1
+  },
+  {
+   "group": "A reference",
+   "label": "EnzX x1 (0.5 g/L) R2",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "1x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 2
+  },
+  {
+   "group": "A reference",
+   "label": "EnzX x1 (0.5 g/L) R3",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "1x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 3
+  },
+  {
+   "group": "B EnzX x4",
+   "label": "EnzX x4 (2.0 g/L) R1",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "4x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 4
+  },
+  {
+   "group": "B EnzX x4",
+   "label": "EnzX x4 (2.0 g/L) R2",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "4x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 5
+  },
+  {
+   "group": "B EnzX x4",
+   "label": "EnzX x4 (2.0 g/L) R3",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "4x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 6
+  },
+  {
+   "group": "C EnzX x8",
+   "label": "EnzX x8 (4.0 g/L) R1",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "8x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 7
+  },
+  {
+   "group": "C EnzX x8",
+   "label": "EnzX x8 (4.0 g/L) R2",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "8x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 8
+  },
+  {
+   "group": "C EnzX x8",
+   "label": "EnzX x8 (4.0 g/L) R3",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "1x",
+    "EnzB": "1x",
+    "EnzC": "1x",
+    "EnzD": "1x",
+    "EnzE": "1x",
+    "EnzY": "1x",
+    "EnzX": "8x"
+   },
+   "note": "Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 9
+  },
+  {
+   "group": "D control",
+   "label": "NE: no enzyme",
+   "substrates": {
+    "Substrate-S": 100,
+    "Substrate-P": 200
+   },
+   "enzymes": {
+    "EnzA": "0x",
+    "EnzB": "0x",
+    "EnzC": "0x",
+    "EnzD": "0x",
+    "EnzE": "0x",
+    "EnzY": "0x",
+    "EnzX": "0x"
+   },
+   "note": "zero-check, matrix peaks, non-enzymatic Substrate-P hydrolysis; Solid-T 100 mM = 0.560 mg solid per tube, added first",
+   "num": 10
+  }
+ ],
+ "sampling": {
+  "volume_uL": 5,
+  "dilution": "20x",
+  "quench": "5 uL + 95 uL 30 mM H2SO4",
+  "analysis": "HPX-87H + RID, 25 min; Pi from the same quenched sample (malachite green / MESG, extra dilution needed)",
+  "targets": [
+   "Ribavirin",
+   "Xylose remaining",
+   "7.35 min pentose-P pool",
+   "Pi",
+   "end pH of the tube at 48 h"
+  ]
+ },
+ "premix": {
+  "extra_rxns": 6
+ },
+ "cocktail_dead_volume_uL": 15,
+ "serial_dilution": [
+  "EnzX"
+ ]
+}

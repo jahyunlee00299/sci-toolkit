@@ -169,3 +169,7 @@ static prediction. A local copy of these tests was tried once and removed
 (SSOT-20, 2026-09-24) — it drifted from upstream with no sync mechanism, the
 same failure mode the source copy hit under SSOT-11; testing the installed
 package's own suite is the SSOT.
+
+## Related skills
+
+- `verification-gates` — where this gate (axis ①) sits among the others, and why a clean `fiducial` run on a clone that failed here means little.

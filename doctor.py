@@ -83,6 +83,7 @@ from doctor_lib.checks_env import (  # noqa: E402
     check_hooks_config,
     check_shell_env,
     check_skill_requirements,
+    check_gate_tools,
     check_lab_numeric_stack,
     check_gitleaks,
 )
@@ -130,6 +131,7 @@ def run_all_checks(root: Path, quick: bool = False) -> list[CheckResult]:
         check_connectivity(root),
         check_skill_requirements(root),
         check_lab_numeric_stack(root),
+        check_gate_tools(root),
         check_gitleaks(root),
     ]
     if not quick:
@@ -143,6 +145,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_doctor_sentinel.py", "secret scan"),
     ("tests/test_body_typo_lint.py", "body typo lint"),
     ("tests/test_caption_style.py", "caption title/interpretive lint"),
+    ("tests/test_paper_theme.py", "paper figure theme and figure_lint dpi rule"),
     ("tests/test_verify_numeric_claims.py", "patent numeric-claim gate"),
     ("tests/test_doi_verify.py", "DOI verification"),
     ("tests/test_assumption_check.py", "stats assumption check"),
@@ -160,6 +163,8 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_si_institutional.py", "SI fetch + institutional links"),
     ("tests/test_checksums_manifest.py", "manifest portability (untracked/EOL)"),
     ("tests/test_doc_counts.py", "documented counts match reality"),
+    ("tests/test_llm_call.py", "optional llm_call helper (API path, claude -p fallback, kill switch)"),
+    ("tests/test_gate_wiring.py", "verification gates are wired into doctor and the agent routing (planted missing tools must WARN, never OK)"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
     ("tests/test_sequence_verification.py", "sequence-verification (variant presence/absence, primer codon recovery, reference-map refusals, construct MW)"),
     ("tests/test_stdio.py", "shared UTF-8 stdout helper (cp949 control vs fixed, non-reconfigurable streams, no private reconfigure blocks left)"),
@@ -185,11 +190,12 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_skill_requirements.py", "per-skill dependency declaration matches the scripts; missing-package report"),
     ("tests/test_gitleaks_layer.py", "gitleaks second layer (absent=WARN, clean=OK, findings=FAIL; config allowlist paths exist)"),
     ("tests/test_uncertainty_doe_skills.py", "vendored K-Dense scripts on hand-derived lab cases (kcat/Km u, g to mol, 2^3 and CCD run tables, plate layout; skips when pint/uncertainties/pydoe are absent)"),
+    ("tests/test_statusline_usage.py", "statusline-usage script output on every fixture (bash always, PowerShell when present; skips when the interpreter is absent)"),
     # A directory entry is a pytest suite: run with pytest, not as a script.
     # The root pytest.ini disables import-collection (tests/ are scripts), so
     # the suite passes its own python_files pattern back in.
     ("skills/lab-record/tests", "lab-record pytest suite (ID allocation, lint rules 1-7, trace/impact/open)"),
-    ("skills/experiment-hub/tests", "experiment-hub pytest suite (pipetting checks, Excel COM guard)"),
+    ("skills/experiment-hub/tests", "experiment-hub pytest suite (pipetting checks, Excel COM guard, pipette count, R1/R2 rules, canon-gate)"),
     ("skills/web-scraping/tests", "web-scraping pytest suite (EZproxy scope, PDF pipeline, target safety, GitHub failure surfacing)"),
     ("skills/primer-design/tests", "primer-design pytest suite (iPCR subst/del, RE cloning, colony PCR, expression analysis, order sheet, vector registry)"),
     ("skills/get-available-resources/tests", "get-available-resources pytest suite (golden snapshots of detect_resources over fake hosts, CLI contract)"),

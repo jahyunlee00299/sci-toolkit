@@ -11,7 +11,7 @@ biopython>=1.79
 primer3-py>=2.0.0
 
 # Data / Excel export
-pandas>=1.3.0
+pandas>=1.5.0  # to_csv(lineterminator=...) needs 1.5+
 openpyxl>=3.0.0
 xlwt>=1.3.0
 

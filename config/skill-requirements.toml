@@ -20,7 +20,8 @@ packages = []
 packages = []
 
 [journal-ppt]
-packages = ["lxml", "pptx"]
+packages = ["lxml", "pillow", "pptx"]
+# pillow: import PIL
 
 [lab-record]
 packages = []

@@ -101,6 +101,24 @@
       "pip_package": "compat-check",
       "size_kb": 8
     },
+    "provenance-check": {
+      "category": "data-stats",
+      "role": "gate for a derived constant: it must trace to a declared source file, sha256, measurement date, instrument, valid range and the value actually in use (needs the provenance-check package from GitHub)",
+      "requires": [],
+      "size_kb": 4
+    },
+    "regress-check": {
+      "category": "data-stats",
+      "role": "freeze critical results and fail when a number moves, a tolerance is widened, or a freeze has no recorded reason (needs the regress-check package from GitHub)",
+      "requires": [],
+      "size_kb": 4
+    },
+    "verification-gates": {
+      "category": "data-stats",
+      "role": "router for the mechanical verification gates (compat-check, provenance-check, fiducial, regress-check, canon-gate) with the shared 0/1/2 exit contract",
+      "requires": [],
+      "size_kb": 5
+    },
     "conda-env-manager": {
       "category": "data-stats",
       "role": "conda environment diagnosis, creation, repair, import scanning, version-conflict resolution",
@@ -142,9 +160,9 @@
     },
     "experiment-hub": {
       "category": "molbio",
-      "role": "Experiment protocols, condition optimization, history logging, experiment comparison",
+      "role": "Experiment protocols, condition optimization, history logging, experiment comparison, pipetting workbooks with enforced pipette limits, pipette count and a canonical-constants gate",
       "requires": [],
-      "size_kb": 77
+      "size_kb": 166
     },
     "fiducial": {
       "category": "validation",
@@ -173,12 +191,12 @@
     },
     "journal-ppt": {
       "category": "documents",
-      "role": "Academic journal-club and research-seminar PowerPoint decks (DOI/manuscript -> deck) with a runnable QC gate",
+      "role": "Academic journal-club and research-seminar PowerPoint decks (DOI/manuscript -> deck) with a runnable QC gate, a journal-club preset and a prose/notes gate",
       "requires": [
         "pptx",
         "academic-term-rules"
       ],
-      "size_kb": 105
+      "size_kb": 731
     },
     "lab-data-analysis": {
       "category": "data-stats",
@@ -341,6 +359,12 @@
       "requires": [],
       "size_kb": 7
     },
+    "statusline-usage": {
+      "category": "validation",
+      "role": "Claude Code status line: model, context-window use, 5-hour and weekly rate-limit use with reset times; dependency-free bash script plus a PowerShell twin",
+      "requires": [],
+      "size_kb": 12
+    },
     "token-efficient-routing": {
       "category": "validation",
       "role": "Agent/model routing -- assigns work to the cheapest adequate tier (3 gates: spawn, tier, structure; gate-hook patterns; log-based tuning)",
@@ -436,7 +460,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 48 skills",
+      "desc": "All 52 skills",
       "skills": [
         "__ALL__"
       ]

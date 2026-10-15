@@ -4,6 +4,122 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.157] — 2026-10-14
+
+- statusline-usage: add a status line skill (model, context use, 5h and weekly limits with reset times) with a dependency-free bash script and fixture tests
+
+## [1.2.156] — 2026-10-14
+
+- docs: add a beginner permission section (allow prompt, permission modes, allow/deny rules) to 01 (ko + en)
+
+## [1.2.155] — 2026-10-13
+
+- experiment-hub: move Mode 1b, hand-built/publishing detail and workbook verification into references/ to get SKILL.md under the 24 KiB cap
+
+## [1.2.154] — 2026-10-13
+
+- experiment-hub: make the recalculated-file test match openpyxl's <v /> empty cache (no lxml, as in CI)
+
+## [1.2.153] — 2026-10-13
+
+- docs: link external products and cross-referenced docs in the beginner guides (ko + en)
+
+## [1.2.152] — 2026-10-13
+
+- docs/en: strip AI writing patterns (em dashes, bold overuse, filler) from the English beginner docs
+
+## [1.2.151] — 2026-10-13
+
+- docs/en: strip AI writing patterns (em dashes, bold overuse, filler) from the English beginner docs
+
+## [1.2.150] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.149] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.148] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.147] — 2026-10-13
+
+- docs: add English translations of the beginner docs under docs/en
+
+## [1.2.146] — 2026-10-13
+
+- experiment-hub: port structural workbook guards, calc subcommand, opt-in Methods publish and workbook-editing rules
+
+## [1.2.145] — 2026-10-13
+
+- experiment-hub: port serial dilution, enzyme-preparation block and cocktail dead volume, with a synthetic fixture
+
+## [1.2.144] — 2026-10-13
+
+- experiment-hub: no percentage overage, 5 uL dead volume default; refresh checksums and drift declaration
+
+## [1.2.143] — 2026-10-13
+
+- sanitize: generic wording and synthetic figures in docs and test fixtures
+
+## [1.2.142] — 2026-10-08
+
+- llm_call: route HTTP through sci_http; refresh SHA256SUMS
+
+## [1.2.141] — 2026-10-08
+
+- Add optional llm_call.py helper: Anthropic API when ANTHROPIC_API_KEY is set, claude -p otherwise
+
+## [1.2.140] — 2026-10-08
+
+- Add optional llm_call.py helper: Anthropic API when ANTHROPIC_API_KEY is set, claude -p otherwise
+
+## [1.2.139] — 2026-10-08
+
+- routing_probe: record Haiku 5.5 measurement (contract kept, boundary row misrouted 2/3)
+
+## [1.2.138] — 2026-10-08
+
+- markitdown example: sonnet-5 -> sonnet-5.5 model id
+
+## [1.2.137] — 2026-10-07
+
+- AGENTS.md: move nine less common routing rows to docs/agents/00-routing-extra.md and merge the two sequence-verification rows; test scans the extra file
+
+## [1.2.136] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.135] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.134] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.133] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.132] — 2026-10-07
+
+- Add verification-gates router with provenance-check and regress-check skills; move AGENTS.md sections 4-5 to docs/agents to stay under the Codex cap
+
+## [1.2.131] — 2026-10-04
+
+- journal-ppt: re-port with journal-club preset and QC-20 prose/notes gate, scrubbed for distribution
+
+## [1.2.130] — 2026-10-04
+
+- Make golden characterization tests platform-neutral so the Linux CI doctor passes
+
+## [1.2.129] — 2026-10-04
+
+- experiment-hub: enforce pipette limits and R1/R2 rules, add pipette count and canon-gate, on synthetic fixtures
+
 ## [1.2.128] — 2026-10-03
 
 - Ship the K-Dense MIT notice inside each adopted skill folder so installed copies keep it

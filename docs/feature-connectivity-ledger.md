@@ -1523,6 +1523,113 @@ wired-by: licenses/K-Dense-MIT.txt
 wired-by: skills/uncertainty-and-units/SKILL.md
 wired-by: skills/doe-and-replication/SKILL.md
 
+## experiment-hub pipetting rules, pipette count and canon-gate (2026-10-04)
+
+**Scope** — sub-feature of `experiment-hub` Mode 10 (layer: sub-feature model +
+cross-cutting validation gate). Ported from the maintainer's working copy and
+sanitised for distribution: `pipette_count.py` (step model, CLI
+`--compare/--steps/--json`), `equal_volume.py` (equal-volume spec -> one
+diluted working stock per level), `canon_gate.py` (canonical-constants gate,
+exit 0/1/2) with a SYNTHETIC `canonical_constants.example.toml`, and
+`reaction_matrix.py` (`validate_config` checks a-f + canon-gate, the
+`Enzyme Additions` sheet, R1 common water in MM-A, `premix.extra_rxns`).
+SKILL.md gains a HARD RULES box whose every rule names the check that enforces it.
+
+**Inputs / outputs** — reaction-matrix config JSON (new optional keys
+`pipettes`, `premix.extra_rxns`, `control_water_in_place`,
+`common_water_in_mm_a`, `enzyme_cocktail`, `equal_volume_uL`, waivers with a
+`*_reason`), an xlsx Params sheet for canon-gate; outputs are the validation
+report (FAIL blocks the xlsx), the 5-sheet workbook and the pipette count.
+Registry lookup: `$LAB_CANON_REGISTRY` -> `canonical_constants.toml` next to
+the checked file -> next to `canon_gate.py` -> the example; none = BLIND.
+
+**Evidence** — `skills/experiment-hub/tests` 110 passed (doctor runs the
+directory as a pytest suite). Every fixture is synthetic
+(`tests/synthetic_fixtures.py`; the Params workbook is generated with openpyxl
+and its creator metadata is the neutral string "synthetic-fixture"). The synthetic 11-tube design
+reproduces the step counts the SKILL.md box quotes (A vs B 74 vs 88, 76 vs 90
+with water-in-place; tie at 28 tubes, B fewer from 31 with one-tube
+increments) and both premix rounding WARNs, which disappear at
+`premix.extra_rxns = 5` (CofactorX draw 1.2 uL, CofactorY 2.0 uL).
+
+**Refutation** — the residual-defect tests (`test_pipette_residual_fixes.py`)
+were first run against the pre-fix code: 15 of 17 failed (the 2 that passed
+are positive controls). Attack table: sub-floor additions, malformed waivers
+(`"false"`, `1`, empty reason), alias and batch-label bypasses of R2 (two names,
+trailing space, case, int vs str, a dilution entry without `source_stock_gL`),
+overfilled and exactly-full tubes, empty configs, no-buffer configs, a DW
+top-up between 0 and the floor, a waiver trying to cover a > 5 % rounding FAIL,
+and an absent registry (BLIND, exit 2, never a pass).
+
+**Deferred risk** — (1) the rounding-stage closure lowers the per-tube MM-A
+volume in 0.1 uL steps, which shifts buffer concentrations by up to one floor
+over the MM-A volume (reported by the rounding check, not hidden). (2) R2's
+name-stem grouping is a heuristic. (3) `dilution_calc.py` (`reaction_matrix.py
+calc`) and the newer structural guards of `pipetting_checks.py` were not part
+of this port. (4) The margins (MM-A n+3, x1.2, +10 uL dead) are planning
+conventions, not measurements.
+
+wired-by: skills/experiment-hub/tests/test_pipette_rules.py
+wired-by: skills/experiment-hub/tests/test_pipette_rule_fixes.py
+wired-by: skills/experiment-hub/tests/test_pipette_residual_fixes.py
+wired-by: skills/experiment-hub/tests/test_canon_gate.py
+wired-by: skills/experiment-hub/SKILL.md
+
+## 2026-10-04 — journal-ppt re-port: journal-club preset + QC-20 prose gate (skills/, sub-feature)
+
+**Scope.** `skills/journal-ppt/` was the 2026-09-23 five-file snapshot. Re-ported from the runtime copy (the authoring SSOT per `scripts/skill_drift.py`) and scrubbed: it now ships the themes, 23 layouts, `qc_layout`/`qc_numbers`, the journal-club preset (`references/prefs/journal_club.json`, `Deck(prefs="journal_club")`), the `thank_you` layout (54 pt declared on the layout) and `qc_prose.py` (QC-20: notes residue, notes/slide count mismatch, duplicate notes sentences, AI-vocabulary and semicolon headlines, trailing periods, missing Conclusions slide, visible Appendix).
+
+**Inputs / outputs.** in: runtime `journal-ppt` (commit cd8f3fa of the skills repo). out: `skills/journal-ppt/` (37 files, 731 KB with its tests), `config/catalog.json` (role, size_kb), `config/skill-requirements.toml` (pillow added by the scanner), `SHA256SUMS`.
+
+**Evidence.** Ported tree: journal-ppt tests 107 passed (preset, layouts, QC) in the toolkit copy; the runtime suite is 571 passed. `tests/test_skill_references.py`, `test_service_routing.py`, `test_skill_contract.py`, `test_doc_counts.py`, `test_checksums_manifest.py`, `test_doctor_sentinel.py` all pass; `skill_requirements.py --check` matches; `leakgate scan` 0 findings in 39 files.
+
+**What the gate caught that the plan missed.**
+1. The SENTINEL scan failed the first port on three unpublished-research markers (an engineered-enzyme label in `style_spec.md`, another in a `qc_deck.py` comment, a substrate name in a layout test fixture). The port script now rewrites them to neutral labels; the runtime copy keeps its own text.
+2. Reference checks rejected the new S3/S4 usage examples (`assets/scheme1.png`, `assets/fig5.png`) and a `logo_fetch.py` status note; examples now use the allow-listed `assets/fig1.png`, and the logo paragraph keeps the earlier toolkit wording.
+3. Windows line endings in the copied files broke the manifest's LF policy; the port normalizes to LF before hashing.
+
+**Deferred risk**: the optional language gate (QC-19) is not shipped here, so the deck QC reports "language-gate NOT RUN" as a warning, never a pass. The skill tests live inside the skill folder and are not collected by the toolkit's `pytest.ini` (`testpaths = tests`); run them from `skills/journal-ppt`.
+
+## 2026-10-07 — verification-gates router with provenance-check and regress-check (skills/, cross-cutting)
+
+**Scope.** The toolkit shipped two of the four mechanical gates (`compat-check`, `fiducial`) and no router, so an agent reading `AGENTS.md` had no way to learn which gate holds at which moment or that exit 2 means BLIND. Added `skills/verification-gates/` (router, shared 0/1/2 contract, reporting format), `skills/provenance-check/` and `skills/regress-check/` (install from the public GitHub repos; no source copy). `AGENTS.md` sections 4 and 5 moved verbatim to `docs/agents/` to stay under the Codex read cap.
+
+**Inputs / outputs.** in: the lab's runtime `verification-gates` skill and the two tool READMEs, rewritten in English with lab paths and agent names removed. out: three skill folders, `config/catalog.json` (3 entries, `all` preset 48 to 51), `PROJECT_STRUCTURE.md`, README count 44 to 47, `AGENTS.md` section 0 row "Report any number" now routes to `verification-gates`, `docs/agents/08-verification-routes.md` row, back-links from `fiducial`, `compat-check`, `scientific-validation`.
+
+**Evidence.** `tests/test_agents_routing.py` (every routed skill exists; AGENTS.md 30,820 bytes, was 32,704 against a 32,768 cap), `test_doc_counts.py`, `test_skill_contract.py`, `test_skill_references.py`, `test_skill_sizes.py`, `test_skill_drift.py`, `test_checksums_manifest.py`, `test_doctor_sentinel.py` all exit 0; `leakgate scan` 0 findings in 15 files.
+
+**What the gate caught that the plan missed.**
+1. `AGENTS.md` had 64 bytes of headroom, so the routing edit could not be a new row; it reuses an existing row and two sections moved out.
+2. The first checksum run failed on a CRLF `PROJECT_STRUCTURE.md` written by a helper script and on untracked new skill folders; both are fixed before the commit.
+3. The catalog edit by round-tripping JSON reordered unrelated keys; redone as a text insertion.
+
+**Deferred risk**: the two new tool skills depend on a `pip install` from GitHub that this repo cannot test offline; `endnote_library_audit` (axis 5) is not bundled here, so the router lists five axes, not six. Push and release are separate decisions.
+
+## 2026-10-07 — AGENTS.md section 0 trim: less common routes moved to docs (docs/agents/, sub-feature)
+
+**Scope.** The always-read routing table carried nine rarely used rows and two rows for one skill. Nine rows moved verbatim to `docs/agents/00-routing-extra.md` (preprints, DOI collection, patent disclosure, `±` and units, DoE, slides, file conversion, web search, install help) and the two `sequence-verification` rows merged into one. `AGENTS.md` 25,433 to 23,265 bytes.
+
+**Inputs / outputs.** in: `AGENTS.md` section 0. out: the shortened table with one pointer sentence, the new docs file, and `tests/test_agents_routing.py`, which now scans the extra file for dangling skills and scripts exactly as it scans section 0.
+
+**Evidence.** `test_agents_routing.py` passes with the extra file included; the checksum, doc-count, skill-reference and SENTINEL tests pass; `leakgate` clean. Every skill whose row moved keeps its Korean triggers in its own `description:`, which is what the router reads.
+
+**What the gate caught that the plan missed.** The merged row first named `read_coverage.py` without its path, and the test rejected it as a nonexistent file; the row now uses full `sequence-verification/scripts/` paths.
+
+**Deferred risk**: an agent that picks a route only from the table will not see the moved rows unless it follows the pointer sentence or the skill description matches. No usage log exists to measure which rows were rare, so the selection was by judgement.
+
+## 2026-10-08 — llm_call.py: optional API-first completion helper (sub-feature)
+
+**Scope.** Lab members running small scripts that ask Claude one plain question had only `claude -p`, which spends subscription quota. Added `scripts/llm_call.py`: Anthropic API when the user's own `ANTHROPIC_API_KEY` is set, `claude -p` otherwise; `LLM_CALL_API=0` forces the CLI; `LLM_CALL_LOG` writes one JSON line per call. Documented for beginners in `docs/03_토큰과_비용.md` section 4-4.
+
+**Inputs / outputs.** in: prompt, model, max_tokens. out: text, or `LLMCallError`. No secrets-store path, no user names, no home paths; stdlib only.
+
+**Evidence.** `tests/test_llm_call.py` (API path, no key, HTTP error, kill switch, all paths fail, log line) passes. `leakgate scan` 0 findings in 5 files.
+
+**What the gate caught that the plan missed.** Haiku 5.5 thinks by default and thinking tokens consume `max_tokens`, which returned an empty text block in the lab's own run; the helper sends `thinking: disabled`.
+
+wired-by: docs/03_토큰과_비용.md
+**Deferred risk**: the real API path is covered by mocks here; it was proven against the live API only in the lab's own copy of the helper.
+
 ---
 
 ## Refactor batch 4 (2026-10-03) — the three oversized functions left after batches 2 and 3

@@ -1,0 +1,135 @@
+# EXAMPLE canonical-constants registry for canon_gate.py -- every entry is SYNTHETIC.
+#
+# Copy this file to `canonical_constants.toml` (next to canon_gate.py, next to your configs, or
+# anywhere named by the environment variable LAB_CANON_REGISTRY) and replace the entries with your
+# lab's own decisions. canon_gate.py falls back to this example only when no real registry exists,
+# so a real config is normally BLIND (exit 2) against it: the example names match nothing real.
+#
+# One entry = one DECISION about a constant that every pipetting config JSON and every
+# pipetting/methods xlsx Params sheet must agree with. A file that contradicts an entry is a
+# FAIL (exit 1). Changing a canonical value = edit the registry with a new `decided` date and move
+# the old value into `supersedes`; never "fix" the checker.
+#
+# fields : stock_conc (mM) | final_conc (mM) | batch (string with a 6-digit batch label) | stock_gL (g/L)
+# basis  : "researcher-decision" (a person decided it) | "source-agreement" (two independent
+#          files agree, checked digit-for-digit on the registration date; not a decision)
+# supersedes : earlier values that are now WRONG. `kind = "file"` entries are matched by value
+#          (a FAIL that equals one is reported as "matches superseded value"); `kind = "doc"`
+#          entries cannot be machine-checked and are carried into the report as text.
+
+[meta]
+schema = 1
+registered = "example"
+note = "Synthetic example. Working stocks (SaltM, SaltC) are per-experiment dilutions and deliberately NOT canonical; see [[undecided]]."
+
+# ---------------- CofactorX: a cofactor whose unit was once written wrong ----------------
+[[canon]]
+id = "cofactorx.stock"
+names = ["CofactorX", "Cofactor-X", "cofactor X"]
+field = "stock_conc"
+value = 10
+unit = "mM"
+decided = "example"
+decided_by = "researcher"
+basis = "researcher-decision"
+source = "example decision: lab stock 10 mM"
+supersedes = [
+  { kind = "file", where = "older example workbook Params CofactorX_EXISTING_STOCK", value = 10, unit = "uM" },
+]
+
+[[canon]]
+id = "cofactorx.final"
+names = ["CofactorX", "Cofactor-X", "cofactor X"]
+field = "final_conc"
+value = 0.015
+unit = "mM"
+decided = "example"
+decided_by = "researcher"
+basis = "researcher-decision"
+source = "example decision: final 0.015 mM"
+supersedes = [
+  { kind = "file", where = "older example workbook Params CofactorX_FINAL", value = 0.015, unit = "uM" },
+  { kind = "doc",  where = "an older methods draft (CofactorX final concentration)", value = 0.015, unit = "uM" },
+]
+
+# ---------------- EnzA: batch label and stock ----------------
+[[canon]]
+id = "enza.batch"
+names = ["EnzA"]
+field = "batch"
+value = "100001"
+decided = "example"
+decided_by = "researcher"
+basis = "researcher-decision"
+source = "example decision: batch 100001 is the one in use"
+supersedes = [
+  { kind = "file", where = "example config draft EnzA batch label", value = "100009" },
+]
+
+[[canon]]
+id = "enza.stock_gL"
+names = ["EnzA"]
+field = "stock_gL"
+value = 12.0
+unit = "g/L"
+decided = "example"
+decided_by = "researcher"
+basis = "researcher-decision"
+source = "batch 100001 (see enza.batch)"
+
+[[canon]]
+id = "enzb.stock_gL"
+names = ["EnzB"]
+field = "stock_gL"
+value = 14.0
+unit = "g/L"
+decided = "example"
+decided_by = "n/a (two files agree)"
+basis = "source-agreement"
+source = "two example files agree"
+
+[[canon]]
+id = "enzf.stock_gL"
+names = ["EnzF"]
+field = "stock_gL"
+value = 70.0
+unit = "g/L"
+decided = "example"
+decided_by = "n/a (two files agree)"
+basis = "source-agreement"
+source = "two example files agree"
+
+[[canon]]
+id = "enzg.stock_gL"
+names = ["EnzG"]
+field = "stock_gL"
+value = 40.0
+unit = "g/L"
+decided = "example"
+decided_by = "n/a (two files agree)"
+basis = "source-agreement"
+source = "two example files agree"
+
+# ---------------- NOT canonical: per-experiment working stocks (WARN class only) ----------------
+# A file whose value differs from an `observed` value of another file gets a WARN (never a FAIL):
+# someone should confirm the working dilution is intentional. `file` is matched by basename so a
+# file is never compared with itself.
+[[undecided]]
+id = "saltm.working_stock"
+names = ["SaltM", "SaltM (working)"]
+field = "stock_conc"
+unit = "mM"
+observed = [
+  { file = "example_params.xlsx", value = 1000 },
+  { file = "example_config.json", value = 100 },
+]
+
+[[undecided]]
+id = "saltc.working_stock"
+names = ["SaltC", "SaltC (working)"]
+field = "stock_conc"
+unit = "mM"
+observed = [
+  { file = "example_params.xlsx", value = 100 },
+  { file = "example_config.json", value = 20 },
+]
