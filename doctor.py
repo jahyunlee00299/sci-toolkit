@@ -145,6 +145,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_doctor_sentinel.py", "secret scan"),
     ("tests/test_body_typo_lint.py", "body typo lint"),
     ("tests/test_caption_style.py", "caption title/interpretive lint"),
+    ("tests/test_paper_theme.py", "paper figure theme and figure_lint dpi rule"),
     ("tests/test_verify_numeric_claims.py", "patent numeric-claim gate"),
     ("tests/test_doi_verify.py", "DOI verification"),
     ("tests/test_assumption_check.py", "stats assumption check"),
