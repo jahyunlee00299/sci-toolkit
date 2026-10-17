@@ -3,6 +3,9 @@
 # tests/test_skill_requirements.py fails when this file lags the scripts.
 # Skills without scripts/ have no entry. Windows-only packages: pywin32.
 
+[avoid-ai-writing]
+packages = []
+
 [biorxiv-database]
 packages = []
 

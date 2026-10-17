@@ -2,10 +2,10 @@
   "_comment": "Intended toolkit-vs-runtime skill differences. Written by `scripts/skill_drift.py --declare`; each entry is pinned to both copies' fingerprints and goes stale when either side changes.",
   "skills": {
     "avoid-ai-writing": {
-      "reason": "Size racket: runtime's local-addition section cross-references ../manuscript-pipeline/writing_voice.md, a runtime-only sibling skill path; toolkit instead ships its own check-style.js tool. SKILL.md is grandfathered oversized per the 260903 user decision (memory: project_scitoolkit_shared_script_fork_260903) and not to be split.",
-      "toolkit_fp": "d4ae986c23b298e8",
-      "runtime_fp": "46697b97677a7d61",
-      "declared": "2026-09-24"
+      "reason": "Runtime SKILL.md was split into references/ (options, word-lists, structural-patterns) on 261002; the toolkit copy keeps one inline SKILL.md (size-ratcheted) and ships its own check-style.js. The docs-genre reference and the two doc check scripts are identical in both copies; the toolkit points to them from README.md.",
+      "toolkit_fp": "daf9853ecbb858b2",
+      "runtime_fp": "59307268dd21ee11",
+      "declared": "2026-10-17"
     },
     "code-quality": {
       "reason": "Reverse-direction: toolkit is ahead, not behind. Toolkit's Mode C section already has the 260924-era two-axis review split (Standards vs Spec, reviewed and reported separately, quote-the-request rule) that runtime's older SKILL.md (dated 2026-03-16, months before toolkit's 2026-08-22) does not have. Porting runtime's SKILL.md over toolkit's would delete real content, not add it.",

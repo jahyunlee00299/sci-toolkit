@@ -391,6 +391,14 @@ nothing here to check it against. The
 [license audit](https://github.com/conorbronsdon/avoid-ai-writing/issues/88)
 behind that line is public.
 
+## READMEs and install guides
+
+For a README, quickstart or how-to guide with code blocks, tables and links, see
+[`references/docs-genre.md`](references/docs-genre.md): measured targets from 12 human-written
+docs (em dash 0, bold 1 to 5 per 1k words), per-element rules, and the traps found while
+cleaning a bilingual guide set. `scripts/doc_metrics.py` measures a doc and
+`scripts/preserve_check.py` confirms an edit changed no code, link, table row or number.
+
 ## Credits
 
 Pattern research informed by:
