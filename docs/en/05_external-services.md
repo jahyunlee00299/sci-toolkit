@@ -14,7 +14,7 @@ An AI agent becomes useful when it does things like "read and organize my mailbo
 repository," or "check my to-do list (Asana/Notion) and schedule calendar events."
 For that, the AI has to be able to connect to these services, but "connecting it" and "connecting it safely" are different matters.
 
-After reading this document you will know three things.
+This document covers three things.
 
 1. Why this toolkit avoids MCP connections and makes REST connector scripts (`scripts/connectors/`) the
    default, and why MCP is used only as a last resort when there is no alternative
@@ -51,10 +51,6 @@ Disconnecting changes account settings, so the AI will not click it for you; it 
 > say "turn it on for just this task on only one device," so judge the timing of switching it on and off
 > on an account-wide basis.
 
-> Summary: MCP is the fallback for when you cannot build
-> a REST connector. If a service already has a REST connector, do not connect it through MCP. Only for services without one
-> do you use the MCP button as an exception, until a connector exists.
-
 ### A trap that really happened: when the "preview" ends without confirmation
 
 The MCP tools of some services split an operation into two steps: first they create a "preview," and the change takes effect only when you press the
@@ -62,12 +58,11 @@ confirm button on screen. Depending on the kind of screen/session you are using,
 replies "I created the preview," but nothing has been created. It is a silent failure that looks like success
 on the surface.
 
-This kind of trap shows exactly why REST connectors come first. A REST connector's write operation has
+This trap shows why REST connectors come first. A REST connector's write operation has
 no "stuck halfway at a preview" state. If you do not add `--write`, nothing happens, and if you add it, it runs.
-There is no ambiguous middle ground.
 
 If you really have to use an MCP "create"-type tool, always query the list/search again right after creating to confirm
-it actually took effect. Do not trust the "succeeded" wording of the reply.
+it actually took effect. Do not rely on the "succeeded" wording of the reply alone.
 
 ---
 
@@ -77,7 +72,7 @@ We reuse the analogy from earlier.
 
 > Token / API key / password = access pass
 
-The reason you must not handle an access pass carelessly is clear: whoever picks it up can walk in and out of the building under your name.
+The reason you must not handle an access pass carelessly is simple: whoever picks it up can walk in and out of the building under your name.
 Follow the principles below.
 
 - **Do not paste tokens into the chat window.** Do not type a token string straight into the conversation, as in "connect using this token."
@@ -121,7 +116,7 @@ In that case the repository may still carry a link to the "original (upstream)."
   that happens only after a person explicitly confirms "yes, it's OK to push this to the original."
 - You do not need to know all of this: a safely configured AI agent stops and asks when it encounters an operation that pushes to the original repository.
   The only thing to remember from this document is that "pushing to the original always gets one more confirmation."
-- The general rule for public repositories is the same: **never put unpublished research, personal information, or credentials in a public repository.**
+- The general rule for public repositories is the same. Never put unpublished research, personal information, or credentials in a public repository.
 
 ---
 
@@ -148,7 +143,6 @@ Concretely:
 
 - Actions that go outside cannot be undone. A wrongly sent email may already have been read by the recipient.
 - However well the AI wrote it, a person pressing the final send button gives one more chance to catch mistakes.
-- Following this one principle, "the AI does not press the send button in place of a person," prevents most accidents.
 
 ---
 
@@ -231,8 +225,6 @@ The criterion: "is it only reading my own stuff, or does it affect other people?
 | Reading and analyzing shared sheet data | Editing or deleting shared sheet values |
 | Writing my own personal notes/drafts | Editing material other people see |
 
-In a word: reading is always fine; anything that goes out to others or is hard to undo always gets confirmation or stops at a draft.
-
 ---
 
 ## 6. Codex tips
@@ -241,18 +233,5 @@ In a word: reading is always fine; anything that goes out to others or is hard t
   if a REST connector exists, use it first; if not, use an MCP/token connection; and hard-to-undo actions like
   sending, deleting, or assigning always go through human confirmation.
 - In particular, the "do not push to the original (upstream) repository" principle for GitHub must be followed the same way whichever AI tool you use.
-  A different tool does not change the principle.
 - If you use several AI tools together, writing rules such as "mail always stops at a draft" and "pushing to the original repository only after confirmation"
   into the `AGENTS.md`/`CLAUDE.md` explained in [`docs/en/04_giving-ai-rules.md`](04_giving-ai-rules.md) keeps the principles in place even when the tool changes.
-
----
-
-## 7. One-line summary
-
-- Connection = for mail, GitHub, Asana, Notion, calendar, and sheets, always use the
-  REST connectors in `scripts/connectors/` first, and once switched, disconnect that service's MCP. MCP only as a last resort, for
-  exploratory web work that REST cannot replace
-- Tokens/passwords = access pass: never expose them in chat windows, code, or public repositories; keep them only in the app's secure storage
-- GitHub original (upstream) repository = push only to your own copy (fork); anything going to the original is always confirmed by a person
-- The most important principle: for anything that goes out externally, such as mail, task assignment, or calendar invitations, create only a draft, and you always send it yourself
-- Rule of thumb = reading (checking your own stuff) proceeds as is; writing (affecting others) gets confirmation or stops at a draft

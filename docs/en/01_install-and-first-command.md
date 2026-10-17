@@ -2,9 +2,9 @@
 
 # 01. Installation and Your First Command: Actually Giving One a Try
 
-> If the earlier [00_getting-started](00_getting-started.md) gave you a feel for "what an AI agent is,"
-> this document takes you through actually installing the program, layering this toolkit on top, and giving your first command.
-> Follow the steps in order. If you get stuck, ask a senior labmate.
+> If the earlier [00_getting-started](00_getting-started.md) gave you a feel for what an AI agent is,
+> this document takes you through installing the program, layering this toolkit on top, and giving your first command.
+> If you get stuck, ask a senior labmate.
 
 ---
 
@@ -12,7 +12,7 @@
 
 - A computer (Windows and Mac both work)
 - A Claude subscription account ([Pro or Max](https://claude.com/pricing)). If you don't have one, subscribe first at [claude.ai](https://claude.ai).
-  You **do not need** an API key. (For why, see [02_api-and-mcp](02_api-and-mcp.md).)
+  You don't need an API key. (For why, see [02_api-and-mcp](02_api-and-mcp.md).)
 - This toolkit folder (`sci-toolkit`): the folder this document is in.
 
 ---
@@ -21,7 +21,7 @@
 
 There are three ways to use [Claude Code](https://code.claude.com/docs/en/overview). All three are the same Claude Code,
 you log in with the same subscription account, and this toolkit is layered on in exactly the same way.
-The only difference is "where you chat."
+The only difference is where you chat.
 
 ### Which one should I pick?
 
@@ -31,8 +31,8 @@ The only difference is "where you chat."
 | You already work on code and data in VS Code | VS Code extension |
 | You're comfortable in the terminal / you use it on a server | Terminal (CLI) |
 
-> If you can't decide, start with the desktop app. If you switch later, you won't have to redo your setup.
-> Installing all three at once causes no conflicts.
+> If you can't decide, start with the desktop app. If you switch later, you won't have to redo your setup,
+> and installing all three at once causes no conflicts.
 
 ### Method A: Desktop app (recommended for beginners)
 
@@ -41,15 +41,15 @@ The only difference is "where you chat."
    (Like any ordinary program: download → run → click "Next," and you're done.)
 3. After installing, open the app and log in with your own Claude account. ([Get started with the desktop app](https://code.claude.com/docs/en/desktop-quickstart))
 
-> That's all. Click the icon → log in → the chat box appears.
+> Click the icon and log in, and the chat box appears. That is all there is to installing.
 
 ### Method B: VS Code extension (if you work with code and data in VS Code)
 
 If you're already working on Python scripts or data in [VS Code](https://code.visualstudio.com/), this is the most convenient.
 The AI can see the file you're editing right away, and you can see the results of its changes directly in the editor.
 
-1. Open VS Code and click the Extensions icon (four squares) on the left.
-2. Type `Claude Code` in the search box and Install [the one made by Anthropic](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code).
+1. Open VS Code and click the **Extensions** icon (four squares) on the left.
+2. Type `Claude Code` in the search box and **Install** [the one made by Anthropic](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code).
 3. After it's installed, reopen the window and log in with your Claude account as prompted.
 4. Open `sci-toolkit` as your working folder (File → Open Folder).
 
@@ -73,7 +73,7 @@ For how to use it on a remote server, see [09_remote-server](09_remote-server.md
 
 ## 2. "Layering on" this toolkit
 
-If you only install Claude Code, the AI doesn't yet know "how our lab does things."
+If you only install Claude Code, the AI doesn't yet know how our lab does things.
 Only after you layer this toolkit folder on does it know our rules.
 
 > Analogy: Claude Code is a new researcher you've hired.
@@ -89,12 +89,12 @@ Only after you layer this toolkit folder on does it know our rules.
 2. The AI automatically consults `AGENTS.md`, `config/`, `skills/`, and so on in this folder.
    You don't need to set anything up yourself.
 
-> ⚠️ If you move the whole folder or rename it, references may break.
+> Note: if you move the whole folder or rename it, references may break.
 > To start, leave it exactly as you received it.
 
 ### If you also want to use it from other folders (optional)
 
-The method above attaches the skills "only when you've opened the `sci-toolkit` folder."
+The method above attaches the skills only when you've opened the `sci-toolkit` folder.
 If you want to use them no matter which folder you work in, install just the skills you want.
 
 ```
@@ -116,8 +116,8 @@ python doctor.py
 ```
 
 If you see `PASS`, it's working. (If you see `FAIL`, take a screenshot of that line and show it to a senior labmate.)
-If you don't use the terminal, you can skip this step.
-You can also just tell Claude Code, "Run doctor.py and tell me the result."
+If you don't use the terminal, you can skip this step,
+or tell Claude Code, "Run doctor.py and tell me the result."
 
 ### Python version: Uncertainty/units and experimental design features need 3.12 or later
 
@@ -148,9 +148,9 @@ You don't need to memorize any commands.
 (“Organize and tell me what files are in this folder.”)
 
 The AI scans the folder and puts together a list with descriptions.
-This is a task that only reads and changes nothing, so it is safe. It's a good way to get a feel for things.
+This task only reads and changes nothing, so it is safe.
 
-### Trying the toolkit's real features
+### Trying the toolkit's features
 
 This toolkit includes features (skills) such as paper search, plotting, statistics, and document work.
 For example:
@@ -165,8 +165,8 @@ For example:
 ```
 (“Draw a bar chart from this Excel file (tell me the filename). In a style I can put in a paper.”)
 
-The AI picks and runs the appropriate feature by itself. You don't need to choose a skill;
-say what you want to do in words.
+The AI picks and runs the appropriate feature by itself, so you don't have to work out which skill to use.
+Say what you want to do in words.
 
 ### Looking back
 
@@ -181,8 +181,8 @@ At first, keep this confirmation step on and watch alongside it. As you get used
 
 ## 4. Permission settings: handling the "Allow" prompt
 
-The confirmation box the AI shows before it changes a file or runs a command is a **permission request**.
-For the first few days, watching these prompts is the best way to learn what the AI is doing.
+The confirmation box the AI shows before it changes a file or runs a command is a permission request.
+For the first few days, watch these prompts to learn what the AI is doing.
 
 ### When an allow prompt appears
 
@@ -196,9 +196,9 @@ The prompt says what the AI wants to do (the file it will change, the command it
 
 Before you click, check three things.
 
-- **Which file?** If it wants to change a file outside the working folder, or your original data, decline first and ask why.
-- **Is it deleting something?** If you see `rm`, `del`, or "delete", read it once more.
-- **Is it sending something out?** `git push`, sending mail, and uploads are hard to undo.
+- Which file? If it wants to change a file outside the working folder, or your original data, decline first and ask why.
+- Is it deleting something? If you see `rm`, `del`, or "delete", read it once more.
+- Is it sending something out? `git push`, sending mail, and uploads are hard to undo.
 
 If you don't know what a command means, click **No** and ask "what does that command do?"
 Once you understand it, ask again.
@@ -208,7 +208,7 @@ a file edit is remembered only until this conversation ends. ([Official explanat
 
 ### Choosing a permission mode
 
-How often the AI asks is set by the **permission mode**. Change it with the mode selector next to the send button
+How often the AI asks is set by the permission mode. Change it with the mode selector next to the send button
 in the desktop app, the mode indicator in the VS Code prompt box, or `Shift+Tab` in the terminal.
 
 | Mode | Does without asking | When to use |
@@ -219,7 +219,7 @@ in the desktop app, the mode indicator in the VS Code prompt box, or `Shift+Tab`
 | **Auto** | Most things (a second AI screens risky actions in the background) | When prompts get too frequent |
 | **Bypass permissions** | Everything | **Don't use it.** For isolated test environments only |
 
-Recent versions of the terminal and VS Code can **start in Auto**, so you may see almost no allow prompts.
+Recent versions of the terminal and VS Code can start in Auto, so you may see almost no allow prompts.
 Switch to Manual at first and watch. The desktop app remembers the last mode you picked for each folder.
 ([Permission modes docs](https://code.claude.com/docs/en/permission-modes))
 
@@ -273,8 +273,6 @@ If you use [Codex](https://developers.openai.com/codex) (OpenAI's similar tool),
 
 ## 7. Next steps
 
-You have now started using an AI agent.
-
 - How costs arise and why a subscription is safe → [03_tokens-and-cost](03_tokens-and-cost.md)
 - If you want to give the AI more rules, like "this is how we do it" → [04_giving-ai-rules](04_giving-ai-rules.md)
 - To safely entrust external services such as mail, GitHub, Asana/Notion, and calendars to the AI → [05_external-services](05_external-services.md)
@@ -282,14 +280,4 @@ You have now started using an AI agent.
 - To connect a Notion database to the AI → [07_notion-guide](07_notion-guide.md)
 - To handle Asana tasks, comments, and subtasks with the AI → [08_asana-guide](08_asana-guide.md)
 
-Trying one or two warm-up commands today is enough.
 If you have questions, ask a senior labmate (mentor).
-
----
-
-## One-line summary
-
-- Installation = download the Claude Code desktop app and log in (no API key needed)
-- Layering on the toolkit = set the working folder to `sci-toolkit` and you're done (referenced automatically)
-- First command = just say what you want to do in the chat box (warm up with read-only tasks)
-- Safeguard = the AI checks with you before changing anything. Watch at first, then trust it with more

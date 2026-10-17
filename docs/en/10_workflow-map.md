@@ -22,7 +22,7 @@ This package has three layers. Their roles differ, so don't mix them up.
                 ─ The gates that must pass before anyone says "it's done"
 ```
 
-Key point: ① decides the path, ② does the work, and **③ must pass before it counts as finished**.
+① decides the path, ② does the work, and ③ must pass before it counts as finished.
 In this toolkit, saying "done" without ③ is not done.
 
 ---
@@ -41,7 +41,7 @@ Run the designated tools
     → docx/scripts/figure_caption_check.py
     → docx/scripts/manuscript_ref_order.py
     ↓
-🔒 Gate: read the "kind" of each result
+Gate: read the "kind" of each result
     → An "out-of-order numbering" finding does not automatically mean "move the caption."
       A figure that is never cited, a ghost citation with no caption, and a draft-state
       leftover each call for a different remedy.
@@ -60,21 +60,21 @@ The full table is in `AGENTS.md` §0. Here are the ones you'll use most.
 
 | What you want to do | What to use | What must pass before you finish |
 |---|---|---|
-| Find papers | `research-search` | 🔒 `scripts/doi_verify.py`: catches made-up DOIs and retracted papers |
-| Collect references + OA PDFs | `scripts/ref_fetch.py` | 🔒 Report the mismatched and not-found items in the report exactly as they are |
-| Write or revise a manuscript | `manuscript-pipeline` | 🔒 Terminology lint + number consistency + `body_typo_lint.py` (units/notation) |
-| Edit a Word file | `docx` → `incremental_edit.py` | 🔒 `docx_preflight.py` + `word_validate.py` on the output file |
+| Find papers | `research-search` | Gate: `scripts/doi_verify.py`: catches made-up DOIs and retracted papers |
+| Collect references + OA PDFs | `scripts/ref_fetch.py` | Gate: Report the mismatched and not-found items in the report exactly as they are |
+| Write or revise a manuscript | `manuscript-pipeline` | Gate: Terminology lint + number consistency + `body_typo_lint.py` (units/notation) |
+| Edit a Word file | `docx` → `incremental_edit.py` | Gate: `docx_preflight.py` + `word_validate.py` on the output file |
 | Live-edit a Word file that is open | `docx` → `word_live_edit.py` | Re-read the edited part afterwards to confirm |
-| Extract text from Word | 🔒 `manuscript_text.py --count-only` first | If tracked changes exist, the ordinary method silently drops text |
-| Insert citations | `endnote-citation-injection` | 🔒 `doi_verify.py --bibtex` + `endnote_biblio_check.py` |
-| Make a figure | `publication-figures` | 🔒 `figure_lint.py` + recompute the numbers from the raw data |
-| Analyze data | `lab-data-analysis` → `stats-workflow` | 🔒 `assumption_check.py`: checks normality and equal variance and names the test to use |
-| Model fitting / optimization | the relevant skill → `scientific-validation` | 🔒 `sci_validate.py` (mass balance, physical plausibility) |
-| Put a number into a document | — | 🔒 Recompute from the original script/raw data |
-| [Send mail, issues, tasks](05_external-services.md) | `scripts/connectors/` | 🔒 **Drafts only.** A human does the sending |
-| [Installation isn't working](01_install-and-first-command.md) | `doctor.py` | 🔒 Until it shows `PASS` |
+| Extract text from Word | Gate: `manuscript_text.py --count-only` first | If tracked changes exist, the ordinary method silently drops text |
+| Insert citations | `endnote-citation-injection` | Gate: `doi_verify.py --bibtex` + `endnote_biblio_check.py` |
+| Make a figure | `publication-figures` | Gate: `figure_lint.py` + recompute the numbers from the raw data |
+| Analyze data | `lab-data-analysis` → `stats-workflow` | Gate: `assumption_check.py`: checks normality and equal variance and names the test to use |
+| Model fitting / optimization | the relevant skill → `scientific-validation` | Gate: `sci_validate.py` (mass balance, physical plausibility) |
+| Put a number into a document | — | Gate: Recompute from the original script/raw data |
+| [Send mail, issues, tasks](05_external-services.md) | `scripts/connectors/` | Gate: drafts only. A human does the sending |
+| [Installation isn't working](01_install-and-first-command.md) | `doctor.py` | Gate: Until it shows `PASS` |
 
-🔒 = a gate enforced by a script. Don't judge by eye; run it and look at the exit code.
+A gate is enforced by a script. Don't judge by eye; run it and look at the exit code.
 
 ---
 
@@ -85,9 +85,9 @@ if a check can be built reliably, we build it as a script.
 
 | | Enforced by a script | Guided by a document (guide) |
 |---|---|---|
-| **Criterion** | The pass/fail rule is clear, so a machine can check it for you | It needs situational judgment and can't be reduced to a rule |
-| **Examples** | Manuscript numbers, Word file corruption, secrets, whether a DOI really exists, statistical assumptions, terminology notation | Which database to search, what argument to build, how to interpret results |
-| **Why** | Both people and AI mistakenly believe "I checked it." A script doesn't get tired | If a machine makes the call for you, it actually gets it wrong |
+| Criterion | The pass/fail rule is clear, so a machine can check it for you | It needs situational judgment and can't be reduced to a rule |
+| Examples | Manuscript numbers, Word file corruption, secrets, whether a DOI really exists, statistical assumptions, terminology notation | Which database to search, what argument to build, how to interpret results |
+| Why | Both people and AI mistakenly believe "I checked it." A script doesn't get tired | If a machine makes the call for you, it actually gets it wrong |
 
 At first we assumed "if the cost of a mistake is low, a document is enough," but most of the
 things we left as documents on that basis turned out to be machine-checkable. So the following three
@@ -140,7 +140,7 @@ python scripts/make_checksums.py --apply   # refresh the file list and hashes
 python doctor.py                           # confirm PASS
 ```
 
-In particular, **when you write in a document "run `scripts/foo.py`", check that the file actually exists.**
+In particular, when you write in a document "run `scripts/foo.py`", check that the file actually exists.
 A document pointing to a file that doesn't exist was the most common breakage in this package,
 which is why we made `test_skill_references.py` check it automatically.
 

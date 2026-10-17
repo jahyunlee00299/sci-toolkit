@@ -41,7 +41,7 @@ an Integration = the counter that issues your access pass.
 
 ---
 
-## 3. Preparation 2 (the most common trap): Share the Integration with the target DB
+## 3. Preparation 2: Share the Integration with the target DB (the most common trap)
 
 Even after creating the Integration and registering the token, there are many cases where running `list-dbs` shows nothing.
 There is one reason.
@@ -89,7 +89,7 @@ Run all commands from the toolkit root.
 # 1) List the databases I can see (= that were shared with me) [READ]
 python scripts/connectors/notion_db_connector.py list-dbs
 
-# 2) Check a specific DB's properties (schema) — which fields exist and their types [READ]
+# 2) Check a specific DB's properties (schema): which fields exist and their types [READ]
 python scripts/connectors/notion_db_connector.py schema --db <YOUR_DATABASE_ID>
 
 # 3) Query the DB's rows (items), the latest 10 [READ]
@@ -98,7 +98,7 @@ python scripts/connectors/notion_db_connector.py query --db <YOUR_DATABASE_ID>
 # 3-1) Simple filtering by status value
 python scripts/connectors/notion_db_connector.py query --db <YOUR_DATABASE_ID> --status "In progress"
 
-# 4) Add a new item — first a preview (dry-run) without --write
+# 4) Add a new item: first a preview (dry-run) without --write
 #    ("예시 항목" in these examples is just a sample title: "Example item")
 python scripts/connectors/notion_db_connector.py add-row --db <YOUR_DATABASE_ID> --title "예시 항목" --prop Status="In progress"
 
@@ -131,7 +131,7 @@ python scripts/connectors/notion_db_connector.py add-row \
 | `list-dbs` / `schema` / `query` | Runs immediately (read-only) | Changes nothing to begin with |
 | `add-row` (without `--write`) | Prints a preview only; nothing actually happens | — |
 | `add-row --write` | Actually creates a new item | Can be undone by deleting it manually in Notion |
-| (delete/archive) | **Not in this script at all** | — |
+| (delete/archive) | Not in this script at all | — |
 
 - Reading (`list-dbs`/`schema`/`query`) can be run freely at any time.
 - Adding an item (`add-row`) only shows a preview of what would be created unless you attach `--write`.
@@ -179,11 +179,3 @@ a `--prop` name, it will be caught as an error.
    `schema --db <id>`, then retry with matching `--prop` values.
 4. list-dbs result is empty → no DB has been shared yet. Follow chapter 3 and share at least
    one DB.
-
----
-
-## 9. One-line summary
-
-- Notion DB integration = reading (list-dbs/schema/query) is free, adding (add-row) needs `--write`, and there is no delete at all.
-- The most common mistake = issuing only the token and forgetting to share the Integration with the target DB (Connections).
-- If you are unsure about property names, always run `schema --db <id>` first.

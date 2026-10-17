@@ -5,8 +5,6 @@
 If the logs look smeared together, Korean tables don't line up with ASCII headers, and the tabs you opened at the same time
 all look identical so you can't tell which one failed, this document fixes those three.
 
-Whether you notice a wrong number or let it slip by is decided here, so this is more than a matter of taste.
-
 ```bash
 python scripts/terminal_setup.py            # preview (writes nothing)
 python scripts/terminal_setup.py --apply    # apply after backing up
@@ -83,14 +81,14 @@ So this script
 | | 5.1 | 7.1+ |
 |---|---|---|
 | History prediction | Works | Works |
-| Plugin prediction (AI-style suggestions) | **Doesn't work** | Works |
+| Plugin prediction (AI-style suggestions) | Doesn't work | Works |
 | ListView | Needs PSReadLine 2.2.6+ | Same |
 
 5.1 ships with PSReadLine 2.0.0 and doesn't update itself. To use ListView,
 you have to upgrade the module.
 
 ```powershell
-# You must install NuGet first — otherwise Install-Module stops with no output
+# You must install NuGet first, otherwise Install-Module stops with no output
 # at the "install the provider?" prompt
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
 Install-Module PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck

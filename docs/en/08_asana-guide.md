@@ -2,12 +2,12 @@
 
 # 08. Asana Integration Guide: Letting the AI Read Your Task List and Create New Tasks/Comments
 
-> One-line summary: Reading (me/tasks) is free; creating tasks/comments/subtasks happens only when you add --write; there is no complete or delete feature at all.
+> One-line summary: Reading (me/tasks) is free, creating tasks/comments/subtasks needs --write, and there is no complete or delete feature at all.
 
-This document explains, at a beginner's level, how to use `scripts/connectors/asana_connector.py` to let the AI read your Asana
+This document explains how to use `scripts/connectors/asana_connector.py` to let the AI read your Asana
 My Tasks (Task) list and to create new tasks, comments, and subtasks.
-The big principles of connection and security were already covered in [05_external-services](05_external-services.md), so this document
-focuses on the "Asana" case, especially the problem of formatting breaking.
+The big principles of connection and security are in [05_external-services](05_external-services.md); this document
+covers Asana, especially the problem of formatting breaking.
 
 ---
 
@@ -22,7 +22,7 @@ If you manage tasks (Tasks) in Asana, this integration lets the AI do the follow
 
 Reading always runs immediately (unlike the write actions in 2, 3, and 4), but write actions (creating tasks/comments/subtasks)
 only show a preview (dry-run) by default, and to actually run them you must explicitly
-attach a flag called `--write`. (It is in the same vein as [document 05](05_external-services.md)'s "outgoing actions stop at the draft" principle.)
+attach a flag called `--write`. (It follows the same principle as [document 05](05_external-services.md)'s "outgoing actions stop at the draft" principle.)
 
 > Why this connector is better than MCP, a real case: Asana's MCP task-creation
 > tool only makes a "preview card," and the task is actually created only after you click a confirm button on screen once more.
@@ -42,7 +42,7 @@ or completing someone else's task.
 ## 2. Preparation: Get an Asana Personal Access Token (PAT)
 
 To use the [Asana API](https://developers.asana.com/docs) you need to issue a "[Personal Access Token](https://developers.asana.com/docs/personal-access-token)."
-Using the analogy from [`docs/en/02_api-and-mcp.md`](02_api-and-mcp.md), the token = access pass.
+Using the analogy from [`docs/en/02_api-and-mcp.md`](02_api-and-mcp.md), the token is an access pass.
 
 1. Log in at [`app.asana.com`](https://app.asana.com) in your browser, then go to the profile icon at the top right → "My Settings"
    (shown as "내 설정(My Settings)" in the Korean UI).
@@ -56,7 +56,7 @@ Using the analogy from [`docs/en/02_api-and-mcp.md`](02_api-and-mcp.md), the tok
    - Set the environment variable `SCITK_ASANA_TOKEN` and write something like `"token": "ENV:SCITK_ASANA_TOKEN"` in `credentials.json`
      (the token value itself is not left in the file, which is safer; see [`docs/en/05_external-services.md`](05_external-services.md)).
 
-> Do not paste the token into the chat window. It is exactly document 05's "token = access pass" principle.
+> Do not paste the token into the chat window. Same as document 05's "token = access pass" principle.
 
 ### Finding your workspace gid
 
@@ -95,7 +95,7 @@ python scripts/connectors/asana_connector.py me
 # 2) List my tasks [READ]
 python scripts/connectors/asana_connector.py tasks --workspace <WORKSPACE_GID>
 
-# 3) Create a new task — first a preview (dry-run) without --write
+# 3) Create a new task: first a preview (dry-run) without --write
 #    ("예시 작업" in these examples is just a sample name: "Example task")
 python scripts/connectors/asana_connector.py add-task --workspace <WORKSPACE_GID> --name "예시 작업"
 
@@ -120,11 +120,10 @@ outward action."
 
 ---
 
-## 4. The most important section: why comment/subtask formatting breaks, and the fix
+## 4. Why comment/subtask formatting breaks, and the fix
 
-Users often ran into this problem: when you send a formatted comment straight to the Asana API,
-the "formatting often goes wrong" or it even produces an error. This connector is built to
-block those traps automatically.
+Sending a formatted comment straight to the Asana API often produced broken formatting or
+an outright error. This connector blocks those traps automatically.
 
 ### Short ordinary comments → just use `--text`
 
@@ -134,7 +133,7 @@ python scripts/connectors/asana_connector.py add-comment --task <TASK_GID> --tex
 
 (`"완료했습니다"` = "Done.")
 
-This is sent as is as plain text, and Asana displays it on its own. There is nothing else to worry about.
+This is sent as is as plain text, and Asana displays it on its own.
 
 ### If you need formatting (bold, lists, and so on), use `--html`
 
@@ -146,19 +145,19 @@ python scripts/connectors/asana_connector.py add-comment --task <TASK_GID> \
 
 (The text reads: "<strong>Result summary</strong>: progress 80%, the next step is analysis.")
 
-When you attach `--html`, the connector internally automatically validates and corrects Asana's `html_text` formatting rules.
+When you attach `--html`, the connector validates and corrects Asana's `html_text` formatting rules automatically.
 [Asana's formatting rules](https://developers.asana.com/docs/rich-text) have 4 traps that beginners easily fall into without knowing it.
 
 | # | Trap | What happens | What the connector does |
 |---|---|---|---|
-| (a) | The whole thing must be wrapped in `<body>...</body>` | If not wrapped, a format error | When `--html` is used and there is no `<body>`, it **wraps it automatically** |
-| (b) | The `<p>` tag (paragraph tag) is absolutely forbidden | Including `<p>` makes the request itself fail with `xml_parsing_error` | If the connector finds `<p>`, it **blocks it before running** and tells you "use &#10; for line breaks" |
-| (c) | Line breaks use the special code `&#10;`, not an ordinary line break (Enter) | Just putting in Enter breaks the formatting | The connector **automatically converts** the line breaks (Enter) you typed into `&#10;` |
-| (d) | The `'→'` (arrow symbol) character is absolutely forbidden | Including it makes the request fail with an XML parsing error | If the connector finds `→`, it **blocks it before running** and tells you "replace it with `->` or a word" |
+| (a) | The whole thing must be wrapped in `<body>...</body>` | If not wrapped, a format error | When `--html` is used and there is no `<body>`, it wraps it automatically |
+| (b) | The `<p>` tag (paragraph tag) is absolutely forbidden | Including `<p>` makes the request itself fail with `xml_parsing_error` | If the connector finds `<p>`, it blocks it before running and tells you "use &#10; for line breaks" |
+| (c) | Line breaks use the special code `&#10;`, not an ordinary line break (Enter) | Just putting in Enter breaks the formatting | The connector automatically converts the line breaks (Enter) you typed into `&#10;` |
+| (d) | The `'→'` (arrow symbol) character is absolutely forbidden | Including it makes the request fail with an XML parsing error | If the connector finds `→`, it blocks it before running and tells you "replace it with `->` or a word" |
 
-And the allowed tags are only some: `<strong>` (bold), `<em>` (italic), `<u>` (underline), `<code>`, `<a>` (link),
+The allowed tags are only a few: `<strong>` (bold), `<em>` (italic), `<u>` (underline), `<code>`, `<a>` (link),
 `<ul>`/`<ol>`/`<li>` (lists), `<h1>`/`<h2>` (headings), and `<table>`/`<tr>`/`<td>`.
-Using any other tag may be rejected on Asana's side, so we recommend keeping formatting within this list.
+Using any other tag may be rejected on Asana's side, so keep formatting within this list.
 
 For a subtask's description, attaching the `--html-notes` flag applies the same rules.
 
@@ -174,8 +173,7 @@ python scripts/connectors/asana_connector.py add-subtask --parent <TASK_GID> \
 In the past, when the Asana API was called directly with a tool like `curl`, Korean text on Windows could be garbled, sent as
 escape codes like `\uXXXX`, or with a mismatched encoding. This connector is built to always specify
 `ensure_ascii=False` + `charset=utf-8` in the request, so Korean task
-names, comments, and descriptions are sent as is without being garbled. This is handled automatically, so you don't need to
-worry about it.
+names, comments, and descriptions are sent as is without being garbled.
 
 ### Conclusion
 
@@ -206,17 +204,8 @@ worry about it.
 | `add-task` (without `--write`) | Prints a preview only; nothing is actually created | — |
 | `add-task --write` | Actually creates the task. If `--assignee` is not me, an outward-action notice | Explicit `--write` required |
 | `add-comment` (without `--write`) | Prints a preview only | — |
-| `add-comment --write` | Actually posts the comment (always an outward-action notice — others can see it) | Explicit `--write` required |
+| `add-comment --write` | Actually posts the comment (always an outward-action notice, others can see it) | Explicit `--write` required |
 | `add-subtask` (without `--write`) | Prints a preview only | — |
 | `add-subtask --write` | Actually creates the subtask. If `--assignee` is not me, an outward-action notice | Explicit `--write` required |
-| (complete a task) | **Not in this script at all** | — |
-| (delete) | **Not in this script at all** | — |
-
----
-
-## 7. One-line summary
-
-- Asana integration = reading (me/tasks) is free, creating tasks/comments/subtasks needs `--write`, and complete/delete are not there at all.
-- If you need a formatted comment, use `--html` (or `--html-notes`); Asana's fussy rules such as no `<p>`, `&#10;` line breaks, and
-  no `→` are followed automatically by the connector or blocked before running.
-- For a short ordinary comment, plain `--text` is enough; Korean text is also sent as is without being garbled.
+| (complete a task) | Not in this script at all | — |
+| (delete) | Not in this script at all | — |

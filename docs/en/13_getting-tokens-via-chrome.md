@@ -2,8 +2,8 @@
 
 # 13. Getting Tokens the Easy Way with Chrome (Claude Code + Chrome Extension)
 
-> Claude takes you right to the correct settings screen, but **clicking the "Generate" button and copying the
-> value are always done by you.** Claude never reads or stores the token value on your behalf.
+> Claude takes you right to the correct settings screen, but clicking the "Generate" button and copying the
+> value are always done by you. Claude never reads or stores the token value on your behalf.
 
 [`docs/07_notion-guide.md`](07_notion-guide.md) and [`docs/08_asana-guide.md`](08_asana-guide.md) explain how to find each menu by hand.
 If Claude Code has a [Chrome MCP connection](https://code.claude.com/docs/en/chrome) (the [Chrome Web Store](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) extension), you can cut down on the effort of hunting for menus. What
@@ -14,7 +14,7 @@ matters is how far to automate and where the human has to take over.
 ## 1. Principle: why Claude doesn't see the token value
 
 - A GitHub/Notion/Asana token is shown on screen only once, right after it is generated, and can't be viewed again.
-- If Claude reads the screen and repeats that value in chat, **the token is left in the conversation history** at that moment.
+- If Claude reads the screen and repeats that value in chat, the token is left in the conversation history at that moment.
   That is, in effect, the same as the "pasting a token into the chat window" that [`docs/05_external-services.md`](05_external-services.md) §2 forbids.
 - Pressing the "generate token" button is also an action that changes account settings, so it isn't the kind of thing
   Claude should press on its own.
@@ -31,8 +31,8 @@ So the roles are divided like this.
 |---|---|
 | Check the login state, navigate to the exact settings page | Claude (Chrome MCP) |
 | Check that the scope/permission checkboxes are selected as intended | Claude checks via screenshot + guides you |
-| Click the "Generate/Create" button | **You** |
-| Copy the token value | **You** |
+| Click the "Generate/Create" button | You |
+| Copy the token value | You |
 | Register the value in `credentials.json` | You (run `register_token.py`; paste once, not visible on screen) |
 | Confirm that it was registered (value masked) | Claude (`_credentials.py`) |
 
@@ -63,7 +63,6 @@ yet, so for now it is handled with the MCP connect button).
    - If you're not logged in, Claude does not log in; it asks you to log in yourself
      (entering credentials is prohibited).
    - If it's your first login, you can create a new account or log in with your own existing account.
-     Either way there's nothing special to worry about.
 3. Claude checks the name/scope input fields on the screen and tells you "you can create it as is"
    (Claude can fill in the text inputs: the name and scope selection are not secret values).
 4. You click the "Generate" button yourself.
@@ -133,11 +132,3 @@ The first time you try this, you will almost always get stuck on the following t
   paste the path Claude gave you straight into the File Explorer address bar to open the exact file.
   After saving, don't re-check the value by eye; confirm only with the masked confirmation message
   that `register_token.py` shows right after registration (`[등록됨] ... = xx****...`, where "등록됨" means “registered”).
-
-## 5. One-line summary
-
-- Claude goes only as far as navigation (moving to the exact URL + checking the screen); the generate button and copying the value are always yours
-- Claude does not read the token value off the screen and repeat it, so that it doesn't end up in the chat history
-- The issued token is stored in `config/credentials.json`, and this file is separate on each machine.
-  It isn't shared with other PCs, so there's no need to worry too much about which account you pick
-- For per-service shortcuts, see the §2 table above; Google Calendar/Drive use a separate OAuth flow

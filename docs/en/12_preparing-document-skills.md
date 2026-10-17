@@ -7,7 +7,7 @@
 "이 워드 파일 고쳐줘" (“fix this Word file”), "PDF에서 표 뽑아줘" (“pull the tables out of this PDF”), "엑셀로 정리해줘" (“organize this in Excel”): just say it the usual way.
 The ability to handle document files is provided on the [Claude Code](https://code.claude.com/docs/en/overview) side, so this toolkit does not need to fill that role.
 
-This document explains why you don't see those skill folders in the repository,
+This document explains why those skill folders are not in the repository
 and describes the lab's own tools that are included anyway.
 
 ## Why they aren't in the repository
@@ -22,20 +22,16 @@ explicitly prohibits the following.
 In other words, keeping a copy in this repository is itself a license violation. It is the same even if the repository
 is private: the clause "do not keep copies outside the Services" applies regardless of whether it is public.
 
-So we left out the files and kept the connection. The installer still knows its
-dependencies on these skills, and tells you the above when it matters.
+So we left out the files and kept only the connection. The installer knows its
+dependencies on these skills and tells you the above when it matters.
 
 ## How to prepare them
 
 In most cases you don't have to do anything.
 
-When you tell Claude Code "이 워드 파일 고쳐줘" (“fix this Word file”), "PDF에서 표 뽑아줘" (“pull the tables out of this PDF”), or "엑셀로 정리해줘" (“organize this in Excel”),
-the ability to handle that document format is provided on the Claude Code side.
-This toolkit does not need to fill that role.
-
-If document work isn't going well, get the relevant skill through the route Anthropic provides and place it under
+If document work doesn't go well, get the relevant skill through the route Anthropic provides and place it under
 `~/.claude/skills/`. The distribution route differs by Claude Code version, so we don't
-put a specific link here; an outdated link is more confusing.
+put a specific link here. An outdated link is more confusing.
 
 ## Manuscript work you can still do with this toolkit
 
@@ -63,12 +59,3 @@ python skills/manuscript-pipeline/scripts/figure_caption_check.py MANUSCRIPT.doc
 
 These tools work with just python-docx (PyPI, open source), and do not
 depend on the Anthropic skills.
-
-## Summary
-
-| | Status |
-|---|---|
-| The `docx`, `pdf`, `pptx`, `xlsx` skills themselves | Not in the repository (owned by Anthropic) |
-| Ability to handle document formats | Provided by Claude Code; it usually just works |
-| The lab's own 7 manuscript QC tools | Included as they are in `manuscript-pipeline/scripts/` |
-| Installer | Knows the dependencies, and tells you what is missing |

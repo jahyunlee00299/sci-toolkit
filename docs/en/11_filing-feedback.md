@@ -16,7 +16,7 @@ misuse something at the same spot, the tool is at fault, not the users.
 
 Talk to [Claude Code](https://code.claude.com/docs/en/overview) as you normally would.
 
-> "docx 표 편집이 자꾸 실패하는데 이거 좀 불편해요" (“Table editing in docx keeps failing, and it's a real hassle”)
+> "docx 표 편집이 자꾸 실패하는데 이거 좀 불편해요" (“Table editing in docx keeps failing, and it's a bit of a hassle”)
 > "이런 기능이 있으면 좋겠는데 없네요" (“I wish there were a feature like this, but there isn't”)
 > "이거 왜 안 되는지 모르겠어요" (“I don't understand why this doesn't work”)
 
@@ -85,8 +85,8 @@ just the body text, then hand that text to the maintainer directly.
 
 ## What you must not include (the code enforces this)
 
-This record is passed on to other people. So if any of the following is in it,
-`export` **refuses to run.** This is an actual check, not just a notice.
+**This record is passed on to other people.** So if any of the following is in it,
+`export` refuses to run. This is an actual check, not just a notice.
 
 - Passwords, API keys, tokens
 - Other people's personal information (names, emails, phone numbers)
@@ -159,5 +159,5 @@ The sanitizing gate also applies to the preview. If only the preview were let th
 workaround of copying that output and posting it by hand, and that path has no checks at all.
 
 What the gate catches and what it lets through is pinned down as a contract by `tests/test_feedback_sanitize.py`.
-The blocking cases in it are leaks that actually happened, so if false positives are annoying,
+The blocking cases in it are **leaks that actually happened**, so if false positives are annoying,
 fix the gate instead of deleting the cases.

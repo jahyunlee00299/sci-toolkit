@@ -12,7 +12,7 @@ These are the cases it covers.
 - The work needs to keep running even when you turn off your laptop
 
 > The connection details for the lab shared server and HPC (address, account, key) are not included in this distribution.
-> Use the information you received from your lab or IT office. Do not store connection details inside this folder.
+> Use the information you received from your lab or IT office. **Do not store connection details inside this folder.**
 
 ---
 
@@ -89,7 +89,7 @@ python install/install.py --preset data-figures --apply
 
 ## 3. Long jobs: keep them running even if the connection drops
 
-With [SSH](https://www.openssh.com), when the connection drops, whatever was running dies with it. If you close your laptop or
+With [SSH](https://www.openssh.com), **when the connection drops, whatever was running dies with it.** If you close your laptop or
 the Wi-Fi drops, a calculation that had been running for hours is lost.
 
 ### tmux (recommended)
@@ -155,7 +155,7 @@ CPU, GPU, memory, and disk and tells you which strategy fits.
 - Do not store connection details (address, account, password, SSH key) inside this toolkit folder.
   This folder gets copied around between people.
 - Keep SSH keys in `~/.ssh/`, and using a key instead of a password is safer.
-- **Do not leave personal API keys in plain text on a shared server.** Other users can see them.
+- Do not leave personal API keys in plain text on a shared server. Other users can see them.
   Use environment variables or a file with restricted permissions (`chmod 600`).
 - The shared folders on a shared server may have other people's data mixed in.
   Before having the AI read a whole folder, check what is inside it first.
