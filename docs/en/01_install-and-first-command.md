@@ -13,7 +13,7 @@
 - A computer (Windows and Mac both work)
 - A Claude subscription account ([Pro or Max](https://claude.com/pricing)). If you don't have one, subscribe first at [claude.ai](https://claude.ai).
   You don't need an API key. (For why, see [02_api-and-mcp](02_api-and-mcp.md).)
-- This toolkit folder (`sci-toolkit`): the folder this document is in.
+- This toolkit folder (`sci-toolkit`): the folder this document is in. If you don't have it yet, see [15_github-setup](15_github-setup.md).
 
 ---
 
@@ -265,7 +265,7 @@ If you use [Codex](https://developers.openai.com/codex) (OpenAI's similar tool),
 
 - Installation: turn on Codex in a ChatGPT subscription (Plus or higher) environment, or install the CLI as instructed.
 - Layering on this toolkit: if you open the `sci-toolkit` folder as your working folder, Codex automatically reads `AGENTS.md`.
-  (It is set up so that Claude Code consults `AGENTS.md`, and Codex consults the same `AGENTS.md`.)
+  (Claude Code reads `CLAUDE.md`, and this repository's `CLAUDE.md` points to `AGENTS.md`.)
 - First command: likewise, just say what you want to do. Only how you launch it differs a little;
   the flow of "open the folder → ask in words → check and approve" is the same.
 

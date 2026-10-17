@@ -16,7 +16,8 @@ research content is filtered out by a mechanical check (`doctor.py` SENTINEL).
 
 | I am… | start here |
 |---|---|
-| 초심자, not sure what's what | [docs/00_시작하기](docs/00_시작하기.md) (Getting Started) · English: [docs/en/00_getting-started](docs/en/00_getting-started.md) |
+| a beginner, not sure what's what | [docs/00_시작하기](docs/00_시작하기.md) (Getting Started) · English: [docs/en/00_getting-started](docs/en/00_getting-started.md) |
+| don't have the folder yet | [docs/15_깃허브_설정하기](docs/15_깃허브_설정하기.md) (Git and GitHub setup) · English: [docs/en/15_github-setup](docs/en/15_github-setup.md) |
 | just want to install first | [QUICKSTART.md](QUICKSTART.md): install only the skills you need |
 | want to understand how it works | [docs/10_전체_워크플로우_지도](docs/10_전체_워크플로우_지도.md) (Full Workflow Map) · English: [docs/en/10_workflow-map](docs/en/10_workflow-map.md) |
 | the AI keeps going off track | [AGENTS.md](AGENTS.md) §0 routing table -> say "follow §0" |
@@ -60,7 +61,11 @@ script or a doc instead, and that's noted below.
 ## How to load it
 
 A skill is just a directory, so there is no separate registration step. Copying
-the folder into Claude Code's skills location is the install.
+the folder into Claude Code's skills location is the install. The commands
+below run from the repository folder, which works the same for Claude Code and
+Codex. Get it with `git clone https://github.com/jahyunlee00299/sci-toolkit.git`
+or a ZIP download; [docs/15](docs/15_깃허브_설정하기.md) walks through Git, Python
+and GitHub login.
 
 ```bash
 python install/install.py --list                      # check the catalog
@@ -75,7 +80,7 @@ python doctor.py                                      # PASS means ready
 - Restart Claude Code (or open a new session) after installing. Skills are
   picked up at session start.
 
-See [QUICKSTART.md](QUICKSTART.md) for the 5-minute 초심자 path from a USB
+See [QUICKSTART.md](QUICKSTART.md) for the 5-minute beginner path from a USB
 drive, including which install mode to pick.
 
 ## How to use it
@@ -169,7 +174,7 @@ Off-campus access has a few restrictions:
 | `config/catalog.json` | Skill catalog SSOT (categories, dependencies, size, presets) |
 | `hooks/` | 7 safety guards: secrets, forced deletes, dangerous git (including fork-upstream pushes), cloud recursive scans, plus 3 for Windows environment mismatches |
 | `scripts/` | Research helper tools (HPLC parser, primer check, JCR verification, `ref_fetch.py`, etc.) + external-integration connectors |
-| `docs/` | 15 초심자 docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome); English translations in `docs/en/` |
+| `docs/` | 16 beginner docs (getting started -> install -> API/MCP -> tokens & cost -> ... -> full workflow map -> getting a token via Chrome -> setting up Git and GitHub); English translations in `docs/en/` |
 | `tests/` | 50 regression tests (secrets/research markers, reference existence, routing consistency, non-destructive install, capability loss, bidirectional hooks, hook file wiring, Codex hook adapter, doctor auto-run after install, feedback channel/sanitization gate, dual-credentials-store detection, connector dry-run/`--write` gate, connector install bundle, service/skill routing target existence, adopted-discipline-skill clause existence, development-discipline-skill clause existence, spec-driven 4-stage contract existence, adopted-skill clause existence, dead-automation detection, tool connectivity ratchet, standalone-tool smoke, doctor self-test verdicts: outage vs broken, shared HTTP retry policy, SKILL.md size ratchet, Agent Skills frontmatter contract, per-skill dependency declaration, gitleaks second layer, patent numeric-claim arithmetic gate, vendored uncertainty/DoE scripts on hand-derived lab cases, statusline script output on every fixture, paper figure theme). `doctor.py` runs all of them automatically |
 | `doctor.py` | Integrity/environment check (`doctor_lib/` holds the checks). `PASS` means it's ready; `--offline` keeps every self-test off the network |
 | `evals/` | Headless measurement of whether routing actually fires (slow, costs money; run manually) |

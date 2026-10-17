@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.159] — 2026-10-17
+
+- docs: add Git and GitHub setup guide (ko + en) and link it from README, QUICKSTART, docs 00/01
+
 ## [1.2.158] — 2026-10-17
 
 - docs: remove AI-writing patterns from README and beginner guides

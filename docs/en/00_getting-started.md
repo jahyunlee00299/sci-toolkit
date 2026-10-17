@@ -63,6 +63,6 @@ There are several ways to use it, but for beginners the desktop app is the easie
 
 ## 6. Next step
 
-Move on to [01. Install and first command](01_install-and-first-command.md). For your first time, try a single small file in this order: "read it → organize it → plot it."
+If you don't have the toolkit folder yet, start with [15. Setting up Git and GitHub](15_github-setup.md). Once you have it, move on to [01. Install and first command](01_install-and-first-command.md). For your first time, try a single small file in this order: "read it → organize it → plot it."
 
 If you get stuck, ask a labmate or your point person.
