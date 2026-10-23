@@ -1,54 +1,71 @@
-# SQLite direct UPDATE on existing EndNote records — rules and the ENCI_Base exception
+# Editing existing EndNote records: `safe_refs_update.py`
 
-Full rationale for why `refs` stays read-only after INSERT, and the one
-validated exception (`jterms`-class self-contained term-list tables) that
-can be safely edited via a real-collation REINDEX pipeline.
+Direct `UPDATE`/`DELETE` on `refs` was once forbidden outright (read-only diagnosis, GUI Find and
+Replace for fixes). That rule is **superseded**: `EN_MAKE_SORT_KEY` has been reproduced exactly
+(`en_make_sort_key.py`), so an `UPDATE refs ...` is a supported operation again, but only through
+the pipeline tool. Do not hand-roll the UPDATE.
 
-## ⚠️ SQLite direct UPDATE on existing records = read-only diagnosis, NOT a fix path (260715 finding)
+## Why a hand-written UPDATE is still wrong
 
-Everything in `references/endnote-sqlite-internals.md` (INSERT + the two stub functions) works because INSERT only fires the
-`refs__refs_ord_AI` **AFTER-INSERT** trigger, which this skill's `EN_MAKE_SORT_KEY` +
-`ENCIN_ko_KR` stubs are sufficient for. **Fixing already-inserted bad records (e.g. bulk
-`reference_type` correction, or a bulk `\r`/`\n` author-separator fix) is a different
-operation — it fires the AFTER-**UPDATE** trigger (`refs__refs_ord_AU`), which requires the
-library's real collation/sort-key behavior, not our approximations.**
+An INSERT fires only the `refs__refs_ord_AI` AFTER-INSERT trigger. An UPDATE fires the
+AFTER-UPDATE trigger (`refs__refs_ord_AU`), which re-sorts `refs_ord` with the library's real
+sort-key function and collations (`ENCIN_ko_KR`, `ENCI_Base`, `NOCASE`). A naive Python stub
+(`.lower()` compare) can throw `database disk image is malformed`, or leave the sort index
+inconsistent with EndNote's own rules while `PRAGMA integrity_check` (evaluated under the wrong
+collation) reports spurious results or masks real ones.
 
-In a mature, actively-used library (this project's "My EndNote Library_2025") the `refs_ord`
-index is built with **three custom collations**: `ENCIN_ko_KR`, `ENCI_Base`, and `NOCASE`. This
-skill's Python-side collation stub (`encin_collation`, a naive `.lower()` compare) does not
-reproduce the real `ENCIN_ko_KR`/`ENCI_Base` behavior. A direct `UPDATE refs SET reference_type
-= ... WHERE id IN (...)` against a library that uses these collations can throw
-`database disk image is malformed` when the AU trigger tries to re-sort `refs_ord`, and even a
-successful-looking UPDATE risks leaving the sort index inconsistent with the real collation
-rules — `PRAGMA integrity_check` will then report spurious issues (or mask real ones) because
-it is being evaluated against the wrong collation implementation.
+## The tool
 
-**Rule: SQLite access to an existing/shared EndNote library is read-only (diagnosis, counting,
-export) — never `UPDATE`/`DELETE` on `refs` once records exist beyond what this run itself just
-inserted.** Concretely:
-- **Bulk `reference_type` correction (Bill → Journal Article, etc.)** → use EndNote's own
-  **Library → Find and Replace → In: Reference Type → Bill → Journal Article** (bulk, GUI-native,
-  respects the library's own collation/sort-key logic). This is the only safe path once bad
-  records are already committed to a shared library. ([Clarivate KB](https://support.clarivate.com/Endnote/s/article/EndNote-Change-reference-type-for-many-records))
-- **Bulk author `\r`/`\n` separator fix** on records that were NOT inserted by this same run/session
-  → also prefer GUI (open record, re-enter/re-paste author field) or, if scripting is
-  unavoidable, restrict the UPDATE to the exact id range this skill's own INSERT just created in
-  the same transaction (fresh rows, AU trigger has not yet had to re-sort them against
-  collation-dependent neighbors) — never retrofit older/foreign records this way.
-- **Before any UPDATE attempt at all**: back up `sdb.eni` (mandatory, see Phase 0), then test the
-  UPDATE against a **throwaway copy** of the DB file first and run `PRAGMA integrity_check` on
-  the copy afterward. If it reports anything beyond the expected diff, do not apply to the live
-  file — fall back to GUI Find&Replace and restore from backup if a live UPDATE was already
-  attempted.
-- **Diagnosis is always safe** (`SELECT ... FROM refs`, `SELECT ... FROM refs_ord` read-only) —
-  only `INSERT`/`UPDATE`/`DELETE` carry the trigger/collation risk. Use SQLite freely to count,
-  audit, and locate bad records; use the EndNote GUI to actually fix them once records already
-  exist in a shared/multi-manuscript library.
+```bash
+# 1. write a spec: record id -> column -> value  (a list value for `author` is joined with 
+)
+cat > fix.json <<'JSON'
+{ "123": {"author": ["Smith, Anna Maria", "Jones, Peter", "Lee, Soo", "Costa, Ana"]} }
+JSON
 
-## Exception: ENCI_Base reverse-engineered + REINDEX pipeline makes trigger-free tables safely editable (260715 finding)
+"$PY" safe_refs_update.py --spec fix.json            # rehearsal only (library untouched)
+"$PY" safe_refs_update.py --spec fix.json --apply    # rehearse -> back up -> apply -> verify
+```
 
-The blanket "read-only, use GUI" rule above still holds for **`refs`** (it drives `refs_ord` via
-an AFTER-UPDATE trigger that needs the real collation). But **`ENCI_Base` itself has now been
+What it guarantees, in order: refuses to run while `EndNote.exe` is open -> backs up `sdb.eni` ->
+rehearses `REINDEX -> UPDATE -> REINDEX -> integrity_check` on a copy and re-derives every sort
+key -> only then repeats it on the live file with `VACUUM` -> **restores the backup automatically
+if post-apply verification fails**. Columns are allow-listed (`author`, `year`, `title`,
+`secondary_title`, `volume`, `number`, `pages`, `electronic_resource_number`, `reference_type`);
+`trash_state` and friends are rejected. Resolve a `reference_type` code from the type name
+(`references/reference-types.md`).
+
+Two facts worth knowing at the call site:
+
+- **Authors are separated by `
+` only.** A `
+` is not a separator: EndNote folds the whole
+  string into one author, which is what produces bibliography output such as
+  `Smith, Anna MariaJones, Peter...` with the first author's given name swallowed. Scan for it
+  with `SELECT id FROM refs WHERE author LIKE '%' || char(10) || '%'`.
+- `ENCIN_ko_KR` is BINARY; `ENCI_Base` comes from the sibling `enci_base_collation.py`.
+
+Tests (run both after touching either module; they are the gate, not decoration):
+
+```bash
+"$PY" tests/test_en_make_sort_key.py         # fixtures + full-library replay (skipped if no library)
+"$PY" tests/test_safe_refs_update_guards.py  # every refusal path must actually fire (skipped if no library)
+```
+
+The replay test regenerates `key_2` for every row of a real library and compares it with what
+EndNote itself stored; on the library it was derived from, every trigger-produced row reproduces
+exactly. Rows that store a raw lower-cased author string instead of a sort key were inserted
+without the trigger running (direct SQL INSERTs) and are a defect of those rows; re-saving them in
+EndNote, or running any `--apply` edit against them, regenerates a proper key.
+
+If the tool is unavailable, the fallback is the GUI: Library -> Find and Replace (for example
+In: Reference Type, Bill -> Journal Article), and `SELECT` for diagnosis only. Before any
+experiment, back up `sdb.eni`, close EndNote, and test on a throwaway copy.
+
+## Exception: ENCI_Base reverse-engineered + REINDEX pipeline makes trigger-free tables safely editable 
+
+`refs` is edited only through `safe_refs_update.py` (above): it drives `refs_ord` via an
+AFTER-UPDATE trigger that needs the real collation. Separately, **`ENCI_Base` itself has now been
 reverse-engineered successfully** — see `enci_base_collation.py` (co-located in this skill's
 folder, `endnote-citation-injection/enci_base_collation.py`) — reproducing 3526/3527 (99.97%) of
 real `ENCI_Base`-ordered rows across every `COLLATE ENCI_Base` index in a live library (`jterms`
@@ -83,8 +100,8 @@ moment, so a correct collation registration is a hard precondition, not optional
 (their ENCI_Base index only orders their own rows for the Term List UI). `refs`/`refs_ord` is
 cross-referenced by CWYW citation resolution and the AU trigger's sort-key regeneration touches
 sync/tag/prop side-tables too — a `refs` DELETE/UPDATE + REINDEX is a materially larger blast
-radius that has NOT been validated this way. Until that validation exists, `refs` stays GUI-only
-per the rule above; only `jterms`-class term-list tables get this safe direct-SQLite path.
+radius that has NOT been validated this way. `refs` edits go through `safe_refs_update.py`; only
+`jterms`-class term-list tables get this direct-SQLite REINDEX path.
 
 **Always required regardless of scope**: backup `sdb.eni` first (Phase 0), close EndNote before
 opening the file, and validate on a throwaway copy before touching the live library if there is

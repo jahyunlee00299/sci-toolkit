@@ -1,11 +1,11 @@
 # Phase 6.1 — Orphan citation recovery (body cites a rec-number with no backing record)
 
 Full detail for the reverse failure mode of Phase 6.0: the docx body already contains an EndNote field citing a
-specific rec-number (`{Author, Year #901}`), but that id has **no matching row in `refs`** —
+specific rec-number (`{Author, Year #123}`), but that id has **no matching row in `refs`** —
 either the record was deleted from the library after the citation was inserted, or the citation
 was hand-typed/copy-pasted with a guessed/wrong id, or it came from a different library the
 document was once linked to. Symptom in Word: the citation renders as **unformatted / raw
-brace text** (`{Author, Year #901}` shown literally) instead of the formatted `(Author, Year)`
+brace text** (`{Author, Year #123}` shown literally) instead of the formatted `(Author, Year)`
 output, and EndNote's Find Citation(s) turns up nothing for that id.
 
 ## Diagnosis
@@ -26,7 +26,7 @@ records that DO exist but aren't yet CWYW-searchable — see `references/endnote
 2. Resolve/verify via DOI (CrossRef + OpenAlex dual-check, same as Phase 2) — never guess a
    replacement id or fabricate metadata.
 3. **Add the record to the library first** (via this skill's normal Phase 6 INSERT path, with
-   `reference_type` forced correctly per the rule in `references/endnote-sqlite-internals.md`), obtaining a **new, real** rec-number.
+   `reference_type` resolved from the type name, `references/reference-types.md`), obtaining a **new, real** rec-number.
 4. **Re-link the existing citation in Word, do NOT hand-edit the field text.** Use EndNote's
    **Edit & Manage Citation(s)** dialog (select the citation in Word → CWYW → Edit & Manage
    Citations) and use "Insert" / replace-with-search to point the citation at the newly added
@@ -48,4 +48,4 @@ placeholders like `[REF:34]` / `[REF:87-91]` (inserted by an earlier editing pas
 Treat them as opaque find-strings: partition the run on the placeholder and wrap the
 placeholder in `<w:del>`, the `{Author, Year #id}` in `<w:ins>` (Phase 7). Multi-ref
 placeholders (`[REF:87-91]`) expand to one brace group with `;`-separated cites:
-`{Seo, 2019 #520; Chong, 2022 #548; ...}`.
+`{Smith, 2019 #120; Jones, 2022 #121; ...}`.

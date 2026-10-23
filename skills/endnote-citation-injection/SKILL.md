@@ -1,6 +1,6 @@
 ---
 name: endnote-citation-injection
-description: Inject EndNote unformatted citations (`{Author, Year #N}`) into a Word docx using Track Changes. Covers ref harvesting from a separate refs docx, DOI verification (CrossRef + OpenAlex cross-check), hallucination detection, alternative paper substitution, EndNote SQLite direct INSERT (bypassing manual RIS import), and lxml-based docx editing that preserves namespaces, places citations before periods, removes leading spaces, and survives Word's integrity check. Use when a thesis/manuscript draft has parenthetical (Author, Year) citations that need to be converted to EndNote `{Author, Year #RecordNumber}` form so EndNote 2025 + Word can render formatted bibliographies.
+description: EndNote 2025 library and its Word citations. INJECT - turn (Author, Year) citations into {Author, Year #RecNum} via Track Changes, with DOI verification, hallucination checks and rule-checked inserts (en_insert.py). REPAIR - fix library records that render wrongly (merged or garbled authors, wrong reference type, broken journal names) with safe_refs_update.py, never a hand-written UPDATE. ADD records with en_insert.py. FORMAT - guarded CWYW (cwyw_update.py) and .ens output styles read and edited with ens_style.py. Use when a thesis or manuscript draft has parenthetical citations to convert to EndNote form, or when an EndNote bibliography renders wrongly.
 ---
 
 # EndNote Citation Injection
@@ -10,15 +10,62 @@ End-to-end pipeline that takes a draft Word docx with parenthetical citations an
 ## When to Use
 
 Trigger this skill when the user asks any of:
-- "이 docx 본문 인용을 EndNote 형식으로 바꿔줘"
-- "(Author, 2020) → {Author, 2020 #N} 변환"
-- "EndNote 라이브러리에 ref 추가하고 본문 인용 매칭"
-- "별도 refs.docx에 reference list 있는데 본문 docx에 적용"
-- The user is using (Author, Year) style citations and wants to convert them to EndNote unformatted form
+- "convert the citations in this docx to EndNote form"
+- "(Author, 2020) -> {Author, 2020 #N}"
+- "add these refs to the EndNote library and match them to the body citations"
+- "the reference list is in a separate refs.docx; apply it to the body docx"
+- "the bibliography shows merged authors / the wrong reference type / unabbreviated journals"
+- "change this EndNote output style" or "run Update Citations and Bibliography"
 
 Do NOT use when:
 - User wants pure RIS export/import for a third party (use a simpler RIS-only flow)
 - DOI verification only without docx editing (use a CrossRef agent directly)
+- A single DOI or a handful of citations (use `manuscript-pipeline`'s `references/endnote_integration.md`)
+
+## Default: insert unformatted, format once before submission
+
+A new citation enters a manuscript ONLY as an unformatted EndNote marker `{Author, Year #RecNum}`
+(a group is `{A, 2017 #123; B, 2023 #124}`), as plain text runs under Track Changes. "Update
+Citations and Bibliography" (CWYW, `cwyw_update.py`) is NOT part of the editing loop. It is run
+**once, near submission, on a document with no tracked changes**, and its rendered output is then
+read against the sentences.
+
+Why: CWYW has two measured failure modes that every automated gate passes - a tracked-deleted
+citation field is resurrected, and every citation can shift by one position
+(`references/cwyw-update-and-failure-modes.md`). Unformatted markers are visible, recoverable and
+break nothing; the formatted state is only produced once, where it can be audited.
+
+**Pre-submission sequence (exact order):**
+
+1. Accept all tracked changes (no revision may remain; `manuscript-pipeline/scripts/manuscript_text.py --count-only` must not report tracked changes).
+2. Close EndNote (`safe_refs_update.py` refuses to run while `EndNote.exe` is open); kill every Word process.
+3. Library fixes via `safe_refs_update.py --apply` (`references/endnote-sqlite-update-rules.md`).
+4. `cwyw_update.py <docx>`. Fix the library first: CWYW prints whatever the record says at that moment.
+5. Read EVERY rendered citation against its sentence. A field census or `INVALID CITATION 0` is not evidence.
+6. `endnote_biblio_check.py --strict` and `reference_validator.py`.
+
+**Marker format:**
+
+- **Surname = the first author exactly as stored in the record** (`refs.author`, text before the first `\r` and its comma), not the surname printed in the paper's byline if the record differs.
+- **Resolve the RecNum from the LIVE DB**: a read-only copy of `$ENDNOTE_DATA/sdb/sdb.eni`, never the stale `.enl` (Phase 0). List every candidate with id, authors, year, title and DOI before choosing; trashed rows (`trash_state != 0`) and duplicates are normal.
+- **Same surname, different year is a trap** - a wrong id resolves silently to a different paper. Confirm id, year AND title together, never surname + year from memory.
+- **Corporate author = the record's exact author string** (`FAO`, not `Food and Agriculture Organization`; see Phase 6 "Author normalization"). A long-form record stops `{Author, Year #N}` from resolving and prints as the wrong name.
+- A marker whose id has no row in `refs` is an orphan (Phase 6.1). While it is still an unformatted marker, correcting the brace text IS the repair; field re-linking is only for already-formatted fields.
+
+## Tools in this skill
+
+| script | job |
+| --- | --- |
+| `en_insert.py` | add records (validated spec, rehearsal on a copy, backup, verification) |
+| `safe_refs_update.py` | edit existing records (rehearse, back up, verify, auto-restore) |
+| `cwyw_update.py` + `cwyw_guard.py` + `en_fields.py` | the one guarded Update Citations run |
+| `endnote_library_audit.py` | read-only author-notation and DOI audit of the whole library (`references/library-audit-and-ens-styles.md`) |
+| `ens_style.py` | read and edit `.ens` output styles (`references/library-audit-and-ens-styles.md`) |
+| `en_reftypes.py`, `en_journal.py`, `en_make_sort_key.py`, `enci_base_collation.py` | support modules (type by name, journal normalization, sort key, collation) |
+| `../manuscript-pipeline/scripts/endnote_biblio_check.py` | post-render QC gate on a docx |
+
+Tests run on synthetic data and skip cleanly when no EndNote library or install is present:
+`for t in tests/test_*.py; do "$PY" "$t"; done`.
 
 ## Execution Method
 
@@ -46,7 +93,7 @@ Phase 4: User decision gates (DROP/REPLACE/alt confirmation)
    ↓
 Phase 5: Citation rewrite plan (multi-run aware mapping)
    ↓
-Phase 6: EndNote DB INSERT (lxml stub functions)
+Phase 6: EndNote record INSERT (en_insert.py)
    ↓
 Phase 7: lxml Track Changes apply (period-aware)
    ↓
@@ -72,6 +119,16 @@ Before any edit:
    cp "$ENDNOTE_DATA/sdb/sdb.eni" "$ENDNOTE_DATA/sdb/sdb.eni.refs-backup-<YYYYMMDD>"
    ```
    Where `$ENDNOTE_DATA = ~/Documents/My EndNote Library_2025.Data/`
+
+   **Read the library ONLY through `$ENDNOTE_DATA/sdb/sdb.eni`. The sibling
+   `My EndNote Library_2025.enl` is a stale snapshot and querying it produces false "not in the
+   library" answers.** Measured: the `.enl` was a copy whose highest record id was far below the
+   live file's, so a lookup reported a paper absent that the live `sdb.eni` held, and the false
+   verdict was relayed before it was caught. A wrong absence verdict is expensive: it sends the
+   next step off to re-import a reference that already exists. Copy `sdb.eni` to a scratch path
+   and open the copy read-only (`file:...?mode=ro`); never read or write the live file in place.
+   A read-only query is also the fastest way to resolve "which Chen 2021 is this?": list every
+   candidate with id, authors, title and DOI before judging.
 3. Working dir: `~/AppData/Local/Temp/refs_work/` (Windows) — short path, no OneDrive sync
 4. Copy both target docx files to working dir as `v2.docx` (body target) and `v2_refs.docx` (refs source)
 
@@ -125,7 +182,7 @@ after EndNote DB INSERT returns real IDs), and one of 7 `operation` types (RETAI
 REPLACE_NARRATIVE / REPLACE_WITH_ALT / REMOVE_CITATION_BUNDLE / REMOVE_CITATION_PARTIAL /
 INSERT_NEW_SENTENCE). Full schema + worked example: `references/citation-rewrite-plan-schema.md`.
 
-## Phase 6 — EndNote SQLite Direct INSERT
+## Phase 6 — EndNote record INSERT (`en_insert.py`)
 
 ### Phase 6.0 — DOI-match existing records first (skip INSERT if already present)
 
@@ -139,7 +196,7 @@ only unmatched refs to INSERT below. (One real run: all 6 targets already existe
 
 ### Phase 6.1 — Orphan citation recovery (body cites a rec-number with no backing record)
 
-The reverse failure of 6.0: the docx body cites a rec-number (`{Author, Year #901}`) with no
+The reverse failure of 6.0: the docx body cites a rec-number (`{Author, Year #123}`) with no
 matching row in `refs`, rendering as raw brace text. Diagnose via `SELECT id FROM refs WHERE
 id = ?`; recover by adding a verified new record (never guess a replacement id or hand-edit the
 brace text) and re-linking via EndNote's Edit & Manage Citation(s) dialog. Full procedure and
@@ -147,44 +204,77 @@ custom placeholder forms (`[REF:34]`, `[REF:87-91]`): `references/orphan-citatio
 
 ---
 
-**When INSERT is needed** (refs with no existing DB match): EndNote's RIS import is GUI-only and
-slow. Direct SQLite INSERT works IF you handle two EndNote-specific SQLite extensions —
-`EN_MAKE_SORT_KEY` and `ENCIN_ko_KR` (custom function + collation on the `refs_ord`
-AFTER-INSERT trigger, both failing INSERT with a clear error if missing). Full stub code,
-INSERT columns, mandatory post-INSERT audit: `references/endnote-sqlite-internals.md`.
+**When INSERT is needed** (refs with no existing DB match): run **`en_insert.py`**. Do not hand-write
+the INSERT; EndNote's RIS import is GUI-only and slow, and a direct SQLite INSERT needs two
+EndNote-specific extensions (`EN_MAKE_SORT_KEY`, `ENCIN_ko_KR`) that the tool already registers.
 
-Two hard rules that gate whether Phase 6 is safe to run at all:
-- **Author separator MUST be `\r` (CR), never `\n` (LF)** — LF silently breaks author-list
+```bash
+"$PY" en_insert.py --spec new_refs.json                    # validate + rehearse on a copy
+"$PY" en_insert.py --spec new_refs.json --apply --json ids.json   # back up, insert, verify
+```
+
+The spec is a JSON list (`type`, `authors`, `year`, `title`, `journal`, `volume`, `issue`,
+`pages`, `doi`, optional `url`/`publisher`/`place`/`date`/`notes`/`access_date`/`corporate`). Each
+rule below is a refusal before anything is written, and each closes an incident:
+
+| rule | source module | incident it closes |
+| --- | --- | --- |
+| `type` required, resolved by **name** from `%APPDATA%\EndNote\RefTypeTable.xml`; Bill/Generic need `--allow-type` | `en_reftypes.py` | Bill/Generic leak (33 + 2 records); XML-number mix-up |
+| authors `Surname, Given`, CR-joined, no LF/U+FFFD, no bare surname (`corporate: true` for organisations) | `en_insert.py` | `\n` separator; author omission |
+| journal resolved to the canonical full name via the library term list, then the shipped lists (`Terms Lists\*.txt`); abbreviations expand, shipped full names stay; a name missing from the library list is reported | `en_journal.py` | raw PubMed strings; unabbreviated journals |
+| DOI normalised; one already in the library is skipped and its id returned | `en_insert.py` | duplicate records (Phase 6.0) |
+| no markup (`<sub>`, `<i>`, `<scp>` ...) in any field - EndNote prints it literally | `en_insert.py` | `CO<sub>2</sub>` printed as text in several records |
+
+It prints the `{Surname, Year #id}` marker for each new record and adds the `sync` row by default
+(`--no-sync-row` to skip). `en_journal.JournalIndex.polluted_terms()` lists library term-list
+entries whose "full name" is really an abbreviation (e.g. `ACS Catal` next to `ACS Catalysis`);
+they are reported, not auto-deleted. Tests: `"$PY" tests/test_en_insert.py`.
+
+Internals (sort-key function, collation, column list, `\r` author separator, triggers, sync table,
+lock check, author normalization) are kept for diagnosis only in
+`references/endnote-sqlite-internals.md`. Do not copy them into a hand-written INSERT.
+
+Hard rules the tool enforces, worth knowing when reading a failure:
+- **Author separator MUST be `\r` (CR), never `\n` (LF)** - LF silently breaks author-list
   rendering while the EndNote UI still looks correct.
-- **`reference_type` MUST be set explicitly (default 17 = Journal Article)** — 0/NULL/omitted
-  renders as "Bill" (lost italics/bold), no UI-visible error. One incident: 33 Bill + 2 Generic.
+- **`reference_type` is resolved from the type NAME, never typed as a number.** 🔴 An older
+  version of this skill said "default 17 = Journal Article"; 17 is **Bill** in the SQLite column
+  (0 = Journal Article on a stock EndNote 2025 install). 27 is Equation and 12 is Audiovisual
+  Material, not Report and Web Page. The numbering differs between the XML field, the SQLite
+  column and a customised install: `references/reference-types.md`.
+- **Corporate authors keep the short form** the citation key uses (author normalization, `references/endnote-sqlite-internals.md`).
 
-### ⚠️ SQLite UPDATE on shared records = forbidden, use GUI (260715 finding)
+### Editing existing records: `safe_refs_update.py`
 
-INSERT is safe (AFTER-INSERT trigger, handled by this skill's two stubs). **Fixing
-already-inserted bad records fires the AFTER-UPDATE trigger, needing the library's REAL
-collation (`ENCIN_ko_KR`, `ENCI_Base`, `NOCASE`) that our stubs do not reproduce** — a direct
-`UPDATE` on a shared library can throw `database disk image is malformed` or silently corrupt
-the sort index. **Rule: SQLite on `refs` beyond this run's own fresh INSERTs is read-only
-diagnosis only — use EndNote's Library → Find and Replace for bulk fixes.** One exception exists
-for self-contained term-list tables (`jterms`, `ENCI_Base` + `REINDEX`); does NOT generalize to
-`refs`. Full rule: `references/endnote-sqlite-update-rules.md`.
+`UPDATE refs ...` is supported, but only through the pipeline tool, which rehearses on a throwaway
+copy first, backs up `sdb.eni`, verifies every sort key and restores the backup if verification
+fails. It refuses to run while EndNote is open. Never a hand-written UPDATE: it fires the
+AFTER-UPDATE trigger that needs the real collation and can corrupt the sort index.
 
-### Triggers (auto-fire on INSERT, no manual population needed)
-`refs__refs_ord_AI`, `refs__ref_props_AI`, `refs__ret_watch_AI`, `refs__tag_members_AI`. The
-`sync` table is the exception — NOT auto-populated, so a new record may not be CWYW-searchable
-until a sync row is added or the user runs Tools → Recover Library. Sync INSERT, lock check,
-author normalization: `references/endnote-sqlite-internals.md`.
+```bash
+"$PY" safe_refs_update.py --spec fix.json            # rehearsal only (library untouched)
+"$PY" safe_refs_update.py --spec fix.json --apply    # rehearse -> back up -> apply -> verify
+```
 
-### Post-render QC gate — `endnote_biblio_check.py` (260714, MANDATORY)
+Spec, allow-listed columns, tests and the `jterms` term-list exception:
+`references/endnote-sqlite-update-rules.md`. Wrong reference types are fixed the same way.
+
+### Running Update Citations: `cwyw_update.py`
+
+Only step 4 of the pre-submission sequence above. It is guarded by default (precheck, unhusk,
+verify with exit 4 on a shifted or resurrected citation). The measured failure modes, the
+untracked-delete route for replacing a citation, and the benign `empty_field_result` artifact:
+`references/cwyw-update-and-failure-modes.md`.
+
+### Post-render QC gate — `endnote_biblio_check.py` (MANDATORY)
 
 After EndNote renders the bibliography (or before any manuscript submission), run the
 non-destructive checker:
 ```
-python <docx-skill>/scripts/endnote_biblio_check.py <manuscript.docx>
-python <docx-skill>/scripts/endnote_biblio_check.py <manuscript.docx> --strict   # exit 1 if any error (gate)
+python skills/manuscript-pipeline/scripts/endnote_biblio_check.py <manuscript.docx>
+python skills/manuscript-pipeline/scripts/endnote_biblio_check.py <manuscript.docx> --strict   # exit 1 if any error (gate)
 ```
-Detects 7 error classes (reference_type wrong, invalid citation, journal italic missing, author
+Detects 7 error classes (reference_type wrong - Bill, Generic or Equation, judged by rendered name -, invalid citation, journal italic missing, author
 omission, `&amp;` breakage, non-CASSI journal, missing reflist entries) from `word/document.xml`
 alone, no Word needed. Full catalog: `references/biblio-check-error-classes.md`. Mandatory
 pre-submission gate (`--strict`), not optional cleanup.
@@ -197,7 +287,7 @@ abbreviated/full-name bibliography in a real run. **Store the full canonical nam
 EndNote's Journals Term List + style (CASSI for RSC/chemistry, not ISO4) do the abbreviation.
 Full steps, CASSI import, term-list hygiene: `references/journal-name-normalization.md`.
 
-### ⚠️ Frozen-abbreviation problem (260715 finding)
+### ⚠️ Frozen-abbreviation problem 
 
 Each citation's rendered text is a **frozen `fldData` snapshot** — if frozen before the term
 list existed or `secondary_title` was normalized, a plain "Update Citations and Bibliography"
@@ -247,7 +337,7 @@ Final verification: re-open via python-docx, confirm structural counts match.
 
 ## Common Pitfalls
 
-Full table (19 rows, symptom → fix, all phases + DB/term-list edge cases):
+Full table (25 rows, symptom → fix, all phases + DB/term-list edge cases):
 `references/common-pitfalls-table.md`.
 
 ## Output Files (per run)
@@ -267,7 +357,7 @@ Worked example of the note (`endnote_injection_<project>.md`): `references/memor
 ## Reference Run
 
 Validated end-to-end (thesis-review .docx): 34 candidate refs → 33 INSERT-ed (1 dropped) → 34
-transformations, record range 748–780, zero corruption, in-place overwrite.
+transformations, a contiguous block of new record ids, zero corruption, in-place overwrite.
 
 ---
 
@@ -277,5 +367,6 @@ transformations, record range 748–780, zero corruption, in-place overwrite.
   `references/endnote_integration.md` instead.
 - `docx` — OOXML insertion mechanics SSOT for `<w:ins>`/comment-marker patterns in Phase 7.
 - `academic-term-rules` — italic conventions for author names.
+- `verification-gates` — routes "verify" requests to the right gate; `endnote_library_audit.py` is its references axis.
 
 **Role boundary:** single DOI → `manuscript-pipeline`; bulk batch (10+) → this skill; OOXML → `docx`.

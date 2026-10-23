@@ -152,11 +152,11 @@
     },
     "endnote-citation-injection": {
       "category": "paper-writing",
-      "role": "Bulk EndNote citation insertion + dual DOI verification",
+      "role": "EndNote 2025 citations and library: bulk citation insertion with dual DOI verification, rule-checked record insert (en_insert.py), safe record repair (safe_refs_update.py), guarded Update Citations (cwyw_update.py), library audit and .ens output styles",
       "requires": [
         "docx"
       ],
-      "size_kb": 52
+      "size_kb": 213
     },
     "experiment-hub": {
       "category": "molbio",

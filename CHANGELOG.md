@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.162] — 2026-10-23
+
+- endnote-citation-injection: port the current authoring skill
+
+## [1.2.161] — 2026-10-23
+
+- endnote_biblio_check: flag only Bill, Generic and Equation reference types
+
 ## [1.2.160] — 2026-10-17
 
 - avoid-ai-writing: add docs-genre reference and two doc check scripts
