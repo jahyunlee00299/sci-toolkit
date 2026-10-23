@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.163] — 2026-10-23
+
+- skill-drift: declare endnote-citation-injection as intentionally different; refresh SHA256SUMS
+
 ## [1.2.162] — 2026-10-23
 
 - endnote-citation-injection: port the current authoring skill

@@ -1,11 +1,11 @@
-522abd7cfff2c476329a870c823c2f830ecbd602860f33f46c28b8a53ff74096 *./.claude-plugin/plugin.json
+88acf1dd35130e68b8b4472a6e6efd3b5b696432697d1e4b787ba8872390efa3 *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 bf85658b013a384435aceb801043aaa2efafee781b72d7b4ba19d8a72ea8fe98 *./AGENTS.md
-26fc62695ead7bb306c0949e00a67da2da6104c9845efafce098a237120a3595 *./CHANGELOG.md
+b2b749f04caebf4f035b37c14a141edf10dd3736a41352c3cddc40193d9562c1 *./CHANGELOG.md
 2e4c91ac91b8920fc53a5a9ebb283ed00bc29419686676fa96bc09e312737e3f *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -18,7 +18,7 @@ f2341cb7ab8a0570449fc8de076abc6076fc25a81970dda6c85cd33681d51cc3 *./config/autom
 4a00ecee8dc70d01eadf8960b50f0970f94abe00d485b80576f70f8e7a1b852c *./config/credentials.example.json
 c7a1cef8bb0352a84a3350d37573d555a8dc8625ffe3f15515845af3d8f91112 *./config/institutions.json
 cb73e7b1e9fb0467caa4a694ec310b1a8a2e791e3ca7f3625941f9e7ad3281ad *./config/research_markers.example.json
-8a28dd469f8a454e2730ce87d7dcc192ff95f759857d33567edb99acf084e526 *./config/skill-drift-intended.json
+398dc99a0d8512f6039cf0dfdeb5fb4a573836abe90aff309741636a2533d6ca *./config/skill-drift-intended.json
 fff82e26a112787b7f83cf5901698d6b9be2baf2795bf63ec804cd293797f051 *./config/skill-requirements.toml
 05dd4a9308c4bd1fd3ce577351295c1dd143a5474b635fffd7050f041bdfb560 *./docs/00_시작하기.md
 c837a9b5b14d379d31842016e560b2d8729c81c12bf6edc721d6fbc318937a8a *./docs/01_설치와_첫_명령.md

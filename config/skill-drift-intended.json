@@ -19,6 +19,12 @@
       "runtime_fp": "73df6adfeab7375f",
       "declared": "2026-09-24"
     },
+    "endnote-citation-injection": {
+      "reason": "Toolkit keeps its split SKILL.md + references/ layout and an English, sanitized body: no maintainer record ids, manuscript or person names, paths or Korean trigger phrases; docs/ ledger not shipped; scripts ported with generic fixtures.",
+      "toolkit_fp": "f401aceb9be88e5c",
+      "runtime_fp": "9b04c47a3a7fc980",
+      "declared": "2026-10-23"
+    },
     "experiment-hub": {
       "reason": "toolkit copy sanitized: license MIT, synthetic test fixtures and example canon registry instead of the maintainer's lab data, generic examples and no project history; publishing to a Methods folder is opt-in (nothing configured = skipped, not exit 3). Ported 261013: serial dilution (default auto), the Pipetting Guide enzyme-preparation block, cocktail_dead_volume_uL, the x1.0 / 5 uL dead-volume surplus defaults, the reaction_matrix calc subcommand (dilution_calc), the structural workbook guards in pipetting_checks (with the empty-cache count fix) and the workbook-editing rules, tested on synthetic fixtures (tests/test_structural_guards.py).",
       "toolkit_fp": "613f119b87f47a8a",
