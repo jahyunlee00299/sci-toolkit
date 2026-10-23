@@ -7,10 +7,17 @@ only reads word/document.xml via zipfile (never opens the docx in Word,
 never touches the EndNote fields).
 
 Catches 7 categories of error:
-  1. reference_type error — the EndNote record is Bill/Generic instead of
-                             Journal Article(17) (reference_type left
-                             unspecified at INSERT time -> defaults to Bill
-                             -> italics/bold get lost)
+  1. reference_type error — the EndNote record renders as Bill / Generic /
+                             Equation (type left unspecified at INSERT time or
+                             a code mix-up -> italics/bold get lost).
+                             Judged by NAME only. There are three numbering
+                             schemes, so a number is never used for the verdict:
+                             the 17 in the field XML
+                             `<ref-type name="Journal Article">17</ref-type>`,
+                             the sqlite `refs.reference_type` (0 = Journal
+                             Article, 17 = Bill on a stock EndNote 2025
+                             install; see `en_reftypes.load()`), and any
+                             user-defined order.
   2. INVALID CITATION      — distinguishes body-rendered (w:t, unrecoverable)
                              from field (instrText, resolved by Update)
   3. missing journal-name italics — no italic run in the reference paragraph
@@ -75,15 +82,18 @@ def _decode_blobs(xml):
 
 
 def check_reference_types(xml):
-    """Distribution of ref-type across EndNote records. Anything other than Journal Article(17) is a potential error."""
+    """Distribution of ref-type across EndNote records. Bill / Generic / Equation = potential error.
+
+    Legitimate types (Book, Patent, Thesis, Report, ...) are listed but not counted as errors.
+    """
     blob = _decode_blobs(xml)
     types = re.findall(r'<ref-type name="([^"]+)"', blob)
     from collections import Counter
     dist = Counter(types)
-    # Journal Article / Book Section / Report / Web Page / Conference Paper = normal type group
-    ok = {"Journal Article", "Book Section", "Report", "Web Page", "Conference Paper"}
-    # Bill / Generic, etc. are usually an error that leaked in from being unspecified at INSERT
-    suspicious = {t: n for t, n in dist.items() if t not in ok}
+    # Bill/Generic leaked in when the type was left unspecified at INSERT; Equation appeared
+    # when reports and patents were stored under an XML-numbering code (27) in the sqlite column.
+    bad = {"Bill", "Generic", "Equation"}
+    suspicious = {t: n for t, n in dist.items() if t in bad}
     return dict(distribution=dict(dist), suspicious=suspicious)
 
 
@@ -263,10 +273,10 @@ def _fmt(r):
     rt = r["reference_types"]
     L.append(f"\n## 1. Reference Type distribution")
     for t, n in sorted(rt["distribution"].items(), key=lambda x: -x[1]):
-        flag = "  ⚠️ error (needs to be changed to Journal Article)" if t in rt["suspicious"] else ""
+        flag = "  ⚠️ error (change to the real type)" if t in rt["suspicious"] else ""
         L.append(f"   {t}: {n}{flag}")
     if rt["suspicious"]:
-        L.append(f"   \U0001f534 {sum(rt['suspicious'].values())} suspicious type(s) — bulk-change to Journal Article via EndNote Find&Replace")
+        L.append(f"   \U0001f534 {sum(rt['suspicious'].values())} suspicious type(s) — fix reference_type with safe_refs_update.py --spec (resolve the code from the type NAME with en_reftypes.code_for)")
 
     inv = r["invalid_citations"]
     L.append(f"\n## 2. INVALID CITATION")
