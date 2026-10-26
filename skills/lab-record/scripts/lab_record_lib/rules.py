@@ -7,6 +7,7 @@ from typing import Callable, NamedTuple
 
 from .baseline import baseline_for
 from . import catalog as cat
+from . import chem
 from . import paths
 from .config import is_digits
 from .model import BARE_PROT, Index, Record, as_list, iter_refs
@@ -162,10 +163,120 @@ def rule9_catalog_paths(ctx: Context) -> list[Violation]:
     return out
 
 
+def _ref(ctx: Context, owner: cat.Entry, field_: str, kind: str, name) -> list[Violation]:
+    if ctx.catalog.resolve(kind, name) is None:
+        return [Violation(12, "catalog", f"{owner.label} {field_} {name!r} is not a {kind} in the catalog")]
+    return []
+
+
+def rule12_catalog_references(ctx: Context) -> list[Violation]:
+    """Names inside catalog entries must resolve (aliases count; `related` is not an alias)."""
+    out: list[Violation] = []
+    if not ctx.catalog:
+        return out
+    for e in ctx.catalog.entries:
+        d = e.data
+        for rel in d.get("related", []):
+            out += _ref(ctx, e, "related", e.kind, rel["name"])
+        if e.kind == "enzyme":
+            out += [v for n in d.get("catalyzes", []) for v in _ref(ctx, e, "catalyzes", "reaction", n)]
+            out += [v for n in d.get("cofactor", []) for v in _ref(ctx, e, "cofactor", "compound", n)]
+        elif e.kind == "compound":
+            out += [v for n in d.get("regenerated_by", []) for v in _ref(ctx, e, "regenerated_by", "reaction", n)]
+        elif e.kind == "reaction":
+            if d.get("enzyme"):
+                out += _ref(ctx, e, "enzyme", "enzyme", d["enzyme"])
+            for key in ("substrates", "products"):
+                out += [v for p in d.get(key, []) for v in _ref(ctx, e, key, "compound", p["name"])]
+            for c in d.get("cofactors", []):
+                out += _ref(ctx, e, "cofactors", "compound", c["name"])
+                out += _ref(ctx, e, "cofactors.to", "compound", c["to"])
+    return out
+
+
+def _reaction_sides(ctx: Context, rd, e: cat.Entry):
+    """((left, right), missing). Each side item = (coef, counts, charge); `missing` lists
+    participants that cannot be resolved or have no (parsable) SMILES. None when unresolved."""
+    left, right, missing = [], [], []
+
+    def add(side, name, coef):
+        comp = ctx.catalog.resolve("compound", name)
+        mol = chem.parse(rd, comp.data["smiles"]) if comp and comp.data.get("smiles") else None
+        if mol is None:
+            missing.append(str(name))
+            return
+        counts, charge = chem.composition(rd, mol)
+        side.append((coef, counts, charge))
+
+    d = e.data
+    for p in d.get("substrates", []):
+        add(left, p["name"], p.get("coef", 1))
+    for p in d.get("products", []):
+        add(right, p["name"], p.get("coef", 1))
+    for c in d.get("cofactors", []):
+        add(left, c["name"], c.get("coef", 1))
+        add(right, c["to"], c.get("coef", 1))
+    return (left, right), missing
+
+
+def rule13_catalog_chemistry(ctx: Context) -> list[Violation]:
+    """SMILES parses, InChIKey/formula match it, reactions are element-balanced. Needs RDKit;
+    without it nothing here runs and `blind_notes` says so (never a silent pass)."""
+    out: list[Violation] = []
+    rd = chem.load_rdkit()
+    if rd is None or not ctx.catalog:
+        return out
+    for e in ctx.catalog.entries:
+        d = e.data
+        if e.kind == "compound" and d.get("smiles"):
+            mol = chem.parse(rd, d["smiles"])
+            if mol is None:
+                out.append(Violation(13, "catalog", f"{e.label} smiles does not parse: {d['smiles']}"))
+                continue
+            key = d.get("inchikey")
+            if key and key.strip().upper() != chem.inchikey(rd, mol):
+                out.append(Violation(13, "catalog", f"{e.label} inchikey {key} does not match its smiles "
+                                                    f"(RDKit: {chem.inchikey(rd, mol)})"))
+            if d.get("formula"):
+                got = chem.hill_formula(chem.composition(rd, mol)[0])
+                if d["formula"].replace(" ", "") != got:
+                    out.append(Violation(13, "catalog", f"{e.label} formula {d['formula']} does not match its "
+                                                        f"smiles (RDKit: {got})"))
+        elif e.kind == "reaction" and (d.get("substrates") or d.get("products")):
+            (left, right), missing = _reaction_sides(ctx, rd, e)
+            if not missing:
+                problem = chem.balance_problem(left, right)
+                if problem:
+                    out.append(Violation(13, "catalog", f"{e.label} is not element-balanced: {problem}"))
+    return out
+
+
+def blind_notes(ctx: Context) -> list[str]:
+    """Checks that could not run, as `BLIND ...` lines (stderr, exit code unchanged)."""
+    notes: list[str] = []
+    if not ctx.catalog:
+        return notes
+    n_smiles = sum(1 for e in ctx.catalog.entries if e.kind == "compound" and e.data.get("smiles"))
+    n_rxn = [e for e in ctx.catalog.entries if e.kind == "reaction" and (e.data.get("substrates") or e.data.get("products"))]
+    rd = chem.load_rdkit()
+    if rd is None:
+        if n_smiles:
+            notes.append(f"BLIND rdkit is not importable: smiles/inchikey/formula of {n_smiles} compound(s) NOT checked")
+        if n_rxn:
+            notes.append(f"BLIND rdkit is not importable: element balance of {len(n_rxn)} reaction(s) NOT checked")
+        return notes
+    for e in n_rxn:
+        _, missing = _reaction_sides(ctx, rd, e)
+        if missing:
+            notes.append(f"BLIND {e.label} element balance not checked: no usable smiles for {', '.join(missing)}")
+    return notes
+
+
 RULES: list[Callable[[Context], list[Violation]]] = [
     rule1_closed_append_only, rule2_references_resolve, rule3_prot_pinned, rule4_no_orphans,
     rule5_checklist_values, rule6_people_keys, rule7_paths_exist,
     rule8_duplicates_and_conflict_copies, rule9_catalog_paths,
+    rule12_catalog_references, rule13_catalog_chemistry,  # 10-11 live in the lab repo only
 ]
 
 

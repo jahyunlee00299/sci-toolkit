@@ -43,7 +43,11 @@ original.
 (`kind → name → {project, path, aliases, note}`). Link them from PROT/EXP as
 `links: [{rel: enzyme, name: "<name or alias>"}]` (rel = `enzyme | standard | sheet`) instead of
 free text; lint checks that the name resolves and the file exists, RULE9 flags stale catalog paths.
-"이 효소 쓴 실험" → `uses <name>`; overview → `catalog [--kind K]`.
+"이 효소 쓴 실험" → `uses <name>`; overview → `catalog [--kind K]`. The catalog also holds domain
+knowledge: kinds `compound` and `reaction` (no file path needed), enzyme fields (organism, uniprot,
+ec, catalyzes, cofactor, code_ids) and `related` (not an alias). RULE12/13 check references and, with
+RDKit, SMILES / InChIKey / element balance (else `BLIND` on stderr). `bio-claims [--out FILE]` emits a
+bio-constants claims TOML (cross-check only). Fields: `references/schema.md` §5b.
 
 ## Mode → record
 

@@ -6,11 +6,11 @@ import datetime as dt
 import sys
 
 from . import catalog as catmod
-from . import commands, queries
+from . import bio_claims, commands, queries
 from .config import announce_root
 from .model import Index, TYPES, resolve_config, scan, scan_strict
 from .parse import LabRecordError
-from .rules import Context, run_all
+from .rules import Context, blind_notes, run_all
 
 
 def _stdio() -> None:
@@ -26,6 +26,13 @@ def _cfg(args, announce: bool = False):
     if announce:
         announce_root(cfg)
     return cfg
+
+
+def _load_catalog(cfg):
+    cat = catmod.load_catalog(cfg)
+    for w in cat.warnings:
+        print(f"WARN {w}", file=sys.stderr)
+    return cat
 
 
 def _day(args):
@@ -60,10 +67,12 @@ def cmd_lint(args) -> int:
     records, errors = scan(cfg.root)
     for e in errors:
         print(f"ERROR {e}", file=sys.stderr)
-    violations = run_all(Context(cfg.root, cfg.people, Index(records), cfg.projects,
-                                  catmod.load_catalog(cfg)))
+    ctx = Context(cfg.root, cfg.people, Index(records), cfg.projects, _load_catalog(cfg))
+    violations = run_all(ctx)
     for v in violations:
         print(v)
+    for note in blind_notes(ctx):
+        print(note, file=sys.stderr)
     if errors:
         return 2
     return 1 if violations else 0
@@ -107,7 +116,7 @@ def cmd_impact(args) -> int:
 def cmd_uses(args) -> int:
     cfg, index = _index(args)
     try:
-        print("\n".join(queries.uses(index, catmod.load_catalog(cfg), args.name)))
+        print("\n".join(queries.uses(index, _load_catalog(cfg), args.name)))
     except KeyError:
         print(f"not in the catalog: {args.name}", file=sys.stderr)
         return 1
@@ -116,7 +125,18 @@ def cmd_uses(args) -> int:
 
 def cmd_catalog(args) -> int:
     cfg, index = _index(args)
-    print("\n".join(queries.catalog_table(index, catmod.load_catalog(cfg), args.kind)))
+    print("\n".join(queries.catalog_table(index, _load_catalog(cfg), args.kind)))
+    return 0
+
+
+def cmd_bio_claims(args) -> int:
+    text = bio_claims.build(_load_catalog(_cfg(args)))
+    if args.out:
+        with open(args.out, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(text)
+        print(args.out)
+    else:
+        print(text, end="")
     return 0
 
 
@@ -154,7 +174,7 @@ def build_parser() -> argparse.ArgumentParser:
     n.add_argument("--date", help="YYMMDD override for ids/created (default today)")
     n.set_defaults(func=cmd_new)
 
-    for name, fn, hlp in (("lint", cmd_lint, "check integrity rules 1-9"),
+    for name, fn, hlp in (("lint", cmd_lint, "check integrity rules 1-13"),
                           ("index", cmd_index, "regenerate INDEX.md"),
                           ("open", cmd_open, "list loose ends")):
         sub.add_parser(name, parents=[common], help=hlp).set_defaults(func=fn)
@@ -170,6 +190,10 @@ def build_parser() -> argparse.ArgumentParser:
     c = sub.add_parser("catalog", parents=[common], help="list catalog entries")
     c.add_argument("--kind", choices=catmod.KINDS)
     c.set_defaults(func=cmd_catalog)
+    b = sub.add_parser("bio-claims", parents=[common],
+                       help="emit a bio-constants claims TOML from the catalog (uniprot, reaction keq)")
+    b.add_argument("--out", help="write to FILE instead of stdout")
+    b.set_defaults(func=cmd_bio_claims)
     return p
 
 

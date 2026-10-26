@@ -118,7 +118,7 @@ def catalog_table(index: Index, cat: catmod.Catalog, kind: str | None = None) ->
     out = ["kind\tname\tproject\tpath\texists\tused_by"]
     for e in rows:
         full, problem = cat.full_path(e)
-        shown = full.as_posix() if full is not None else f"(unresolved: {problem})"
+        shown = full.as_posix() if full is not None else (f"(unresolved: {problem})" if problem else "-")
         ok = "yes" if cat.path_problem(e) is None else "no"
         out.append("\t".join([e.kind, e.name, e.project or "-", shown, ok,
                               str(len(catmod.users_of(index.records, cat, e)))]))

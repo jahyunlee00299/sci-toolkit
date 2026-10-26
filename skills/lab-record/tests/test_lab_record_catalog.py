@@ -65,7 +65,6 @@ def test_absent_catalog_is_empty(chain, capsys):
 
 
 @pytest.mark.parametrize("data", [
-    {"enzymes": {}},                                                   # unknown kind
     {"enzyme": {"X": {"project": "nope", "path": "a"}}},               # unknown project key
     {"enzyme": {"X": {"path": ""}}},                                   # empty path
     {"enzyme": {"X": {}}},                                             # missing path

@@ -1,0 +1,49 @@
+{
+  "_comment": "EXAMPLE ONLY. Copy to <root>/catalog.json and replace with your lab's entries. Public data only; the reaction below is fictional.",
+  "enzyme": {
+    "ExampleFDH": {
+      "path": "notes/example-fdh.md",
+      "aliases": [
+        "formate dehydrogenase (example)"
+      ],
+      "organism": "Pseudomonas sp. 101",
+      "uniprot": "P33160",
+      "length_aa": 401,
+      "mass_da": 44136,
+      "note": "Public UniProt entry used as a format example; the path is a placeholder."
+    }
+  },
+  "compound": {
+    "Ethanol": {
+      "smiles": "CCO",
+      "inchikey": "LFQSCWFLJHTTHZ-UHFFFAOYSA-N",
+      "formula": "C2H6O",
+      "cofactor": false
+    },
+    "Dimethyl ether": {
+      "smiles": "COC",
+      "inchikey": "LCGLNKUTAGEVQW-UHFFFAOYSA-N",
+      "formula": "C2H6O",
+      "cofactor": false
+    }
+  },
+  "reaction": {
+    "EXAMPLE-fictional-isomerisation": {
+      "equation": "Ethanol = Dimethyl ether",
+      "reversible": true,
+      "substrates": [
+        {
+          "name": "Ethanol",
+          "coef": 1
+        }
+      ],
+      "products": [
+        {
+          "name": "Dimethyl ether",
+          "coef": 1
+        }
+      ],
+      "note": "FICTIONAL example reaction: shows the fields only; no enzyme catalyses it here and no Keq is claimed."
+    }
+  }
+}

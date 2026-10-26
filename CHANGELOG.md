@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.164] — 2026-10-26
+
+- lab-record: port catalog compound/reaction kinds, RDKit lint, bio-claims, public example catalog
+
 ## [1.2.163] — 2026-10-23
 
 - skill-drift: declare endnote-citation-injection as intentionally different; refresh SHA256SUMS

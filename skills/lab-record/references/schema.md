@@ -221,12 +221,42 @@ Named lab materials that records point at by name instead of free text:
  "standard": {"<name>": {"path": "<root-relative path>"}},
  "sheet":    {"<name>": {"path": "../Primers.xlsx"}}}
 ```
-Kinds are exactly `enzyme | standard | sheet`; `path` is required and resolves like any path
-(`@/` = the entry's own `project` folder). Unknown kind, unknown `project` key, an ambiguous
-name/alias within a kind, or malformed JSON -> exit 2 at load. Records link entries with
+Kinds: `enzyme | standard | sheet` (`path` required) and the domain kinds `compound | reaction`
+(`path` optional). `path` resolves like any path (`@/` = the entry's own `project` folder). An
+unknown top-level kind is skipped with a `WARN` on stderr (forward compatibility). Unknown
+`project` key, a malformed known field, an ambiguous name/alias within a kind, or malformed JSON
+-> exit 2 at load. Records link entries with
 `links: [{rel: enzyme, name: "<name or alias>"}]` (case-insensitive). Commands:
 `uses <name>` (records linking the entry, plus PROT -> its EXPs and EXP -> its DISCs) and
 `catalog [--kind K]` (table: kind, name, project, resolved path, exists, used_by).
+
+**Domain fields** (all optional; unknown extra fields are kept and ignored):
+
+| kind | fields |
+|------|--------|
+| enzyme | `organism`, `uniprot`, `ec`, `catalyzes` [reaction names], `cofactor` [compound names], `code_ids` [identifiers used in code], `mass_da`, `length_aa` (only if stated; used by `bio-claims`) |
+| compound | `smiles`, `inchikey`, `formula`, `cofactor` (bool), `regenerated_by` [reaction names], `ids` {pubchem, chebi, kegg} |
+| reaction | `equation` (text with compound names), `substrates` / `products` [{name, coef}], `enzyme`, `cofactors` [{name, to, coef}] (`to` = the converted form, e.g. NADPH -> NADP+; `coef` optional, default 1, applies to both forms), `rhea`, `reversible` (bool), `keq` {value, pH, ionic_strength, temperature_K, pMg, source} |
+| any | `related` [{name, rel, status, basis}], rel = `probably_same \| same \| distinct \| variant_of \| member_of`, status = `unconfirmed \| confirmed` |
+
+`related` is NOT an alias: alias resolution and the ambiguity check ignore it. `member_of` links a
+specific protein to an activity-level entry whose folder holds several homologs; use it instead of `same` when the catalog
+entry names an activity, not one sequence. A compound's role
+(substrate / intermediate / product) is not stored on the compound; roles belong to a cascade
+(no cascade kind yet).
+
+Lint additions: RULE12 every name inside an entry resolves (`related` within its own kind,
+`reaction.enzyme` / `substrates` / `products` / `cofactors` (`name` and `to`), `enzyme.catalyzes` /
+`cofactor`, `compound.regenerated_by`; aliases count). RULE13 (needs RDKit): SMILES parses,
+`inchikey` and `formula` match the SMILES, and a reaction is element-balanced (C, O, N, P exact; H up
+to the implicit protons, i.e. delta H = delta charge, cofactors included) when every participant has a
+SMILES. Whatever cannot run is printed to stderr as `BLIND ...` (RDKit missing, or a participant without
+SMILES), exit code unchanged, never a silent pass.
+
+`bio-claims [--out FILE]` writes a bio-constants claims TOML: a UniProt claim only where the entry
+states `mass_da` / `length_aa`, an eQuilibrator claim from `reaction.keq` with its conditions; a keq
+missing a condition (or `equation`) is emitted commented out with a `# BLIND:` line. Live database
+values are a cross-check only and are never written back into the catalog.
 
 Notebook files written before adopting lab-record are NOT migrated
 (design decision 261001). New records start in this format; an old file is cited from a new record
