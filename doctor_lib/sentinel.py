@@ -190,7 +190,7 @@ API_KEY_RE = re.compile(
 # Obvious non-secret placeholders. These are matched against the VALUE side of
 # the assignment only, and each must be a whole hyphen/underscore-delimited word
 # — NOT a bare substring. A substring test lets a real key slip through the
-# moment it happens to contain the marker (`api_key="…-project1-secret-…"`),
+# moment it happens to contain the marker (`api_key="…-project1-secret-…"`),  # leakgate:allow (intentional test fixture)
 # which is exactly the kind of hole this scanner exists to catch.
 PLACEHOLDER_WORDS = frozenset({
     "your", "yours", "yourkey", "yourapikey",

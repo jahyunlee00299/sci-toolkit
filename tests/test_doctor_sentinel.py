@@ -21,11 +21,11 @@ sys.modules["doctor"] = doctor   # dataclass needs the module registered
 spec.loader.exec_module(doctor)
 
 MUST_BLOCK = [  # real leaks — must be detected
-    ('api_key = "sk-or-v1-9f3ab21c77de40b8a1e6c5d4f0928374"', "real openrouter-style key"),
+    ('api_key = "sk-or-v1-9f3ab21c77de40b8a1e6c5d4f0928374"', "real openrouter-style key"),  # leakgate:allow (intentional test fixture)
     ('API_KEY="AKI' + 'A5FJ39DKS02MXZQ7B"', "AWS-style access key"),
-    ("apikey: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'", "32-char literal"),
-    ('secret_key="hunter2hunter2hunter2hunter2"', "secret_key literal"),
-    ('sk-abcdefghijklmnopqrstuvwxyz012345', "bare sk- token"),
+    ("apikey: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'", "32-char literal"),  # leakgate:allow (intentional test fixture)
+    ('secret_key="hunter2hunter2hunter2hunter2"', "secret_key literal"),  # leakgate:allow (intentional test fixture)
+    ('sk-abcdefghijklmnopqrstuvwxyz012345', "bare sk- token"),  # leakgate:allow (intentional test fixture)
     ('gh' + 'p_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', "github PAT"),
     # --- 2026-08-08 mutation testing: deleting the vendor rules below still
     # left the test green. In other words, the rules existed but nobody had
@@ -49,8 +49,8 @@ MUST_BLOCK = [  # real leaks — must be detected
     # were checked as a 'substring', a real key value passed as soon as a
     # marker string happened to appear inside it. Never delete these.
     ('api_key="my-real-project1-secret-abcdefghijklmno"', "bypass: value contains 'project1'"),
-    ('api_key="THIS-IS-KEY-HERE-BUT-ALSO-REAL-abcd1234"', "bypass: value contains 'key-here'"),
-    ('api_key="example-a83f2c9d41b7e6058fa2"', "bypass: value contains 'example'"),
+    ('api_key="THIS-IS-KEY-HERE-BUT-ALSO-REAL-abcd1234"', "bypass: value contains 'key-here'"),  # leakgate:allow (intentional test fixture)
+    ('api_key="example-a83f2c9d41b7e6058fa2"', "bypass: value contains 'example'"),  # leakgate:allow (intentional test fixture)
     ('api_key="test_9f3ab21c77de40b8a1e6c5d4"', "bypass: value contains 'test'"),
     # --- Bypass found in the second-round adversarial verification
     # (2026-07-23). A new hole created by the first-round fix itself.
@@ -63,9 +63,9 @@ MUST_BLOCK = [  # real leaks — must be detected
     ('secret_key = "123456789012345678901234567890"', "bypass: 30-digit pure number"),
     ('api_key="98765432109876543210"', "bypass: 20-digit pure number"),
     ('access_token = "1234567890123456"', "bypass: 16-digit number"),
-    ('api_key = "MY_SECRET_KEY_VALUE_ABCD1234"', "bypass: SCREAMING_SNAKE + opaque token"),
-    ('api_key="AUTH_TOKEN_9F3AB21C77DE40B8"', "bypass: SCREAMING_SNAKE + hex token"),
-    ('api_key="sk-1234567890123456789012"', "bypass: digits after sk- prefix"),
+    ('api_key = "MY_SECRET_KEY_VALUE_ABCD1234"', "bypass: SCREAMING_SNAKE + opaque token"),  # leakgate:allow (intentional test fixture)
+    ('api_key="AUTH_TOKEN_9F3AB21C77DE40B8"', "bypass: SCREAMING_SNAKE + hex token"),  # leakgate:allow (intentional test fixture)
+    ('api_key="sk-1234567890123456789012"', "bypass: digits after sk- prefix"),  # leakgate:allow (intentional test fixture)
     ('api_key="sk-or-v1-000000000000000000"', "bypass: digits after vendor prefix"),
 ]
 MUST_NOT_BLOCK = [  # false positives that must NOT happen — doc/code idioms
