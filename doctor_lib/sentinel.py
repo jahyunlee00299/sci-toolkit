@@ -190,7 +190,7 @@ API_KEY_RE = re.compile(
 # Obvious non-secret placeholders. These are matched against the VALUE side of
 # the assignment only, and each must be a whole hyphen/underscore-delimited word
 # — NOT a bare substring. A substring test lets a real key slip through the
-# moment it happens to contain the marker (`api_key="…-project1-secret-…"`),
+# moment it happens to contain the marker (`api_key="…-project1-secret-…"`),  # leakgate:allow (intentional test fixture)
 # which is exactly the kind of hole this scanner exists to catch.
 PLACEHOLDER_WORDS = frozenset({
     "your", "yours", "yourkey", "yourapikey",
@@ -207,7 +207,7 @@ PLACEHOLDER_LITERALS = (
 
 # A "value" that is just the NAME of an environment variable is not a secret:
 #   api_key="PARALLEL_API_KEY"  /  api_key = OPENROUTER_API_KEY
-# Must stay NARROW: a credential like AKIA5FJ39DKS02MXZQ7B is also all-caps, so
+# Must stay NARROW: an AWS-style access key is also all-caps, so
 # require underscore-separated words AND at least one credential-ish word. A
 # real key is a single opaque run of characters, not KEY-ish English words.
 ENV_VAR_NAME_VALUE_RE = re.compile(

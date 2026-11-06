@@ -74,11 +74,11 @@ scan_entry = _mod.scan_entry
 MUST_FLAG = [
     # ── 260628 API key plaintext exposure family ────────────────────────
     ("OpenRouter key (shape of the actually-leaked prefix)",
-     "스크립트가 sk-or-v1-4f3a9c2b8e7d16054a2b9c8d7e6f5041 로 죽어요"),
+     "스크립트가 sk-or-v1-4f3a9c2b8e7d16054a2b9c8d7e6f5041 로 죽어요"),  # leakgate:allow (intentional test fixture)
     ("GitHub PAT",
-     "ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8 를 넣으니 401 이 납니다"),
+     "gh" "p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8 를 넣으니 401 이 납니다"),
     ("api_key assignment statement",
-     'config 에 api_key = "9f3ab21c77de40b8a1c2" 넣었는데 안 먹어요'),
+     'config 에 api_key = "9f3ab21c77de40b8a1c2" 넣었는데 안 먹어요'),  # leakgate:allow (intentional test fixture)
 
     # ── 260706 undisclosed-figure family (MPSP, yield) ──────────────────
     ("undisclosed MPSP dollar figure",
@@ -121,22 +121,22 @@ MUST_FLAG = [
     # reason not to put one here. The contract under test is the shape
     # "Korean name + title + particle," not any specific person.
     ("Korean real name + title (with a trailing particle)",
-     "홍길동 학생이 준 파일에서 에러가 납니다"),
+     "홍길동 학생이 준 파일에서 에러가 납니다"),  # leakgate:allow (intentional test fixture)
     ("Korean real name + '선생님' (teacher)",
-     "임꺽정 선생님 데이터로 돌리면 죽어요"),
+     "임꺽정 선생님 데이터로 돌리면 죽어요"),  # leakgate:allow (intentional test fixture)
     ("email address",
-     "hong@korea.ac.kr 로 메일이 안 가요"),
+     "hong@korea.ac.kr 로 메일이 안 가요"),  # leakgate:allow (intentional test fixture)
     ("phone number",
-     "010-1234-5678 로 알림이 안 옵니다"),
+     "010-1234-5678 로 알림이 안 옵니다"),  # leakgate:allow (intentional test fixture)
 
     # ── absolute path + username ─────────────────────────────────────────
     ("Windows absolute path + username",
-     r"C:\Users\researcher01\OneDrive\연구\data.xlsx 를 못 읽어요"),
+     r"C:\Users\researcher01\OneDrive\연구\data.xlsx 를 못 읽어요"),  # leakgate:allow (intentional test fixture)
     # The username used here is **fictional**. The contract under test is
     # the shape "home path + arbitrary username," not a specific account,
     # and there's no reason to leave a real username in a distributed file.
     ("POSIX home path + username",
-     "/home/researcher01/secret_project/run.py 에서 실패합니다"),
+     "/home/researcher01/secret_project/run.py 에서 실패합니다"),  # leakgate:allow (intentional test fixture)
 
 ]
 
