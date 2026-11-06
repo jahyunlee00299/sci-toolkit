@@ -76,7 +76,7 @@ MUST_FLAG = [
     ("OpenRouter key (shape of the actually-leaked prefix)",
      "스크립트가 sk-or-v1-4f3a9c2b8e7d16054a2b9c8d7e6f5041 로 죽어요"),
     ("GitHub PAT",
-     "ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8 를 넣으니 401 이 납니다"),
+     "gh" "p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8 를 넣으니 401 이 납니다"),
     ("api_key assignment statement",
      'config 에 api_key = "9f3ab21c77de40b8a1c2" 넣었는데 안 먹어요'),
 

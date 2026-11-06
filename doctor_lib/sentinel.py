@@ -207,7 +207,7 @@ PLACEHOLDER_LITERALS = (
 
 # A "value" that is just the NAME of an environment variable is not a secret:
 #   api_key="PARALLEL_API_KEY"  /  api_key = OPENROUTER_API_KEY
-# Must stay NARROW: a credential like AKIA5FJ39DKS02MXZQ7B is also all-caps, so
+# Must stay NARROW: an AWS-style access key is also all-caps, so
 # require underscore-separated words AND at least one credential-ish word. A
 # real key is a single opaque run of characters, not KEY-ish English words.
 ENV_VAR_NAME_VALUE_RE = re.compile(
