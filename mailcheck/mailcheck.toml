@@ -1,0 +1,32 @@
+# mailcheck defaults. Edit a copy and pass it with --config, or edit this file.
+# Every key is optional; a missing key falls back to the built-in default.
+
+[admin]
+# Mail addresses whose local part (before @) starts with one of these words are
+# treated as an administrative office. Used only when you pass an address to
+# is_admin_recipient(); the command line uses --recipient admin instead.
+local_parts = ["admin", "office", "info", "support", "research", "graduate", "team", "center", "hr", "helpdesk"]
+# A display name containing one of these words also counts as administrative.
+name_keywords = ["팀", "센터", "행정", "산학", "연구지원", "사무", "담당", "본부", "교무", "재무", "연구처", "대학원", "도서관"]
+
+[voice]
+# Sign-off words ("OOO 올림" / "OOO 드림"). Put the forms you use here.
+signoff_forms = ["올림", "드림"]
+# Honorific suffixes recognised in the greeting line, longest match wins.
+honorifics = ["교수님", "선생님", "박사님", "연구원님", "팀장님", "담당자님", "위원님", "실장님", "과장님", "부장님", "대표님", "님"]
+
+[thresholds]
+# A sentence counts as a restatement of the received mail when it has at least
+# echo_min_tokens words and echo_overlap of them also appear in the received mail.
+echo_min_tokens = 6
+echo_overlap = 0.6
+# Maximum number of apologies in the whole mail.
+apology_max = 1
+# Thanks: at most this many in the closing two lines and in the body.
+thanks_closing_max = 1
+thanks_body_max = 1
+
+[internal_note]
+# Extra regular expressions that mark a leftover memo to yourself (for example
+# wording from your own workflow). Empty by default.
+extra_patterns = []

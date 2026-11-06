@@ -170,6 +170,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_stdio.py", "shared UTF-8 stdout helper (cp949 control vs fixed, non-reconfigurable streams, no private reconfigure blocks left)"),
     ("tests/test_http_callers.py", "root-level HTTP callers on the shared sci_http (connectors write-once, ref_fetch retry budget, refused/timeout messages, no direct urlopen)"),
     ("tests/test_env_detect.py", "shell-env detection (Windows Git-Bash/WSL branches)"),
+    ("mailcheck/tests", "mailcheck pytest suite (style rules, money notation, commitment exemption, config, CLI exit codes)"),
     ("skills/biorxiv-database/tests/test_preprint_search.py", "preprint route retrieval (F2/F3 disk-artifact)"),
     ("tests/test_credentials_divergence.py", "credentials.json / secrets.json divergence detector"),
     ("tests/test_skill_drift.py", "toolkit vs authoring-tree skill drift detector"),

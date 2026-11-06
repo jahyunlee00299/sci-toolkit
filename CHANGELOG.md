@@ -4,6 +4,14 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.166] — 2026-11-07
+
+- mailcheck: add standalone Korean academic mail style checker
+
+## [Unreleased]
+
+- mailcheck: new standalone Korean academic mail style checker (`python -m mailcheck`), config-driven, with a Korean beginner guide `docs/mailcheck.md`
+
 ## [1.2.165] — 2026-11-06
 
 - tests: split Slack and Google key prefixes so secret scanning does not flag fixtures

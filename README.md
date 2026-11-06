@@ -187,6 +187,7 @@ Off-campus access has a few restrictions:
 | `scripts/fetch_public_vector.py` | Fetches a PUBLIC plasmid/vector by NCBI accession for the primer-design registry (network) |
 | `scripts/jcr_batch_verify.py` | Enriches a journal impact-factor cache with OpenAlex venue data (network) |
 | `scripts/excel_formula_check.py` | Windows-native (Excel COM) scan of a workbook for live `#REF!`/`#DIV/0!`/... errors, no LibreOffice needed |
+| `mailcheck/` | Korean academic mail style checker (apology/thanks caps, restating the received mail, unsourced numbers with 120만원 == 1,200,000원, admin tone, leftover memos, markdown, AI tells, recipient voice profile). `python -m mailcheck draft.txt --source received.txt`; no sending, no LLM, no network; thresholds and admin patterns in `mailcheck/mailcheck.toml`; guide `docs/mailcheck.md` |
 | `skills/markitdown/scripts/convert_literature.py` | Batch-converts a folder of paper PDFs to Markdown for review (needs the `markitdown` package) |
 | `skills/web-scraping/scripts/fetch_github.py` | GitHub repo discovery/monitoring through the official REST API (5th web-scraping mode) |
 | `SHA256SUMS` | Hashes for every file; verify integrity after copying/transferring |

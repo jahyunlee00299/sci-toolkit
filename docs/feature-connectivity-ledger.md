@@ -1754,3 +1754,20 @@ wired-by: skills/primer-design/tests/test_report_characterization.py
 wired-by: skills/get-available-resources/scripts/resource_probes/snapshot.py
 wired-by: skills/primer-design/src/primer_design/restriction_cloning_mode.py
 wired-by: skills/primer-design/src/primer_design/cloning_report.py
+
+
+## 2026-11-07 — mailcheck: standalone Korean academic mail style checker
+
+**Scope / layer** — new tool package `mailcheck/` (rules, voice profile, config, CLI), `docs/mailcheck.md`.
+
+**Why** — owner decision 261107 #8: lab members get the deterministic reply-style rules without the
+maintainer's approval-inbox. The two copies will drift; the follow-up (deferred) is to make the approval-inbox
+read the same `mailcheck.toml`.
+
+**Rule** — owner-specific tuning (admin address patterns, sign-off forms, honorifics, thresholds, workflow
+wording) lives only in `mailcheck/mailcheck.toml`; the code carries neutral defaults, pinned equal by
+`test_packaged_toml_matches_builtin_defaults`.
+
+wired-by: mailcheck/tests/test_mailcheck.py
+wired-by: docs/mailcheck.md
+wired-by: doctor.py
