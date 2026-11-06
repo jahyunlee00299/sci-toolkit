@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.165] — 2026-11-06
+
+- tests: split Slack and Google key prefixes so secret scanning does not flag fixtures
+
 ## [1.2.164] — 2026-10-26
 
 - lab-record: port catalog compound/reaction kinds, RDKit lint, bio-claims, public example catalog
