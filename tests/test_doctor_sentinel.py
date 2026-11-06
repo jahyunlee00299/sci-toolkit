@@ -36,10 +36,11 @@ MUST_BLOCK = [  # real leaks — must be detected
     # here is a 'bare token', not an assignment. Written as an assignment,
     # the api_key= rule would catch it instead, and deleting the actual
     # vendor rule would still pass.
-    ('xoxb-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrSt', "bare Slack bot token"),
+    # Vendor prefixes split so GitHub secret scanning does not flag the fixture.
+    ('xox' + 'b-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrSt', "bare Slack bot token"),
     ('gho_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', "bare GitHub OAuth token"),
     ('AKIA5FJ39DKS02MXZQ7B', "bare AWS access key (no assignment)"),
-    ('AIzaSyA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q', "bare Google API key"),
+    ('AIza' + 'SyA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q', "bare Google API key"),
     ('github_pat_11ABCDEFG0abcdefghijkl_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
      "bare fine-grained GitHub PAT"),
     ('access_token = "ya29.a0ARrdaM_realish_token_value_here123"', "oauth token"),
