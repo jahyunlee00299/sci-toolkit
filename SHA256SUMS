@@ -1,11 +1,11 @@
-4ee99b0df420678c66bdb25fc9dfd0f3d44f26984cf00cc7e95b3414b7c06ea1 *./.claude-plugin/plugin.json
+ea35c8b07ff3a6617bb2fa874262eaa9a84f75cc6ab227ea097996e7247ba8d5 *./.claude-plugin/plugin.json
 ef07c727bd549d6bc73e09c31731f97d747c1b0bc2de15a629d7945c73cc2291 *./.distignore
 cd09f29641dc6cf43d4114910d4db9341df3301607595be69de53e1617ab1da6 *./.gitattributes
 90a899404f1bf07d33e46088dd1e7e0e73176d07ae537eb35e0961ab74f7dcfe *./.github/workflows/doctor.yml
 3fa88f26692ab5741d4e9ae64b3f1a645009285ddbc1cd85a68288943eaa6ec6 *./.gitignore
 4e1c19a86d20205901114e01279fb60560ede5ceeb6feeb0af17cf56fb4d775a *./.gitleaks.toml
 bf85658b013a384435aceb801043aaa2efafee781b72d7b4ba19d8a72ea8fe98 *./AGENTS.md
-f10b52019144d2411d2e401e81a0c838b3164c41f6ac39d88c5a132f9508c397 *./CHANGELOG.md
+6abf9ae9dfd8feced84ff264fd78b80e27decd5eba268f88dd70a2fcc0b995d3 *./CHANGELOG.md
 2e4c91ac91b8920fc53a5a9ebb283ed00bc29419686676fa96bc09e312737e3f *./CLAUDE.md
 3c52b951825852dad204494c11094ddb0f9572d6cc9f836b383a0751ef5c65d7 *./CODEX.md
 4cd3925cb6692fe75cdd3d258a5eebee57218ac62b23b897be5510dba4d27f8f *./LICENSE
@@ -218,7 +218,7 @@ bcc11eaa06926509063ddc3ca5b7b6cdf501ddcc5f7586f2ab82f42a9235e035 *./skills/bio-c
 f18a80d0da8c9dae10c005cff25a5e93bb4f1092ba23d4591d38fb54cd972241 *./skills/bio-constants/scripts/tests/fixtures/eca48ca5c3982638.json
 3a09112dfe48a6514bf2da35634489da96b96066bff8cc9987629933608c2562 *./skills/bio-constants/scripts/tests/test_check.py
 8f1de3f00af790f8dc50ca18f47648e1864949a97b4486add7be716bda0fc319 *./skills/bio-constants/scripts/tests/test_phase1.py
-d8154873ec79c48a27a02533b1a108bb240372c58af46551f50be48ccfcdf09f *./skills/bio-constants/scripts/tests/test_phase2.py
+b7bffb31f1f7c19f91961916944fb065db5960ca473d029b7cc00ef4c00a7756 *./skills/bio-constants/scripts/tests/test_phase2.py
 132caae9ae4bb6729ad7e9ed4ae796f66752165a15afd9628ddccb5228db2d9a *./skills/biorxiv-database/SKILL.md
 821346695f1d4131314b8222d039030ac0a71755863c38b423e8818dd9bff6da *./skills/biorxiv-database/references/api_guide.md
 16baf9d7e29504ce7f15f693c69b56ea8872ea9681e86511986dc154a234bedc *./skills/biorxiv-database/scripts/preprint_search.py

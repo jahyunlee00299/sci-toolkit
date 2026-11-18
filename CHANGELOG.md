@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.167] — 2026-11-19
+
+- bio-constants: stub appdirs in the missing-cache test so it passes without the package
+
 ## [1.2.166] — 2026-11-07
 
 - mailcheck: add standalone Korean academic mail style checker

@@ -105,7 +105,10 @@ class TestThermo(Base):
             self.assertIn(tok, line)
 
     def test_package_feature_check_reports_missing_cache(self):
-        with mock.patch.object(thermo.Path, "exists", return_value=False), \
+        # appdirs is optional; stub it so the check does not depend on the host (CI lacks it)
+        fake_appdirs = mock.Mock(user_cache_dir=mock.Mock(return_value="cache"))
+        with mock.patch.dict(sys.modules, {"appdirs": fake_appdirs}), \
+                mock.patch.object(thermo.Path, "exists", return_value=False), \
                 mock.patch.object(thermo, "_python_with_package", return_value="python"):
             st = thermo.package_status()
         self.assertFalse(st["cache_ok"])
