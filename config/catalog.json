@@ -115,9 +115,15 @@
     },
     "verification-gates": {
       "category": "data-stats",
-      "role": "router for the mechanical verification gates (compat-check, provenance-check, fiducial, regress-check, canon-gate) with the shared 0/1/2 exit contract",
+      "role": "router for the seven mechanical verification gates (compat-check, provenance-check, fiducial, regress-check, endnote library audit, canon-gate, bio-constants) with the shared 0/1/2 exit contract",
       "requires": [],
-      "size_kb": 5
+      "size_kb": 7
+    },
+    "bio-constants": {
+      "category": "molbio",
+      "role": "key-less lookup and claim-vs-live reconciliation of protein mass, length, EC, PDB facts, Rhea reactions and eQuilibrator equilibrium constants; gate 7 of verification-gates (Python standard library only)",
+      "requires": [],
+      "size_kb": 3
     },
     "conda-env-manager": {
       "category": "data-stats",
@@ -428,7 +434,8 @@
         "sequence-verification",
         "experiment-hub",
         "doe-and-replication",
-        "lab-record"
+        "lab-record",
+        "bio-constants"
       ]
     },
     "data-figures": {
@@ -460,7 +467,7 @@
     },
     "all": {
       "label": "Install everything",
-      "desc": "All 52 skills",
+      "desc": "All 53 skills",
       "skills": [
         "__ALL__"
       ]

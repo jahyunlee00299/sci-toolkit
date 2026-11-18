@@ -1,0 +1,8 @@
+{
+ "url": "https://rest.uniprot.org/uniprotkb/P01922.json",
+ "status": 200,
+ "headers": {
+  "content-type": "application/json"
+ },
+ "body_b64": "eyJlbnRyeVR5cGUiOiJJbmFjdGl2ZSIsInByaW1hcnlBY2Nlc3Npb24iOiJQMDE5MjIiLCJ1bmlQcm90a2JJZCI6IkhCQV9IVU1BTiIsImFubm90YXRpb25TY29yZSI6MC4wLCJpbmFjdGl2ZVJlYXNvbiI6eyJpbmFjdGl2ZVJlYXNvblR5cGUiOiJERU1FUkdFRCIsIm1lcmdlRGVtZXJnZVRvIjpbIlA2OTkwNyIsIlA2OTkwNiIsIlA2OTkwNSJdfSwiZXh0cmFBdHRyaWJ1dGVzIjp7InVuaVBhcmNJZCI6IlVQSTAwMDAwMkI5QjAifX0="
+}

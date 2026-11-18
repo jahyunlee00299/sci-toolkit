@@ -166,6 +166,7 @@ SELF_TEST_SCRIPTS = [
     ("tests/test_llm_call.py", "optional llm_call helper (API path, claude -p fallback, kill switch)"),
     ("tests/test_gate_wiring.py", "verification gates are wired into doctor and the agent routing (planted missing tools must WARN, never OK)"),
     ("tests/test_vector_integrity.py", "SnapGene vectors still parse"),
+    ("tests/test_bio_constants.py", "bio-constants offline suite (UniProt/PDB/Rhea/eQuilibrator replays, 0/1/2 contract) and router gate 7 wiring"),
     ("tests/test_sequence_verification.py", "sequence-verification (variant presence/absence, primer codon recovery, reference-map refusals, construct MW)"),
     ("tests/test_stdio.py", "shared UTF-8 stdout helper (cp949 control vs fixed, non-reconfigurable streams, no private reconfigure blocks left)"),
     ("tests/test_http_callers.py", "root-level HTTP callers on the shared sci_http (connectors write-once, ref_fetch retry budget, refused/timeout messages, no direct urlopen)"),

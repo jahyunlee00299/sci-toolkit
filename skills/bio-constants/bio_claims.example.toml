@@ -1,0 +1,33 @@
+# Copy next to the manuscript/model that carries the numbers, edit, run:
+#   python -I <toolkit>/skills/bio-constants/scripts/biodb/bio_const.py check bio_claims.toml
+# Every claim needs an explicit unit; a missing unit is BLIND, never a pass.
+
+[[claim]]
+name = "FDH subunit mass (UniProt P33160)"
+source = "uniprot"
+id = "P33160"
+field = "mass"
+claimed = "44136"
+unit = "Da"
+rtol = 0.01
+note = "His-tagged constructs are heavier; do not claim a tag-corrected mass here"
+
+[[claim]]
+name = "length example"
+source = "uniprot"
+id = "P33160"
+field = "length"
+claimed = "401"
+unit = "aa"
+
+# Thermodynamic claim (eQuilibrator): conditions are mandatory, no defaults.
+# [[claim]]
+# name = "malate dehydrogenase Keq"
+# reaction = "(S)-malate + NAD+ = oxaloacetate + NADH"
+# pH = 7.5
+# ionic_strength = 0.25
+# temperature = 298.15
+# pMg = 3.0
+# claimed_keq = 2.28e-5
+# rtol = 0.05
+# source = "web"      # or "package" once equilibrator-api and the cache are installed

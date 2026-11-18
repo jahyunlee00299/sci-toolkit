@@ -6,6 +6,9 @@
 [avoid-ai-writing]
 packages = []
 
+[bio-constants]
+packages = []
+
 [biorxiv-database]
 packages = []
 

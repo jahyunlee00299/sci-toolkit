@@ -1,0 +1,8 @@
+{
+ "url": "https://data.rcsb.org/rest/v1/core/nonpolymer_entity/2NAD/3",
+ "status": 200,
+ "headers": {
+  "content-type": "application/json"
+ },
+ "body_b64": "eyJwZGJ4X2VudGl0eV9ub25wb2x5Ijp7ImNvbXBfaWQiOiJTTzQiLCJlbnRpdHlfaWQiOiIzIiwibmFtZSI6IlNVTEZBVEUgSU9OIn0sInJjc2Jfbm9ucG9seW1lcl9lbnRpdHkiOnsiZm9ybXVsYV93ZWlnaHQiOjAuMDk2LCJwZGJ4X2Rlc2NyaXB0aW9uIjoiU1VMRkFURSBJT04iLCJwZGJ4X251bWJlcl9vZl9tb2xlY3VsZXMiOjF9LCJyY3NiX25vbnBvbHltZXJfZW50aXR5X2NvbnRhaW5lcl9pZGVudGlmaWVycyI6eyJhc3ltX2lkcyI6WyJEIl0sImF1dGhfYXN5bV9pZHMiOlsiQSJdLCJjaGVtX3JlZl9kZWZfaWQiOiJTTzQiLCJlbnRpdHlfaWQiOiIzIiwiZW50cnlfaWQiOiIyTkFEIiwibm9ucG9seW1lcl9jb21wX2lkIjoiU080IiwicmNzYl9pZCI6IjJOQURfMyJ9LCJyY3NiX2lkIjoiMk5BRF8zIn0="
+}

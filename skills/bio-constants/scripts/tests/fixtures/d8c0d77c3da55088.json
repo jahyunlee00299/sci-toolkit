@@ -1,0 +1,8 @@
+{
+ "url": "https://www.rhea-db.org/rhea?query=ec:1.1.1.37&columns=rhea-id,equation,chebi-id,ec&format=tsv",
+ "status": 200,
+ "headers": {
+  "content-type": "text/plain; charset=UTF-8"
+ },
+ "body_b64": "UmVhY3Rpb24gaWRlbnRpZmllcglFcXVhdGlvbglDaEVCSSBpZGVudGlmaWVyCUVDIG51bWJlcgpSSEVBOjIxNDMyCShTKS1tYWxhdGUgKyBOQUQoKykgPSBveGFsb2FjZXRhdGUgKyBOQURIICsgSCgrKQlDSEVCSToxNTU4OTtDSEVCSTo1NzU0MDtDSEVCSToxNjQ1MjtDSEVCSTo1Nzk0NTtDSEVCSToxNTM3OAlFQzoxLjEuMS4zNztFQzoxLjEuMS4yOTkK"
+}

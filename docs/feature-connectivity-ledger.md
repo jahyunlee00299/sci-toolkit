@@ -1771,3 +1771,17 @@ wording) lives only in `mailcheck/mailcheck.toml`; the code carries neutral defa
 wired-by: mailcheck/tests/test_mailcheck.py
 wired-by: docs/mailcheck.md
 wired-by: doctor.py
+
+
+## 2026-11-18 — bio-constants skill and verification-gates sync (skills/, cross-cutting)
+
+**Scope / layer** — new skill `skills/bio-constants/` (key-less UniProt, RCSB PDB, Rhea and eQuilibrator lookup and claim-vs-live reconciliation, Python standard library only); `skills/verification-gates/SKILL.md` now routes seven gates (adds the references audit and gate 7).
+
+**Why** — the authoring skill added gate 7 after the toolkit router was written; without the skill the router row would point at nothing. Ported together so gate 7 resolves inside the toolkit.
+
+**Inputs / outputs** — in: the authoring `bio-constants` and `verification-gates` skills. out: skill folder (58 offline tests on recorded public responses), catalog entry (molbio category and preset), `PROJECT_STRUCTURE.md`, README counts, `tests/test_bio_constants.py` wrapper wired into `doctor.py`.
+
+**Sanitizing** — every example reaction, accession and EC number is a textbook entry (malate dehydrogenase, E. coli `mdh`, formate dehydrogenase); the fixtures were re-recorded from the public databases and the expected values in the tests updated. The package-route test no longer depends on whether the equilibrator Python package happens to be installed.
+
+wired-by: tests/test_bio_constants.py
+wired-by: skills/bio-constants/scripts/biodb/bio_const.py

@@ -1,0 +1,8 @@
+{
+ "url": "https://www.rhea-db.org/rhea?query=rhea:21433&format=json",
+ "status": 200,
+ "headers": {
+  "content-type": "application/json"
+ },
+ "body_b64": "eyJjb3VudCI6MCwgInJlc3VsdHMiOiBbXX0="
+}

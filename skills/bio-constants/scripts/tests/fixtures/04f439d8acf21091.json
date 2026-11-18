@@ -1,0 +1,8 @@
+{
+ "url": "https://data.rcsb.org/rest/v1/core/entry/9ZZZ",
+ "status": 404,
+ "headers": {
+  "content-type": "application/json"
+ },
+ "body_b64": "eyJzdGF0dXMiOjQwNCwibWVzc2FnZSI6Ik5vIGRhdGEgZm91bmQgZm9yIGVudHJ5SWQ6IDlaWloiLCJsaW5rIjoiaHR0cHM6Ly9kYXRhLnJjc2Iub3JnL3JlZG9jL2luZGV4Lmh0bWwifQ=="
+}

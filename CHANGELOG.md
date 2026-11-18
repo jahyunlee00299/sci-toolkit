@@ -10,6 +10,8 @@ follows [Semantic Versioning (SemVer)](https://semver.org/).
 
 ## [Unreleased]
 
+- verification-gates: sync with the current authoring skill (seven gates: adds the references audit and the database-constants gate, cross-machine nondeterminism rule)
+- bio-constants: new skill, key-less UniProt / RCSB PDB / Rhea / eQuilibrator lookup and claim-vs-live reconciliation (gate 7), offline replay tests
 - mailcheck: new standalone Korean academic mail style checker (`python -m mailcheck`), config-driven, with a Korean beginner guide `docs/mailcheck.md`
 
 ## [1.2.165] — 2026-11-06

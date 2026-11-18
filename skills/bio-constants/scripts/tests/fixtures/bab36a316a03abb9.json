@@ -1,0 +1,8 @@
+{
+ "url": "https://rest.uniprot.org/uniprotkb/P12345-2.json",
+ "status": 404,
+ "headers": {
+  "content-type": "application/json"
+ },
+ "body_b64": "eyJ1cmwiOiJodHRwOi8vcmVzdC51bmlwcm90Lm9yZy91bmlwcm90a2IvUDEyMzQ1LTIiLCJtZXNzYWdlcyI6WyJSZXNvdXJjZSBub3QgZm91bmQiXX0="
+}
