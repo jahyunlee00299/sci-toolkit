@@ -98,10 +98,10 @@ from markitdown import MarkItDown
 from openai import OpenAI
 
 # With AI descriptions for images
-client = OpenAI()
+client = OpenAI(api_key="your-openrouter-api-key", base_url="https://openrouter.ai/api/v1")
 md = MarkItDown(
     llm_client=client,
-    llm_model="anthropic/claude-sonnet-5.5",
+    llm_model="anthropic/claude-opus-5.5",
     llm_prompt="Describe this scientific slide, focusing on data and key findings"
 )
 
@@ -143,7 +143,7 @@ Be technical and precise.
 
 md = MarkItDown(
     llm_client=client,
-    llm_model="anthropic/claude-sonnet-5.5",  # recommended for scientific vision
+    llm_model="anthropic/claude-opus-5.5",  # recommended for scientific vision
     llm_prompt=scientific_prompt
 )
 
@@ -167,14 +167,14 @@ client = OpenAI(
 # Scientific papers - use Claude for technical analysis
 scientific_md = MarkItDown(
     llm_client=client,
-    llm_model="anthropic/claude-sonnet-5.5",
+    llm_model="anthropic/claude-opus-5.5",
     llm_prompt="Describe scientific figures with technical precision"
 )
 
-# Presentations - use GPT-4o for visual understanding
+# Presentations - same Claude model, prompt tuned for slides
 presentation_md = MarkItDown(
     llm_client=client,
-    llm_model="anthropic/claude-sonnet-5.5",
+    llm_model="anthropic/claude-opus-5.5",
     llm_prompt="Summarize slide content and key visual elements"
 )
 
