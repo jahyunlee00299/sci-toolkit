@@ -44,7 +44,9 @@ If spawning, match tier to task depth, not to habit:
 | Standard: multi-file edit, extraction sweep, QC, compare, non-deep review | mid (sonnet-class) |
 | Deep: adversarial verification, physics/plausibility diagnosis, architecture, refactor trade-offs, cross-validation, optimization/fitting reasoning | frontier (opus-class) |
 
-Two traps:
+Tier names are classes, not pins; never write a dated model id into a rule.
+
+Three traps:
 
 - **The inherited-model trap.** Omitting `model` on a subagent inherits the
   parent session's model. On a frontier-tier session, every unpinned spawn is a
@@ -54,6 +56,31 @@ Two traps:
 - **Forks don't save.** A forked agent inherits the parent model by design;
   forking for shallow work has zero savings. Use a fresh agent with an explicit
   cheap tier.
+- **A pinned model is a REQUEST, not a fact, and the pin you can see is only a
+  default.** Three layers can disagree, and only the last one is truth:
+
+  | layer | what it is | how to read it |
+  |---|---|---|
+  | agent definition `model:` frontmatter | a **default** | grep the agent definition files |
+  | `model` argument on the spawn call | a **request** | what you typed |
+  | the transcript's assistant turns | what **actually served** | read the transcript |
+
+  A requested tier can be refused and silently replaced (the harness logs a
+  `fallback` event from the requested model to another one), so a call that
+  pinned a premium or a cheap tier may still have been served by a different
+  one. Never assume a pin took.
+
+  Counting model strings in a transcript reads this backwards: the one mention
+  of the requested model may be the record of the refused request, not of a run.
+  Read the `fallback` event, or count only assistant turns. A finished agent's
+  transcript may also be truncated, so check while the agent is alive or right
+  after its completion notice.
+
+  **Corollary for agent definitions.** Pin `model:` in frontmatter only when the
+  agent's work is always one tier (extraction, monitoring, formatting). For an
+  agent whose tier depends on the claim (an adversarial verifier above all),
+  leave it unpinned so the caller decides and say so in a comment. A pin there
+  silently caps every call at that tier, and the caller cannot see it happen.
 
 ### Gate 3 — Orchestration structure (deep work only)
 
