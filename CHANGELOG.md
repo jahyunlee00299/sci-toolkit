@@ -12,6 +12,7 @@ follows [Semantic Versioning (SemVer)](https://semver.org/).
 
 - markitdown: example usage points the OpenAI client at OpenRouter with valid model slugs
 - token-efficient-routing: "a pinned model is a request, not a fact" trap and the unpinned-agent corollary; tier names are classes, not pins
+- skill-developer: rewrite the trigger-wiring guidance (the description is the trigger, a router is optional, measure one firing), drop the nonexistent skill-rules.json loader and stale skill names
 - primer-design: NEB Tm Calculator lookup (`neb_tm.lookup_pair`, consent required, Q5 annealing temperature cap at 72 C) and a Tm / cycling checklist (`references/tm-and-cycling.md`)
 - lab-data-analysis: HPLC rule that vial number, sample name and injection index are different identifiers (unique-name assertion, anchoring a numbering scheme on a control)
 - verification-gates: sync with the current authoring skill (seven gates: adds the references audit and the database-constants gate, cross-machine nondeterminism rule)
