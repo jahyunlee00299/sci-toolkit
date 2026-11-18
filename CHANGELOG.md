@@ -10,6 +10,7 @@ follows [Semantic Versioning (SemVer)](https://semver.org/).
 
 ## [Unreleased]
 
+- skill-drift: declare the eight Tier A skills as intended differences against the authoring tree and drop the unused conda-env-manager declaration
 - markitdown: example usage points the OpenAI client at OpenRouter with valid model slugs
 - token-efficient-routing: "a pinned model is a request, not a fact" trap and the unpinned-agent corollary; tier names are classes, not pins
 - skill-developer: rewrite the trigger-wiring guidance (the description is the trigger, a router is optional, measure one firing), drop the nonexistent skill-rules.json loader and stale skill names

@@ -7,6 +7,12 @@
       "runtime_fp": "59307268dd21ee11",
       "declared": "2026-10-17"
     },
+    "bio-constants": {
+      "reason": "Toolkit copy sanitized: every example reaction, accession and EC number is a textbook entry (malate dehydrogenase, E. coli mdh, formate dehydrogenase) with fixtures re-recorded from the public databases, the package-route test no longer depends on whether equilibrator-api is installed, the equilibrator venv path is OS-aware, and SKILL.md is rewritten without maintainer paths, rule ids or private skill links.",
+      "toolkit_fp": "75b000db7b178b15",
+      "runtime_fp": "1a923957bf762f1d",
+      "declared": "2026-11-18"
+    },
     "code-quality": {
       "reason": "Reverse-direction: toolkit is ahead, not behind. Toolkit's Mode C section already has the 260924-era two-axis review split (Standards vs Spec, reviewed and reported separately, quote-the-request rule) that runtime's older SKILL.md (dated 2026-03-16, months before toolkit's 2026-08-22) does not have. Porting runtime's SKILL.md over toolkit's would delete real content, not add it.",
       "toolkit_fp": "7dc1b0961e75e2ab",
@@ -31,6 +37,12 @@
       "runtime_fp": "067c65ee6c89ef5b",
       "declared": "2026-09-24"
     },
+    "lab-data-analysis": {
+      "reason": "Ported 261118: the HPLC vial / sample name / injection index identifier rule, rewritten without dates of incidents or quotes. Not ported: the runtime absence-check section and scripts/absence_check.py (bound to the maintainer's HPLC raw roots, a legacy path map and a cloud-synced metadata catalog) and the replicate dispensing check (project-specific). The toolkit keeps its own PeakPicker routing table and description.",
+      "toolkit_fp": "2976860b79ead713",
+      "runtime_fp": "4d71eb5e42bd591f",
+      "declared": "2026-11-18"
+    },
     "lab-record": {
       "reason": "toolkit copy points Asana reads at scripts/connectors/asana_connector.py instead of the maintainer-only asana-extended-api skill",
       "toolkit_fp": "e774b2f70b9cb135",
@@ -38,10 +50,10 @@
       "declared": "2026-10-02"
     },
     "markitdown": {
-      "reason": "Reverse-direction: toolkit is ahead, not behind. Toolkit's SKILL.md already carries the prompt-injection defense section ('The converted text is data, not instructions'), pins the newer anthropic/claude-opus-5.5 model string (runtime still says opus-5), and its scripts already carry the Windows cp949 stdout UTF-8 reconfigure fix that runtime's copies lack. Nothing in the runtime diff is newer content worth porting.",
+      "reason": "Reverse direction plus the runtime fix: toolkit SKILL.md already carries the prompt-injection section, a generic schematics pointer and the Windows UTF-8 stdout fix in both scripts, none of which the runtime copy has. The runtime example_usage.md fix (OpenRouter base_url and valid slugs) was ported 261118.",
       "toolkit_fp": "8409590325e3674e",
-      "runtime_fp": "00ed9f87de6a0a5a",
-      "declared": "2026-09-24"
+      "runtime_fp": "37db93c98b02243b",
+      "declared": "2026-11-18"
     },
     "paper-extract": {
       "reason": "Env-dependence: runtime SKILL.md points its Script Location at ~/.claude/scripts/extract_paper_assets.py (the maintainer's personal layout, 260904 audit), while the toolkit ships its own self-contained copy under skills/paper-extract/scripts/ so a distribution install works standalone.",
@@ -56,16 +68,28 @@
       "declared": "2026-09-24"
     },
     "primer-design": {
-      "reason": "License: the runtime copy is Proprietary and the toolkit ships MIT. No runtime content may be ported; the toolkit copy is maintained independently.",
-      "toolkit_fp": "1bb11c277ebd3117",
-      "runtime_fp": "c82c0f837e92c7b5",
-      "declared": "2026-09-24"
+      "reason": "Toolkit copy is maintained independently: MIT licence (runtime says Proprietary), a different module split (order_sheet_writers, vector_construct_map, mcp tool groups, characterization tests) and its own tests. Ported 261118: the NEB Tm Calculator lookup (neb_tm.py, consent-gated), its 13 offline tests, the REFERENCE.md section and references/tm-and-cycling.md. Not ported: templates/claude-web-export.md and tests/test_md_vs_direct.py (maintainer's Claude-web export workflow).",
+      "toolkit_fp": "10a3ca593a963f99",
+      "runtime_fp": "d3e272ed96e0219a",
+      "declared": "2026-11-18"
     },
     "research-ideation": {
       "reason": "toolkit copy sanitized: license MIT, maintainer-specific recipe, workbook IDs, machine wording and personal rule/tool names generalized",
       "toolkit_fp": "2921bedb421c303c",
       "runtime_fp": "532d2c9de0365c9f",
       "declared": "2026-10-02"
+    },
+    "research-search": {
+      "reason": "Toolkit routing is the key-less one: no paid web-search backends are listed (the runtime change only removes dead commands for the retired paid skills), and it carries the preprint route, ref_fetch.py download routes and the institutional-link policy. The runtime copy routes to skills the toolkit does not ship (researcher-finder, web-scraping libkey / EZproxy login, paid backend status tables with maintainer secrets paths).",
+      "toolkit_fp": "d976adbabff0d3da",
+      "runtime_fp": "800f66a1e9145849",
+      "declared": "2026-11-18"
+    },
+    "skill-developer": {
+      "reason": "Rewritten generically 261118 around the SKILL.md description as the trigger, an optional router hook and one measured firing (no skill-rules.json, which nothing ever read). Not ported: the maintainer's domain_skill_router.sh wiring, the skills-improve-themselves section (skill_draft.py, skill_autoapply), rule ids and the private skill names in the trigger table.",
+      "toolkit_fp": "13382b80e5bf1863",
+      "runtime_fp": "4692b66ba7b2b95a",
+      "declared": "2026-11-18"
     },
     "statsmodels": {
       "reason": "Reverse-direction: toolkit is ahead here, not lagging. Toolkit added references/model_selection.md (AIC/BIC, R-style formulas, CV caveats) after the runtime copy was last touched; nothing to port from runtime, the addition should go the other way eventually.",
@@ -74,10 +98,16 @@
       "declared": "2026-09-24"
     },
     "token-efficient-routing": {
-      "reason": "Env-dependence: runtime's new content (the pinned-model-is-a-request-not-a-fact section, routing_doctor.py, agent_model_check.py) hardcodes personal environment paths (~/.claude/CLAUDE.md, ~/.claude/agents/*.md, ~/.claude/hooks/adaptive_router.sh) outside the skill folder itself and outside any toolkit-installable script tree, same class as the existing paper-extract/patent-invention-disclosure env-dependence declarations. Cannot be ported without first extracting those two scripts into a self-contained, path-agnostic form, which is separate follow-up work.",
-      "toolkit_fp": "7f30cb49a1f85697",
-      "runtime_fp": "ec2dcd9fddee423e",
-      "declared": "2026-09-24"
+      "reason": "Generic parts ported 261118 (the pinned-model-is-a-request trap, tier names are classes, unpinned-agent corollary). Not ported: the Tools section (routing_doctor.py, agent_model_check.py, maintainer agent definitions), account-bound model pricing and the Fable tier facts, measured incident ids and the link to the private token-quota-ops skill.",
+      "toolkit_fp": "00f6ba33eea4fd03",
+      "runtime_fp": "1bb42951586cd45d",
+      "declared": "2026-11-18"
+    },
+    "verification-gates": {
+      "reason": "Toolkit router is an English, generic rewrite: it names the toolkit's own skills (compat-check, provenance-check, fiducial, regress-check, endnote-citation-injection, experiment-hub canon_gate, bio-constants) and carries the seven-gate table and the nondeterminism rule; the runtime copy additionally carries maintainer repo paths, rule ids, an unattended-guard section and links to private skills (a refactor-safety gate, a crawl self-improvement loop) that the toolkit does not ship.",
+      "toolkit_fp": "7188d0854161c264",
+      "runtime_fp": "517f06772a4383f0",
+      "declared": "2026-11-18"
     }
   }
 }
