@@ -63,6 +63,62 @@ url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name}/JSON"
 - Area integration and relative quantification
 - Deconvolution for overlapping peaks (Gaussian fit)
 
+🔴 **Vial number and sample name are two different identifiers — never conflate them (Agilent
+ChemStation).** A real failure cost a whole analysis pass: the assistant read only vial numbers,
+concluded "there are no sample names, so no time course is possible", and was corrected by the
+researcher, who had written the numbers into the sample-name field only.
+
+| | where it lives | what it means |
+|---|---|---|
+| **vial** | the 3-digit PREFIX of the data folder (`043-1801.D` -> vial 43), and the ONLY id the sequence `.LOG` reports (`Instrument running sample Vial 43`) | tray position, nothing else |
+| injection index | the 4-digit part (`043-**1801**.D` -> injection 18) | order within the sequence |
+| **sample name** | the `.ch` header field `notebook`: `rainbow.agilent.chemstation.parse_ch(path).metadata['notebook']` | what the researcher wrote on the tube |
+
+- The sequence `.S` is a register file and carries **no** sample names. The `.LOG` gives vial numbers
+  and the analyzed `.D` name, never the sample name. So neither file can identify a sample on its own.
+- **A vial is reused.** Measured in one sequence: vial 1 held sample `1` at 12:59 and sample
+  `90` at 04:35 the next morning; same for vials 7 and 16. Keying a time course on vial silently
+  merges two different samples. Carry `vial` and `sample_name` as separate columns and join on the name.
+- **The sample name IS the key — so a repeated name is a DEFECT to fix, not a reason to stop
+  keying on it.** This is the opposite of the vial above, and the two need opposite responses: a
+  reused vial is by design (the tray gets refilled), a repeated sample name is a label error in one
+  record. Measured in the same sequence: one name sat on two different tubes (a 12 h
+  no-enzyme control and a 24 h reacting tube), both injected. Assert the name is unique; when it is
+  not, **flag the collision loudly, say which reading you assumed meanwhile, and send the question
+  to the bench notes** — the chromatogram cannot tell you which of the two labels is the wrong one.
+  A tie-break on the acquisition timestamp (a later timepoint cannot be injected before the earlier
+  round is through) keeps the analysis moving; it is a stopgap, not a new key.
+- The `.LOG` also lists `.D` folders that are **not on disk** (calibration standards written
+  elsewhere, entries queued but not run). Skip a missing path; do not let it abort the parse.
+- Read the acquisition timestamp (`metadata['date']`, `metadata['time']`) with every injection: it is
+  the cheapest check that a decoded timepoint is physically possible. Measured once: an injection
+  acquired at 05:27 could not hold a sample drawn at 11:00 the same day, which is what exposed a
+  one-number gap in the researcher's numbering.
+
+**Decoding a researcher's numbering scheme: anchor it on a control, do not assume the stride.**
+A scheme like "19 tubes per round, rounds in timepoint order" looks arithmetic (`round = (n-1)//19`)
+but a skipped number shifts every later round by one and the arithmetic form fails silently with no
+error — it just assigns the wrong timepoint. Anchor each round on a sample whose chromatogram is
+self-identifying (a no-enzyme control: substrate intact, products absent) and derive the round start
+from it, then assert that every detected control lands on the control tube and no reacting trace does.
+Measured once: the control signature placed the rounds at names 1/20/39/**59**/**78**/**96**, not
+the assumed 1/20/39/58/77/96. **Then diff the anchored round starts to localize the slip**: every
+gap should equal the round size, and the one gap that is +1 and the one that is −1 BRACKET the
+mislabeled block. Here the gaps ran 19, 19, **20**, 19, **18** — so the 8 h round was written one
+high, carried the slip through 12 h, and the 24 h round landed back on the planned number and
+collided with the 12 h control. That names the tubes the bench has to check, instead of reporting
+"the numbering is odd"; it also beats the alternative of two independent slips, since one error
+explains both the wide gap and the collision. Re-anchor every new round as it arrives, never
+extrapolate the stride forward, and keep the control gate on — it caught a genuine control anomaly
+instead of hiding it, and later caught the collision by placing a control on a reacting tube.
+
+- Plot absorbance vs. retention time
+- Peak detection (prominence-based)
+- Area integration and relative quantification
+- Deconvolution for overlapping peaks (Gaussian fit)
+- 
+
+
 Pick the tool by how far the analysis has to go:
 
 | Need | Tool |
