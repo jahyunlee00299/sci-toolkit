@@ -1785,3 +1785,18 @@ wired-by: doctor.py
 
 wired-by: tests/test_bio_constants.py
 wired-by: skills/bio-constants/scripts/biodb/bio_const.py
+
+
+## 2026-11-18 — primer-design: NEB annealing temperature lookup and Tm checklist (skills/, sub-feature)
+
+**Scope / layer** — `skills/primer-design/src/primer_design/neb_tm.py` (NEB Tm Calculator client), `references/tm-and-cycling.md`, a REFERENCE.md section and one SKILL.md validation line.
+
+**Why** — the built-in Tm uses generic salt conditions and reads about 1 C low against NEB Q5, and NEB caps the recommended Q5 annealing temperature at 72 C, so a computed "Ta 74 C" is not a program value. The bench number comes from NEB; the built-in Tm stays for relative comparison.
+
+**Rule** — `lookup_pair` sends primer sequences to an external service, so it needs `consent=True` as a keyword argument and caches nothing. The vendor Macrogen order templates are unchanged and hold no data (header row plus numbered empty rows).
+
+**Evidence** — `tests/test_neb_tm.py`: 13 offline tests (consent gate, ACGT validation, product default, cap flag, error collection); no network call.
+
+wired-by: skills/primer-design/tests/test_neb_tm.py
+wired-by: skills/primer-design/src/primer_design/neb_tm.py
+

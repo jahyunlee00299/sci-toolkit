@@ -10,6 +10,7 @@ follows [Semantic Versioning (SemVer)](https://semver.org/).
 
 ## [Unreleased]
 
+- primer-design: NEB Tm Calculator lookup (`neb_tm.lookup_pair`, consent required, Q5 annealing temperature cap at 72 C) and a Tm / cycling checklist (`references/tm-and-cycling.md`)
 - lab-data-analysis: HPLC rule that vial number, sample name and injection index are different identifiers (unique-name assertion, anchoring a numbering scheme on a control)
 - verification-gates: sync with the current authoring skill (seven gates: adds the references audit and the database-constants gate, cross-machine nondeterminism rule)
 - bio-constants: new skill, key-less UniProt / RCSB PDB / Rhea / eQuilibrator lookup and claim-vs-live reconciliation (gate 7), offline replay tests

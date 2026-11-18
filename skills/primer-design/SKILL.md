@@ -58,6 +58,7 @@ Integrated skill for iPCR mutagenesis (substitution/deletion), RE cloning, Colon
 - Confirm reading frame preservation
 - RE cloning: `expression_check.verdict != "FAIL"`
 - QC: PASS or WARNING allowed; if FAIL, redesign
+- Tm/Ta sanity (QC passing is not enough): check Tm spread within each primer block and the polymerase-specific cycling; see `references/tm-and-cycling.md`. A bench annealing temperature comes from `neb_tm.lookup_pair` (REFERENCE.md, "Annealing temperature"), not from `calc_tm`
 
 ## Detailed Usage
 

@@ -305,6 +305,44 @@ upper-case the mismatched bases.
 
 ## Notes
 
+### Annealing temperature — use NEB, not `calc_tm` (measured once, 20 pairs)
+
+`iPCRDesignerBase.calc_tm` runs a salt-corrected nearest-neighbor Tm at Na+ 50 mM,
+Mg2+ 2 mM, primer 500 nM. **Q5 cloning is the default here, and its reaction buffer is not those
+conditions.** Use `calc_tm` for relative comparison (which primer is a block's limiter,
+how far two blocks sit apart, whether a block's internal spread exceeds 5 C). Take any
+number that goes to the bench from `neb_tm.lookup_pair` instead.
+
+```python
+from primer_design import lookup_pair
+row = lookup_pair(fwd, rev, consent=True)        # product="q5" by default
+row["tm1"], row["tm2"], row["ta"], row["ta_is_capped"]
+```
+
+Measured over 20 real primer pairs from a variant library:
+
+| finding | value |
+|---|---|
+| `calc_tm` vs NEB Q5 Tm | reads **low by 1.1 C** on average (0.7-2.5 C) |
+| NEB Ta ceiling for Q5 | **72 C**, hard cap |
+
+The cap is the part that changes decisions. Every pair hotter than 72 C came back with
+`ta == 72.0` exactly, so a computed "Ta 74 C" is not a Q5 setting — at that point the run
+is 2-step (denature, then combined anneal/extend at 72 C). `ta_is_capped` marks those pairs.
+Do not report a `calc_tm`-derived Ta as if it were a program value.
+
+Endpoint traps:
+
+- `prodcode` is mandatory; omitting it gives 400 `missing product type or prodcode`.
+- `conc` is mandatory too, but omitting it gives a **500 with a Node stack trace**
+  (`ReferenceError: conc is not defined`). That 500 is a malformed request, not an outage.
+- `/tm/batch` with a `seqpairs` array 404s. There is no working batch form; `lookup_pairs`
+  loops single calls with a delay.
+
+`lookup_pair` sends sequences to an external service, so it requires `consent=True` and the
+caller must have asked the sequence owner first. Nothing is cached to disk.
+Offline guards: `tests/test_neb_tm.py` (13 tests, no network).
+
 ### SDM Codon Selection
 
 ```

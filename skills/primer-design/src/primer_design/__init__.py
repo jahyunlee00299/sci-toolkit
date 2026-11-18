@@ -1,6 +1,10 @@
 """iPCR primer design package for mutagenesis, RE cloning, and expression analysis."""
 
 from .subst_primer_mode import iPCRDesignerBase, iPCRSubstDesigner
+from .neb_tm import (
+    NEB_PRODCODES, NEB_TA_CAP_C, CALC_TM_OFFSET_C,
+    NebTmError, lookup_pair, lookup_pairs,
+)
 from .del_primer_mode import iPCRDelDesigner
 from .snapgene_parser import parse_snapgene, parse_snapgene_primers
 from .vector_registry import (
