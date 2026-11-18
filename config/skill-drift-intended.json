@@ -13,12 +13,6 @@
       "runtime_fp": "4a565148e92251f5",
       "declared": "2026-09-24"
     },
-    "conda-env-manager": {
-      "reason": "Reverse-direction: toolkit is ahead. Toolkit's Step 3.5 and Related-skill section reference skills/compat-check, a toolkit-only skill absent from the runtime tree, so the runtime copy cannot receive this content until compat-check itself is ported there.",
-      "toolkit_fp": "40348b1e33548f54",
-      "runtime_fp": "73df6adfeab7375f",
-      "declared": "2026-09-24"
-    },
     "endnote-citation-injection": {
       "reason": "Toolkit keeps its split SKILL.md + references/ layout and an English, sanitized body: no maintainer record ids, manuscript or person names, paths or Korean trigger phrases; docs/ ledger not shipped; scripts ported with generic fixtures.",
       "toolkit_fp": "f401aceb9be88e5c",
