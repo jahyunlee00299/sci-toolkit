@@ -21,7 +21,10 @@ reliably catch that bug.
 
 **Publishing (optional, per computer)**: if a Methods folder is configured (env `LAB_METHODS_DIR`, or
 `"methods_dir_glob"` relative to the home folder in `~/.config/experiment-hub.json`, e.g.
-`"OneDrive*/Lab/Methods"`), `reaction_matrix.py` copies every generated workbook there right after generation; a
+`"SyncedLibrary*/Lab/Methods"`), `reaction_matrix.py` copies every generated workbook there right after generation; a
 different file of the same name is kept as `NAME.BACKUP-YYMMDD-HHMM.xlsx` first. Nothing configured = skipped
 with a note; configured but missing or the copy does not match = exit 3 (NOT published, say so). `--no-publish`
 skips it for scratch runs; the tests point `LAB_METHODS_DIR` at a temporary folder (`tests/conftest.py`).
+
+The generated workbook starts on the `FLOW` bench sheet; the other five sheets are hidden unless `"layout": "full"`
+(see [flow_sheet.md](flow_sheet.md)). Keep one `total_volume_uL` per workbook.

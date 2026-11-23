@@ -47,7 +47,7 @@ from pathlib import Path
 
 EXCEL_ERROR_STRINGS = ("#VALUE!", "#DIV/0!", "#REF!", "#NAME?", "#NULL!", "#NUM!", "#N/A")
 # Over COM an error cell's .Value is an int CVErr code, not the "#N/A" text, so a
-# string-only check never fired (found 261002). Map both forms to the display text.
+# string-only check never fired. Map both forms to the display text.
 EXCEL_CVERR_CODES = {-2146826281: "#DIV/0!", -2146826246: "#N/A", -2146826259: "#NAME?",
                      -2146826288: "#NULL!", -2146826252: "#NUM!", -2146826265: "#REF!",
                      -2146826273: "#VALUE!"}

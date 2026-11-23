@@ -26,10 +26,10 @@
       "declared": "2026-10-23"
     },
     "experiment-hub": {
-      "reason": "toolkit copy sanitized: license MIT, synthetic test fixtures and example canon registry instead of the maintainer's lab data, generic examples and no project history; publishing to a Methods folder is opt-in (nothing configured = skipped, not exit 3). Ported 261013: serial dilution (default auto), the Pipetting Guide enzyme-preparation block, cocktail_dead_volume_uL, the x1.0 / 5 uL dead-volume surplus defaults, the reaction_matrix calc subcommand (dilution_calc), the structural workbook guards in pipetting_checks (with the empty-cache count fix) and the workbook-editing rules, tested on synthetic fixtures (tests/test_structural_guards.py).",
-      "toolkit_fp": "613f119b87f47a8a",
-      "runtime_fp": "9f48791be1358cef",
-      "declared": "2026-10-13"
+      "reason": "Toolkit copy sanitized: license MIT, synthetic test fixtures and example canon registry instead of the maintainer's lab data, generic examples and no project history; publishing to a Methods folder is opt-in (nothing configured = skipped, not exit 3; --no-publish). Generator parity with the authoring copy: FLOW bench sheet (flow_sheet.py), water_in_submix, sub-mix spare in tube units (submix_spare_tubes), layout flow/full, per-condition timepoints, printed sub-mix recipes, Pipetting Guide cells that reference the Reaction Matrix, one enzyme total per row, the buffer final_mM contract check, yield basis, weighing qualifier lines, serial superseded columns and guide readability, tested on synthetic fixtures. Not shipped on purpose: the maintainer's registry, build_hub.py, methods_wiring_check.py, examples/ and the lab-config fixtures; SKILL.md is condensed under the size cap with detail in references/. excel_com_guard.py is ahead in the toolkit.",
+      "toolkit_fp": "6ecdfa0c5196ab00",
+      "runtime_fp": "0f36f27c6d314d87",
+      "declared": "2026-11-23"
     },
     "generate-image": {
       "reason": "Toolkit is ahead: runtime Related Skills still names scientific-slides and latex-posters, which the toolkit does not ship (it routes to journal-ppt and publication-figures instead), and the toolkit script carries the Windows UTF-8 stdout fix the runtime lacks.",

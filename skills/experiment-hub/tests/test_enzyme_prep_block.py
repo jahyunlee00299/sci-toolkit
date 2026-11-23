@@ -1,4 +1,4 @@
-"""Pipetting Guide 'ENZYME PREPARATION' block (261012): batch (purification date), total lab stock per enzyme,
+"""Pipetting Guide 'ENZYME PREPARATION' block: batch (purification date), total lab stock per enzyme,
 cocktail recipe, serial dilution, and the configurable cocktail dead volume.
 
 Reference run: synthetic example (EnzX x1/x4/x8, n = 3, 10 tubes, 9 with enzyme).
@@ -43,7 +43,7 @@ def test_block_present_with_batch_and_totals(tmp_path):
         _find(rows, head)
     stocks = {r[0]: r for r in _table(rows, "A) LAB STOCKS")}
     assert set(stocks) == {"EnzA", "EnzB", "EnzC", "EnzD", "EnzE", "EnzY", "EnzX"}
-    assert stocks["EnzE"][1] == "260103" and stocks["EnzX"][1] == "260104"          # purification date shown
+    assert stocks["EnzE"][1] == "100003" and stocks["EnzX"][1] == "100004"          # purification date shown
     assert all(r[1] for r in stocks.values())                                            # every enzyme has a batch
     plan = pc.build_plan(CFG)
     for name, r in stocks.items():                                                       # total = plan's lab draw
@@ -77,12 +77,12 @@ def test_serial_dilution_chain_matches_bench_recipe(tmp_path):
 
 
 def test_no_serial_option_keeps_independent_working_stocks(tmp_path):
-    cfg = copy.deepcopy(CFG); cfg["serial_dilution"] = []   # omitted = auto since 261013
+    cfg = copy.deepcopy(CFG); cfg["serial_dilution"] = []   # omitted = auto
     rows = _guide_rows(cfg, tmp_path)
     _find(rows, "C) WORKING STOCKS")
 
 
-# ---- adversarial review 261012: D1-D4 and the lost guide lines -------------------------------------
+# ---- review findings D1-D4 and the lost guide lines -------------------------------------
 
 def _block_a(rows):
     return {r[0]: r for r in _table(rows, "A) LAB STOCKS")}

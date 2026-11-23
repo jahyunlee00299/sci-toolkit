@@ -52,7 +52,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
-SURPLUS = 1.0          # no percentage overage: the leftover is the dead volume only (261013 user decision)
+SURPLUS = 1.0          # no percentage overage: the leftover is the dead volume only
 DEAD_UL = 5.0
 MM_A_EXTRA_RXNS = 3
 EPS_UL = 5e-4          # a residual below this is "nothing to pipette"
@@ -63,6 +63,9 @@ DEFAULT_COMFORT_UL = 1.0      # 0.5-1.0 uL = possible but poor accuracy (WARN)
 DEFAULT_RESOLUTION_UL = 0.1   # displayed / pipetted volumes are rounded to this
 DEFAULT_MAX_SETTINGS = 4      # more distinct volume settings than this in one tube -> WARN (beginner-proof)
 DEV_WARN, DEV_FAIL = 0.02, 0.05   # concentration deviation caused by the rounding
+SUBMIX_SPARE_TUBES = 1        # a sub-mix is made for n + spare tubes ...
+SUBMIX_SPARE_BIG_N = 10       # ... and for n + 2 tubes when it serves this many tubes or more
+SUBMIX_SPARE_BIG = 2
 
 
 @dataclass
@@ -102,9 +105,39 @@ def mm_a_extra(cfg: dict) -> int:
 
 def dead_ul(cfg: dict, vessel: str = "working") -> float:
     """Dead volume added to an intermediate vessel: config "dead_volume_uL" (default DEAD_UL = 5) for working
-    stocks, "cocktail_dead_volume_uL" (default = dead_volume_uL) for cocktails."""
+    stocks, "cocktail_dead_volume_uL" (default = dead_volume_uL) for cocktails,
+    "submix_dead_volume_uL" (default = dead_volume_uL; an explicit value keeps the legacy fixed-uL sub-mix rule)
+    for substrate sub-mixes.
+
+    A sub-mix made for exactly n_tubes x per_tube leaves every arm's LAST tube 0.1-0.2 uL short after
+    rounding, and the vessel/tip residue (1-5 uL in practice) would not be modelled anywhere, so a
+    sub-mix always carries a dead volume (see submix_make for the default rule)."""
     base = float(cfg.get("dead_volume_uL", DEAD_UL))
-    return float(cfg.get("cocktail_dead_volume_uL", base)) if vessel == "cocktail" else base
+    if vessel == "cocktail":
+        return float(cfg.get("cocktail_dead_volume_uL", base))
+    if vessel == "submix":
+        return float(cfg.get("submix_dead_volume_uL", base))
+    return base
+
+
+def submix_make(cfg: dict, per_tube: float, n: int) -> tuple[float, float, float, float]:
+    """(make_uL, scale, dead_uL, spare_tubes) of a substrate sub-mix serving n tubes at per_tube uL each.
+
+    Spare in TUBE units: n + 1 tubes (n + 2 when n >= SUBMIX_SPARE_BIG_N); config "submix_spare_tubes"
+    overrides the number. A fixed 5-8 uL dead volume was less than one tube for a 14-tube mix, so the last
+    tubes ran short. An explicit config "submix_dead_volume_uL" keeps the legacy fixed-uL rule (spare_tubes is
+    then dead/per_tube, informational). Enzyme cocktails and working stocks keep dead_ul()."""
+    if cfg.get("submix_dead_volume_uL") is not None:
+        dead = float(cfg["submix_dead_volume_uL"])
+        return per_tube * n + dead, (per_tube * n + dead) / per_tube, dead, dead / per_tube
+    raw = cfg.get("submix_spare_tubes")
+    if raw is None:
+        spare = SUBMIX_SPARE_BIG if n >= SUBMIX_SPARE_BIG_N else SUBMIX_SPARE_TUBES
+    else:
+        if isinstance(raw, bool) or not isinstance(raw, (int, float)) or raw < 0:
+            raise ValueError(f"submix_spare_tubes must be a non-negative number, got {raw!r}")
+        spare = float(raw)
+    return per_tube * (n + spare), float(n + spare), per_tube * spare, spare
 
 
 def lab_stock_of(einfo: dict) -> float:
@@ -230,8 +263,8 @@ def route_enzymes(cfg: dict, cocktail: str) -> dict:
 
 
 def limits(cfg: dict) -> dict:
-    """Instrument limits (config block "pipettes"; defaults = a typical lab set whose smallest pipette is
-    2.5 uL -> below 0.5 uL cannot be pipetted, 0.5-1.0 uL possible but poor accuracy).
+    """Instrument limits (config block "pipettes"; defaults = a typical lab set whose
+    smallest pipette 2.5 uL -> below 0.5 uL cannot be pipetted, 0.5-1.0 uL possible but poor accuracy).
     Legacy keys min_addition_uL / warn_addition_uL are read as floor / comfort when "pipettes" omits them."""
     p = cfg.get("pipettes") or {}
     floor = float(p.get("floor_uL", cfg.get("min_addition_uL", DEFAULT_FLOOR_UL)))
@@ -279,22 +312,19 @@ def build_plan(cfg_in: dict, cocktail: str | None = None, common_water: bool | N
     mm_a_vol = sum(mm_per.values())
 
     # ---- substrates: reaction_matrix grouping -------------------------------
+    # The sub-mix steps are created AFTER the water assignment (below): with water_in_submix the DW top-up of
+    # a multi-tube group is carried inside its sub-mix. Grouping and the SM[#..] names are unchanged.
     _, _, groups = analyze_master_mixes(cfg)
     sub_vol_tube = {}
     tube_sub_steps = {}
     submix_of = {}
+    sm_groups: list[dict] = []
     for key, nums in groups.items():
         comps = {s: float(c) * V / float(stocks[s]["conc_mM"]) for s, c in key if float(c) > 0}
         for t in nums:
             sub_vol_tube[t] = sum(comps.values())
         if len(nums) > 1 and comps:
-            sm = f"SM[{','.join('#%d' % t for t in nums)}]"
-            for s, v in comps.items():
-                steps.append(Step("prep", "submix", sm, s, v * len(nums) * SURPLUS))
-                lab[s] += v * len(nums) * SURPLUS
-            mixes.append(sm)
-            for t in nums:
-                submix_of[t] = (sm, sum(comps.values()))
+            sm_groups.append({"name": f"SM[{','.join('#%d' % t for t in nums)}]", "nums": list(nums), "comps": comps})
         else:
             for t in nums:
                 tube_sub_steps[t] = comps
@@ -362,6 +392,39 @@ def build_plan(cfg_in: dict, cocktail: str | None = None, common_water: bool | N
     water, topup, in_place = _assign_water(residual, water0, floor, feasible, water_in_place, enz_tubes,
                                            tube_enzyme_steps, [c["num"] for c in conds])
     topup_no_r1 = {t: (r if r > EPS_UL else 0.0) for t, r in residual.items()}
+
+    # ---- substrate sub-mixes, water folded in (water_in_submix, default true) --------------------------
+    water_in_submix = bool(cfg.get("water_in_submix", True))
+    submixes: list[dict] = []
+    sm_mixes: list[str] = []
+    sm_steps: list[Step] = []
+    submix_water: dict[int, float] = {}
+    topup = dict(topup)
+    for g in sm_groups:
+        nums, comps, sm = g["nums"], g["comps"], g["name"]
+        base = sum(comps.values())
+        w_g = _fold_water(cfg, [topup[t] for t in nums], base, len(nums), floor) if (water_in_submix and feasible) else 0.0
+        sm_per_tube = base + w_g
+        sm_make, sm_scale, sm_dead, sm_spare = submix_make(cfg, sm_per_tube, len(nums))
+        draws = {}
+        for s_, v in comps.items():
+            draws[s_] = v * sm_scale
+            sm_steps.append(Step("prep", "submix", sm, s_, draws[s_]))
+            lab[s_] += draws[s_]
+        if w_g > EPS_UL:
+            draws["water"] = w_g * sm_scale
+            sm_steps.append(Step("prep", "submix", sm, "water", draws["water"]))
+            for t in nums:
+                submix_water[t] = w_g
+                topup[t] = _floor4(topup[t] - w_g) if topup[t] - w_g > EPS_UL else 0.0
+        sm_mixes.append(sm)
+        submixes.append({"name": sm, "conditions": list(nums), "per_tube": sm_per_tube, "substrate_per_tube": base,
+                         "water_per_tube": w_g, "make_uL": sm_make, "dead_uL": sm_dead, "spare_tubes": sm_spare,
+                         "draws": draws})
+        for t in nums:
+            submix_of[t] = (sm, sm_per_tube)
+    steps[0:0] = sm_steps      # same position as before: sub-mix prep steps come first
+    mixes[0:0] = sm_mixes
     n_mm = n + mm_a_extra(cfg)
 
     for b, v in mm_per.items():
@@ -393,11 +456,34 @@ def build_plan(cfg_in: dict, cocktail: str | None = None, common_water: bool | N
             steps.append(Step("run", "water_in_place", tgt, src, v))
 
     return {"config": cfg, "cocktail": cocktail, "common_water": common_water, "water_in_place": in_place,
-            "route": route, "steps": steps,
+            "route": route, "steps": steps, "submixes": submixes,
             "mixes": mixes, "weighings": weighings(cfg), "lab_uL": dict(lab), "working": working,
             "residual": residual, "water_common_uL": water, "water_common_max_uL": water0,
-            "topup": topup, "topup_no_r1": topup_no_r1, "mm_a_rxns": n_mm,
+            "topup": topup, "topup_no_r1": topup_no_r1, "submix_water": submix_water,
+            "water_in_submix": water_in_submix, "mm_a_rxns": n_mm,
             "feasible": feasible, "min_residual_uL": min_res, "n_tubes": n}
+
+
+def _fold_water(cfg: dict, topups: list, base_per_tube: float, n: int, floor: float) -> float:
+    """Per-tube water (uL) that a multi-tube sub-mix carries so its tubes need no (or a smaller) DW top-up.
+
+    w = the smallest top-up of the group (floored to 4 dp). A tube with a larger top-up keeps the remainder as
+    a normal DW step; when some remainder lies between 0 and the pipette floor it could not be pipetted, so
+    w - floor is tried instead (every remainder then grows by floor), and when that is not > 0 the group is not
+    folded (0.0 = legacy behaviour). The water DRAW of the mix (w x scale) must itself be >= the floor, else
+    the group is not folded either (a mix that needs a sub-floor draw is worse than a DW step)."""
+    w = _floor4(min(topups))
+    if w <= EPS_UL:
+        return 0.0
+    rem = [t - w for t in topups]
+    if any(EPS_UL < r < floor - 1e-9 for r in rem):
+        w = _floor4(w - floor)
+        if w <= EPS_UL:
+            return 0.0
+    scale = submix_make(cfg, base_per_tube + w, n)[1]
+    if w * scale < floor - 1e-9:
+        return 0.0
+    return w
 
 
 def _topup_ok(v: float, floor: float) -> bool:
@@ -531,19 +617,29 @@ def rounded_plan(plan: dict, res: float | None = None) -> dict:
 
     tubes = [c["num"] for c in cfg["conditions"]]
     run = {t: [s for s in steps if s.phase == "run" and s.target == f"#{t}"] for t in tubes}
+    # a tube whose water is folded into its sub-mix and that has no separate DW step closes on the SUB-MIX
+    # volume (total - rounded other additions - MM-A); every other tube closes with a DW row
+    sm_names = {sm["name"] for sm in plan.get("submixes", [])}
+    sm_tubes = {t for t in tubes if t in plan.get("submix_water", {}) and plan["topup"].get(t, 0.0) <= EPS_UL
+                and any(s.kind == "substrate" and s.source in sm_names for s in run[t])}
     others = {t: sum(_rnd(s.volume_uL, res) for s in run[t] if s.kind not in ("dw", "mm_a")) for t in tubes}
+    for t in sm_tubes:    # the sub-mix volume is the closing volume: it is not part of the fixed additions
+        others[t] -= sum(_rnd(s.volume_uL, res) for s in run[t] if s.kind == "substrate" and s.source in sm_names)
+    dw_tubes = [t for t in tubes if t not in sm_tubes]
     mm_ex = next((s.volume_uL for t in tubes for s in run[t] if s.kind == "mm_a"), None)
     mm_r = None
     if mm_ex is not None:
-        mm_r = min(_rnd(mm_ex, res), _floor_res(min(V - others[t] for t in tubes), res))
+        caps = [V - others[t] for t in dw_tubes] + [V - others[t] - res for t in sm_tubes]
+        mm_r = min(_rnd(mm_ex, res), _floor_res(min(caps), res))
         # a rounding residual between 0 and the floor cannot be pipetted: lower the per-tube MM-A volume in
         # resolution steps (at most one floor's worth) until every re-closed DW is 0 or >= floor; the buffer
-        # concentration change this causes is part of the deviation report below
+        # concentration change this causes is part of the deviation report below. Tubes that close on their
+        # sub-mix have no DW row and do not take part.
         for k in range(int(math.ceil(lim["floor_uL"] / res - 1e-9)) + 1):
             m = round(mm_r - k * res, 10)
             if m <= 0:
                 break
-            if all(_topup_ok(round(V - others[t] - m, 10), lim["floor_uL"]) for t in tubes):
+            if all(_topup_ok(round(V - others[t] - m, 10), lim["floor_uL"]) for t in dw_tubes):
                 mm_r = m
                 break
     out_t, dw, dropped, dev = {}, {}, {}, {}
@@ -551,6 +647,9 @@ def rounded_plan(plan: dict, res: float | None = None) -> dict:
         rows = []
         for s in run[t]:
             if s.kind == "dw":
+                continue
+            if t in sm_tubes and s.kind == "substrate" and s.source in sm_names:
+                rows.append((s.kind, s.source, s.volume_uL, round(V - others[t] - (mm_r or 0.0), 10)))
                 continue
             rows.append((s.kind, s.source, s.volume_uL, mm_r if s.kind == "mm_a" else _rnd(s.volume_uL, res)))
         d = round(V - sum(r[3] for r in rows), 10)
@@ -575,7 +674,8 @@ def rounded_plan(plan: dict, res: float | None = None) -> dict:
             rel = (rd_amt.get(c, 0.0) / total_r) / (a / V) - 1 if total_r > 0 else -1.0
             if c not in dev or abs(rel) > dev[c][0]:
                 dev[c] = (abs(rel), rel, t)
-    return {"tubes": out_t, "dw": dw, "mm_a_uL": mm_r, "dropped": dropped, "deviation": dev, "res": res}
+    return {"tubes": out_t, "dw": dw, "mm_a_uL": mm_r, "dropped": dropped, "deviation": dev, "res": res,
+            "submix_closing": sorted(sm_tubes)}
 
 
 def volume_settings(rplan: dict) -> dict:
@@ -591,9 +691,13 @@ def volume_settings(rplan: dict) -> dict:
             by_comp[key][rd].append(t)
     multi = {k: {v: ts for v, ts in vs.items()} for k, vs in by_comp.items() if len(vs) > 1}
     seqs = {t: tuple(r[3] for r in rows) for t, rows in rplan["tubes"].items()}
+    seq_count = Counter(seqs.values())
     return {"settings_per_tube": per_tube, "settings_per_tube_max": max(per_tube.values()) if per_tube else 0,
             "settings_run": len(run_all), "multi_volume_components": multi,
-            "identical_sequence": len(set(seqs.values())) <= 1}
+            "identical_sequence": len(set(seqs.values())) <= 1,
+            "n_tubes": len(seqs), "distinct_sequences": len(seq_count),
+            "modal_sequence_tubes": max(seq_count.values()) if seq_count else 0,
+            "modal_sequence": seq_count.most_common(1)[0][0] if seq_count else ()}
 
 
 def summarize(plan: dict) -> dict:
@@ -619,6 +723,8 @@ def summarize(plan: dict) -> dict:
         "multi_volume_components": sorted(vs["multi_volume_components"]),
         "rounding_max_dev_pct": round(100 * worst[1][0], 2), "rounding_max_dev_component": worst[0],
         "water_in_place_tubes": sorted(plan.get("water_in_place", {})),
+        "submix_water_tubes": sorted(plan.get("submix_water", {})),
+        "tubes_same_sequence": vs["modal_sequence_tubes"], "distinct_sequences": vs["distinct_sequences"],
         "tubes": plan["n_tubes"], "cocktail": plan["cocktail"], "common_water": plan["common_water"],
         "feasible": plan["feasible"], "min_residual_uL": round(plan["min_residual_uL"], 4),
         "prep_steps": len(prep), "prep_mixes": len(plan["mixes"]),
@@ -657,7 +763,9 @@ def summary_line(s: dict) -> str:
             f"TOTAL {s['total_steps']} steps / {s['total_ops']} ops | weighings {s['weighings']} (not pipetting) | "
             f"distinct volumes run {s['distinct_volumes_run']} / all {s['distinct_volumes_all']} | "
             f"additions <1 uL: {s['below_1uL']} (run {s['below_1uL_run']}), <2 uL: {s['below_2uL']} | "
-            f"DW top-ups {s['dw_steps_with_r1']} with R1 vs {s['dw_steps_without_r1']} without | "
+            f"DW top-ups {s['dw_steps_with_r1']} with R1 vs {s['dw_steps_without_r1']} without"
+            + (f" (water folded into sub-mixes for {len(s['submix_water_tubes'])} tubes)" if s['submix_water_tubes'] else "")
+            + " | "
             f"below pipette floor {s['floor_uL']} uL: {s['below_floor']}, below comfort {s['comfort_uL']} uL: "
             f"{s['below_comfort']} | volume settings per tube max {s['settings_per_tube_max']}, run "
             f"{s['settings_run']} (rounded to {s['resolution_uL']} uL), identical sequence in every tube: "

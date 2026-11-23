@@ -4,6 +4,10 @@ This file records the version history of the sci-toolkit distribution.
 Format follows [Keep a Changelog](https://keepachangelog.com/), versioning
 follows [Semantic Versioning (SemVer)](https://semver.org/).
 
+## [1.2.168] — 2026-11-23
+
+- experiment-hub: FLOW bench sheet, water folded into the substrate sub-mix, sub-mix spare in tube units
+
 ## [1.2.167] — 2026-11-19
 
 - bio-constants: stub appdirs in the missing-cache test so it passes without the package
@@ -14,6 +18,7 @@ follows [Semantic Versioning (SemVer)](https://semver.org/).
 
 ## [Unreleased]
 
+- experiment-hub: port the authoring generator (FLOW bench sheet, water folded into the substrate sub-mix, sub-mix spare in tube units, layout flow/full, per-condition timepoints, printed sub-mix recipes, yield basis, stock-type contract) with synthetic-fixture tests
 - skill-drift: declare the eight Tier A skills as intended differences against the authoring tree and drop the unused conda-env-manager declaration
 - markitdown: example usage points the OpenAI client at OpenRouter with valid model slugs
 - token-efficient-routing: "a pinned model is a request, not a fact" trap and the unpinned-agent corollary; tier names are classes, not pins

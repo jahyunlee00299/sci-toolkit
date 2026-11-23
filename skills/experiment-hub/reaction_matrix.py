@@ -143,6 +143,7 @@ SURPLUS_NOTE = surplus_note()   # default margin (config "premix": {"extra_rxns"
 MIN_ADDITION_UL = 0.5    # legacy names kept for importers; the limits now live in pipette_count.limits()
 WARN_ADDITION_UL = 1.0   # (config "pipettes": {"floor_uL", "comfort_uL", "resolution_uL"})
 WAIVER_FLAGS = ('allow_small_volume', 'allow_variable_volume')
+LAYOUTS = ('flow', 'full')   # config "layout": FLOW first with the other sheets hidden (default) / all visible
 VOL_REL_TOL, VOL_ABS_TOL = 0.005, 0.005   # two volumes within 0.5 % or 0.005 uL are the same volume (R2)
 
 
@@ -400,6 +401,12 @@ def _check_pipetting_rules(config, report):
             continue                       # enzymes: R2 above
         desc = ', '.join(f'{v} uL (#{",#".join(map(str, ts))})' for v, ts in sorted(vols.items()))
         report.append(f'WARN uniformity: {comp} is added at {len(vols)} different volumes across tubes -- {desc}')
+    report.append(f"INFO flow: {vs['modal_sequence_tubes']} of {vs['n_tubes']} tubes receive the identical volume "
+                  f"sequence ({vs['distinct_sequences']} distinct sequence(s)); the run needs {vs['settings_run']} "
+                  f"distinct volume settings (rounded to {rp['res']} uL)"
+                  + (f"; water carried inside the sub-mix of {len(plan['submix_water'])} tube(s), "
+                     f"separate DW top-up in {sum(1 for v in rp['dw'].values() if v > 0)}"
+                     if plan.get('submix_water') else ''))
     crowded = {t: n for t, n in vs['settings_per_tube'].items() if n > lim['max_settings_per_tube']}
     if crowded:
         report.append(f"WARN uniformity: {len(crowded)} tube(s) need more than {lim['max_settings_per_tube']} "
@@ -461,7 +468,7 @@ def _check_pipetting_rules(config, report):
 
 def _check_serial(config, report, pc):
     """g. config "serial_dilution": a list of enzyme names that have a working-stock ladder (>= 2 levels);
-    a typo or a wrong type silently fell back to independent draws (adversarial review 261012)."""
+    a typo or a wrong type silently fell back to independent draws."""
     if 'serial_dilution' not in config or config['serial_dilution'] == 'auto':
         return True
     sd = config['serial_dilution']
@@ -522,11 +529,14 @@ def _check_r1(config, report, pc):
         elif cw:
             tight = ('tightest tube top-up 0' if p1['water_common_uL'] >= p1['water_common_max_uL'] - pc.EPS_UL
                      else f"lowered from {p1['water_common_max_uL']} so no top-up is below the pipette floor")
+            folded = len(p1.get('submix_water', {}))
+            fold_txt = (f"; {folded} further tube(s) carry their remaining water inside a substrate sub-mix "
+                        f"(water_in_submix), no separate DW step" if folded else '')
             report.append(f"PASS R1: MM-A carries the common water ({p1['water_common_uL']} uL/rxn; {tight}) -> "
-                          f"{with_r1} tube DW top-up(s) instead of {without}")
+                          f"{with_r1} separate tube DW top-up(s) instead of {without}{fold_txt}")
         else:
             report.append(f"WARN R1: \"common_water_in_mm_a\": false -- {without} tube DW pipettings; putting "
-                          f"{p1['water_common_uL']} uL/rxn of water into MM-A would leave {with_r1}")
+                          f"{p1['water_common_uL']} uL/rxn of water into MM-A would leave {with_r1} separate DW step(s)")
     except Exception as exc:  # the count model must never silently skip
         report.append(f'WARN R1 check could not run: {type(exc).__name__}: {exc}')
 
@@ -564,11 +574,39 @@ def validate_config(config, source='<config>'):
                        f'{", ".join(spec)}); expand it first with equal_volume.expand() / '
                        f'"python equal_volume.py spec.json expanded.json" -- reaction_matrix.py does this '
                        f'automatically']
+    if config.get('layout', 'flow') not in LAYOUTS:
+        report.append(f"FAIL layout: must be one of {LAYOUTS}, got {config.get('layout')!r}")
+        ok_layout = False
+    else:
+        ok_layout = True
+    if not isinstance(config.get('water_in_submix', True), bool):
+        report.append(f"FAIL water_in_submix: must be true or false, got {config.get('water_in_submix')!r}")
+        ok_layout = False
+    sp = config.get('submix_spare_tubes')
+    if sp is not None and (isinstance(sp, bool) or not isinstance(sp, (int, float)) or sp < 0):
+        report.append(f"FAIL submix_spare_tubes: must be a non-negative number of tubes, got {sp!r}")
+        ok_layout = False
+    if not ok_layout:
+        return False, report
     vol = config['total_volume_uL']
     stocks = config['stocks']
     enzymes = config['enzymes']
     conditions = config['conditions']
     buffer_stocks = {k: v for k, v in stocks.items() if v['type'] == 'buffer'}
+
+    # The two stock types are a convention, not a label: type 'buffer' means a component held at
+    # ONE level in every tube (so it rides in MM-A and declares `final_mM`), type 'substrate'
+    # means a component read from each condition's `substrates`. Dropping `final_mM` to make a
+    # buffer vary per condition used to crash here with a bare KeyError; say which it is instead.
+    for bname, binfo in buffer_stocks.items():
+        if binfo.get('final_mM') is None:
+            report.append(
+                f"FAIL stock {bname!r}: type 'buffer' is a component common to EVERY tube and "
+                f"needs 'final_mM'. A component whose level varies between conditions is "
+                f"type 'substrate' and is read from each condition's 'substrates'.")
+            ok = False
+    if not ok:
+        return ok, report
 
     # ---- Check 1: per-condition volume closure (would DW go negative?) ----
     # DW = vol - sum(all component uL). generate_excel() defines DW as this exact residual, so the
@@ -628,7 +666,8 @@ def validate_config(config, source='<config>'):
     # For this script's construction, achieved_conc = stock * (target*vol/stock) / vol = target
     # algebraically -- so this check is really "did the config typo a stock/final pair such that
     # division blows up or produces something absurd", not a live formula-vs-formula comparison.
-    # A hand-built workbook (formulas written cell-by-cell, e.g. a stock-blend design) does NOT get this guarantee for free -- see SKILL.md Mode 1 note: for anything
+    # A hand-built workbook (formulas written cell-by-cell, e.g. a stock-blend design)
+    # does NOT get this guarantee for free -- see SKILL.md Mode 1 note: for anything
     # that doesn't fit this script's config shape, the same recomputation must be done manually,
     # in a throwaway script, against every sheet/condition, not just spot-checked.
     for sname, sinfo in stocks.items():
@@ -835,6 +874,7 @@ def generate_excel(config, output_path):
 
     # Data rows
     fd, ld = None, None
+    cond_rows: dict = {}
     current_group = None
     for cond in conditions:
         grp = cond.get('group', '')
@@ -846,6 +886,10 @@ def generate_excel(config, output_path):
         if fd is None:
             fd = r
         ld = r
+        # Sheet 1 inserts a section row before each new group, so a condition's row
+        # is NOT fd + index. Sheet 2's per-tube breakdown references these rows instead of
+        # re-deriving the same volumes from literals (see PER-TUBE VOLUME BREAKDOWN).
+        cond_rows[cond['num']] = r
 
         dc(ws, r, ci['type'], 'Exp')
         dc(ws, r, ci['num'], cond['num'])
@@ -895,12 +939,15 @@ def generate_excel(config, output_path):
         r += 1
 
     # Enzyme totals
+    # One enzyme PER ROW, label in column 1. These used to share one row with each
+    # label written at `ci[e_uL] - 1`; the enzyme columns are contiguous, so every label
+    # overwrote the previous enzyme's formula and 6 of 7 totals silently vanished.
     r += 1
     for e in enz_names:
         ecol = get_column_letter(ci[f'{e}_uL'])
-        dc(ws, r, ci[f'{e}_uL'] - 1, f'{e} total (x{pipette_count.SURPLUS:g}):', B, LT)
+        dc(ws, r, 1, f'{e} total (x{pipette_count.SURPLUS:g}) [dead volume not included]:', B, LT)
         fml(ws, r, ci[f'{e}_uL'], f'=ROUND(SUM({ecol}{fd}:{ecol}{ld})*{pipette_count.SURPLUS},2)').font = B
-    r += 1
+        r += 1
     dc(ws, r, 1, note, NOTE, LT)
 
     # Column widths
@@ -912,6 +959,7 @@ def generate_excel(config, output_path):
     # ═══════════════════════════════════════════
     # SHEET 2: Pipetting Guide
     # ═══════════════════════════════════════════
+    S1 = f"'{ws.title}'"   # sheet-1 reference prefix for cross-sheet formulas (title has a space)
     ws2 = wb.create_sheet('Pipetting Guide')
     ws2.sheet_properties.tabColor = '70AD47'
 
@@ -965,13 +1013,16 @@ def generate_excel(config, output_path):
     r += 2
     dc(ws2, r, 1, 'SUBSTRATE GROUPING (conditions with identical substrates)', S, LT)
     r += 1
-    for c, h in enumerate(['Group', 'Conditions', 'Components', '# tubes'], 1):
+    for c, h in enumerate(['Group', 'Tubes', 'Substrates (final mM; others 0)', '# tubes'], 1):
         ws2.cell(row=r, column=c, value=h)
     hdr(ws2, r, 4)
     r += 1
 
+    sm_of = {}
     for i, sm in enumerate(sub_mixes):
-        comp_str = ', '.join(f'{k}={v}' for k, v in sm['components'].items())
+        for n in sm['conditions']:
+            sm_of[n] = f'SM-{i+1}'
+        comp_str = ', '.join(f'{k} {v:g}' for k, v in sm['components'].items() if v) or 'none (no substrate)'
         cond_str = ', '.join(f'#{n}' for n in sm['conditions'])
         dc(ws2, r, 1, f'SM-{i+1}', B)
         dc(ws2, r, 2, cond_str, N, LT)
@@ -981,13 +1032,54 @@ def generate_excel(config, output_path):
             ws2.cell(row=r, column=c).fill = GF
         r += 1
 
+    # SUB-MIX RECIPES. The grouping table above says WHICH tubes share a sub-mix and at what final
+    # concentration, but not how to MAKE one: the volume to draw from each stock and the total it
+    # yields must be printed too, or the plan's prep steps are counted but the bench has no recipe.
+    by_conds = {tuple(s['conditions']): s for s in pc_plan.get('submixes', [])}
+    recipes = [(i + 1, by_conds[tuple(sm['conditions'])])
+               for i, sm in enumerate(sub_mixes) if tuple(sm['conditions']) in by_conds]
+    if recipes:
+        r += 1
+        dc(ws2, r, 1, 'SUB-MIX RECIPES (make each one before dispensing)', S, LT)
+        r += 1
+        # NOT "How to mix": that exact header is the working-stock contract checked by
+        # tests/test_guide_readability.py (its sentence must name water and a "->" yield).
+        for c, h in enumerate(['Sub-mix', 'Draw from stock', 'How to make it', 'uL'], 1):
+            ws2.cell(row=r, column=c, value=h)
+        hdr(ws2, r, 4)
+        r += 1
+        for idx, rec in recipes:
+            n_t = len(rec['conditions'])
+            for s, v in rec['draws'].items():
+                dc(ws2, r, 1, f'SM-{idx}', B)
+                dc(ws2, r, 2, s, N, LT)
+                dc(ws2, r, 3, (f'add {v:.1f} uL of water to the SM-{idx} tube' if s == 'water'
+                               else f'draw {v:.1f} uL of {s} stock into the SM-{idx} tube'), N, LT)
+                dc(ws2, r, 4, round(v, 1))
+                r += 1
+            dc(ws2, r, 1, f'SM-{idx} total', B)
+            water_txt = (f' (incl. {rec["water_per_tube"]:.1f} uL water)' if rec.get('water_per_tube') else '')
+            dc(ws2, r, 2, f'{n_t} tube(s) x {rec["per_tube"]:.1f} uL{water_txt} + {rec["dead_uL"]:.1f} uL spare '
+                          f'({rec["spare_tubes"]:g} tube)', N, LT)
+            dc(ws2, r, 3, f'mix well; add {rec["per_tube"]:.1f} uL to each of '
+                          f'{", ".join("#%d" % t for t in rec["conditions"])}', N, LT)
+            dc(ws2, r, 4, round(rec['make_uL'], 1)).font = B
+            for c in range(1, 5):
+                ws2.cell(row=r, column=c).fill = GF
+            r += 1
+
+    # bench order: label the tubes and make the enzyme stocks before the per-tube reference table
+    r = _enzyme_prep_block(ws2, r + 1, pc_plan, sm_of)
+
     # Per-tube volumes
     r += 1
-    dc(ws2, r, 1, 'PER-TUBE VOLUME BREAKDOWN', T, LT)
+    dc(ws2, r, 1, 'PER-TUBE VOLUME BREAKDOWN (reference: exact design volumes per tube)', T, LT)
     r += 1
     dc(ws2, r, 1, f'Exact design volumes. PIPETTE the volumes rounded to {res:g} uL in sheet "Enzyme Additions" '
-                  f'(DW re-closed after rounding; a no-enzyme control gets WATER in place of the enzyme additions, '
-                  f'so its DW below is split into the same volumes as the enzyme tubes).', NOTE, LT)
+                  f'(every tube re-closed to the total after rounding: by a DW row, or, where the water is carried inside '
+                  f'a substrate sub-mix, by the sub-mix volume; a no-enzyme control gets WATER in place of the enzyme '
+                  f'additions, so its DW below is split into the same volumes as the enzyme tubes). With water_in_submix '
+                  f'the "DW top-up" column below is carried inside the sub-mix (exact design; see SUB-MIX RECIPES).', NOTE, LT)
     r += 1
     dc(ws2, r, 1, note, NOTE, LT)
     r += 1
@@ -1003,26 +1095,28 @@ def generate_excel(config, output_path):
         dc(ws2, r, ci2, f'#{cond["num"]}', B); ci2 += 1
         fml(ws2, r, ci2, f'=$D${ma_total}'); ci2 += 1  # MM-A
 
+        # These must not re-derive every volume from LITERALS
+        # (=ROUND(100*100/1800,4)), so editing a stock or the total volume on sheet 1 left
+        # sheet 2 and sheet 3 silently disagreeing with it and the per-tube totals no longer
+        # summed to the reaction volume. Sheet 1 already computes each volume from its own
+        # input cells; sheet 2 is now a VIEW of those cells, so there is one source of truth.
+        s1row = cond_rows[cond['num']]
         for s in sub_names:
-            conc = cond['substrates'].get(s, 0)
-            stock = stocks[s]['conc_mM']
-            fml(ws2, r, ci2, f'=ROUND({conc}*{vol}/{stock},4)'); ci2 += 1
+            fml(ws2, r, ci2, f'={S1}!{get_column_letter(ci[f"{s}_uL"])}{s1row}'); ci2 += 1
 
         # DW column — will fill after enzymes
         dw_ci = ci2; ci2 += 1
 
         for e in enz_names:
-            level = cond['enzymes'].get(e, '1x')
-            rxn_gL = enzymes[e]['rxn_gL'][level]
-            stock_gL = enzymes[e]['stock_gL']
-            fml(ws2, r, ci2, f'=ROUND({rxn_gL}*{vol}/{stock_gL},4)'); ci2 += 1
+            fml(ws2, r, ci2, f'={S1}!{get_column_letter(ci[f"{e}_uL"])}{s1row}'); ci2 += 1
 
         # Total col
         total_ci = ci2
         b_col = get_column_letter(2)
         last_col = get_column_letter(ci2 - 1)
-        # DW = vol - (MM-A + substrates + enzymes)
-        fml(ws2, r, dw_ci, f'=ROUND({vol}-{b_col}{r}-' +
+        # DW = vol - (MM-A + substrates + enzymes); the total volume comes from sheet 1's
+        # input cell, never a literal, so changing it there re-closes every tube here
+        fml(ws2, r, dw_ci, f'=ROUND({S1}!$B${vol_row}-{b_col}{r}-' +
             '-'.join(get_column_letter(3 + i) + str(r) for i in range(len(sub_names))) +
             '-' + '-'.join(get_column_letter(dw_ci + 1 + i) + str(r) for i in range(len(enz_names))) +
             ',4)')
@@ -1034,11 +1128,14 @@ def generate_excel(config, output_path):
             '+'.join(get_column_letter(dw_ci + 1 + i) + str(r) for i in range(len(enz_names))))
         r += 1
 
-    r = _enzyme_prep_block(ws2, r + 1, pc_plan)
-
-    for c in range(1, len(vol_cols) + 1):
-        ws2.column_dimensions[get_column_letter(c)].width = 12
-    ws2.column_dimensions['A'].width = 8
+    for c in range(1, max(len(vol_cols), 9) + 1):
+        ws2.column_dimensions[get_column_letter(c)].width = 14
+    for col, w in (('A', 34), ('B', 18), ('C', 30)):
+        ws2.column_dimensions[col].width = w
+    for row in ws2.iter_rows():
+        for cell in row:   # header rows (filled) wrap instead of spilling into the next cell
+            if cell.fill is not None and cell.fill.fill_type and isinstance(cell.value, str) and cell.row > 2:
+                cell.alignment = Alignment(wrap_text=True, vertical='center', horizontal=cell.alignment.horizontal)
 
     _enzyme_additions_sheet(wb, pc_plan, pc_sum, date)
 
@@ -1115,10 +1212,33 @@ def generate_excel(config, output_path):
         # Data entry cells
         for i in range(n_tp):
             dc(ws4, r, 3 + i, None, fill=YF)
-        # Yield formulas — use yield_substrate from config, or largest substrate conc
-        yield_sub = config.get('yield_substrate')
-        if yield_sub:
-            denom = cond['substrates'].get(yield_sub, 100)
+        # Yield formulas — explicit basis, named component, or largest substrate conc.
+        # yield_basis_mM wins: it is the only way to report a yield on a reactant that sits
+        # OUTSIDE the volume closure (a weighed solid is never in `substrates`, so naming it in
+        # yield_substrate cannot resolve).
+        # A condition may carry its own basis: a design that varies the weighed limiting
+        # reactant between arms (e.g. 50 mM in one arm, 80 mM in another) has no single
+        # denominator, and one global basis would print the second arm's yield 1.6x high.
+        yield_basis = cond.get('yield_basis_mM', config.get('yield_basis_mM'))
+        yield_sub = cond.get('yield_substrate', config.get('yield_substrate'))
+        if yield_basis is not None:
+            denom = float(yield_basis)
+        elif yield_sub:
+            # A component held at one level for every tube lives in `stocks` with a final_mM
+            # (the MM-A convention), not in per-condition `substrates`. Look in both before
+            # giving up. A name that is an MM-A component used to miss the lookup and silently
+            # fall back to 100, which is right only when that final happens to BE 100 mM.
+            # Never fall back silently.
+            if yield_sub in cond['substrates']:
+                denom = cond['substrates'][yield_sub]
+            elif stocks.get(yield_sub, {}).get('final_mM') is not None:
+                denom = stocks[yield_sub]['final_mM']
+            else:
+                raise ValueError(
+                    "yield_substrate %r is neither a per-condition substrate nor a stock with "
+                    "final_mM (condition #%s). A reactant outside the volume closure (weighed "
+                    "solid) has no concentration here: set yield_basis_mM instead."
+                    % (yield_sub, cond['num']))
         else:
             # Pick substrate with highest concentration (exclude cofactors)
             real_subs = {k: v for k, v in cond['substrates'].items()
@@ -1169,6 +1289,24 @@ def generate_excel(config, output_path):
     ws4.column_dimensions['A'].width = 6
     ws4.column_dimensions['B'].width = 22
 
+    # ═══════════════════════════════════════════
+    # FLOW sheet (bench sheet) + layout
+    # ═══════════════════════════════════════════
+    layout = config.get('layout', 'flow')
+    if layout not in LAYOUTS:
+        raise ValueError(f'layout must be one of {LAYOUTS}, got {layout!r}')
+    import flow_sheet
+    flow_ws = flow_sheet.write_flow_sheet(wb, pc_plan, pipette_count.rounded_plan(pc_plan), config)
+    for sh in wb.worksheets:
+        sh.sheet_view.tabSelected = sh is flow_ws
+    wb.active = 0
+    if layout == 'flow':
+        # the other sheets stay in the file (other tools and tests read them; the Pipetting Guide formulas
+        # reference Reaction Matrix) but are hidden: the bench works from FLOW
+        for sh in wb.worksheets:
+            if sh is not flow_ws:
+                sh.sheet_state = 'hidden'
+
     wb.save(output_path)
 
     # Report (the legacy 'Pipetting: ~N (saved ...)' estimate counted 0 uL cells and is removed -- the step
@@ -1217,6 +1355,16 @@ def _enzyme_additions_sheet(wb, plan, summ, date):
         vals = [wk['working_stock'], wk['enzyme'], round(wk['lab_gL'], 4), round(wk['dilution_x'], 4),
                 round(wk['working_gL'], 4), rq(wk['uL_per_tube']), round(wk['needed_uL'], 2), wk['make_uL'],
                 rq(wk['lab_stock_uL']), rq(wk['water_uL'])]
+        if wk['enzyme'] in ser:
+            # A serially diluted level is made by block C, and the independent-draw figures for it are
+            # not just different, they are SHORT: they size the make for this level's own tubes only and
+            # know nothing about the transfer the next lower level draws out of it. Printing them next to
+            # a prose "ignore these columns" is not enough -- the two sheets could offer 'make 95 uL'
+            # and 'make 100 uL' for the same level, and following the 95 leaves no dead volume for the
+            # tubes, so the last tube comes up short of the target. Blank the numbers instead of
+            # annotating them.
+            vals[7] = 'see Guide block C'
+            vals[8] = vals[9] = None
         for c, v in enumerate(vals, 1):
             dc(ws, r, c, v, N, LT if c <= 2 else CT)
         r += 1
@@ -1240,7 +1388,8 @@ def _enzyme_additions_sheet(wb, plan, summ, date):
     dc(ws, r, 1, 'PER-TUBE ADDITION TABLE (pipetting order; enzymes LAST)', S, LT)
     r += 1
     rp = pipette_count.rounded_plan(plan)
-    dc(ws, r, 1, f'Pipette the "uL" column (rounded to {res:g} uL; DW re-closes every tube to the total). '
+    dc(ws, r, 1, f'Pipette the "uL" column (rounded to {res:g} uL; every tube closes to the total, by a DW row or by its '
+                 f'substrate sub-mix volume where the water is folded into the sub-mix). '
                  f'A no-enzyme control gets WATER in the same volumes as the enzyme additions (water_in_place).',
        NOTE, LT)
     r += 1
@@ -1286,7 +1435,7 @@ def _enzyme_additions_sheet(wb, plan, summ, date):
 
 def _serial_names(cfg, working):
     """Enzymes whose working-stock levels are made by serial dilution. Config "serial_dilution": omitted or "auto"
-    = every enzyme with >= 2 working-stock levels (default since 261013: a concentration series is a serial
+    = every enzyme with >= 2 working-stock levels (a concentration series is a serial
     dilution wherever it can be); a list of names = only those; [] = independent draws for all."""
     sd = cfg.get('serial_dilution', 'auto')
     if sd == 'auto':
@@ -1329,7 +1478,46 @@ def _serial_recipes(plan):
     return out
 
 
-def _enzyme_prep_block(ws, r, plan):
+def lab_stock_totals(plan):
+    """Enzyme lab-stock consumption for the whole run, split by use: {'cocktail', 'direct', 'working'} each
+    {real enzyme name: uL}, 'serial' = _serial_recipes(plan), 'names' = enzymes in block-A order. The single source
+    of the Pipetting Guide block "A) LAB STOCKS TO TAKE" and the FLOW sheet's TAKE OUT table."""
+    import pipette_count
+    cfg = plan['config']
+    route = plan['route']
+    einfo = cfg['enzymes']
+
+    def is_ws(source):
+        e = einfo.get(source)
+        return bool(e) and pipette_count.lab_stock_of(e) / float(e['stock_gL']) > pipette_count.NEAT_TOL
+
+    def real_of(source):
+        a = route['src_info'].get(source)
+        return a['enzyme'] if a else source.replace(' (lab stock)', '')
+
+    cock_use = defaultdict(float)
+    for ck in route['cocktails']:
+        for src, v in ck['comps'].items():
+            if not is_ws(src):   # a diluted working stock in a cocktail is priced by its own lab draw (block C)
+                cock_use[real_of(src)] += v * ck['scale']
+    direct_use = defaultdict(float)
+    for lst in route['separate'].values():
+        for src, v in lst:
+            if not is_ws(src) and not src.startswith(('cocktail', 'common cocktail')):
+                direct_use[real_of(src)] += v * pipette_count.SURPLUS
+    serial = _serial_recipes(plan)
+    ws_use = defaultdict(float)
+    for wk in plan['working']:
+        if wk['enzyme'] not in serial:
+            ws_use[wk['enzyme']] += wk['lab_stock_uL']
+    for enz, rows_ in serial.items():
+        ws_use[enz] += sum(x['lab_uL'] for x in rows_)
+    names = [n for n in dict.fromkeys(list(cock_use) + list(direct_use) + list(ws_use))]
+
+    return {'cocktail': cock_use, 'direct': direct_use, 'working': ws_use, 'serial': serial, 'names': names}
+
+
+def _enzyme_prep_block(ws, r, plan, sm_of=None):
     """Pipetting Guide blocks 'TUBES TO PREPARE' and 'ENZYME PREPARATION (make before the run)': the enzyme
     stock table (batch = purification date, lab stock g/L, TOTAL lab stock to take for every use), the
     cocktail recipe(s) and the working-stock recipes. SKILL.md: a workbook without them is not finished.
@@ -1352,19 +1540,48 @@ def _enzyme_prep_block(ws, r, plan):
         e = einfo.get(source) or einfo.get(real) or {}
         return real, e.get('batch', 'n/a'), (pipette_count.lab_stock_of(e) if e else None)
 
-    dc(ws, r, 1, 'TUBES TO PREPARE (label before the run)', S, LT)
+    dc(ws, r, 1, f"TUBES TO PREPARE (label before the run): {len(cfg['conditions'])} empty tubes, {V:g} uL reactions", S, LT)
     r += 1
-    labels = '; '.join(f"#{c['num']} {c.get('label', c.get('note', ''))}".strip() for c in cfg['conditions'])
-    dc(ws, r, 1, f"{len(cfg['conditions'])} empty tubes ({V:g} uL reactions): {labels}", N, LT)
+    inp_set = {t for t, v in plan['water_in_place'].items() if v}
+    for c, h in enumerate(['Tube', 'Substrate group', 'Condition', 'Enzyme'], 1):
+        ws.cell(row=r, column=c, value=h)
+    hdr(ws, r, 4)
     r += 1
+    for cond in cfg['conditions']:
+        on = [e for e, lvl in cond.get('enzymes', {}).items() if lvl not in ('0x', 0, '0', None)]
+        # an expanded working-stock name already carries its level ('E [4uM]'): do not print the level twice
+        enz_txt = ', '.join(e if '[' in e else f"{e} {cond['enzymes'][e]}" for e in on) if on else 'none: WATER instead'
+        dc(ws, r, 1, f"#{cond['num']}", B, LT)
+        dc(ws, r, 2, (sm_of or {}).get(cond['num'], ''), N, LT)
+        dc(ws, r, 3, cond.get('label', cond.get('note', '')), N, LT)
+        dc(ws, r, 4, enz_txt, N, LT)
+        r += 1
     if plan['weighings']:
         w = '; '.join(f"#{t} {solid} {mg} mg" for t, solid, mg in plan['weighings'])
-        dc(ws, r, 1, f'Weigh first, one per tube (solid, not pipetting): {w}', N, LT)
+        dc(ws, r, 1, f'Weigh first (solid, not pipetting), per tube unless a line below says otherwise: {w}',
+           N, LT)
         r += 1
+        # `weighings` keeps only NAME and mg out of the note, so any sentence qualifying HOW those tubes are
+        # weighed (replicates weighed as one group because the per-tube mass is under the balance, a solubility
+        # limit, ...) was dropped and the line above then asserted per-tube weighing against it, e.g. a
+        # per-tube mass under one division of the balance while the Reaction Matrix note said to weigh the
+        # replicates as one group. Carry those sentences through, with the tubes they apply to.
+        qual: dict[str, list[int]] = {}
+        weighed = {t for t, _s, _m in plan['weighings']}
+        for cond in cfg['conditions']:
+            if cond['num'] not in weighed:
+                continue
+            for s in re.split(r'(?<=[.;])\s+', cond.get('note', '') or ''):
+                s = s.strip()
+                if re.search(r'weigh', s, re.I) and 'mg solid' not in s:
+                    qual.setdefault(s, []).append(cond['num'])
+        for s, tubes in qual.items():
+            dc(ws, r, 1, f"{', '.join('#%s' % t for t in tubes)}: {s}", NOTE, LT)
+            r += 1
     inp = {t: v for t, v in plan['water_in_place'].items() if v}
     if inp:
         dc(ws, r, 1, f"No-enzyme tube(s) {', '.join('#%s' % t for t in inp)}: WATER in the same volumes and order "
-                     f"as the enzyme additions of the other tubes.", N, LT)
+                     f"as the enzyme additions of the other tubes.", NOTE, LT)
         r += 1
     r += 1
 
@@ -1374,24 +1591,8 @@ def _enzyme_prep_block(ws, r, plan):
                  'Batch = purification date of the stock tube to use.', NOTE, LT)
     r += 1
 
-    cock_use = defaultdict(float)
-    for ck in route['cocktails']:
-        for src, v in ck['comps'].items():
-            if not is_ws(src):   # a diluted working stock in a cocktail is priced by its own lab draw (block C)
-                cock_use[info(src)[0]] += v * ck['scale']
-    direct_use = defaultdict(float)
-    for lst in route['separate'].values():
-        for src, v in lst:
-            if not is_ws(src) and not src.startswith(('cocktail', 'common cocktail')):
-                direct_use[info(src)[0]] += v * pipette_count.SURPLUS
-    serial = _serial_recipes(plan)
-    ws_use = defaultdict(float)
-    for wk in plan['working']:
-        if wk['enzyme'] not in serial:
-            ws_use[wk['enzyme']] += wk['lab_stock_uL']
-    for enz, rows_ in serial.items():
-        ws_use[enz] += sum(x['lab_uL'] for x in rows_)
-    names = [n for n in dict.fromkeys(list(cock_use) + list(direct_use) + list(ws_use))]
+    tot = lab_stock_totals(plan)
+    cock_use, direct_use, ws_use, serial, names = tot['cocktail'], tot['direct'], tot['working'], tot['serial'], tot['names']
 
     dc(ws, r, 1, 'A) LAB STOCKS TO TAKE - total volume per enzyme for the whole run', S, LT)
     r += 1
@@ -1417,7 +1618,8 @@ def _enzyme_prep_block(ws, r, plan):
     for ck in route['cocktails']:
         dead = pipette_count.dead_ul(cfg, 'cocktail')
         dc(ws, r, 1, f"B) {ck['name'].upper()} - combine the stocks below in ONE tube (neat unless marked WORKING STOCK) ({len(ck['members'])} "
-                     f"enzyme tubes x {pipette_count.SURPLUS:g} + {dead:g} uL dead = {rq(ck['make_uL'])} uL)", S, LT)
+                     f"enzyme tubes x {pipette_count.SURPLUS:g} + {dead:g} uL dead = {ck['make_uL']:.2f} uL "
+                     f"planned; the TOTAL row below sums the ROUNDED draws and may differ by a few 0.1 uL)", S, LT)
         r += 1
         heads = ['Component', 'Batch', 'Lab stock (g/L)', 'uL per tube', 'uL to combine']
         for c, h in enumerate(heads, 1):
@@ -1433,7 +1635,7 @@ def _enzyme_prep_block(ws, r, plan):
             dc(ws, r, 3, round(lab_gL, 4) if lab_gL else '')
             dc(ws, r, 4, rq(v)); dc(ws, r, 5, rq(v * ck['scale']))
             r += 1
-        dc(ws, r, 1, 'TOTAL (sum of rounded draws)', B, LT)
+        dc(ws, r, 1, 'TOTAL (sum of rounded draws; the planned make is in the heading above)', B, LT)
         fml(ws, r, 4, f'=SUM(D{first}:D{r-1})').font = B
         fml(ws, r, 5, f'=SUM(E{first}:E{r-1})').font = B
         r += 1
@@ -1446,7 +1648,7 @@ def _enzyme_prep_block(ws, r, plan):
                      f'transfer is a pipettable volume)', S, LT)
         r += 1
         heads = ['Working stock', 'Batch', 'Working (g/L)', 'Make (uL)', 'Take from', 'Take (uL)', 'Water (uL)',
-                 'uL per tube']
+                 'uL per tube', 'How to mix']
         for c, h in enumerate(heads, 1):
             ws.cell(row=r, column=c, value=h)
         hdr(ws, r, len(heads))
@@ -1454,8 +1656,9 @@ def _enzyme_prep_block(ws, r, plan):
         for x in rows_:
             vals = [x['stock'], info(x['stock'])[1], round(x['working_gL'], 4), x['make_uL'], x['src'],
                     rq(x['src_uL']), rq(x['make_uL'] - rq(x['src_uL'])), rq(x['per_tube'])]   # water closes the rounded take
+            vals.append(f"{vals[5]:g} uL {x['src']} + {vals[6]:g} uL water -> {x['make_uL']:g} uL; mix")
             for c, v in enumerate(vals, 1):
-                dc(ws, r, c, v, N, LT if c in (1, 2, 5) else CT)
+                dc(ws, r, c, v, N, LT if c in (1, 2, 5, 9) else CT)
             r += 1
         r += 1
     rest = [w for w in plan['working'] if w['enzyme'] not in serial]
@@ -1463,7 +1666,7 @@ def _enzyme_prep_block(ws, r, plan):
         dc(ws, r, 1, 'C) WORKING STOCKS (lab stock + WATER)', S, LT)
         r += 1
         heads = ['Working stock', 'Enzyme', 'Batch', 'Working (g/L)', 'Make (uL)', 'Lab stock (uL)', 'Water (uL)',
-                 'uL per tube']
+                 'uL per tube', 'How to mix']
         for c, h in enumerate(heads, 1):
             ws.cell(row=r, column=c, value=h)
         hdr(ws, r, len(heads))
@@ -1472,8 +1675,10 @@ def _enzyme_prep_block(ws, r, plan):
             _, batch, _ = info(wk['working_stock'])
             vals = [wk['working_stock'], wk['enzyme'], batch, round(wk['working_gL'], 4), wk['make_uL'],
                     rq(wk['lab_stock_uL']), rq(wk['water_uL']), rq(wk['uL_per_tube'])]
+            vals.append(f"{vals[5]:g} uL {wk['enzyme']} lab stock ({batch}) + {vals[6]:g} uL water -> {wk['make_uL']:g} uL; mix"
+                        if vals[6] else f"{wk['enzyme']} lab stock ({batch}) used as is ({vals[5]:g} uL)")
             for c, v in enumerate(vals, 1):
-                dc(ws, r, c, v, N, LT if c <= 3 else CT)
+                dc(ws, r, c, v, N, LT if c <= 3 or c == 9 else CT)
             r += 1
         r += 1
     return r
@@ -1482,8 +1687,8 @@ def _enzyme_prep_block(ws, r, plan):
 def methods_dir():
     """The Methods folder every generated workbook is published to: env LAB_METHODS_DIR (tests, other lab members),
     else the glob stored per computer in ~/.config/experiment-hub.json (key "methods_dir_glob", relative to the home
-    folder, e.g. "OneDrive*/Lab/Methods"). The glob is resolved on the home folder only, never by
-    a recursive walk of OneDrive. None when nothing matches."""
+    folder, e.g. "SyncedLibrary*/Lab/Methods"). The glob is resolved on the home folder only, never by
+    a recursive walk of a cloud-sync folder. None when nothing matches."""
     import os
     env = os.environ.get('LAB_METHODS_DIR')
     if env:
